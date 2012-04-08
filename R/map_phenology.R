@@ -7,13 +7,44 @@
 #' @param parametersfit Set of parameters to be fitted
 #' @param Phi Phi values to be analyzed
 #' @param Delta Delta value to be analyzed
-#' @param method_incertitude 2 [default] is the correct one from a statistical point of view; 
-#'                           0 is an aproximate method more rapid; 
-#'                           1 is an alternative more rapid but biased.
-#' @param zero_counts Example c(TRUE, TRUE, FALSE) indicates whether the zeros have
+#' @param method_incertitude 2 [default] is the correct one from a statistical point of view; \cr
+#'                           0 is an aproximate method more rapid; \cr
+#'                           1 is an alternative more rapid but biased.\cr
+#' @param zero_counts Example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 #'                    been recorder for each of these timeseries. Defaut is TRUE for all.
 #' @param help If TRUE, an help is displayed
 #' @description This function generates a map of likelihood varying Phi and Delta.
+#' @examples
+#' library("phenology")
+#' # Read a file with data
+#' # Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+#' data(Gratiot)
+#' # Generate a formatted list nammed data_Gratiot 
+#' data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' # Generate initial points for the optimisation
+#' parg<-par_init(data_Gratiot, parametersfixed=NULL)
+#' # Run the optimisation
+#' # result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' data(result_Gratiot)
+#' # Extract the fitted parameters
+#' parg1<-extract_result(result_Gratiot)
+#' # Add constant Alpha and Tau values [day d amplitude=(Alpha+Nd*Beta)^Tau with Nd being the number of counts for day d]
+#' pfixed<-c(parg1, Alpha=0, Tau=1)
+#' pfixed<-pfixed[-which(names(pfixed)=="Theta")]
+#' # The only fitted parameter will be Beta
+#' parg2<-c(Beta=0.5, parg1["Theta"])
+#' # Generate a likelihood map [default Phi=seq(from=0.1, to=20, length.out=100) but it is very long]
+#' # Take care, it takes 20 hours ! The data map_Gratiot has the result
+#' # map_Gratiot<-map_phenology(data=data_Gratiot, Phi=seq(from=0.1, to=20, length.out=100), parametersfit=parg2, parametersfixed=pfixed)
+#' data(map_Gratiot)
+#' # Plot the map
+#' plot_map(map=map_Gratiot, pdf=FALSE, col=heat.colors(128))
+#' # Plot the min(-Ln L) for Phi varying at any delta value
+#' plot_phi(map=map_Gratiot, pdf=FALSE)
+#' # Plot the min(-Ln L) for Delta varying with Phi equal to the value for maximum likelihood
+#' plot_delta(map=map_Gratiot, pdf=FALSE)
+#' # Plot the min(-Ln L) for Delta varying with Phi the nearest to 15
+#' plot_delta(map=map_Gratiot, Phi=15, pdf=FALSE)
 #' @export
 
 map_phenology <-
@@ -122,7 +153,7 @@ for(i in 1:LPhi) {
 
     repeat {
     	    	
-		resul<-optim(par, Lnegbin, NULL, method="BFGS",control=list(trace=0, REPORT=1, maxit=500),hessian=FALSE)
+		resul<-optim(par, .Lnegbin, NULL, method="BFGS",control=list(trace=0, REPORT=1, maxit=500),hessian=FALSE)
 		if (resul$convergence==0) break
 		par<-resul$par
 		# print("Convergence is not achieved. Optimization continues !")
@@ -148,7 +179,7 @@ Dv=as.vector(input)
 pos=which.min(Dv)
 j0=floor(pos/nrow(input))+1
 i0=pos%%nrow(input)
-print(paste("the minnimum Log likelihood is ", input[i0, j0], sep=""))
+print(paste("The minimum -Ln likelihood is ", input[i0, j0], sep=""))
 print(paste("For Phi=",Phivalue[i0],sep=""))
 print(paste("And Delta=",Deltavalue[j0],sep=""))
 

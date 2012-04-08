@@ -8,12 +8,7 @@
 
 phenology <-
 function() {
-	cat("Version 3.25 25/3/2012\n")
-	cat("----------------------------------------------------------------------------------\n")
-	cat("The current working directory is:\n")
 	wd<-getwd()
-	cat(wd, "\n\n")
-
 	cat("Help is available for each function with function_name(help=TRUE)\n")
 	cat("\n")
 
@@ -238,15 +233,15 @@ cat("# Gratiot, N., Gratiot, J., de Thoisy, B. & Kelle, L. (2006) Estimation of 
 
 cat('> data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")', "\n")
 data_Gratiot<<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
-cat('> par<-par_init(data_Gratiot, parametersfixed=NULL)\n')
-# par<<-par_init(data_Gratiot, parametersfixed=NULL)
-par<<-structure(c(95.8321263398564, 175.358708794243, 62.4612122478645, 
+cat('> parg<-par_init(data_Gratiot, parametersfixed=NULL)\n')
+# parg<<-par_init(data_Gratiot, parametersfixed=NULL)
+parg<<-structure(c(95.8321263398564, 175.358708794243, 62.4612122478645, 
 8.05881177534446e-05, 33.0763701906086, 0.217617932254042, 0.424402045435138, 
 3.58256503707858), .Names = c("LengthB", "Peak", "LengthE", "Flat", 
 "Max_Complete", "MinB_Complete", "MinE_Complete", "Theta"))
-cat('> result<-fit_phenology(data=data_Gratiot, parametersfit=par, parametersfixed=NULL, trace=0)\n')
-result_Gratiot<<-fit_phenology(data=data_Gratiot, parametersfit=par, parametersfixed=NULL, trace=0)
-cat('> plot_phenology(result=result, pdf=FALSE)\n')
+cat('> result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=0)\n')
+result_Gratiot<<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=0)
+cat('> plot_phenology(result=result_Gratiot, pdf=FALSE)\n')
 plot_phenology(result=result_Gratiot, pdf=FALSE)
 			print("Done !")
 		}

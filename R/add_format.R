@@ -8,29 +8,41 @@
 #' @param reference as.Date('2001-12-31') The date used as 1st date
 #' @param format The format of the date in the file
 #' @param help If TRUE, an help is displayed
-#' @description To create a new dataset, the syntaxe is
-#' data<-add_format(add=newdata, name="Site",
-#' +   reference=as.Date('2001-12-31'), format='%d/%m/%y')
-#' To add a dataset to a previous one, the syntaxe is 
-#' data<-add_format(origin=previousdata, add=newdata, name='Site', 
-#' +   reference=as.Date('2001-12-31'), format='%d/%m/%y')
-#' 
-#' The dataset to be added must include 2 or 3 columns.
-#' The first one is the date in the format specified by
+#' @description To create a new dataset, the syntaxe is \cr
+#' data<-add_format(add=newdata, name="Site", reference=as.Date('2001-12-31'), format='%d/%m/%y')\cr
+#' To add a dataset to a previous one, the syntaxe is \cr
+#' data<-add_format(origin=previousdata, add=newdata, name='Site', reference=as.Date('2001-12-31'), format='%d/%m/%y')\cr
+#' \cr
+#' The dataset to be added must include 2 or 3 columns.\cr
+#' The first one is the date in the format specified by 
 #' the parameter format=. If the number of nests is known 
-#' for an exact data, then only one date must be indicated
-#' If the number of nests is known for a range of date, the
-#' first and last dates must be separated but a -.
-#' For example: 1/2/2000-10/2/2000
-#' The second column is the number of nests observed for
-#' this date or this range of dates.
-#' The third column is optional and is the name of the rookery.
+#' for an exact data, then only one date must be indicated 
+#' If the number of nests is known for a range of date, the 
+#' first and last dates must be separated but a -.\cr
+#' For example: 1/2/2000-10/2/2000\cr
+#' The second column is the number of nests observed for 
+#' this date or this range of dates.\cr
+#' The third column is optional and is the name of the rookery.\cr
 #' If only two columns are indicated, the name can be indicated as 
-#' a parameter of the function with name=. If no name is indicated,
+#' a parameter of the function with name=. If no name is indicated, 
 #' the default name Site will be used, but take care, only one 
-#' rookery this name can be used.
-#' Several rookeries can be included in the same file but in this case
+#' rookery this name can be used.\cr
+#' Several rookeries can be included in the same file but in this case 
 #' the rookery name is obligatory at the third column.
+#' @examples 
+#' library(phenology)
+#' # Read a file with data
+#' # Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+#' data(Gratiot)
+#' # Generate a formatted list nammed data_Gratiot 
+#' data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' # Generate initial points for the optimisation
+#' parg<-par_init(data_Gratiot, parametersfixed=NULL)
+#' # Run the optimisation
+#' # result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' data(result_Gratiot)
+#' # Plot the phenology and get some stats
+#' plot_phenology(result=result_Gratiot, pdf=FALSE)
 #' @export
 
 

@@ -15,11 +15,11 @@
   \item{parametersfit}{Set of parameters to be fitted}
 
   \item{trace}{If 1, display the progression of fit; 0 is
-  silent}
+  silent (don't be afraid if it is long !)}
 
   \item{method_incertitude}{2 [default] is the correct one
-  from a statistical point of view; 0 is an aproximate
-  method more rapid; 1 is an alternative more rapid but
+  from a statistical point of view;\cr 0 is an aproximate
+  method more rapid;\cr 1 is an alternative more rapid but
   biased.}
 
   \item{zero_counts}{example c(TRUE, TRUE, FALSE) indicates
@@ -36,25 +36,41 @@
 }
 \description{
   Function of the package phenology to fit parameters to
-  timeseries. To fit data, the syntaxe is :
+  timeseries.\cr To fit data, the syntaxe is :\cr
   Result<-fit_phenology(data=dataset, parametersfit=par,
-  parametersfixed=pfixed, trace=1, + method_incertitude=2,
-  zero_counts=TRUE, hessian=TRUE) or if no parameter is
-  fixed : Result<-fit_phenology(data=dataset,
-  parametersfit=par) or fit_phenology(help=TRUE) to have
-  this help ! Add trace=1 [default] to have information on
-  the fit progression. or trace=0 to hide information on
-  the fit progression. method_incertitude=2 [default] is
-  the correct one from a statistical point of view.
-  method_incertitude=0 is an aproximate method more rapid.
-  method_incertitude=1 is an alternative more rapid but
-  biased. zero_counts=c(TRUE, TRUE, FALSE) indicates
-  whether the zeros have been recorder for each of these
-  timeseries. Defaut is TRUE for all. hessian=FALSE does
-  not estimate se of parameters.
+  parametersfixed=pfixed, trace=1, method_incertitude=2,
+  zero_counts=TRUE, hessian=TRUE)\cr or if no parameter is
+  fixed :\cr Result<-fit_phenology(data=dataset,
+  parametersfit=par)\cr or\cr fit_phenology(help=TRUE) to
+  have this help !\cr Add trace=1 [default] to have
+  information on the fit progression or trace=0 to hide
+  information on the fit progression.\cr
+  method_incertitude=2 [default] is the correct one from a
+  statistical point of view.\cr method_incertitude=0 is an
+  aproximate method more rapid.\cr method_incertitude=1 is
+  an alternative more rapid but biased.\cr
+  zero_counts=c(TRUE, TRUE, FALSE) indicates whether the
+  zeros have been recorder for each of these timeseries.
+  Defaut is TRUE for all.\cr hessian=FALSE does not
+  estimate se of parameters.
 }
 \details{
   fit_phenology fits parameters to timeseries.
+}
+\examples{
+library(phenology)
+# Read a file with data
+# Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+data(Gratiot)
+# Generate a formatted list nammed data_Gratiot
+data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
+# Generate initial points for the optimisation
+parg<-par_init(data_Gratiot, parametersfixed=NULL)
+# Run the optimisation
+# result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+data(result_Gratiot)
+# Plot the phenology and get some stats
+plot_phenology(result=result_Gratiot, pdf=FALSE)
 }
 \author{
   Marc Girondot

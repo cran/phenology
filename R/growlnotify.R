@@ -5,6 +5,9 @@
 #' @param textinfo Text to display in the growlnotify window
 #' @param help If TRUE, an help is displayed
 #' @description This function is used to send a notification to Mac user.
+#' @examples 
+#' # If growlnotify is used on a non-mac system, it just returns
+#' growlnotify("It works if you are on a Mac with GrowNotify installed!")
 #' @export
 
 

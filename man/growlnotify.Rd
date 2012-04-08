@@ -19,6 +19,10 @@
 \details{
   growlnotify send growl notification for MacOs X systems.
 }
+\examples{
+# If growlnotify is used on a non-mac system, it just returns
+growlnotify("It works if you are on a Mac with GrowNotify installed!")
+}
 \author{
   Marc Girondot
 }

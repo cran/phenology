@@ -24,6 +24,13 @@
 \details{
   add_SD adds SD for a fixed parameter.
 }
+\examples{
+library(phenology)
+# Generate a set of fixed parameter: Flat and Min
+pfixed<-c(Flat=0, Min=0)
+	# Add SD for the Flat parameter
+pfixed<-add_SD(parametersfixed=pfixed, parameter="Flat", SD=5)
+}
 \author{
   Marc Girondot
 }

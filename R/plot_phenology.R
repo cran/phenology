@@ -11,6 +11,20 @@
 #' @param ... Parameters used for graphics
 #' @param help If TRUE, an help is displayed
 #' @description The function "plot_phenology" plots the phenology graph from a result.
+#' @examples
+#' library(phenology)
+#' # Read a file with data
+#' # Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+#' data(Gratiot)
+#' # Generate a formatted list nammed data_Gratiot 
+#' data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' # Generate initial points for the optimisation
+#' parg<-par_init(data_Gratiot, parametersfixed=NULL)
+#' # Run the optimisation
+#' # result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' data(result_Gratiot)
+#' # Plot the phenology and get some stats
+#' plot_phenology(result=result_Gratiot, pdf=FALSE)
 #' @export
 
 
@@ -134,10 +148,14 @@ setTxtProgressBar(pb, j)
 # maintenant tous les paramètre fixés appraissent dans resfit
 	xparec<-.format_par(par2[j,], nmser)
 	
-	for(i in 1:365) {
+#	for(i in 1:365) {
 #	print(i)
-		ponte2[j,i]=NestNumber(i, xparec, print=FALSE)
-	}
+#		ponte2[j,i]=.daily_count(i, xparec, print=FALSE)
+#	}
+	
+	ponte2[j,1:365]=.daily_count(1:365, xparec, print=FALSE)
+	
+	
 # je viens de générer les pontes du jour j
 }
 
@@ -153,9 +171,9 @@ mnponte<-mean(apply(ponte2, 1, sum))
 sdponte<-sd(apply(ponte2, 1, sum))
 cat("Estimation without the observed data\n")
 if (sdponte!=0) {
-cat("Total number of nests: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+4)), "\n", sep="")
+cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+4)), "\n", sep="")
 } else {
-cat("Total number of nests: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD 0.000\n", sep="")
+cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD 0.000\n", sep="")
 }
 
 cat("Estimation taking into account the observed data\n")
@@ -164,7 +182,7 @@ cat("Estimation taking into account the observed data\n")
 for(i in 1:dim(data[[series[kseries]]])[1]) {
 		if (!is.na(data[[series[kseries]]]$ordinal2[i])) {
 			for(j in (1+data[[series[kseries]]]$ordinal[i]):data[[series[kseries]]]$ordinal2[i]) {
-# plus la pein, vérifié maintenant à l'entrée des données: 4/2/2012
+# plus la peine, vérifié maintenant à l'entrée des données: 4/2/2012
 #				if ((j<1)||(j>365)) {
 #					print(paste("Error in the date ",data[[series[kseries]]]$date[i], " or ",
 # data[[series[kseries]]]$date2[i], "; please check", sep=""))
@@ -183,9 +201,9 @@ for(i in 1:dim(data[[series[kseries]]])[1]) {
 mnponte<-mean(apply(ponte2, 1, sum))
 sdponte<-sd(apply(ponte2, 1, sum))
 if (sdponte!=0) {
-cat("Total number of nests: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+4)), "\n", sep="")
+cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+4)), "\n", sep="")
 } else {
-cat("Total number of nests: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD 0.000\n", sep="")
+cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD 0.000\n", sep="")
 }
 
 
@@ -194,11 +212,11 @@ cat("Total number of nests: ", format(mnponte, digits=floor(log10(mnponte)+4)), 
 
 xparec<-.format_par(parres, nmser)
 
-for(j in 1:365) {val[j, "Theor"]=.daily_count(j-1, xparec, print=FALSE)}
+val[1:365, "Theor"]=.daily_count(1:365, xparec, print=FALSE)
 
 ## je remplis le tableau val avec les nb théoriques +/- 2 SD
-for(j in 1:365) {val[j, "Theor-2SE"]=max(0, val[j, "Theor"]-2*sd2[j])}
-for(j in 1:365) {val[j, "Theor+2SE"]=val[j, "Theor"]+2*sd2[j]}
+for(i in 1:365) {val[i, "Theor-2SE"]=max(0, val[i, "Theor"]-2*sd2[i])}
+val[1:365, "Theor+2SE"]=val[1:365, "Theor"]+2*sd2[1:365]
 
 
 ## je calcule la distribution théorique des points minimaux

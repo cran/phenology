@@ -31,26 +31,56 @@ nn<-ifelse(d<xpar["Begin"], xpar["MinB"],
 		)
 	)
 
+if (any(is.na(nn))) {
+	print("Global: Error, the parameters at the time of error are:")
+	print(xpar)
+	.phenology.env$par_error<<-xpar
+	pause <- scan() 
+}
 
-if (xpar["sin"]) {	
-	nn<-nn+sin(2*pi*((d+xpar["Delta"])/xpar["Phi"]))*(xpar["Alpha"]+(xpar["Beta"]*nn^xpar["Tau"]))
+
+if (xpar["sin"]) {
+	ns<-sin(2*pi*((d+xpar["Delta"])/xpar["Phi"]))*(xpar["Alpha"]+(xpar["Beta"]*nn^xpar["Tau"]))
+if (any(is.na(ns))) {
+	print(d)
+	print("Sin: Error, the parameters at the time of error are:")
+	print(xpar)
+	.phenology.env$par_error<<-xpar
+	pause <- scan() 
 }
-	
+} else {
+	ns<-0
+}
+
 if (xpar["sin1"]) {
-	nn<-nn+sin(2*pi*((d+xpar["Delta1"])/xpar["Phi1"]))*(xpar["Alpha1"]+(xpar["Beta1"]*nn^xpar["Tau1"]))
+	ns1<-sin(2*pi*((d+xpar["Delta1"])/xpar["Phi1"]))*(xpar["Alpha1"]+(xpar["Beta1"]*nn^xpar["Tau1"]))
+if (any(is.na(ns1))) {
+	print(d)
+	print("Sin 1: Error, the parameters at the time of error are:")
+	print(xpar)
+	.phenology.env$par_error<<-xpar
+	pause <- scan() 
 }
+} else {
+	ns1<-0
+}
+
 
 if (xpar["sin2"]) {
-	nn<-nn+sin(2*pi*((d+xpar["Delta2"])/xpar["Phi2"]))*(xpar["Alpha2"]+(xpar["Beta2"]*nn^xpar["Tau2"]))
+	ns2<-sin(2*pi*((d+xpar["Delta2"])/xpar["Phi2"]))*(xpar["Alpha2"]+(xpar["Beta2"]*nn^xpar["Tau2"]))
+if (any(is.na(ns2))) {
+	print(d)
+	print("Sin 2: Error, the parameters at the time of error are:")
+	print(xpar)
+	.phenology.env$par_error<<-xpar
+	pause <- scan() 
+}
+} else {
+	ns2<-0
 }
 
-# print(xpar)
-# print(nn)
-if (any(is.na(nn))) {
-	print("Error, the parameters at the time of error are:")
-	print(xpar)
-	nn[is.na(nn)]<-1E-9
-}
+nn<-nn+ns+ns1+ns2
+nn[is.na(nn)]<-1E-9
 
 nn<-ifelse((nn<=0) & (d<xpar["Begin"]), xpar["MinB"],
 		ifelse((nn<=0) & (d>xpar["Begin"]), xpar["MinE"],

@@ -23,6 +23,21 @@
 \details{
   par_init calculates initial set of parameters.
 }
+\examples{
+library(phenology)
+# Read a file with data
+# Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+data(Gratiot)
+# Generate a formatted list nammed data_Gratiot
+data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
+# Generate initial points for the optimisation
+parg<-par_init(data_Gratiot, parametersfixed=NULL)
+# Run the optimisation
+# result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+data(result_Gratiot)
+# Plot the phenology and get some stats
+plot_phenology(result=result_Gratiot, pdf=FALSE)
+}
 \author{
   Marc Girondot
 }

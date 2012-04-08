@@ -1,10 +1,10 @@
-#' The package phenology fits a parametric function that describes phenology
+#' Fit a parametric function that describes phenology
 #'
 #' \tabular{ll}{
 #'  Package: \tab phenology\cr
 #'  Type: \tab Package\cr
-#'  Version: \tab 3.25\cr
-#'  Date: \tab 2012-04-05\cr
+#'  Version: \tab 3.28\cr
+#'  Date: \tab 2012-04-08\cr
 #'  License: \tab GPL (>= 2)\cr
 #'  LazyLoad: \tab yes\cr
 #'  }
@@ -18,8 +18,24 @@
 #'             Endangered Species Research, 12, 85-105.
 #' @references Girondot, M. 2010. Editorial: The zero counts. Marine 
 #'             Turtle Newsletter, 129, 5-6.
-#' @keywords Seasonality
-#' @keywords Phenology
-#' @keywords Ecology
+#' @keywords Seasonality Phenology Ecology
+#' @seealso Girondot, M., Rivalan, P., Wongsopawiro, R., Briane, J.-P., Hulin, V.,
+#'          Caut, S., Guirlet, E. & Godfrey, M. H. 2006. Phenology of marine turtle 
+#'          nesting revealed by a statistical model of the nesting season. BMC Ecology, 
+#'          6, 11.
+#' @examples
+#' library(phenology)
+#' # Read a file with data
+#' # Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+#' data(Gratiot)
+#' # Generate a formatted list nammed data_Gratiot 
+#' data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' # Generate initial points for the optimisation
+#' parg<-par_init(data_Gratiot, parametersfixed=NULL)
+#' # Run the optimisation
+#' # result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' data(result_Gratiot)
+#' # Plot the phenology and get some stats
+#' plot_phenology(result=result_Gratiot, pdf=FALSE)
 
 NULL
