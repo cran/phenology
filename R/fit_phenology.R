@@ -39,7 +39,7 @@
 #' # result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
-#' plot_phenology(result=result_Gratiot, pdf=FALSE)
+#' output<-plot_phenology(result=result_Gratiot, pdf=FALSE)
 #' @export
 
 

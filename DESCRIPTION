@@ -1,8 +1,8 @@
 Package: phenology
 Type: Package
 Title: Tools to manage a parametric function that describes phenology
-Version: 3.28
-Date: 2012-04-08
+Version: 3.29
+Date: 2012-04-09
 Author: Marc Girondot
 Maintainer: Marc Girondot <marc.girondot@u-psud.fr>
 Depends: fields
@@ -19,8 +19,9 @@ Collate: 'BE_to_LBLE.R' 'LBLE_to_BE.R' 'Likelihood_phenology.R'
         'growlnotify.R' 'map_phenology.R' 'par_init.R' 'phenology.R'
         'plot_delta.R' 'plot_map.R' 'plot_phenology.R' 'plot_phi.R'
         'remove_site.R' 'shift_sinusoid.R' 'phenology-package.R'
-        'Gratiot.R' 'map_Gratiot.R' 'result_Gratiot.R'
+        'moon_phase.R' 'Gratiot.R' 'map_Gratiot.R' 'result_Gratiot.R'
         'result_Gratiot_Flat.R' 'result_Gratiot1.R' 'result_Gratiot2.R'
-Packaged: 2012-04-08 16:12:12 UTC; marcgirondot
+        'compare_AIC.R'
+Packaged: 2012-04-10 21:33:26 UTC; marcgirondot
 Repository: CRAN
-Date/Publication: 2012-04-08 16:48:52
+Date/Publication: 2012-04-11 06:03:53

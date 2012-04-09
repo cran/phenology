@@ -1,6 +1,6 @@
 \name{BE_to_LBLE}
 \alias{BE_to_LBLE}
-\title{Transform a set of parameters from Begin End format to LengthB LengthE.}
+\title{Transform a set of parameters from Begin End to LengthB LengthE.}
 \usage{
   BE_to_LBLE(parameters = NULL, help = FALSE)
 }

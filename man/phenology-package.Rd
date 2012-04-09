@@ -9,7 +9,7 @@
   Fit a parametric function that describes phenology
 
   \tabular{ll}{ Package: \tab phenology\cr Type: \tab
-  Package\cr Version: \tab 3.28\cr Date: \tab 2012-04-08\cr
+  Package\cr Version: \tab 3.29\cr Date: \tab 2012-04-09\cr
   License: \tab GPL (>= 2)\cr LazyLoad: \tab yes\cr }
 }
 \examples{
@@ -25,7 +25,7 @@ parg<-par_init(data_Gratiot, parametersfixed=NULL)
 # result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
 data(result_Gratiot)
 # Plot the phenology and get some stats
-plot_phenology(result=result_Gratiot, pdf=FALSE)
+output<-plot_phenology(result=result_Gratiot, pdf=FALSE)
 }
 \author{
   Marc Girondot \email{marc.girondot@u-psud.fr}

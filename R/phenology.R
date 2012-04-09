@@ -1,6 +1,6 @@
 #' phenology is the help function for phenology package.
-#' @title The function "phenology"
-#' @author Marc Girondot
+#' @title Help for phenology package.
+#' @author Marc Girondot \email{marc.girondot@@u-psud.fr}
 #' @return None
 #' @description Help function for phenology package.
 #' @export

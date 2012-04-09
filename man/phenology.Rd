@@ -1,6 +1,6 @@
 \name{phenology}
 \alias{phenology}
-\title{The function "phenology"}
+\title{Help for phenology package.}
 \usage{
   phenology()
 }
@@ -14,6 +14,6 @@
   phenology is the help function for phenology package.
 }
 \author{
-  Marc Girondot
+  Marc Girondot \email{marc.girondot@u-psud.fr}
 }
 

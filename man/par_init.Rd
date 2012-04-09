@@ -36,7 +36,7 @@ parg<-par_init(data_Gratiot, parametersfixed=NULL)
 # result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
 data(result_Gratiot)
 # Plot the phenology and get some stats
-plot_phenology(result=result_Gratiot, pdf=FALSE)
+output<-plot_phenology(result=result_Gratiot, pdf=FALSE)
 }
 \author{
   Marc Girondot

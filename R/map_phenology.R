@@ -81,7 +81,7 @@ if (is.null(parametersfit)) {parametersfit<-NA}
 Phivalue=Phi
 if (is.null(Delta)) {
 
-Deltavalue=seq(from=0, to=max(Phivalue)/4, length.out=length(Phivalue)+1)
+Deltavalue=seq(from=0, to=max(Phivalue)/2, length.out=length(Phivalue)+1)
 
 } else {
 	Deltavalue=Delta
@@ -142,7 +142,7 @@ for(j in 1:LDelta) {
 XDelta<-Deltavalue[j]
 for(i in 1:LPhi) {
   XPhi<-Phivalue[i]
-  if (XDelta>=XPhi/4) {
+  if (XDelta>=XPhi/2) {
     input[i,j]=NA
   } else {
   	parametersfixed["Delta"]<-XDelta

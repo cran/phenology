@@ -1,0 +1,14 @@
+THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
+
+Please note that only the most significant changes are reported here.
+
+
+            CHANGES IN VERSION 3.29    (2012-04-09)
+
+* added generic function moon_phase()
+* added moon=FALSE parameter for fit_phenology()
+* added moon=TRUE for examples of shift_sinusoid()
+* plot_phenology() return a list of lists with the outputs
+* added generic function compare_AIC()
+
+

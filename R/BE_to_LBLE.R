@@ -1,5 +1,5 @@
 #' BE_to_LBLE transforms a set of parameters from Begin End format to LengthB LengthE.
-#' @title Transform a set of parameters from Begin End format to LengthB LengthE.
+#' @title Transform a set of parameters from Begin End to LengthB LengthE.
 #' @author Marc Girondot
 #' @return Return the set of modified parameters
 #' @param parameters Set of current parameters
