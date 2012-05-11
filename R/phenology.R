@@ -179,7 +179,7 @@ function() {
 							if(length(sd)!=0) {
 								sd<-as.numeric(sd)
 								es<-add_SD(parametersfixed=es, parameter=npf, SD=sd)
-								assign(pf, es, envir = .GlobalEnv)
+								assign("pf", es, envir = .GlobalEnv)
 								print("Done !")
 							}
 						} else {
@@ -232,15 +232,18 @@ cat("# They come from the figure 1 of:\n")
 cat("# Gratiot, N., Gratiot, J., de Thoisy, B. & Kelle, L. (2006) Estimation of marine turtles nesting season from incomplete data ; statistical adjustment of a sinusoidal function. Animal Conservation, 9, 95-102.\n")
 
 cat('> data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")', "\n")
-data_Gratiot<<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+data_Gratiot<<-data_Gratiot
 cat('> parg<-par_init(data_Gratiot, parametersfixed=NULL)\n')
 # parg<<-par_init(data_Gratiot, parametersfixed=NULL)
-parg<<-structure(c(95.8321263398564, 175.358708794243, 62.4612122478645, 
+parg<-structure(c(95.8321263398564, 175.358708794243, 62.4612122478645, 
 8.05881177534446e-05, 33.0763701906086, 0.217617932254042, 0.424402045435138, 
 3.58256503707858), .Names = c("LengthB", "Peak", "LengthE", "Flat", 
 "Max_Complete", "MinB_Complete", "MinE_Complete", "Theta"))
+parg<<-parg
 cat('> result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=0)\n')
-result_Gratiot<<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=0)
+result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=0)
+result_Gratiot<<-result_Gratiot
 cat('> plot_phenology(result=result_Gratiot, pdf=FALSE)\n')
 plot_phenology(result=result_Gratiot, pdf=FALSE)
 			print("Done !")

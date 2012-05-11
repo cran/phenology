@@ -23,7 +23,7 @@
 
 
 extract_result <-
-function(result=res, help=FALSE) {
+function(result=NULL, help=FALSE) {
 if(help) {
 	cat("This function is used to get the set of parameters\n")
 	cat("from a result object obtained after fit_phenology.\n")

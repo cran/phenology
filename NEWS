@@ -2,13 +2,23 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 3.30    (2012-05-13)
+
+* create two new classes: phenology and phenologymap
+* create the plot, print, summary methods for these new classes
+* it is possible to add several datasets at one time with add=list(d1, d2, d3)
+* for add_format, it is possible to add several format for date with format = c("%d/%m/%Y", "%d/%m/%y"). All formats are tested.
+* added function read_folder() to open all files from a folder and create a list to be used with add_format function
+* correct an error for the outputs of plot_phenology with several series
+* the main calendar dates for each series are shown at the end of the fit
+* these dates are stored in the result under the name $Dates
 
             CHANGES IN VERSION 3.29    (2012-04-09)
 
-* added generic function moon_phase()
+* added function moon_phase()
 * added moon=FALSE parameter for fit_phenology()
 * added moon=TRUE for examples of shift_sinusoid()
 * plot_phenology() return a list of lists with the outputs
-* added generic function compare_AIC()
+* added function compare_AIC()
 
 

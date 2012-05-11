@@ -72,6 +72,9 @@ if (help || is.null(data)) {
 
 } else {
 
+.phenology.env<- NULL
+rm(.phenology.env)
+
 if (is.null(parametersfixed)) {parametersfixed<-NA}
 if (is.null(parametersfit)) {parametersfit<-NA}
 
@@ -93,16 +96,20 @@ LDelta<-length(Deltavalue)
 # SET MATRIX
 matrix(data=NA, LPhi, LDelta) ->input
 
-	.phenology.env <<- new.env()
-	.phenology.env$data<<-data
-#	.phenology.env$fixed<<-parametersfixed
-	.phenology.env$incertitude<<-method_incertitude
+	.phenology.env <<- new.env(parent=.GlobalEnv)
+	assign("data", data, envir=as.environment(.phenology.env))
+#	assign("fixed", parametersfixed, envir=as.environment(.phenology.env))
+	assign("incertitude", method_incertitude, envir=as.environment(.phenology.env))
+
+
 	if (length(zero_counts)==1) {zero_counts<-rep(zero_counts, length(data))}
 	if (length(zero_counts)!=length(data)) {
 		print("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) or possess the same number of logical values than the number of series analyzed.")
 		return()
 	}
-	.phenology.env$zerocounts<<-zero_counts
+
+	assign("zerocounts", zero_counts, envir=as.environment(.phenology.env))
+
 
 # si ni Alpha ni Beta ne sont à ajuster, je mets Beta
 if (is.na(parametersfit["Alpha"]) && is.na(parametersfit["Beta"])) {
@@ -147,7 +154,8 @@ for(i in 1:LPhi) {
   } else {
   	parametersfixed["Delta"]<-XDelta
   	parametersfixed["Phi"]<-XPhi
-    .phenology.env$fixed<<-parametersfixed
+
+	assign("fixed", parametersfixed, envir=as.environment(.phenology.env))
     
     par<-parpre
 
@@ -183,8 +191,12 @@ print(paste("The minimum -Ln likelihood is ", input[i0, j0], sep=""))
 print(paste("For Phi=",Phivalue[i0],sep=""))
 print(paste("And Delta=",Deltavalue[j0],sep=""))
 
-return(list(input=input, Phi=Phivalue, Delta=Deltavalue, Parametersfitted=names(parametersfit), 
-Parametersfixed=parametersfixed, Data=names(data)))
+outputmap <- list(input=input, Phi=Phivalue, Delta=Deltavalue, Parametersfitted=names(parametersfit), 
+Parametersfixed=parametersfixed, Data=names(data))
+
+class(outputmap) <- "phenologymap"
+
+return(outputmap)
 
 }
 }

@@ -30,12 +30,11 @@
   \item{help}{If TRUE, an help is displayed}
 }
 \value{
-  Return A list of lists with formated outputs\cr For each
-  site:\cr $site=name of the site\cr $estimate1=Estimation
-  of counts not taking into account the observations\cr
-  $sd1=The SD of estimation1\cr $estimate2=Estimation of
-  counts taking into account the observations\cr $sd2=The
-  SD of estimation2
+  Return a list of outputs. For each site:\cr $site=name of
+  the site\cr estimate1=Estimation of counts not taking
+  into account the observations\cr sd1=The SD of
+  estimation1\cr estimate2=Estimation of counts taking into
+  account the observations\cr sd2=The SD of estimation2
 }
 \description{
   The function "plot_phenology" plots the phenology graph

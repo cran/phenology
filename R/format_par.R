@@ -3,7 +3,7 @@
 #' @author Marc Girondot
 #' @return Return a modified set of parameters
 #' @param xpar Set of parameters
-#' @param serie Standard deviation value to be added
+#' @param serie Name of the series to be analyzed
 #' @param help If TRUE, an help is displayed
 #' @description Calculate a simplified set of parameters.
 

@@ -3,22 +3,24 @@
 #' @author Marc Girondot
 #' @return Return a list of formated data
 #' @param origin previousdata or NULL if no previous data exists
-#' @param add newdata The data to be added
+#' @param add newdata The data to be added. It can be a set of several entities that uses the same reference and date format
 #' @param name 'Site' The name of the monitored site
 #' @param reference as.Date('2001-12-31') The date used as 1st date
-#' @param format The format of the date in the file
+#' @param format The format of the date in the file. Several format can be set and the last one that give compatible result is used
 #' @param help If TRUE, an help is displayed
 #' @description To create a new dataset, the syntaxe is \cr
 #' data<-add_format(add=newdata, name="Site", reference=as.Date('2001-12-31'), format='%d/%m/%y')\cr
 #' To add a dataset to a previous one, the syntaxe is \cr
 #' data<-add_format(origin=previousdata, add=newdata, name='Site', reference=as.Date('2001-12-31'), format='%d/%m/%y')\cr
+#' To add several timeseries at the same time with '%d/%m/%y'or '%d/%m/%Y' date format:
+#' data<-add_format(add=list(newdata1, newdata2), name=c('Site1', 'Site2'), reference=as.Date('2001-12-31'), format=c('%d/%m/%y', '%d/%m/%Y'))\cr
 #' \cr
 #' The dataset to be added must include 2 or 3 columns.\cr
 #' The first one is the date in the format specified by 
 #' the parameter format=. If the number of nests is known 
 #' for an exact data, then only one date must be indicated 
 #' If the number of nests is known for a range of date, the 
-#' first and last dates must be separated but a -.\cr
+#' first and last dates must be separated but a - (dash).\cr
 #' For example: 1/2/2000-10/2/2000\cr
 #' The second column is the number of nests observed for 
 #' this date or this range of dates.\cr
@@ -74,8 +76,35 @@ if(help) {
 	cat("the rookery name is obligatory at the third column.\n")
 } else {
 
-	if (is.null(name)) {name<-deparse(substitute(add))}
-	
+if (is.null(add) || !exists(as.character(substitute(add)))) {
+	cat("Data to be add does not exist !\n")
+} else {
+
+
+if (!is.data.frame(add)) {
+	nbdatasets <- length(add)
+	addlist <- add
+	if (length(name)==nbdatasets) {
+		names(addlist) <- name
+	} else {
+		if (is.null(names(addlist))) {
+			print("The names of datasets are set to 'dataset'")
+			names(addlist) <- paste("dataset", 1:nbdatasets, sep="")
+		}
+	}
+	name <- NULL
+} else {
+	nbdatasets <- 1
+	addlist <- list(add)
+	names(addlist) <- deparse(substitute(add))
+}
+
+
+for (kk in 1:nbdatasets) {
+
+	add <- addlist[[kk]]
+	name<-names(addlist)[kk]
+		
 # fichier pnd
 # si 5 colonnes, j'en retire les 2 dernières
 	if (dim(add)[2]==5) {
@@ -109,13 +138,32 @@ if(help) {
 		addT<-data.frame(Date=rep(as.Date("1900-01-01"), dim(add)[1]), Date2=rep(as.Date("1900-01-01"), dim(add)[1]), nombre=rep(NA, dim(add)[1]), ordinal=rep(NA, dim(add)[1]), ordinal2=rep(NA, dim(add)[1]), Modeled=rep(NA, dim(add)[1]), LnL=rep(NA, dim(add)[1]))
 		for(i in 1:dim(add)[1]) {
 			essai<-unlist(strsplit(add$Date[i], "-"))
-			addT$Date[i]<-as.Date(essai[1], format)
+			
+			dtcorrect <- NULL
+			for (fd in 1:length(format)) {
+				dtencours <- as.Date(essai[1], format[fd])
+				ref <- as.numeric(dtencours-reference+1)
+				if (ref>=0 & ref<=366) {
+					dtcorrect <- dtencours
+				}
+			}
+			
+			addT$Date[i] <- dtcorrect
 			if (is.na(addT$Date[i])) {
 				print(paste("Error date ", essai[1], sep=""))
 			} else {
 				addT$ordinal[i]<-as.numeric(addT$Date[i]-reference+1)
 				if (length(essai)==2) {
-					addT$Date2[i]<-as.Date(essai[2], format)
+					dtcorrect <- NULL
+					for (fd in 1:length(format)) {
+						dtencours <- as.Date(essai[2], format[fd])
+						ref <- as.numeric(dtencours-reference+1)
+						if (ref>=0 & ref<=366) {
+							dtcorrect <- dtencours
+						}
+					}
+							
+					addT$Date2[i]<-dtcorrect
 					addT$ordinal2[i]<-as.numeric(addT$Date2[i]-reference+1)
 				} else {
 					addT$Date2[i]<-NA
@@ -129,7 +177,7 @@ if(help) {
 		names(origin)[nb+1]<-name
 		}
 		
-#		return(origin)
+
 	} else {
 # J'ai un nom de site. Il n'y a donc peut-être plusieurs séries - 21012012
 		colnames(add)=c("Date", "Nombre", "Site")	
@@ -170,6 +218,12 @@ if(help) {
 		cat("Within a file, all dates must conform to the same format.\n")
 	}	
 	
-	return(origin)
+
+}
+
+return(origin)
+
+}
+	
 }
 }

@@ -11,6 +11,11 @@
 
 .daily_count <-
 function(d, xpar, print=TRUE, help=FALSE) {
+
+.phenology.env<- NULL
+rm(.phenology.env)
+
+
 if(help) {
 	cat("This function is for internal use only. The syntaxe is :\n")
 	cat(".daily_count(day, xpar)\n")
@@ -34,7 +39,7 @@ nn<-ifelse(d<xpar["Begin"], xpar["MinB"],
 if (any(is.na(nn))) {
 	print("Global: Error, the parameters at the time of error are:")
 	print(xpar)
-	.phenology.env$par_error<<-xpar
+	assign("par_error", xpar, envir=as.environment(.phenology.env))
 	pause <- scan() 
 }
 
@@ -45,7 +50,7 @@ if (any(is.na(ns))) {
 	print(d)
 	print("Sin: Error, the parameters at the time of error are:")
 	print(xpar)
-	.phenology.env$par_error<<-xpar
+	assign("par_error", xpar, envir=as.environment(.phenology.env))
 	pause <- scan() 
 }
 } else {
@@ -58,7 +63,7 @@ if (any(is.na(ns1))) {
 	print(d)
 	print("Sin 1: Error, the parameters at the time of error are:")
 	print(xpar)
-	.phenology.env$par_error<<-xpar
+	assign("par_error", xpar, envir=as.environment(.phenology.env))
 	pause <- scan() 
 }
 } else {
@@ -72,7 +77,7 @@ if (any(is.na(ns2))) {
 	print(d)
 	print("Sin 2: Error, the parameters at the time of error are:")
 	print(xpar)
-	.phenology.env$par_error<<-xpar
+	assign("par_error", xpar, envir=as.environment(.phenology.env))
 	pause <- scan() 
 }
 } else {
@@ -89,6 +94,9 @@ nn<-ifelse((nn<=0) & (d<xpar["Begin"]), xpar["MinB"],
 			)
 		)
 	)
+
+nn[nn==0]<-1E-9
+
 
 # je suis en en mode interactif, j'affiche le résultat
 if (print) {

@@ -7,7 +7,7 @@
 #' @param parametersfit Set of parameters to be fitted
 #' @param trace If 1, display the progression of fit; 0 is silent (don't be afraid if it is long !)
 #' @param method_incertitude 2 [default] is the correct one from a statistical point of view;\cr
-#'                           0 is an aproximate method more rapid;\cr
+#'                           0 is an aproximate method more rapid and using less memory;\cr
 #'                           1 is an alternative more rapid but biased.
 #' @param zero_counts example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 #'                    been recorder for each of these timeseries. Defaut is TRUE for all.
@@ -22,7 +22,7 @@
 #' fit_phenology(help=TRUE) to have this help !\cr
 #' Add trace=1 [default] to have information on the fit progression or trace=0 to hide information on the fit progression.\cr
 #' method_incertitude=2 [default] is the correct one from a statistical point of view.\cr
-#' method_incertitude=0 is an aproximate method more rapid.\cr
+#' method_incertitude=0 is an aproximate method more rapid and using less memory.\cr
 #' method_incertitude=1 is an alternative more rapid but biased.\cr
 #' zero_counts=c(TRUE, TRUE, FALSE) indicates whether the zeros have been recorder for each of these timeseries. Defaut is TRUE for all.\cr
 #' hessian=FALSE does not estimate se of parameters.
@@ -63,26 +63,30 @@ if ((help)||(is.null(data))||(is.null(parametersfit))) {
 	cat("hessian=FALSE does not estimate se of parameters.\n")
 } else {
 
+.phenology.env<- NULL
+rm(.phenology.env)
+
 if (is.null(parametersfixed)) {parametersfixed<-NA}
 
-	.phenology.env <<- new.env()
-	.phenology.env$data<<-data
-	.phenology.env$fixed<<-parametersfixed
-	.phenology.env$incertitude<<-method_incertitude
+	.phenology.env <<- new.env(parent=.GlobalEnv)
+	assign("data", data, envir=as.environment(.phenology.env))
+	assign("fixed", parametersfixed, envir=as.environment(.phenology.env))
+	assign("incertitude", method_incertitude, envir=as.environment(.phenology.env))
+
 	
 	if (length(zero_counts)==1) {zero_counts<-rep(zero_counts, length(data))}
 	if (length(zero_counts)!=length(data)) {
 		print("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) or possess the same number of logical values than the number of series analyzed.")
 		return()
 	}
-	.phenology.env$zerocounts<<-zero_counts
-	
-	
+
+	assign("zerocounts", zero_counts, envir=as.environment(.phenology.env))
+
 	repeat {
 		resul<-optim(parametersfit, .Lnegbin, NULL, method="BFGS",control=list(trace=trace, REPORT=1, maxit=500),hessian=FALSE)
 		if (resul$convergence==0) break
 		parametersfit<-resul$par
-		print("Convergence is not achieved. Optimization continues !")
+		print("Convergence is not acheived. Optimization continues !")
 	}
 	
 	resfit<-resul$par
@@ -114,7 +118,7 @@ if (is.null(parametersfixed)) {parametersfixed<-NA}
 	} else {
 		res_se_diag=diag(inversemathessian)
 		
-		res_se<-NULL
+		res_se <- rep(NA, length(resfit))
 		res_se[res_se_diag>=0]<-sqrt(res_se_diag[res_se_diag>=0])
 
 	}
@@ -124,6 +128,7 @@ if (is.null(parametersfixed)) {parametersfixed<-NA}
 		res_se<-rep(NA, length(resfit))
 	
 	}
+		
 	names(res_se)<-names(resfit)
 	
 	resul$se<-res_se
@@ -136,24 +141,144 @@ if (is.null(parametersfixed)) {parametersfixed<-NA}
 	
 	resul$data<-data
 	
-	.phenology.env$result<<-resul
-	
-
-
-	
+		
 for(kl in 1:length(res_se)) {
-if (is.na(res_se[kl])) {
-	cat(paste(names(resfit[kl]), "=", format(resfit[kl], digits=max(3, trunc(log10(abs(resfit[kl])))+4)), "  SE= NaN\n", sep=""))
+	if (is.na(res_se[kl])) {
+		cat(paste(names(resfit[kl]), "=", format(resfit[kl], digits=max(3, trunc(log10(abs(resfit[kl])))+4)), "  SE= NaN\n", sep=""))
+	} else {
+		cat(paste(names(resfit[kl]), "=", format(resfit[kl], digits=max(3, trunc(log10(abs(resfit[kl])))+4)), "  SE=", format(res_se[kl], , digits=max(3, trunc(log10(res_se[kl]))+4)), "\n", sep=""))
+	}
+}
+
+dtout <- list()
+
+for (kl in 1:length(resul$data)) {
+
+cat(paste("Series: ", names(resul$data[kl]), "\n", sep=""))
+
+# la date de référence est resul$data[[kl]][1, "Date"]-resul$data[[kl]][1, "ordinal"]+1
+ref <- resul$data[[kl]][1, "Date"]-resul$data[[kl]][1, "ordinal"]+1
+intdtout <- c(reference=ref)
+
+par <- .format_par(c(resfit, parametersfixed), names(resul$data[kl]))
+sepfixed <- parametersfixed[strtrim(names(parametersfixed), 3)=="sd#"]
+names(sepfixed) <- substring(names(sepfixed), 4)
+se <- c(res_se, sepfixed)
+
+d1 <- ref+par["Peak"]
+cat(paste("Peak: ", d1, "\n", sep=""))
+intdtout <- c(intdtout, Peak=as.numeric(d1))
+if (!is.na(se["Peak"])) {
+	d2 <- d1-2*se["Peak"]
+	d3 <- d1+2*se["Peak"]
+	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
+	intdtout <- c(intdtout, PeakCI1=as.numeric(d2), PeakCI2=as.numeric(d3))
 } else {
-	cat(paste(names(resfit[kl]), "=", format(resfit[kl], digits=max(3, trunc(log10(abs(resfit[kl])))+4)), "  SE=", format(res_se[kl], , digits=max(3, trunc(log10(res_se[kl]))+4)), "\n", sep=""))
+	cat(paste("confidence interval not available\n", sep=""))
+	intdtout <- c(intdtout, PeakCI1=NA, PeakCI2=NA)
 }
+
+d1 <- ref+par["Begin"]
+cat(paste("Begin: ", d1, "\n", sep=""))
+intdtout <- c(intdtout, Begin=as.numeric(d1))
+# pour l'intervalle de confiance, il faut modifier soit directement
+# Begin
+# Peak Length
+# Peak LengthB
+d2 <- NULL
+d3 <- NULL
+if (!is.na(se["Begin"])) {
+	d2 <- ref+par["Begin"]-2*se["Begin"]
+	d3 <- ref+par["Begin"]+2*se["Begin"]
+} else {
+	sel <- 0
+	l <- NA
+	if (!is.na(se["Length"])) {
+		l <- par["Length"]
+		sel <- se["Length"]
+	} else {
+		if (!is.na(se["LengthB"])) {
+			l <- par["LengthB"]
+			sel <- se["LengthB"]
+		}
+	}
+	if (!is.na(se["Peak"])) {
+		d2 <- ref+par["Peak"]-2*se["Peak"]-l-2*sel
+		d3 <- ref+par["Peak"]+2*se["Peak"]-l+2*sel
+	} else {
+		d2 <- ref+par["Peak"]-l-2*sel
+		d3 <- ref+par["Peak"]-l+2*sel
+	}
 }
+if (!is.null(d2)) {
+	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
+	intdtout <- c(intdtout, BeginCI1=as.numeric(d2), BeginCI2=as.numeric(d3))
+} else {
+	cat(paste("confidence interval not available\n", sep=""))
+	intdtout <- c(intdtout, BeginCI1=NA, BeginCI2=NA)
+}
+
+
+d1 <- ref+par["End"]
+cat(paste("End: ", d1, "\n", sep=""))
+intdtout <- c(intdtout, End=as.numeric(d1))
+# pour l'intervalle de confiance, il faut modifier soit directement
+# End
+# Peak Length
+# Peak LengthE
+d2 <- NULL
+d3 <- NULL
+if (!is.na(se["End"])) {
+	d2 <- ref+par["End"]-2*se["End"]
+	d3 <- ref+par["End"]+2*se["End"]
+} else {
+	sel <- 0
+	l <- NA
+	if (!is.na(se["Length"])) {
+		l <- par["Length"]
+		sel <- se["Length"]
+	} else {
+		if (!is.na(se["LengthE"])) {
+			l <- par["LengthE"]
+			sel <- se["LengthE"]
+		}
+	}
+	if (!is.na(se["Peak"])) {
+		d2 <- ref+par["Peak"]-2*se["Peak"]+l-2*sel
+		d3 <- ref+par["Peak"]+2*se["Peak"]+l+2*sel
+	} else {
+		d2 <- ref+par["Peak"]+l-2*sel
+		d3 <- ref+par["Peak"]+l+2*sel
+	}
+}
+if (!is.null(d2)) {
+	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
+	intdtout <- c(intdtout, EndCI1=as.numeric(d2), EndCI2=as.numeric(d3))
+} else {
+	cat(paste("confidence interval not available\n", sep=""))
+	intdtout <- c(intdtout, EndCI1=NA, EndCI2=NA)
+}
+
+dtout <- c(dtout, list(intdtout))
+
+}
+
+names(dtout) <- names(resul$data)
+
+resul$Dates <- dtout
+
+class(resul) <- "phenology"
+	
+	assign("result", resul, envir=as.environment(.phenology.env))
+
+
 	cat(paste("-Ln L=", format(resul$value, digits=max(3, trunc(log10(resul$value))+4)), "\n", sep=""))
 	cat(paste("Parameters=", format(length(resul$par), digits=max(3, trunc(log10(length(resul$par)))+4)), "\n", sep=""))
 	cat(paste("AIC=", format(2*resul$value+2*length(resul$par), digits=max(3, trunc(log10(2*resul$value+2*length(resul$par)))+4)), "\n", sep=""))
 
 	
 	growlnotify('Fit is done!')
+	
 
 	return(resul)
 }

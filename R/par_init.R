@@ -25,7 +25,7 @@
 
 
 par_init <-
-function(data=dta, parametersfixed=NULL, help=FALSE) {
+function(data=NULL, parametersfixed=NULL, help=FALSE) {
 
 if(help) {
 	cat("This function is used to generate a first set of parameters\n")
@@ -71,6 +71,7 @@ if (!is.na(parametersfixed["Peak"])) {
 	pk<-parametersfixed["Peak"]
 } else {
 	pk<-od[which.max(nb)]
+	pk<-rnorm(1, pk, 5)
 	names(pk)<-"Peak"
 }
 
@@ -90,6 +91,7 @@ if (!is.na(parametersfixed["End"])) {
 
 if ((pk<=bg)||(pk>=ed)) {
 	pk<-bg+(ed-bg)/2
+	
 	names(pk)<-"Peak"
 	}
 

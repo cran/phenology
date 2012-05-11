@@ -10,14 +10,18 @@
   \item{origin}{previousdata or NULL if no previous data
   exists}
 
-  \item{add}{newdata The data to be added}
+  \item{add}{newdata The data to be added. It can be a set
+  of several entities that uses the same reference and date
+  format}
 
   \item{name}{'Site' The name of the monitored site}
 
   \item{reference}{as.Date('2001-12-31') The date used as
   1st date}
 
-  \item{format}{The format of the date in the file}
+  \item{format}{The format of the date in the file. Several
+  format can be set and the last one that give compatible
+  result is used}
 
   \item{help}{If TRUE, an help is displayed}
 }
@@ -31,15 +35,20 @@
   add a dataset to a previous one, the syntaxe is \cr
   data<-add_format(origin=previousdata, add=newdata,
   name='Site', reference=as.Date('2001-12-31'),
-  format='%d/%m/%y')\cr \cr The dataset to be added must
-  include 2 or 3 columns.\cr The first one is the date in
-  the format specified by the parameter format=. If the
-  number of nests is known for an exact data, then only one
-  date must be indicated If the number of nests is known
-  for a range of date, the first and last dates must be
-  separated but a -.\cr For example: 1/2/2000-10/2/2000\cr
-  The second column is the number of nests observed for
-  this date or this range of dates.\cr The third column is
+  format='%d/%m/%y')\cr To add several timeseries at the
+  same time with '%d/%m/%y'or '%d/%m/%Y' date format:
+  data<-add_format(add=list(newdata1, newdata2),
+  name=c('Site1', 'Site2'),
+  reference=as.Date('2001-12-31'), format=c('%d/%m/%y',
+  '%d/%m/%Y'))\cr \cr The dataset to be added must include
+  2 or 3 columns.\cr The first one is the date in the
+  format specified by the parameter format=. If the number
+  of nests is known for an exact data, then only one date
+  must be indicated If the number of nests is known for a
+  range of date, the first and last dates must be separated
+  but a - (dash).\cr For example: 1/2/2000-10/2/2000\cr The
+  second column is the number of nests observed for this
+  date or this range of dates.\cr The third column is
   optional and is the name of the rookery.\cr If only two
   columns are indicated, the name can be indicated as a
   parameter of the function with name=. If no name is

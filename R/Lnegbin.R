@@ -5,12 +5,13 @@
 #' @param x Set of parameters to be fitted
 #' @description Function of the package phenology
 
-.Lnegbin <-
-function(x) 
-{
+.Lnegbin <- function(x) {
+
+.phenology.env<- NULL
+rm(.phenology.env)
 
 sum=0
-# j'ai tous les paramètres dans xpar
+# je mets tous les paramètres dans xpar
 	xpar<-c(x, .phenology.env$fixed)
 
 
@@ -18,11 +19,12 @@ for(k in 1:length(.phenology.env$data)) {
 
 # print(paste("pop", k))
 
-data<-.phenology.env$data[[k]]
+datatot<-.phenology.env$data
+data<-datatot[[k]]
 # quel est le nom de la série en cours
-nmser<-names(.phenology.env$data[k])
+nmser<-names(datatot[k])
 # Prend en compte les 0 ou non 5/2/2012
-zero<-.phenology.env$zerocounts[k]
+zero<- .phenology.env$zerocounts[k]
 deb<-ifelse(zero, 0, 1)
 	
 # je fais un fonction où j'envoie les paramètres et la série et il renvoie ceux à utiliser directement
@@ -44,9 +46,9 @@ for (i in 1:dim(data)[1])
        			sumnbcount<-.daily_count(data$ordinal[i],xparec, print=FALSE)
 # dans zero j'ai l'information si je prends les 0 ou non pour cette série
        			if (!zero) {
-       				lnli2<--log(dnbinom(data$nombre[i], size=th, mu=sumnbcount, log=FALSE)/(1-dnbinom(0, size=th, mu=sumnbcount, log=FALSE)))
+       				lnli2 <- -log(dnbinom(data$nombre[i], size=th, mu=sumnbcount, log=FALSE)/(1-dnbinom(0, size=th, mu=sumnbcount, log=FALSE)))
 				} else {
-       				lnli2<--dnbinom(data$nombre[i], size=th, mu=sumnbcount, log=TRUE)
+       				lnli2 <- -dnbinom(data$nombre[i], size=th, mu=sumnbcount, log=TRUE)
        			}
 
         	} else {
@@ -154,9 +156,9 @@ p<-dmultinom(tb[ii,1:nbjour], prob=nbcountrel, log=TRUE)
 	for(countday in 1:nbjour) {
 		p<-p+a[tb[ii,countday]+1, countday]
 	}
-sump<-sump+exp(p)
+sump <- sump+exp(p)
 }
-lnli2<--log(sump)
+lnli2 <- -log(sump)
 
 }
 
@@ -165,12 +167,13 @@ lnli2<--log(sump)
 # fin du test if ((is.na(data$Date2[i]))) {
 }
 
-.phenology.env$data[[k]]$LnL[i]<-lnli2
-.phenology.env$data[[k]]$Modeled[i]<-sumnbcount
+datatot[[k]]$LnL[i]<-lnli2
+datatot[[k]]$Modeled[i]<-sumnbcount
+
+assign("data", datatot, envir=as.environment(.phenology.env))
 
 sum<-sum+lnli2
 
-# fin du test if (is.na(data$nombre[i])==FALSE) {: plus besoin 4/2/2012
 # transformé en test de zero
 }
 

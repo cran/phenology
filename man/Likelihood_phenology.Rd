@@ -2,7 +2,7 @@
 \alias{likelihood_phenology}
 \title{Estimate the likelihood of timeseries based on a set of parameters.}
 \usage{
-  likelihood_phenology(data = dta, parametersfit = x,
+  likelihood_phenology(data = NULL, parametersfit = NULL,
     parametersfixed = NULL, zero_counts = TRUE,
     method_incertitude = 0, help = FALSE)
 }

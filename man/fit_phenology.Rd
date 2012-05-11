@@ -19,8 +19,8 @@
 
   \item{method_incertitude}{2 [default] is the correct one
   from a statistical point of view;\cr 0 is an aproximate
-  method more rapid;\cr 1 is an alternative more rapid but
-  biased.}
+  method more rapid and using less memory;\cr 1 is an
+  alternative more rapid but biased.}
 
   \item{zero_counts}{example c(TRUE, TRUE, FALSE) indicates
   whether the zeros have been recorder for each of these
@@ -47,12 +47,12 @@
   information on the fit progression.\cr
   method_incertitude=2 [default] is the correct one from a
   statistical point of view.\cr method_incertitude=0 is an
-  aproximate method more rapid.\cr method_incertitude=1 is
-  an alternative more rapid but biased.\cr
-  zero_counts=c(TRUE, TRUE, FALSE) indicates whether the
-  zeros have been recorder for each of these timeseries.
-  Defaut is TRUE for all.\cr hessian=FALSE does not
-  estimate se of parameters.
+  aproximate method more rapid and using less memory.\cr
+  method_incertitude=1 is an alternative more rapid but
+  biased.\cr zero_counts=c(TRUE, TRUE, FALSE) indicates
+  whether the zeros have been recorder for each of these
+  timeseries. Defaut is TRUE for all.\cr hessian=FALSE does
+  not estimate se of parameters.
 }
 \details{
   fit_phenology fits parameters to timeseries.

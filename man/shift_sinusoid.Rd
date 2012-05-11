@@ -36,7 +36,7 @@ pfixed=c(Flat=0)
 # Generate initial points for the optimisation
 parg<-par_init(data_Gratiot, parametersfixed=pfixed)
 # Fit is done
-# result_Gratiot_Flat<-fit_phenology(data=data_Gratiot, parametersfit=parg2, parametersfixed=pfixed, trace=1)
+# result_Gratiot_Flat<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=pfixed, trace=1)
 data(result_Gratiot_Flat)
 parg<-extract_result(result_Gratiot_Flat)
 # Add data for one sinusoid superimposed [day d amplitude=(Alpha+Nd*Beta)^Tau with Nd being the number of counts for day d]

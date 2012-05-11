@@ -28,7 +28,7 @@
 
 
 likelihood_phenology <-
-function(data=dta, parametersfit=x, parametersfixed=NULL, zero_counts=TRUE, method_incertitude=0, help=FALSE) {
+function(data=NULL, parametersfit=NULL, parametersfixed=NULL, zero_counts=TRUE, method_incertitude=0, help=FALSE) {
 
 if(help) {
 	cat("This function is used to estimate the likelihood based on\n")
@@ -40,19 +40,21 @@ if(help) {
 
 if (is.null(parametersfixed)) {parametersfixed<-NA}
 
+.phenology.env<- NULL
+rm(.phenology.env)
 
-
-	.phenology.env <<- new.env()
-	.phenology.env$data<<-data
-	.phenology.env$fixed<<-parametersfixed
-	.phenology.env$incertitude<<-method_incertitude
-
+	.phenology.env <<- new.env(parent=.GlobalEnv)
+	assign("data", data, envir = as.environment(.phenology.env))
+	assign("fixed", parametersfixed, envir = as.environment(.phenology.env))
+	assign("incertitude", method_incertitude, envir = as.environment(.phenology.env))
+	
 	if (length(zero_counts)==1) {zero_counts<-rep(zero_counts, length(data))}
 	if (length(zero_counts)!=length(data)) {
 		print("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) or possess the same number of logical values than the number of series analyzed.")
 		return()
 	}
-	.phenology.env$zerocounts<<-zero_counts
+	
+	assign("zerocounts", zero_counts, envir = as.environment(.phenology.env))
 
 	LnL<-.Lnegbin(parametersfit)
 	
