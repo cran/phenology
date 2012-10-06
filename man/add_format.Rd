@@ -4,7 +4,8 @@
 \usage{
   add_format(origin = NULL,
     add = stop("A dataset must be indicated"), name = NULL,
-    reference = NULL, format = "\%d/\%m/\%y", help = FALSE)
+    reference = NULL, format = "\%d/\%m/\%y",
+    adjust_ref = TRUE, help = FALSE)
 }
 \arguments{
   \item{origin}{previousdata or NULL if no previous data
@@ -23,6 +24,10 @@
   format can be set and the last one that give compatible
   result is used}
 
+  \item{adjust_ref}{If TRUE, the day and month of reference
+  is unchanged but year is changed dependent on the first
+  date of timeseries.}
+
   \item{help}{If TRUE, an help is displayed}
 }
 \value{
@@ -35,10 +40,10 @@
   add a dataset to a previous one, the syntaxe is \cr
   data<-add_format(origin=previousdata, add=newdata,
   name='Site', reference=as.Date('2001-12-31'),
-  format='%d/%m/%y')\cr To add several timeseries at the
-  same time with '%d/%m/%y'or '%d/%m/%Y' date format:
-  data<-add_format(add=list(newdata1, newdata2),
-  name=c('Site1', 'Site2'),
+  adjust_ref=TRUE, format='%d/%m/%y')\cr To add several
+  timeseries at the same time with '%d/%m/%y'or '%d/%m/%Y'
+  date format: data<-add_format(add=list(newdata1,
+  newdata2), name=c('Site1', 'Site2'),
   reference=as.Date('2001-12-31'), format=c('%d/%m/%y',
   '%d/%m/%Y'))\cr \cr The dataset to be added must include
   2 or 3 columns.\cr The first one is the date in the
@@ -53,9 +58,10 @@
   columns are indicated, the name can be indicated as a
   parameter of the function with name=. If no name is
   indicated, the default name Site will be used, but take
-  care, only one rookery this name can be used.\cr Several
-  rookeries can be included in the same file but in this
-  case the rookery name is obligatory at the third column.
+  care, only one rookery of this name can be used.\cr
+  Several rookeries can be included in the same file but in
+  this case the rookery name is obligatory at the third
+  column.
 }
 \details{
   add_format creates a new dataset.

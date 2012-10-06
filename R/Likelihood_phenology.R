@@ -10,7 +10,7 @@
 #'                           1 is an alternative more rapid but biased.
 #' @param zero_counts example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 #'                    been recorder for each of these timeseries. Defaut is TRUE for all.
-#' @param help If TRUE, an help is displayed
+#' @param result An object obtained after fit_phenology()
 #' @description This function is used to estimate the likelihood based on a set of parameters.
 #' @examples 
 #' # Read a file with data
@@ -28,25 +28,35 @@
 
 
 likelihood_phenology <-
-function(data=NULL, parametersfit=NULL, parametersfixed=NULL, zero_counts=TRUE, method_incertitude=0, help=FALSE) {
+function(data=NULL, parametersfit=NULL, parametersfixed=NULL, zero_counts=NULL, method_incertitude=NULL, result=NULL) {
 
-if(help) {
-	cat("This function is used to estimate the likelihood based on\n")
-	cat("a set of parameters.\n")
-	cat("The general syntax is:\n")
-	cat("likelihood_phenology(data=dta, parametersfit=x, parametersfixed=parfixed, \n")
-	cat("+         zero_counts=TRUE, method_incertitude=0)\n")
-} else {
+# if result est donné, on prend les données dedans et on remplace celles introduites en plus
+
+if (!is.null(result)) {
+  if (class(result) != "phenology") {
+    cat("The object result must be the result of a fit_phenology()\n")
+    return()
+  }
+
+  if (is.null(data)) {data <- result$data}
+  if (is.null(parametersfit)) {parametersfit <- result$par}
+  if (is.null(parametersfixed)) {parametersfixed <- result$parametersfixed}
+  if (is.null(zero_counts)) {zero_counts <- result$zero_counts}
+  if (is.null(method_incertitude)) {method_incertitude <- result$method_incertitude}
+
+}
+
+if (!is.null(data)) {
+  if (class(data) != "phenologydata") {
+    cat("The data object must be the result of a add_format()\n")
+    return()
+  }
+}
+
 
 if (is.null(parametersfixed)) {parametersfixed<-NA}
-
-.phenology.env<- NULL
-rm(.phenology.env)
-
-	.phenology.env <<- new.env(parent=.GlobalEnv)
-	assign("data", data, envir = as.environment(.phenology.env))
-	assign("fixed", parametersfixed, envir = as.environment(.phenology.env))
-	assign("incertitude", method_incertitude, envir = as.environment(.phenology.env))
+if (is.null(method_incertitude)) {method_incertitude <- 0}
+if (is.null(zero_counts)) {zero_counts <- TRUE}
 	
 	if (length(zero_counts)==1) {zero_counts<-rep(zero_counts, length(data))}
 	if (length(zero_counts)!=length(data)) {
@@ -54,11 +64,8 @@ rm(.phenology.env)
 		return()
 	}
 	
-	assign("zerocounts", zero_counts, envir = as.environment(.phenology.env))
-
-	LnL<-.Lnegbin(parametersfit)
+LnL<-.Lnegbin(parametersfit, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts))
 	
 	return(LnL)
 
-}
 }

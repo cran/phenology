@@ -9,7 +9,7 @@
   Fit a parametric function that describes phenology
 
   \tabular{ll}{ Package: \tab phenology\cr Type: \tab
-  Package\cr Version: \tab 3.29\cr Date: \tab 2012-04-09\cr
+  Package\cr Version: \tab 3.40\cr Date: \tab 2012-10-06\cr
   License: \tab GPL (>= 2)\cr LazyLoad: \tab yes\cr }
 }
 \examples{

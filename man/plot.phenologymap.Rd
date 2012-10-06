@@ -2,12 +2,24 @@
 \alias{plot.phenologymap}
 \title{Plot a likelihood map with Delta and Phi varying.}
 \usage{
-  \method{plot}{phenologymap} (x, ...)
+  \method{plot}{phenologymap} (x, ..., pdf = FALSE,
+    pdfname = "Map.pdf", col = heat.colors(128),
+    help = FALSE)
 }
 \arguments{
   \item{x}{A map generated with map_phenology.}
 
-  \item{...}{Parameters used by plot_map()}
+  \item{...}{not used}
+
+  \item{pdf}{TRUE or FALSE, indicates if a pdf file is
+  generated.}
+
+  \item{pdfname}{Name of file if pdf=TRUE}
+
+  \item{col}{Colors could be heat.colors(128) or
+  rainbow(64) or col=gray(c(seq(0, 1, length.out=128)))}
+
+  \item{help}{If TRUE, an help is displayed}
 }
 \value{
   Return None

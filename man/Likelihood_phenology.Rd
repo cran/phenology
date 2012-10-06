@@ -3,8 +3,8 @@
 \title{Estimate the likelihood of timeseries based on a set of parameters.}
 \usage{
   likelihood_phenology(data = NULL, parametersfit = NULL,
-    parametersfixed = NULL, zero_counts = TRUE,
-    method_incertitude = 0, help = FALSE)
+    parametersfixed = NULL, zero_counts = NULL,
+    method_incertitude = NULL, result = NULL)
 }
 \arguments{
   \item{data}{Dataset generated with add_format}
@@ -22,7 +22,7 @@
   whether the zeros have been recorder for each of these
   timeseries. Defaut is TRUE for all.}
 
-  \item{help}{If TRUE, an help is displayed}
+  \item{result}{An object obtained after fit_phenology()}
 }
 \value{
   The likelihood of the data with the parameters

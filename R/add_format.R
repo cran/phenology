@@ -7,11 +7,12 @@
 #' @param name 'Site' The name of the monitored site
 #' @param reference as.Date('2001-12-31') The date used as 1st date
 #' @param format The format of the date in the file. Several format can be set and the last one that give compatible result is used
+#' @param adjust_ref If TRUE, the day and month of reference is unchanged but year is changed dependent on the first date of timeseries.
 #' @param help If TRUE, an help is displayed
 #' @description To create a new dataset, the syntaxe is \cr
 #' data<-add_format(add=newdata, name="Site", reference=as.Date('2001-12-31'), format='%d/%m/%y')\cr
 #' To add a dataset to a previous one, the syntaxe is \cr
-#' data<-add_format(origin=previousdata, add=newdata, name='Site', reference=as.Date('2001-12-31'), format='%d/%m/%y')\cr
+#' data<-add_format(origin=previousdata, add=newdata, name='Site', reference=as.Date('2001-12-31'), adjust_ref=TRUE, format='%d/%m/%y')\cr
 #' To add several timeseries at the same time with '%d/%m/%y'or '%d/%m/%Y' date format:
 #' data<-add_format(add=list(newdata1, newdata2), name=c('Site1', 'Site2'), reference=as.Date('2001-12-31'), format=c('%d/%m/%y', '%d/%m/%Y'))\cr
 #' \cr
@@ -28,7 +29,7 @@
 #' If only two columns are indicated, the name can be indicated as 
 #' a parameter of the function with name=. If no name is indicated, 
 #' the default name Site will be used, but take care, only one 
-#' rookery this name can be used.\cr
+#' rookery of this name can be used.\cr
 #' Several rookeries can be included in the same file but in this case 
 #' the rookery name is obligatory at the third column.
 #' @examples 
@@ -49,7 +50,7 @@
 
 
 add_format <-
-function(origin=NULL, add=stop("A dataset must be indicated"), name=NULL, reference=NULL, format="%d/%m/%y", help=FALSE) {
+function(origin=NULL, add=stop("A dataset must be indicated"), name=NULL, reference=NULL, format="%d/%m/%y", adjust_ref=TRUE, help=FALSE) {
 if(help) {
 	cat("To create a new dataset, the syntaxe is \n")
 	cat("data<-add_format(add=newdata, name='Site', \n")
@@ -76,11 +77,18 @@ if(help) {
 	cat("the rookery name is obligatory at the third column.\n")
 } else {
 
-if (is.null(add) || !exists(as.character(substitute(add)))) {
-	cat("Data to be add does not exist !\n")
-} else {
+if (class(origin)!="phenologydata" && !is.null(origin)) {
+  cat("The origin variable must be already formatted\n")
+  return()
+}
+  
+# if (is.null(add) || !exists(as.character(substitute(add)))) {
+if (is.null(add)) {
+	cat("Data to be added does not exist !\n")
+  return()
+}
 
-
+# print(paste("1: ", name))
 if (!is.data.frame(add)) {
 	nbdatasets <- length(add)
 	addlist <- add
@@ -96,15 +104,25 @@ if (!is.data.frame(add)) {
 } else {
 	nbdatasets <- 1
 	addlist <- list(add)
-	names(addlist) <- deparse(substitute(add))
+	if (is.null(name)) {
+		names(addlist) <- deparse(substitute(add))
+	} else {
+		names(addlist) <- name
+	}
 }
 
+
+# print(paste("2: ", name))
+
+XDate<-as.POSIXlt(reference)
 
 for (kk in 1:nbdatasets) {
 
 	add <- addlist[[kk]]
 	name<-names(addlist)[kk]
-		
+
+# print(paste("3: ", name))
+
 # fichier pnd
 # si 5 colonnes, j'en retire les 2 dernières
 	if (dim(add)[2]==5) {
@@ -119,12 +137,16 @@ for (kk in 1:nbdatasets) {
 
 	if (dim(add)[2]==2) {
 	
-# J'ai deux colonnes et le nom des dans name
+# J'ai deux colonnes et le nom des séries dans name
 	print(name)
 # Je n'ai pas de nom de site. Il n'y a donc qu'une seule série
 		colnames(add)=c("Date", "Nombre")	
 		add$Date<-as.character(add$Date)
 		add[, 2]<-as.character(add[, 2])
+# je prends la première date même si pas de ponte. Utilisé pour référence
+		adddate<-add[(add[,1]!=""),1][1]
+#		print(adddate)
+
 # je retire toutes les lignes pour lesquelles je n'ai pas d'observation de ponte - 19012012
 		add<-add[(add[,1]!="") & (!is.na(add[,1])) & (gsub("[0-9 ]", "", add[,2])=="") & (!is.na(add[,2])) & (add[,2]!=""),1:2]
 		
@@ -135,14 +157,59 @@ for (kk in 1:nbdatasets) {
 		
 		# Je le mets en numérique: 21/3/2012
 		add[, 2]<-as.numeric(add[, 2])
+		# je viens d'avoir une nouvelle série
+		# il faut que je calcule la nouvelle référence
+		# > XDate<-as.POSIXlt(fd)
+		# > XDate
+		# [1] "2010-08-18 UTC"
+		# > XDate$year+1900 
+		# [1] 2010
+		# > XDate$year<-2011-1900
+		# > XDate
+		# [1] "2011-08-18 UTC"
+		
 		addT<-data.frame(Date=rep(as.Date("1900-01-01"), dim(add)[1]), Date2=rep(as.Date("1900-01-01"), dim(add)[1]), nombre=rep(NA, dim(add)[1]), ordinal=rep(NA, dim(add)[1]), ordinal2=rep(NA, dim(add)[1]), Modeled=rep(NA, dim(add)[1]), LnL=rep(NA, dim(add)[1]))
+		
+		reference_ec <- NULL
+		# Dans XDate j'ai la référence globale
+		if (adjust_ref) {
+			essai<-unlist(strsplit(adddate, "-"))
+			dtcorrect <- NULL
+			for (fd in 1:length(format)) {
+				dtencours <- as.Date(essai[1], format[fd])
+				referencetest <- XDate
+				dtencoursX <- as.POSIXlt(dtencours)
+				referencetest$year <- dtencoursX$year
+				ref <- as.numeric(dtencours-as.Date(referencetest)+1)
+#				print(paste(dtencours, referencetest, ref))
+				if (referencetest$year>0 & ref>=0 & ref<=366) {
+					dtcorrect <- dtencours
+					reference_ec <- as.Date(referencetest)
+				}
+			}
+		
+		} else {
+			reference_ec <- reference
+		
+		}
+		
+		if (is.null(reference_ec)) {
+		
+			print("No refence date can be calculated")
+		
+		} else {
+		
+		print(paste("Reference: ", reference_ec))
+		
+		# dans i la ligne en cours
 		for(i in 1:dim(add)[1]) {
+		
 			essai<-unlist(strsplit(add$Date[i], "-"))
 			
 			dtcorrect <- NULL
 			for (fd in 1:length(format)) {
 				dtencours <- as.Date(essai[1], format[fd])
-				ref <- as.numeric(dtencours-reference+1)
+				ref <- as.numeric(dtencours-reference_ec+1)
 				if (ref>=0 & ref<=366) {
 					dtcorrect <- dtencours
 				}
@@ -152,19 +219,19 @@ for (kk in 1:nbdatasets) {
 			if (is.na(addT$Date[i])) {
 				print(paste("Error date ", essai[1], sep=""))
 			} else {
-				addT$ordinal[i]<-as.numeric(addT$Date[i]-reference+1)
+				addT$ordinal[i]<-as.numeric(addT$Date[i]-reference_ec+1)
 				if (length(essai)==2) {
 					dtcorrect <- NULL
 					for (fd in 1:length(format)) {
 						dtencours <- as.Date(essai[2], format[fd])
-						ref <- as.numeric(dtencours-reference+1)
+						ref <- as.numeric(dtencours-reference_ec+1)
 						if (ref>=0 & ref<=366) {
 							dtcorrect <- dtencours
 						}
 					}
 							
 					addT$Date2[i]<-dtcorrect
-					addT$ordinal2[i]<-as.numeric(addT$Date2[i]-reference+1)
+					addT$ordinal2[i]<-as.numeric(addT$Date2[i]-reference_ec+1)
 				} else {
 					addT$Date2[i]<-NA
 					addT$ordinal2[i]<-NA
@@ -176,6 +243,8 @@ for (kk in 1:nbdatasets) {
 		origin$kyYI876Uu<-addT
 		names(origin)[nb+1]<-name
 		}
+		# fin du teste sur reference_ec
+		}
 		
 
 	} else {
@@ -184,7 +253,8 @@ for (kk in 1:nbdatasets) {
 		add$Date<-as.character(add$Date)
 		add[, 2]<-as.character(add[, 2])
 # je retire toutes les lignes pour lesquelles je n'ai pas d'observation de ponte - 19012012
-		add<-add[(add[,1]!="") & (!is.na(add[,1])) & (gsub("[0-9 ]", "", add[,2])=="") & (!is.na(add[,2])) & (add[,2]!=""),1:3]
+# Non, seront retirées après sinon je perds la date de référence sans ponte
+#		add<-add[(add[,1]!="") & (!is.na(add[,1])) & (gsub("[0-9 ]", "", add[,2])=="") & (!is.na(add[,2])) & (add[,2]!=""),1:3]
 
 # Je le mets en numérique: 21/3/2012
 		add[, 2]<-as.numeric(add[, 2])
@@ -202,7 +272,10 @@ for (kk in 1:nbdatasets) {
 		for(i in 1:length(levels(fac))) {
 			siteencours<-levels(fac)[i]
 			addencours<-add[add[,3]==siteencours, 1:2]
-			dtaorigin<-add_format(origin=dtaorigin, add=addencours, name=siteencours, reference=reference, format=format)
+#			print("ajout")
+#			print(siteencours)
+#			print(addencours)
+			dtaorigin<-add_format(origin=dtaorigin, add=addencours, name=siteencours, reference=reference, format=format, adjust_ref=adjust_ref)
 		}
 		origin<-dtaorigin
 
@@ -221,9 +294,10 @@ for (kk in 1:nbdatasets) {
 
 }
 
+class(origin) <- "phenologydata"
+
 return(origin)
 
-}
 	
 }
 }

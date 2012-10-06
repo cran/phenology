@@ -2,6 +2,40 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 3.40    (2012-10-06)
+
+* add Bayesian analysis
+
+            CHANGES IN VERSION 3.36    (2012-07-22)
+
+* change the function compare_AIC() to be used also with package embryogrowth
+
+            CHANGES IN VERSION 3.35    (2012-06-06)
+
+* new function adapt_parameters to extract only the useful parameters form a set
+* the output from a plot can be used with several timeseries analyzed at the same time
+* add a new class: phenologyout that is created by plot_phenology
+* add the print.phenologyout and summary.phenologyout function
+* the moons are now displayed at the top of the graph, not superimposed
+
+            CHANGES IN VERSION 3.34    (2012-05-31)
+
+* remove the use of the phenology.env environment
+
+            CHANGES IN VERSION 3.33    (2012-05-31)
+
+* internal changes
+
+
+            CHANGES IN VERSION 3.32    (2012-05-23)
+
+* new option for add_format: adjust_ref=TRUE
+* change on the way that Begin, Peak and End are calculated within par_init
+
+            CHANGES IN VERSION 3.31    (2012-05-14)
+
+* internal change to get no warnings during build
+
             CHANGES IN VERSION 3.30    (2012-05-13)
 
 * create two new classes: phenology and phenologymap

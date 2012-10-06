@@ -3,28 +3,31 @@
 #' @author Marc Girondot
 #' @return Return the likelihood
 #' @param x Set of parameters to be fitted
+#' @param pt Transfer parameters
 #' @description Function of the package phenology
 
-.Lnegbin <- function(x) {
+.Lnegbin <- function(x, pt) {
 
-.phenology.env<- NULL
-rm(.phenology.env)
+#.phenology.env<- NULL
+#rm(.phenology.env)
+
+# pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts)
 
 sum=0
 # je mets tous les paramètres dans xpar
-	xpar<-c(x, .phenology.env$fixed)
+	xpar<-c(x, pt$fixed)
 
 
-for(k in 1:length(.phenology.env$data)) {
+for(k in 1:length(pt$data)) {
 
 # print(paste("pop", k))
 
-datatot<-.phenology.env$data
+datatot<-pt$data
 data<-datatot[[k]]
 # quel est le nom de la série en cours
 nmser<-names(datatot[k])
 # Prend en compte les 0 ou non 5/2/2012
-zero<- .phenology.env$zerocounts[k]
+zero<- pt$zerocounts[k]
 deb<-ifelse(zero, 0, 1)
 	
 # je fais un fonction où j'envoie les paramètres et la série et il renvoie ceux à utiliser directement
@@ -70,7 +73,7 @@ for(countday in 1:nbjour) {
 #je somme
 sumnbcount<-sum(nbcount)
 
-if (.phenology.env$incertitude==0) {
+if (pt$incertitude==0) {
 
 # je calcule pour chaque jour qu'elle est la fraction du nombre de ponte par rapport au total                
 	nbcountrel<-nbcount/sumnbcount
@@ -95,7 +98,7 @@ for(countday in 1:nbjour) {
 
 } else {
 
-if (.phenology.env$incertitude==1) {
+if (pt$incertitude==1) {
 
 # je suis sur la méthode 1 d'incertitude
 if (!zero) {
@@ -170,7 +173,7 @@ lnli2 <- -log(sump)
 datatot[[k]]$LnL[i]<-lnli2
 datatot[[k]]$Modeled[i]<-sumnbcount
 
-assign("data", datatot, envir=as.environment(.phenology.env))
+# assign("data", datatot, envir=as.environment(.phenology.env))
 
 sum<-sum+lnli2
 

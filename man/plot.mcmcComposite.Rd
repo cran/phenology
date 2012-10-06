@@ -1,0 +1,69 @@
+\name{plot.mcmcComposite}
+\alias{plot.mcmcComposite}
+\title{Plot the result of a MCMC search}
+\usage{
+  \method{plot}{mcmcComposite} (x, ..., chain = 1,
+    parameters = 1)
+}
+\arguments{
+  \item{x}{A mcmcComposite object obtained after MHmcmc()}
+
+  \item{chain}{The chain to use}
+
+  \item{parameters}{Name of parameters or their number (see
+  description)}
+
+  \item{...}{Graphical parameters to be send to hist()}
+}
+\value{
+  None
+}
+\description{
+  Plot the result of a MCMC search.\cr The parameters to
+  use can be called by:\cr parameters="all"\cr
+  parameters=1:4\cr parameters=c("PAR1", "PAR2", "PAR5")\cr
+  parameters=c(TRUE, TRUE, FALSE, TRUE)\cr
+}
+\details{
+  plot.mcmcComposite plots the result of a MCMC search
+}
+\examples{
+library(phenology)
+# Read a file with data
+# Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+data(Gratiot)
+# Generate a formatted list named data_Gratiot
+data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
+# Generate initial points for the optimisation
+parg<-par_init(data_Gratiot, parametersfixed=NULL)
+# Run the optimisation
+## not run
+# result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+## end not run
+data(result_Gratiot)
+# Generate set of priors for Bayesian analysis
+## not run
+## pmcmc <- phenology_MHmcmc_p(result_Gratiot)
+## end not run
+pmcmc <- structure(c("dunif", "dunif", "dunif", "dunif", "dunif", "dunif",
+"dunif", "dunif", "0", "0", "0", "0", "0", "0", "0", "0", "200",
+"365", "200", "50", "200", "5", "5", "10", "2", "2", "2", "2",
+"2", "2", "2", "2", "0", "0", "0", "0", "0", "0", "0", "0", "200",
+"365", "200", "50", "200", "5", "5", "10", "95.826796339888",
+"175.36499338462", "62.4313052780003", "6.77668901451618e-05",
+"33.1138407661406", "0.21779065736816", "0.424368825094697",
+"3.58302217559733"), .Dim = c(8L, 7L), .Dimnames = list(c("LengthB",
+"Peak", "LengthE", "Flat", "Max_Gratiot", "MinB_Gratiot", "MinE_Gratiot",
+"Theta"), c("Density", "Prior1", "Prior2", "SDProp", "Min", "Max",
+"Init")))
+## not run
+# res_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000,
+# parametersMCMC = pmcmc, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
+# data(res_mcmc)
+# plot(res_mcmc, parameters=3, xlim=c(230, 330))
+## end not run
+}
+\author{
+  Marc Girondot
+}
+

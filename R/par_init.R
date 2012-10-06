@@ -25,7 +25,7 @@
 
 
 par_init <-
-function(data=NULL, parametersfixed=NULL, help=FALSE) {
+function(data=stop("A dataset must be provided"), parametersfixed=NA, help=FALSE) {
 
 if(help) {
 	cat("This function is used to generate a first set of parameters\n")
@@ -47,7 +47,17 @@ if(help) {
 
 if (is.null(parametersfixed)) {parametersfixed<-NA}
 
+if (class(data)!="phenologydata") {
+  cat("Data must be formated first using the function add_format().\n")
+  return()
+}
+
+
 par<-NULL
+
+bg <- 0
+pk <- 0
+ed <- 0
 
 for(serie in 1:length(data)) {
 
@@ -68,39 +78,38 @@ names(mE1)<-paste("MinE_", names(data[serie]), sep="")
 }
 
 if (!is.na(parametersfixed["Peak"])) {
-	pk<-parametersfixed["Peak"]
+	pkp<-parametersfixed["Peak"]
 } else {
-	pk<-od[which.max(nb)]
-	pk<-rnorm(1, pk, 5)
-	names(pk)<-"Peak"
+	pkp<-od[which.max(nb)]
+	pkp<-rnorm(1, pkp, 5)
+	names(pkp)<-"Peak"
 }
 
 if (!is.na(parametersfixed["Begin"])) {
-	bg<-parametersfixed["Begin"]
+	bgp<-parametersfixed["Begin"]
 } else {
-	bg<-od[1]+(pk-od[1])/2
-	names(bg)<-"Begin"
+	bgp<-od[1]+(pkp-od[1])/2
+	names(bgp)<-"Begin"
 }
 
 if (!is.na(parametersfixed["End"])) {
-	bg<-parametersfixed["End"]
+	edp<-parametersfixed["End"]
 } else {
-	ed<-od[length(od)]-(od[length(od)]-pk)/2
-	names(ed)<-"End"
+	edp<-od[length(od)]-(od[length(od)]-pkp)/2
+	names(edp)<-"End"
 }
 
-if ((pk<=bg)||(pk>=ed)) {
-	pk<-bg+(ed-bg)/2
-	
-	names(pk)<-"Peak"
+if ((pkp<=bgp)||(pkp>=edp)) {
+	pkp<-bgp+(edp-bgp)/2	
+	names(pkp)<-"Peak"
 	}
+	
+bg <- bg+bgp
+ed <- ed+edp
+pk <- pk+pkp
 
 #c(bg, pk, ed, Flat=2, mx1, mB1, mE1)
 
-if ((serie==1) && (is.na(parametersfixed["Begin"])) && (is.na(parametersfixed["LengthB"]))) {par<-c(par, bg)}
-if ((serie==1) && (is.na(parametersfixed["Peak"]))) {par<-c(par, pk)}
-if ((serie==1) && (is.na(parametersfixed["End"])) && (is.na(parametersfixed["LengthE"]))) {par<-c(par, ed)}
-if ((serie==1) && (is.na(parametersfixed["Flat"]))) {par<-c(par, Flat=2)}
 c<-paste("Max_", names(data[serie]), sep="")
 if (is.na(parametersfixed[c])) {par<-c(par, mx1)}
 if (is.na(parametersfixed["Min"])) {
@@ -111,6 +120,12 @@ if (is.na(parametersfixed["Min"])) {
 }
 
 }
+
+if ((is.na(parametersfixed["Begin"])) && (is.na(parametersfixed["Length"])) && (is.na(parametersfixed["LengthB"]))) {par<-c(par, bg/length(data))}
+if ((is.na(parametersfixed["Peak"]))) {par<-c(par, pk/length(data))}
+if ((is.na(parametersfixed["End"])) && (is.na(parametersfixed["Length"])) && (is.na(parametersfixed["LengthE"]))) {par<-c(par, ed/length(data))}
+if ((is.na(parametersfixed["Flat"]))) {par<-c(par, Flat=2)}
+
 
 par<-c(par, Theta=5)
 

@@ -72,8 +72,8 @@ if (help || is.null(data)) {
 
 } else {
 
-.phenology.env<- NULL
-rm(.phenology.env)
+#.phenology.env<- NULL
+#rm(.phenology.env)
 
 if (is.null(parametersfixed)) {parametersfixed<-NA}
 if (is.null(parametersfit)) {parametersfit<-NA}
@@ -96,10 +96,10 @@ LDelta<-length(Deltavalue)
 # SET MATRIX
 matrix(data=NA, LPhi, LDelta) ->input
 
-	.phenology.env <<- new.env(parent=.GlobalEnv)
-	assign("data", data, envir=as.environment(.phenology.env))
-#	assign("fixed", parametersfixed, envir=as.environment(.phenology.env))
-	assign("incertitude", method_incertitude, envir=as.environment(.phenology.env))
+#	.phenology.env <<- new.env(parent=.GlobalEnv)
+#	assign("data", data, envir=.phenology.env)
+#	assign("fixed", parametersfixed, envir=.phenology.env)
+#	assign("incertitude", method_incertitude, envir=.phenology.env)
 
 
 	if (length(zero_counts)==1) {zero_counts<-rep(zero_counts, length(data))}
@@ -108,7 +108,7 @@ matrix(data=NA, LPhi, LDelta) ->input
 		return()
 	}
 
-	assign("zerocounts", zero_counts, envir=as.environment(.phenology.env))
+#	assign("zerocounts", zero_counts, envir=.phenology.env)
 
 
 # si ni Alpha ni Beta ne sont à ajuster, je mets Beta
@@ -155,13 +155,13 @@ for(i in 1:LPhi) {
   	parametersfixed["Delta"]<-XDelta
   	parametersfixed["Phi"]<-XPhi
 
-	assign("fixed", parametersfixed, envir=as.environment(.phenology.env))
+#	assign("fixed", parametersfixed, envir=as.environment(.phenology.env))
     
     par<-parpre
 
     repeat {
     	    	
-		resul<-optim(par, .Lnegbin, NULL, method="BFGS",control=list(trace=0, REPORT=1, maxit=500),hessian=FALSE)
+		resul<-optim(par, .Lnegbin, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts), method="BFGS",control=list(trace=0, REPORT=1, maxit=500),hessian=FALSE)
 		if (resul$convergence==0) break
 		par<-resul$par
 		# print("Convergence is not achieved. Optimization continues !")

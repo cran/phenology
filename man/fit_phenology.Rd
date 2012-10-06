@@ -3,7 +3,7 @@
 \title{Fits the phenology parameters to timeseries.}
 \usage{
   fit_phenology(data = NULL, parametersfit = NULL,
-    parametersfixed = NA, trace = 1,
+    parametersfixed = NA, trace = 1, maxit = 500,
     method_incertitude = 2, zero_counts = TRUE,
     hessian = TRUE, help = FALSE)
 }
@@ -14,8 +14,12 @@
 
   \item{parametersfit}{Set of parameters to be fitted}
 
-  \item{trace}{If 1, display the progression of fit; 0 is
+  \item{trace}{If 1, displays the progression of fit; 0 is
   silent (don't be afraid if it is long !)}
+
+  \item{maxit}{Number of iterations for search before
+  checking if it converges. If it does not converge, will
+  continue. Default 500.}
 
   \item{method_incertitude}{2 [default] is the correct one
   from a statistical point of view;\cr 0 is an aproximate
@@ -49,10 +53,10 @@
   statistical point of view.\cr method_incertitude=0 is an
   aproximate method more rapid and using less memory.\cr
   method_incertitude=1 is an alternative more rapid but
-  biased.\cr zero_counts=c(TRUE, TRUE, FALSE) indicates
-  whether the zeros have been recorder for each of these
-  timeseries. Defaut is TRUE for all.\cr hessian=FALSE does
-  not estimate se of parameters.
+  potentially biased.\cr zero_counts=c(TRUE, TRUE, FALSE)
+  indicates whether the zeros have been recorded for each
+  of these timeseries. Defaut is TRUE for all.\cr
+  hessian=FALSE does not estimate se of parameters.
 }
 \details{
   fit_phenology fits parameters to timeseries.

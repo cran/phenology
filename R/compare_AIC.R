@@ -10,7 +10,7 @@
 #' library("phenology")
 #' #' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
 #' data(Gratiot)
-#' # Generate a formatted list nammed data_Gratiot 
+#' # Generate a formated list nammed data_Gratiot 
 #' data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Fix parameter FLat to 0
 #' pfixed=c(Flat=0)
@@ -34,7 +34,7 @@ function(result=NULL, help=FALSE) {
 if(help) {
 	cat("This function is used to compares the AIC of several outputs obtained\n")
 	cat("with the same data but with different set of parameters.\n")
-	cat("The syntax is parfixed<-add_SD(parametersfixed=NULL, parameter=name, SD=value)\n")
+	cat("The syntax is outputAIC<-compare_AIC(list(test1=result_test1, test2=result_test2))\n")
 
 } else {
 if (!is.null(result)) {
@@ -49,7 +49,11 @@ if (!is.null(result)) {
 			aic<-NULL
 			name<-names(result)
 			for (i in 1:l) {
-				aic<-c(aic, 2*result[[i]]$value+2*(length(result[[i]]$par)))
+				if (inherits(result[[i]], "NestsResult")) {
+					aic<-c(aic, result[[i]]$AIC)
+				} else {
+					aic<-c(aic, 2*result[[i]]$value+2*(length(result[[i]]$par)))
+				}
 			}
 			
 			bestaic<-min(aic)
