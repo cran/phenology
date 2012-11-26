@@ -14,6 +14,7 @@
 #'                    been recorder for each of these timeseries. Defaut is TRUE for all.
 #' @param hessian If FALSE does not estimate se of parameters
 #' @param help If TRUE, an help is displayed
+#' @param silent If TRUE does not show any message
 #' @description Function of the package phenology to fit parameters to timeseries.\cr
 #' To fit data, the syntaxe is :\cr
 #' Result<-fit_phenology(data=dataset, parametersfit=par, parametersfixed=pfixed, trace=1, method_incertitude=2, zero_counts=TRUE, hessian=TRUE)\cr
@@ -45,7 +46,8 @@
 
 
 fit_phenology <-
-function(data=NULL, parametersfit=NULL, parametersfixed=NA, trace=1, maxit=500, method_incertitude=2, zero_counts=TRUE, hessian=TRUE, help=FALSE) {
+function(data=NULL, parametersfit=NULL, parametersfixed=NA, trace=1, maxit=500, method_incertitude=2, 
+	zero_counts=TRUE, hessian=TRUE, help=FALSE, silent=FALSE) {
 if ((help)||(is.null(data))||(is.null(parametersfit))) {
 	cat("To fit data, the syntaxe is :\n")
 	cat("Result<-fit_phenology(data=dataset, parametersfit=par, parametersfixed=pfixed, trace=1,\n")
@@ -86,7 +88,7 @@ if (class(data)!="phenologydata") {
 		resul<-optim(parametersfit, .Lnegbin, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts) , method="BFGS",control=list(trace=trace, REPORT=1, maxit=maxit),hessian=FALSE)
 		if (resul$convergence==0) break
 		parametersfit<-resul$par
-		print("Convergence is not acheived. Optimization continues !")
+		if (!silent) print("Convergence is not acheived. Optimization continues !")
 	}
 	
 	resfit<-resul$par
@@ -99,20 +101,22 @@ if (class(data)!="phenologydata") {
 	resfit[substr(names(resfit), 1, 3)=="Min"]<-abs(resfit[substr(names(resfit), 1, 3)=="Min"])
 	resfit[substr(names(resfit), 1, 3)=="Max"]<-abs(resfit[substr(names(resfit), 1, 3)=="Max"])
 	resfit<-resfit[!is.na(resfit)]
-	cat("Fit done!\n")
-	cat(paste("-Ln L=", format(resul$value, digits=max(3, trunc(log10(resul$value))+4)), "\n", sep=""))
+	if (!silent) cat("Fit done!\n")
+	if (!silent) cat(paste("-Ln L=", format(resul$value, digits=max(3, trunc(log10(resul$value))+4)), "\n", sep=""))
 	if (hessian) {
-	cat("Estimation of the standard error of parameters. Be patient please.\n")
+	if (!silent) cat("Estimation of the standard error of parameters. Be patient please.\n")
 	
-	resul<-optim(resfit, .Lnegbin, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts), method="BFGS",control=list(trace=0, REPORT=1, maxit=10),hessian=TRUE)
+	resul<-optim(resfit, .Lnegbin, pt=list(data=data, fixed=parametersfixed, 
+	incertitude=method_incertitude, zerocounts=zero_counts), method="BFGS",
+	control=list(trace=0, REPORT=1, maxit=10),hessian=TRUE)
 
 	resfit<-resul$par
 
 	mathessian<-resul$hessian
-	inversemathessian=try(solve(mathessian), silent=TRUE)
+	inversemathessian <- try(solve(mathessian), silent=TRUE)
 	if (substr(inversemathessian[1], 1, 5)=="Error") {
-		print("Error in the fit; probably one or more parameters are not estimable.")
-		print("Standard errors cannot be estimated.")
+		if (!silent) print("Error in the fit; probably one or more parameters are not estimable.")
+		if (!silent) print("Standard errors cannot be estimated.")
 		res_se<-rep(NA, length(resfit))
 	
 	} else {
@@ -124,7 +128,7 @@ if (class(data)!="phenologydata") {
 	}
 	} else {
 	
-		print("Standard errors are not estimated.")
+		if (!silent) print("Standard errors are not estimated.")
 		res_se<-rep(NA, length(resfit))
 	
 	}
@@ -144,9 +148,9 @@ if (class(data)!="phenologydata") {
 		
 for(kl in 1:length(res_se)) {
 	if (is.na(res_se[kl])) {
-		cat(paste(names(resfit[kl]), "=", format(resfit[kl], digits=max(3, trunc(log10(abs(resfit[kl])))+4)), "  SE= NaN\n", sep=""))
+		if (!silent) cat(paste(names(resfit[kl]), "=", format(resfit[kl], digits=max(3, trunc(log10(abs(resfit[kl])))+4)), "  SE= NaN\n", sep=""))
 	} else {
-		cat(paste(names(resfit[kl]), "=", format(resfit[kl], digits=max(3, trunc(log10(abs(resfit[kl])))+4)), "  SE=", format(res_se[kl], , digits=max(3, trunc(log10(res_se[kl]))+4)), "\n", sep=""))
+		if (!silent) cat(paste(names(resfit[kl]), "=", format(resfit[kl], digits=max(3, trunc(log10(abs(resfit[kl])))+4)), "  SE=", format(res_se[kl], , digits=max(3, trunc(log10(res_se[kl]))+4)), "\n", sep=""))
 	}
 }
 
@@ -154,7 +158,7 @@ dtout <- list()
 
 for (kl in 1:length(resul$data)) {
 
-cat(paste("Series: ", names(resul$data[kl]), "\n", sep=""))
+if (!silent) cat(paste("Series: ", names(resul$data[kl]), "\n", sep=""))
 
 # la date de référence est resul$data[[kl]][1, "Date"]-resul$data[[kl]][1, "ordinal"]+1
 ref <- resul$data[[kl]][1, "Date"]-resul$data[[kl]][1, "ordinal"]+1
@@ -166,20 +170,20 @@ names(sepfixed) <- substring(names(sepfixed), 4)
 se <- c(res_se, sepfixed)
 
 d1 <- ref+par["Peak"]
-cat(paste("Peak: ", d1, "\n", sep=""))
+if (!silent) cat(paste("Peak: ", d1, "\n", sep=""))
 intdtout <- c(intdtout, Peak=as.numeric(d1))
 if (!is.na(se["Peak"])) {
 	d2 <- d1-2*se["Peak"]
 	d3 <- d1+2*se["Peak"]
-	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
+if (!silent) 	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
 	intdtout <- c(intdtout, PeakCI1=as.numeric(d2), PeakCI2=as.numeric(d3))
 } else {
-	cat(paste("confidence interval not available\n", sep=""))
+if (!silent) 	cat(paste("confidence interval not available\n", sep=""))
 	intdtout <- c(intdtout, PeakCI1=NA, PeakCI2=NA)
 }
 
 d1 <- ref+par["Begin"]
-cat(paste("Begin: ", d1, "\n", sep=""))
+if (!silent) cat(paste("Begin: ", d1, "\n", sep=""))
 intdtout <- c(intdtout, Begin=as.numeric(d1))
 # pour l'intervalle de confiance, il faut modifier soit directement
 # Begin
@@ -211,16 +215,16 @@ if (!is.na(se["Begin"])) {
 	}
 }
 if (!is.null(d2)) {
-	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
+if (!silent) 	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
 	intdtout <- c(intdtout, BeginCI1=as.numeric(d2), BeginCI2=as.numeric(d3))
 } else {
-	cat(paste("confidence interval not available\n", sep=""))
+if (!silent) 	cat(paste("confidence interval not available\n", sep=""))
 	intdtout <- c(intdtout, BeginCI1=NA, BeginCI2=NA)
 }
 
 
 d1 <- ref+par["End"]
-cat(paste("End: ", d1, "\n", sep=""))
+if (!silent) cat(paste("End: ", d1, "\n", sep=""))
 intdtout <- c(intdtout, End=as.numeric(d1))
 # pour l'intervalle de confiance, il faut modifier soit directement
 # End
@@ -252,10 +256,10 @@ if (!is.na(se["End"])) {
 	}
 }
 if (!is.null(d2)) {
-	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
+if (!silent) 	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
 	intdtout <- c(intdtout, EndCI1=as.numeric(d2), EndCI2=as.numeric(d3))
 } else {
-	cat(paste("confidence interval not available\n", sep=""))
+if (!silent) 	cat(paste("confidence interval not available\n", sep=""))
 	intdtout <- c(intdtout, EndCI1=NA, EndCI2=NA)
 }
 
@@ -269,12 +273,12 @@ resul$Dates <- dtout
 
 class(resul) <- "phenology"
 	
-cat(paste("-Ln L=", format(resul$value, digits=max(3, trunc(log10(resul$value))+4)), "\n", sep=""))
-cat(paste("Parameters=", format(length(resul$par), digits=max(3, trunc(log10(length(resul$par)))+4)), "\n", sep=""))
-cat(paste("AIC=", format(2*resul$value+2*length(resul$par), digits=max(3, trunc(log10(2*resul$value+2*length(resul$par)))+4)), "\n", sep=""))
+if (!silent) cat(paste("-Ln L=", format(resul$value, digits=max(3, trunc(log10(resul$value))+4)), "\n", sep=""))
+if (!silent) cat(paste("Parameters=", format(length(resul$par), digits=max(3, trunc(log10(length(resul$par)))+4)), "\n", sep=""))
+if (!silent) cat(paste("AIC=", format(2*resul$value+2*length(resul$par), digits=max(3, trunc(log10(2*resul$value+2*length(resul$par)))+4)), "\n", sep=""))
 
 	
-growlnotify('Fit is done!')
+if (!silent) growlnotify('Fit is done!')
 	
 
 return(resul)

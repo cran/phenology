@@ -17,19 +17,24 @@
 #' @param series Number of series to be analyzed or 'all'
 #' @param ... Parameters used for graphics (xlab, ylab, ylim, cex and pch)
 #' @param moon If TRUE, the moon phase is ploted. Default is FALSE
+#' @param replicate.CI Number of replicates for estimation of confidence interval.
 #' @param help If TRUE, an help is displayed
 #' @description The function "plot_phenology" plots the phenology graph from a result.
 #' @examples
 #' library(phenology)
 #' # Read a file with data
-#' # Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+#' \dontrun{
+#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
+#' }
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
 #' parg<-par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
-#' # result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' \dontrun{
+#' result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' }
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output<-plot_phenology(result=result_Gratiot, pdf=FALSE)
@@ -38,7 +43,8 @@
 
 
 plot_phenology <-
-function(result=NULL, ..., data=NULL, parameters=NULL, parametersfixed=NA, pdf=FALSE, series="all", moon=FALSE, help=FALSE) {
+function(result=NULL, ..., data=NULL, parameters=NULL, parametersfixed=NA, pdf=FALSE, 
+	series="all", moon=FALSE, replicate.CI=1000, help=FALSE) {
 
 if(help || (is.null(data) && is.null(result))) {
 	cat("The syntaxe of this function is :\n")
@@ -145,31 +151,31 @@ if (is.null(data)) {nmser=""} else {
 if (!is.null(parres)) {
 
 ## crée un tableau avec des réplicats des modèles
-par2=matrix(rep(NA, length(parres)*1000), ncol=length(parres))
+par2=matrix(rep(NA, length(parres)*replicate.CI), ncol=length(parres))
 
 ## On nomme les colonnes comme les noms des paramètres
 colnames(par2)=names(parres)
 
 
-# on générère 1000 jeux de paramètres à partir des paramètres obtenus en vraisemblance
+# on générère replicate.CI jeux de paramètres à partir des paramètres obtenus en vraisemblance
 # ici il faut que je prenne aussi ceux transmis en parmetersfixed
-for(i in 1:length(parres)) par2[,i]=rnorm(1000, mean=as.numeric(parres[i]), sd=res_se[i])
+for(i in 1:length(parres)) par2[,i]=rnorm(replicate.CI, mean=as.numeric(parres[i]), sd=res_se[i])
 
-## je génère une matrice de 1000 saisons de pontes
+## je génère une matrice de replicate.CI saisons de pontes
 ## note que je ne gère pas les années bissextiles
-ponte2=matrix(rep(NA, 365*1000), ncol=365)
+ponte2=matrix(rep(NA, 365*replicate.CI), ncol=365)
 
 # affiche le nom de la série
 cat("\n", nmser, "\n", sep="")
 
 cat("\n")
 
-pb<-txtProgressBar(min=1, max=1000, style=3)
+pb<-txtProgressBar(min=1, max=replicate.CI, style=3)
 
 
 
-## je remplis les 1000 saisons de ponte
-for(j in 1:1000) {
+## je remplis les replicate.CI saisons de ponte
+for(j in 1:replicate.CI) {
 
 setTxtProgressBar(pb, j)
 
@@ -177,10 +183,6 @@ setTxtProgressBar(pb, j)
 # maintenant tous les paramètre fixés appraissent dans resfit
 	xparec <- .format_par(par2[j,], nmser)
 	
-#	for(i in 1:365) {
-#	print(i)
-#		ponte2[j,i]=.daily_count(i, xparec, print=FALSE)
-#	}
 	
 	ponte2[j,1:365]=.daily_count(1:365, xparec, print=FALSE)
 	
@@ -193,50 +195,27 @@ sd2<-apply(ponte2, 2, sd)
 
 mnponte<-mean(apply(ponte2, 1, sum))
 sdponte<-sd(apply(ponte2, 1, sum))
-#cat("Estimation without the observed data\n")
-#if (sdponte>=1e-4) {
-#	cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+4)), "\n", sep="")
-	out1<-c(estimate1=mnponte, sd1=sdponte)
-#} else {
-#	cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD 0.000\n", sep="")
-#	out1<-c(estimate1=mnponte, sd1=0)
-#}
+out1<-c(estimate1=mnponte, sd1=sdponte)
 
 
-#cat("Estimation taking into account the observed data\n")
-
-# dans ponte2[nbsimul 1:1000, jour 1:365] j'ai la donnée théorique
+# dans ponte2[nbsimul 1:replicate.CI, jour 1:365] j'ai la donnée théorique
 for(i in 1:dim(data[[series[kseries]]])[1]) {
 		if (!is.na(data[[series[kseries]]]$ordinal2[i])) {
 			for(j in (1+data[[series[kseries]]]$ordinal[i]):data[[series[kseries]]]$ordinal2[i]) {
-# plus la peine, vérifié maintenant à l'entrée des données: 4/2/2012
-#				if ((j<1)||(j>365)) {
-#					print(paste("Error in the date ",data[[series[kseries]]]$date[i], " or ",
-# data[[series[kseries]]]$date2[i], "; please check", sep=""))
-#				} else {
-					ponte2[1:1000, j]<-0
-#				}
+					ponte2[1:replicate.CI, j]<-0
 			}
 		}
 }
 
 for(i in 1:dim(data[[series[kseries]]])[1]) {
-	ponte2[1:1000, data[[series[kseries]]]$ordinal[i]]<-data[[series[kseries]]]$nombre[i]
+	ponte2[1:replicate.CI, data[[series[kseries]]]$ordinal[i]]<-data[[series[kseries]]]$nombre[i]
 }
 
 
 
 mnponte<-mean(apply(ponte2, 1, sum))
 sdponte<-sd(apply(ponte2, 1, sum))
-
-
-#if (sdponte>=1e-4) {
-#	cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+4)), "\n", sep="")
-	out1<-c(out1, estimate2=mnponte, sd2=sdponte)
-#} else {
-#	cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD 0.000\n", sep="")
-#	out1<-c(out1, estimate2=mnponte, sd2=0)
-#}
+out1<-c(out1, estimate2=mnponte, sd2=sdponte)
 
 # 20 mai 2012
 out1 <- c(out1, CI_Min=max(mnponte-2*sdponte, sum(data[[series[kseries]]]$nombre)), CI_Max=mnponte+2*sdponte)

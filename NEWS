@@ -2,6 +2,11 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 3.41    (2012-11-25)
+            
+* add function phenology_swot() for rapid fit of nesting season
+* if standard error of parameters is not available, produce NA for SE of nest counts
+
             CHANGES IN VERSION 3.40    (2012-10-06)
 
 * add Bayesian analysis

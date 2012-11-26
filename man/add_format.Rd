@@ -8,14 +8,14 @@
     adjust_ref = TRUE, help = FALSE)
 }
 \arguments{
-  \item{origin}{previousdata or NULL if no previous data
+  \item{origin}{Previous data or NULL if no previous data
   exists}
 
-  \item{add}{newdata The data to be added. It can be a set
-  of several entities that uses the same reference and date
+  \item{add}{The data to be added. It can be a set of
+  several entities that uses the same reference and date
   format}
 
-  \item{name}{'Site' The name of the monitored site}
+  \item{name}{The name of the monitored site}
 
   \item{reference}{as.Date('2001-12-31') The date used as
   1st date}

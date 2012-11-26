@@ -16,19 +16,24 @@
 #' @param parameters Set of parameters to be changed
 #' @param series Number of series to be analyzed or 'all'
 #' @param moon If TRUE, the moon phase is ploted. Default is FALSE
+#' @param replicate.CI Number of replicates for estimation of confidence interval.
 #' @param help If TRUE, an help is displayed
 #' @description The function plot.phenology plots the phenology graph from a result.
 #' @examples
 #' library(phenology)
 #' # Read a file with data
-#' # Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+#' \dontrun{
+#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+#' }
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
 #' parg<-par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
-#' # result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' \dontrun{
+#' result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' }
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output<-plot(result_Gratiot, pdf=FALSE)
@@ -37,7 +42,8 @@
 
 #plot.phenology <- function(x, ...) {
 
-plot.phenology <- function(x, ..., data=NULL, parameters=NULL, parametersfixed=NA, pdf=FALSE, series="all", moon=FALSE, help=FALSE) {
+plot.phenology <- function(x, ..., data=NULL, parameters=NULL, parametersfixed=NA, pdf=FALSE, 
+	series="all", moon=FALSE, replicate.CI=1000, help=FALSE) {
 
 # result=NULL, data=NULL, parameters=NULL, parametersfixed=NA, series="all", pdf=FALSE, moon=FALSE, help=FALSE, ...
 

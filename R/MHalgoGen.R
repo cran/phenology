@@ -14,15 +14,20 @@ for (kk in 1:n.chains) {
 
 # Initialisation
 nbvar<-dim(parameters)[1]
-varp<-matrix(rep(NA, (nbvar+1)*(n.adapt+n.iter+1)), ncol=nbvar+1)
-varp2<-matrix(rep(NA, (nbvar+1)*(n.adapt+n.iter+1)), ncol=nbvar+1)
+varp<-matrix(rep(NA, (nbvar+1)*(n.adapt+n.iter+2)), ncol=nbvar+1)
+varp2<-matrix(rep(NA, (nbvar+1)*(n.adapt+n.iter+2)), ncol=nbvar+1)
 
 colnames(varp)<-c(rownames(parameters), "Ln L")
 colnames(varp2)<-c(rownames(parameters), "Ln L")
 
 
 for(i in 1:nbvar) varp[1, i]<-as.numeric(parameters[i, 'Init'])
-varp[1, nbvar+1]<- (-likelihood(data, varp[1, 1:nbvar]))
+varp[1, "Ln L"]<- (-likelihood(data, varp[1, 1:nbvar]))
+cpt<-1
+varp2[cpt, 1:nbvar]<-varp[1, i]
+varp2[cpt, "Ln L"]<-varp[i, "Ln L"]
+cpt<-2
+
 
 if (trace) {
 	cat(paste("Chain ", kk, ": [", 1, "] ",as.numeric(varp[1, nbvar+1]), "\n", sep=""))
@@ -40,7 +45,7 @@ Prior<-matrix(as.numeric(parameters[,2:3]), ncol=2)
 Limites<-matrix(as.numeric(parameters[,5:6]), ncol=2)
 
 dfun<-parameters[,"Density"]
-cpt<-1
+
 
 # Itérations
 for (i in 2:(n.adapt+n.iter+1))

@@ -1,8 +1,8 @@
 Package: phenology
 Type: Package
 Title: Tools to manage a parametric function that describes phenology
-Version: 3.40
-Date: 2012-10-06
+Version: 3.41
+Date: 2012-11-26
 Author: Marc Girondot
 Maintainer: Marc Girondot <marc.girondot@u-psud.fr>
 Depends: fields, coda, R (>= 2.10.0)
@@ -13,6 +13,6 @@ LazyData: yes
 LazyLoad: yes
 URL:
         http://max2.ese.u-psud.fr/epc/conservation/Girondot/Publications/Marine_Turtles_Nesting_Season.html
-Packaged: 2012-10-07 10:21:38 UTC; marcgirondot
+Packaged: 2012-11-26 15:42:37 UTC; marcgirondot
 Repository: CRAN
-Date/Publication: 2012-10-07 11:23:58
+Date/Publication: 2012-11-26 16:08:57

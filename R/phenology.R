@@ -18,17 +18,19 @@ function() {
 	cat("The different functions to be used are:\n")
 	cat("1:  Change the working directory:\n")
 	cat("    setwd('", wd, "')\n", sep="")
-	cat("2:  This help\n")
-	cat("    phenology()\n")
-	cat("3:  Demo data. Generate a 'Gratiot' variable to play with.\n")
-	cat("    The data come from Gratiot et al. 2006 fig. 1a.\n")
-	cat("4:  Read data from file:\n")
-	cat("    newdata<-read.delim('Essai.txt', , header=FALSE) \n")
-	cat("5:  Format data to be analyzed:\n")
-	cat("    data<-add_format(origin=previousdata, add=newdata, name='Site', \n")
+	cat("2:  Read data from file:\n")
+	cat("    newdata<-read.delim('Essai.txt', header=FALSE) \n")
+	cat("3:  Format data to be analyzed:\n")
+	cat("    Formated<-add_format(origin=previousdata, add=DATA, name='Site', \n")
 	cat("    + reference=as.Date('2001-01-01'), format='%d/%m/%y')\n")
-	cat("6:  Estimate first set of initial values:\n")
-	cat("    par<-par_init(data=dta, parametersfixed=parfixed)\n")
+    cat("4:  Introduce fixed parameters:\n")
+	cat("    pfixed<-c(Flat=0, Min=0)\n")	
+	cat("5:  Estimate set of initial values:\n")
+	cat("    par<-par_init(data=Formated, parametersfixed=parfixed)\n")
+	cat("6:  Fit the phenology:\n")
+	cat("    + result<-  fit_phenology(data = NULL, parametersfit = NULL, parametersfixed = NA,\n")
+	cat("    + trace = 1, maxit = 500, method_incertitude = 2, zero_counts = TRUE,\n")
+	cat("    hessian = TRUE)\n")	
 	cat("7:  Estimate likelihood:\n")
 	cat("    Likelihood_phenology(data=dta, parametersfit=x, parametersfixed=parfixed,\n")
 	cat("    + method_incertitude=2)\n")
@@ -36,9 +38,6 @@ function() {
 	cat("    para<-BE_to_LBLE(parameters=para)\n")
 	cat("9:  Transform a set of parameters from LengthB and LengthE to Begin and End:\n")
 	cat("    para<-LBLE_to_BE(parameters=para)\n")
-	cat("10: Fit the data:\n")
-	cat("    res<-fit_phenology(data=dta, parametersfit=x, parametersfixed=parfixed,\n")
-	cat("    + method_incertitude=2, trace=1, zero_counts=c(TRUE), hessian=TRUE)\n")
 	cat("11: Plot the nth timeseries (data is optional if result is indicated):\n")
 	cat("    plot_phenology(result=res, data=dta, pdf=TRUE, series=n)\n")
 	cat("12: Take the fitted parameters from a fitted result:\n")
@@ -58,7 +57,7 @@ function() {
 	cat("    plot_delta(map=Lmap, pdf=FALSE, pdfname='Map.pdf')\n")
 	cat("19: This function is used to shift sinusoid parameters from '', '1' or '2'.\n")
 	cat("    par<-shift_sinusoid(parameters=parx, from='', to='1')\n")
-	cat("\nEnter the number of the function to be used (1, 3, 4, 8, 9, 12, 13, 14): ")
+	cat("\nEnter the number of the function to be used (1, 2, 3, 4, 5, 8, 9, 12, 13, 14): ")
 	
 	
 	
@@ -68,33 +67,138 @@ function() {
 #####################################################################
 		if(f==1) {
 			cat("1: setwd()\n")
-			cat("Working directory:\n")
+			cat("Working directory, press enter to choose the directory from a file inside the directory:\n")
 			p<-scan(nmax=1, what="character", allowEscapes=TRUE, sep="*", quiet=TRUE)
 			if(length(p)!=0) {
 				setwd(p)
 				wd<-getwd()
 				print("Done !")
+			} else {
+				nm <- try(file.choose(), silent=TRUE)
+				if(class(nm)!="try-error") {
+					setwd(dirname(nm))
+					wd<-getwd()
+				}
 			}
 		}
 #####################################################################
-		if(f==4) {
-			cat("4: newdata<-read.delim('Essai.txt', , header=FALSE) \n")
-			cat("Name of the file to be read:\n")
-			nm<-scan(nmax=1, what="character", quiet=TRUE)
-			if(length(nm)!=0) {
-				cat("Name of data in which the file will be read:\n")
+		if(f==2) {
+			cat("2: newdata<-read.delim('Essai.txt', , header=FALSE) \n")
+			cat("Choose the file to be read:\n")
+			nm <- try(file.choose(), silent=TRUE)
+			if(class(nm)!="try-error") {
+				cat("Name of object in which the file will be read: DATA [defaut]\n")
 				dta<-scan(nmax=1, what="character", quiet=TRUE)
-				if(length(dta)!=0) {
-					cat("Have the data a header (Y/N [default]):\n")
-					hed<-scan(nmax=1, what="character", quiet=TRUE)
-					if(length(hed)==0) {hed<-"N"}
-					hedF<-ifelse(hed=="Y", TRUE, FALSE)
-					assign(dta, read.delim(nm, , header=hedF), envir = .GlobalEnv)
-					print("Done !")
-				}			
-				
+				if(length(dta)!=0) {dta <- "DATA"}
+				cat("Have the data a header (Y/N [default]):\n")
+				hed<-scan(nmax=1, what="character", quiet=TRUE)
+				if(length(hed)==0) {hed<-"N"}
+				hedF<-ifelse(hed=="Y", TRUE, FALSE)
+				assign(dta, read.delim(nm, header=hedF), envir = .GlobalEnv)
+				print("Done !")				
 			}
 		}
+#####################################################################
+		if(f==3) {
+			cat("3:  Format data to be analyzed:\n")
+			cat("    data<-add_format(origin=previousdata, add=newdata, name='Site', \n")
+			cat("    + reference=as.Date('2001-01-01'), format='%d/%m/%y')\n")
+			cat("Name of previous formated data in which the new ones will be added: Enter for none\n")
+			origin <- scan(nmax=1, what="character", quiet=TRUE)
+			if (origin=="") {origin <- NULL}
+			cat("Name of new formated data: Formated [default]\n")
+			formated <- scan(nmax=1, what="character", quiet=TRUE)
+			if (formated=="") {formated <- "DATA"}
+			cat("Name of new data to add: DATA [default]\n")
+			dta <- scan(nmax=1, what="character", quiet=TRUE)
+			if (dta=="") {dta <- "DATA"}
+			cat("Name of new site: Site [default]\n")
+			name <- scan(nmax=1, what="character", quiet=TRUE)
+			if (name=="") {dta <- "Site"}
+			cat("Reference date (day 0): format YYYY-MM-DD\n")
+			dateref <- scan(nmax=1, what="character", quiet=TRUE)
+			dateref <- as.Date(dateref)
+			cat("Format for dates on file: %d/%m/%y [Default]\n")
+			dateformat <- scan(nmax=1, what="character", quiet=TRUE)
+			
+			assign(formated, add_format(origin=get(origin), add=get(dta), name=get(name), reference=get(dateref), format=get(dateformat)), envir = .GlobalEnv)
+			
+			}
+#####################################################################
+		if(f==4) {
+	    	cat("4:  Introduce fixed parameters:\n")
+			cat("    pfixed<-c(Flat=0, Min=0)\n")
+			pfixed<-NULL
+			cat("Do you want Flat parameter is fixed to 0: Y [Default]/N\n")
+			ask <- scan(nmax=1, what="character", quiet=TRUE)
+			if (ask=="") {ask <- "Y"}
+			if (ask=="Y") {pfixed <-c(pfixed, Flat=0)}
+			cat("Do you want Min parameter is fixed to 0: Y [Default]/N\n")
+			ask <- scan(nmax=1, what="character", quiet=TRUE)
+			if (ask=="") {Flat <- "Y"}
+			if (ask=="Y") {
+				pfixed <-c(pfixed, Min=0)
+			} else {
+				cat("Do you want MinB parameter is fixed to 0: Y [Default]/N\n")
+				ask <- scan(nmax=1, what="character", quiet=TRUE)
+				if (ask=="") {Flat <- "Y"}
+				if (ask=="Y") {pfixed <-c(pfixed, MinB=0)}
+				cat("Do you want MinE parameter is fixed to 0: Y [Default]/N\n")
+				MinB <- scan(nmax=1, what="character", quiet=TRUE)
+				if (ask=="") {Flat <- "Y"}
+				if (ask=="Y") {pfixed <-c(pfixed, MinE=0)}
+			}
+			repeat {
+				cat("Name of other parameter to change: Enter to end\n")
+				ask <- scan(nmax=1, what="character", quiet=TRUE)
+				if (ask=="") {break()}
+				cat("Value for the parameter: Enter to end\n")
+				vale <- scan(nmax=1, what="character", quiet=TRUE)
+				if (vale=="") {break()}
+				pfixed <-c(pfixed, assign(ask, as.numeric(vale)))			
+			}
+			
+			pfixed <<- pfixed
+
+		}
+#####################################################################
+		if(f==5) {
+			cat("5:  Estimate set of initial values:\n")
+			cat("    Par<-par_init(data=Formated, parametersfixed=pfixed)\n")
+			cat("Name of formated data: Formated [Default]\n")
+			Formated <- scan(nmax=1, what="character", quiet=TRUE)
+			if (Formated=="") {Formated <- "Formated"}
+			cat("Name of the fixed parameters: pfixed [default]\n")
+			pfixed <- scan(nmax=1, what="character", quiet=TRUE)
+			if (pfixed=="") {pfixed <- "pfixed"}
+			cat("Name of object to store parameters: Par [default]\n")
+			Par <- scan(nmax=1, what="character", quiet=TRUE)
+			if (Par=="") {Par <- "Par"}
+			
+			assign(Par, par_init(data=get(Formated), parametersfixed=get(pfixed)), envir = .GlobalEnv)
+			
+		}
+#####################################################################
+		if(f==6) {
+			cat("6:  Fit the phenology:\n")
+			cat("    + result<-  fit_phenology(data = NULL, parametersfit = Par, parametersfixed = pfixed)\n")
+			cat("Name of formated data: Formated [Default]\n")
+			Formated <- scan(nmax=1, what="character", quiet=TRUE)
+			if (Formated=="") {Formated <- "Formated"}
+			cat("Name of the fixed parameters: pfixed [default]\n")
+			pfixed <- scan(nmax=1, what="character", quiet=TRUE)
+			if (pfixed=="") {pfixed <- "pfixed"}
+			cat("Name of parameters: Par [default]\n")
+			Par <- scan(nmax=1, what="character", quiet=TRUE)
+			if (Par=="") {Par <- "Par"}
+			cat("Name of object to store result: result [default]\n")
+			result <- scan(nmax=1, what="character", quiet=TRUE)
+			if (Par=="") {result <- "result"}
+
+			assign(result, fit_phenology(data=get(Formated), parametersfit = get(Par), parametersfixed=get(pfixed)), envir = .GlobalEnv)
+
+		}
+
 #####################################################################
 		if(f==8) {
 			cat("8: para<-BE_to_LBLE(parameters=para)\n")
@@ -192,70 +296,8 @@ function() {
 			}
 		}
 
-#####################################################################
-		if(f==2) {
-			#source('http://www.ese.u-psud.fr/epc/conservation/BI/Source_Phenology.r')
-			#print("Done !")
-		}
-		
 		
 
-#####################################################################
-		if(f==3) {
-
-Gratiot<<-data.frame(
-V1=format(seq(from=as.Date("2001-01-01"), to=as.Date("2001-12-31"), by="1 day"), "%d/%m/%Y")
-, V2=c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 3, 0, 0, 0, 
-0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 
-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 1, 2, 4, 8, 7, 2, 5, 0, 1, 0, 0, 8, 1, 2, 5, 3, 
-7, 2, 4, 8, 4, 6, 15, 5, 7, 20, 6, 4, 10, 9, 3, 11, 14, 12, 10, 
-14, 7, 7, 2, 1, 15, 26, 30, 43, 20, 5, 43, 25, 19, 20, 28, 26, 
-31, 18, 25, 10, 17, 5, 17, 33, 26, 41, 30, 20, 55, 16, 17, 9, 
-20, 76, 31, 55, 62, 46, 29, 48, 45, 56, 47, 45, 22, 35, 39, 22, 
-11, 25, 20, 27, 45, 80, 48, 44, 19, 33, 19, 7, 34, 36, 22, 23, 
-31, 13, 13, 17, 26, 36, 15, 24, 26, 41, 26, 35, 25, 10, 13, 10, 
-25, 18, 10, 22, 35, 29, 11, 10, 7, 3, 4, 6, 6, 5, 9, 9, 6, 9, 
-10, 1, 0, 3, 4, 0, 0, 1, 1, 1, 4, 0, 1, 1, 1, 1, 2, 0, 0, 2, 
-2, 0, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 2, 1, 0, 0, 0, 0, 0, 0, 
-2, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 
-0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 1, 0, 3, 0, 0, 0, 0, 1, 3, 3, 0, 
-1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 2, 0, 0, 1, 2)
-)
-
-cat('> Gratiot<-read.delim("http://www.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)\n')
-cat("# The demo data are in the Gratiot variable.\n")
-cat("# They come from the figure 1 of:\n")
-cat("# Gratiot, N., Gratiot, J., de Thoisy, B. & Kelle, L. (2006) Estimation of marine turtles nesting season from incomplete data ; statistical adjustment of a sinusoidal function. Animal Conservation, 9, 95-102.\n")
-
-cat('> data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")', "\n")
-data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
-data_Gratiot<<-data_Gratiot
-cat('> parg<-par_init(data_Gratiot, parametersfixed=NULL)\n')
-# parg<<-par_init(data_Gratiot, parametersfixed=NULL)
-parg<-structure(c(95.8321263398564, 175.358708794243, 62.4612122478645, 
-8.05881177534446e-05, 33.0763701906086, 0.217617932254042, 0.424402045435138, 
-3.58256503707858), .Names = c("LengthB", "Peak", "LengthE", "Flat", 
-"Max_Complete", "MinB_Complete", "MinE_Complete", "Theta"))
-parg<<-parg
-cat('> result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=0)\n')
-result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=0)
-result_Gratiot<<-result_Gratiot
-cat('> plot_phenology(result=result_Gratiot, pdf=FALSE)\n')
-plot_phenology(result=result_Gratiot, pdf=FALSE)
-			print("Done !")
-		}
-		
-#####################################################################
-
-
-		if(f==0) {
-			# source('/Users/marcgirondot/Documents/Espace de travail R/Phenology/Source fit/Source_Phenology.r')
-			# print("Done !")
-		}
 		
 		
 #####################################################################

@@ -41,7 +41,7 @@ print.phenologyout <- function(x, ...) {
 	if (sdponte>=1e-4) {
 		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+4)), "\n", sep="")
 	} else {
-		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD 0.000\n", sep="")
+		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD NA\n", sep="")
 	}
 
 	mnponte<-x[[i]]$estimates[3]
@@ -51,7 +51,7 @@ print.phenologyout <- function(x, ...) {
 	if (sdponte>=1e-4) {
 		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+4)), "\n", sep="")
 	} else {
-		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD 0.000\n", sep="")
+		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD NA\n", sep="")
 	}
 
 	mnponte1<-x[[i]]$estimates[5]

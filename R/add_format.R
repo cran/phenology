@@ -2,9 +2,9 @@
 #' @title Create a new dataset or add a timeserie to a previous one.
 #' @author Marc Girondot
 #' @return Return a list of formated data
-#' @param origin previousdata or NULL if no previous data exists
-#' @param add newdata The data to be added. It can be a set of several entities that uses the same reference and date format
-#' @param name 'Site' The name of the monitored site
+#' @param origin Previous data or NULL if no previous data exists
+#' @param add The data to be added. It can be a set of several entities that uses the same reference and date format
+#' @param name The name of the monitored site
 #' @param reference as.Date('2001-12-31') The date used as 1st date
 #' @param format The format of the date in the file. Several format can be set and the last one that give compatible result is used
 #' @param adjust_ref If TRUE, the day and month of reference is unchanged but year is changed dependent on the first date of timeseries.
