@@ -1,24 +1,22 @@
-\name{BE_to_LBLE}
-\alias{BE_to_LBLE}
-\title{Transform a set of parameters from Begin End to LengthB LengthE.}
+\name{L_to_LBLE}
+\alias{L_to_LBLE}
+\title{Transform a set of parameters from Length format to LengthB LengthE}
 \usage{
-  BE_to_LBLE(parameters = NULL, help = FALSE)
+  L_to_LBLE(parameters = stop("Set of parameters must be given"))
 }
 \arguments{
   \item{parameters}{Set of current parameters}
-
-  \item{help}{If TRUE, an help is displayed}
 }
 \value{
   Return the set of modified parameters
 }
 \description{
   This function is used to transform a set of parameters
-  that uses Begin, Peak and End to a set of parameters that
-  uses LengthB, Peak and LengthE.
+  that uses Length to a set of parameters uses LengthB and
+  LengthE.
 }
 \details{
-  BE_to_LBLE transforms a set of parameters from Begin End
+  L_to_LBLE transforms a set of parameters from Length
   format to LengthB LengthE.
 }
 \examples{
@@ -32,9 +30,9 @@ data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01
 # Generate initial points for the optimisation
 parg<-par_init(data_Gratiot, parametersfixed=NULL)
 # Change the parameters to Begin End format
-parg1<-LBLE_to_BE(parameters=parg)
+parg1<-LBLE_to_L(parameters=parg)
 # And change back to LengthB LengthE.
-parg2<-BE_to_LBLE(parameters=parg1)
+parg2<-L_to_LBLE(parameters=parg1)
 }
 \author{
   Marc Girondot

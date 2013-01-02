@@ -8,7 +8,9 @@
 
 phenology <-
 function() {
-	wd<-getwd()
+
+  if (!exists(as.character(substitute(phenology)))) phenology <- new.env()
+  wd<-getwd()
 	cat("Help is available for each function with function_name(help=TRUE)\n")
 	cat("\n")
 
@@ -21,7 +23,7 @@ function() {
 	cat("2:  Read data from file:\n")
 	cat("    newdata<-read.delim('Essai.txt', header=FALSE) \n")
 	cat("3:  Format data to be analyzed:\n")
-	cat("    Formated<-add_format(origin=previousdata, add=DATA, name='Site', \n")
+	cat("    Formated<-add_phenology(origin=previousdata, add=DATA, name='Site', \n")
 	cat("    + reference=as.Date('2001-01-01'), format='%d/%m/%y')\n")
     cat("4:  Introduce fixed parameters:\n")
 	cat("    pfixed<-c(Flat=0, Min=0)\n")	
@@ -94,14 +96,14 @@ function() {
 				hed<-scan(nmax=1, what="character", quiet=TRUE)
 				if(length(hed)==0) {hed<-"N"}
 				hedF<-ifelse(hed=="Y", TRUE, FALSE)
-				assign(dta, read.delim(nm, header=hedF), envir = .GlobalEnv)
+				assign(dta, read.delim(nm, header=hedF), envir = phenology)
 				print("Done !")				
 			}
 		}
 #####################################################################
 		if(f==3) {
 			cat("3:  Format data to be analyzed:\n")
-			cat("    data<-add_format(origin=previousdata, add=newdata, name='Site', \n")
+			cat("    data<-add_phenology(previous=previousdata, add=newdata, name='Site', \n")
 			cat("    + reference=as.Date('2001-01-01'), format='%d/%m/%y')\n")
 			cat("Name of previous formated data in which the new ones will be added: Enter for none\n")
 			origin <- scan(nmax=1, what="character", quiet=TRUE)
@@ -114,14 +116,16 @@ function() {
 			if (dta=="") {dta <- "DATA"}
 			cat("Name of new site: Site [default]\n")
 			name <- scan(nmax=1, what="character", quiet=TRUE)
-			if (name=="") {dta <- "Site"}
+			if (name=="") {name <- "Site"}
 			cat("Reference date (day 0): format YYYY-MM-DD\n")
 			dateref <- scan(nmax=1, what="character", quiet=TRUE)
 			dateref <- as.Date(dateref)
 			cat("Format for dates on file: %d/%m/%y [Default]\n")
 			dateformat <- scan(nmax=1, what="character", quiet=TRUE)
+			if (dateformat=="") {dateformat <- "%d/%m/%y"}
 			
-			assign(formated, add_format(origin=get(origin), add=get(dta), name=get(name), reference=get(dateref), format=get(dateformat)), envir = .GlobalEnv)
+			
+			assign(formated, add_phenology(previous=get(origin, envir = phenology), add=get(dta, envir = phenology), name=name, reference=dateref, format=dateformat), envir = phenology)
 			
 			}
 #####################################################################
@@ -135,17 +139,17 @@ function() {
 			if (ask=="Y") {pfixed <-c(pfixed, Flat=0)}
 			cat("Do you want Min parameter is fixed to 0: Y [Default]/N\n")
 			ask <- scan(nmax=1, what="character", quiet=TRUE)
-			if (ask=="") {Flat <- "Y"}
+			if (ask=="") {ask <- "Y"}
 			if (ask=="Y") {
 				pfixed <-c(pfixed, Min=0)
 			} else {
 				cat("Do you want MinB parameter is fixed to 0: Y [Default]/N\n")
 				ask <- scan(nmax=1, what="character", quiet=TRUE)
-				if (ask=="") {Flat <- "Y"}
+				if (ask=="") {ask <- "Y"}
 				if (ask=="Y") {pfixed <-c(pfixed, MinB=0)}
 				cat("Do you want MinE parameter is fixed to 0: Y [Default]/N\n")
-				MinB <- scan(nmax=1, what="character", quiet=TRUE)
-				if (ask=="") {Flat <- "Y"}
+				ask <- scan(nmax=1, what="character", quiet=TRUE)
+				if (ask=="") {ask <- "Y"}
 				if (ask=="Y") {pfixed <-c(pfixed, MinE=0)}
 			}
 			repeat {
@@ -158,7 +162,7 @@ function() {
 				pfixed <-c(pfixed, assign(ask, as.numeric(vale)))			
 			}
 			
-			pfixed <<- pfixed
+			assign(pfixed, pfixed, envir = phenology)
 
 		}
 #####################################################################
@@ -175,7 +179,7 @@ function() {
 			Par <- scan(nmax=1, what="character", quiet=TRUE)
 			if (Par=="") {Par <- "Par"}
 			
-			assign(Par, par_init(data=get(Formated), parametersfixed=get(pfixed)), envir = .GlobalEnv)
+			assign(Par, par_init(data=get(Formated, envir = phenology), parametersfixed=get(pfixed, envir = phenology)), envir = phenology)
 			
 		}
 #####################################################################
@@ -195,7 +199,7 @@ function() {
 			result <- scan(nmax=1, what="character", quiet=TRUE)
 			if (Par=="") {result <- "result"}
 
-			assign(result, fit_phenology(data=get(Formated), parametersfit = get(Par), parametersfixed=get(pfixed)), envir = .GlobalEnv)
+			assign(result, fit_phenology(data=get(Formated, envir = phenology), parametersfit = get(Par, envir = phenology), parametersfixed=get(pfixed, envir = phenology)), envir = phenology)
 
 		}
 
@@ -207,7 +211,7 @@ function() {
 			if(length(p)!=0) {
 				es<-try(eval(as.name(p)), silent=TRUE)
 			 	if(substr(es[1], 1, 5)!="Error") {
-					assign(p, BE_to_LBLE(parameters=eval(as.name(p))), envir = .GlobalEnv)
+					assign(p, BE_to_LBLE(parameters=eval(as.name(p))), envir = phenology)
 					print("Done !")
 				} else {
 					print("The parameters do not exist.")
@@ -222,7 +226,7 @@ function() {
 			if(length(p)!=0) {
 				es<-try(eval(as.name(p)), silent=TRUE)
 			 	if(substr(es[1], 1, 5)!="Error") {
-					assign(p, LBLE_to_BE(parameters=eval(as.name(p))), envir = .GlobalEnv)
+					assign(p, LBLE_to_BE(parameters=eval(as.name(p))), envir = phenology)
 					print("Done !")
 				} else {
 					print("The parameters do not exist.")
@@ -240,7 +244,7 @@ function() {
 			 		cat("Parameters data to be setup:\n")
 			 		q<-scan(nmax=1, what="character")
 					if(length(q)!=0) {
-						assign(q, extract_result(result=eval(as.name(p))), envir = .GlobalEnv)
+						assign(q, extract_result(result=eval(as.name(p))), envir = phenology)
 						print("Done !")
 					}
 				} else {
@@ -256,7 +260,7 @@ function() {
 			if(length(p)!=0) {
 				es<-try(eval(as.name(p)), silent=TRUE)
 			 	if(substr(es[1], 1, 5)!="Error") {
-					assign(p, remove_site(parameters=eval(as.name(p))), envir = .GlobalEnv)
+					assign(p, remove_site(parameters=eval(as.name(p))), envir = phenology)
 					print("Done !")
 				} else {
 					print("The parameters do not exist.")
@@ -266,7 +270,7 @@ function() {
 
 #####################################################################
 		if(f==14) {
-			cat("14: parfixed<-add_SD(parametersfixed=NULL, parameter=name, SD=value)\n")
+			cat("14: parfixed<-add_SD(parametersfixed=NULL, parameters=name, SD=value)\n")
 			cat("Fixed parameters to be changed:\n")
 			pf<-scan(nmax=1, what="character", quiet=TRUE)
 			if(length(pf)!=0) {
@@ -282,8 +286,8 @@ function() {
 			 				sd<-scan(nmax=1, what="numeric", quiet=TRUE)
 							if(length(sd)!=0) {
 								sd<-as.numeric(sd)
-								es<-add_SD(parametersfixed=es, parameter=npf, SD=sd)
-								assign("pf", es, envir = .GlobalEnv)
+								es<-add_SD(parametersfixed=es, parameters=npf, SD=sd)
+								assign("pf", es, envir = phenology)
 								print("Done !")
 							}
 						} else {

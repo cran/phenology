@@ -1,10 +1,10 @@
 \name{fit_phenology}
 \alias{fit_phenology}
-\title{Fits the phenology parameters to timeseries.}
+\title{Fit the phenology parameters to timeseries of counts.}
 \usage{
-  fit_phenology(data = NULL, parametersfit = NULL,
-    parametersfixed = NA, trace = 1, maxit = 500,
-    method_incertitude = 2, zero_counts = TRUE,
+  fit_phenology(data = file.choose(), parametersfit = NULL,
+    parametersfixed = NULL, trace = 1, maxit = 500,
+    method_incertitude = "multinomial", zero_counts = TRUE,
     hessian = TRUE, help = FALSE, silent = FALSE)
 }
 \arguments{
@@ -14,17 +14,18 @@
 
   \item{parametersfit}{Set of parameters to be fitted}
 
-  \item{trace}{If 1, displays the progression of fit; 0 is
+  \item{trace}{If 1, it shows the progression of fit; 0 is
   silent (don't be afraid if it is long !)}
 
   \item{maxit}{Number of iterations for search before
-  checking if it converges. If it does not converge, will
-  continue. Default 500.}
+  checking if it converges. If it does not converge, it
+  will continue to search for. Default is 500.}
 
-  \item{method_incertitude}{2 [default] is the correct one
-  from a statistical point of view;\cr 0 is an aproximate
-  method more rapid and using less memory;\cr 1 is an
-  alternative more rapid but biased.}
+  \item{method_incertitude}{'multinomial' [default] is the
+  correct one from a statistical point of view;\cr
+  'binomial' is an aproximate method more rapid and using
+  less memory;\cr 'sum' is an alternative more rapid but
+  potentially biased.}
 
   \item{zero_counts}{example c(TRUE, TRUE, FALSE) indicates
   whether the zeros have been recorder for each of these
@@ -48,35 +49,38 @@
   zero_counts=TRUE, hessian=TRUE)\cr or if no parameter is
   fixed :\cr Result<-fit_phenology(data=dataset,
   parametersfit=par)\cr or\cr fit_phenology(help=TRUE) to
-  have this help !\cr Add trace=1 [default] to have
+  have the help !\cr Add trace=1 [default] to have
   information on the fit progression or trace=0 to hide
   information on the fit progression.\cr
-  method_incertitude=2 [default] is the correct one from a
-  statistical point of view.\cr method_incertitude=0 is an
-  aproximate method more rapid and using less memory.\cr
-  method_incertitude=1 is an alternative more rapid but
-  potentially biased.\cr zero_counts=c(TRUE, TRUE, FALSE)
-  indicates whether the zeros have been recorded for each
-  of these timeseries. Defaut is TRUE for all.\cr
-  hessian=FALSE does not estimate se of parameters.
+  method_incertitude='multinomial' [default] is the correct
+  one from a statistical point of view.\cr
+  method_incertitude='binomial' is an alternative more
+  rapid.\cr method_incertitude='sum' is an aproximate
+  method more rapid and using less memory.\cr
+  zero_counts=c(TRUE, TRUE, FALSE) indicates whether the
+  zeros have been recorded for each of these timeseries.
+  Defaut is TRUE for all.\cr hessian=FALSE does not
+  estimate se of parameters.
 }
 \details{
   fit_phenology fits parameters to timeseries.
 }
 \examples{
+\dontrun{
 library(phenology)
 # Read a file with data
-# Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 data(Gratiot)
 # Generate a formatted list nammed data_Gratiot
-data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
+data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
 parg<-par_init(data_Gratiot, parametersfixed=NULL)
 # Run the optimisation
-# result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
 data(result_Gratiot)
 # Plot the phenology and get some stats
 output<-plot_phenology(result=result_Gratiot, pdf=FALSE)
+}
 }
 \author{
   Marc Girondot

@@ -25,7 +25,7 @@ for(i in 1:nbvar) varp[1, i]<-as.numeric(parameters[i, 'Init'])
 varp[1, "Ln L"]<- (-likelihood(data, varp[1, 1:nbvar]))
 cpt<-1
 varp2[cpt, 1:nbvar]<-varp[1, i]
-varp2[cpt, "Ln L"]<-varp[i, "Ln L"]
+varp2[cpt, "Ln L"]<-varp[1, "Ln L"]
 cpt<-2
 
 

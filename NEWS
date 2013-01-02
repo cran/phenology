@@ -2,10 +2,23 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 3.42-3.43    (2013-01-02)
+            
+* first likelihood is stored in mcmcComposite
+* check for update at load time
+* compare_AIC() can use any list with elements named AIC or aic
+* better managment of options for plot
+* New funtions L_to_LBLE() and LBLE_to_L()
+* add_format() has been renamed as add_phenology()
+* add_phenology() and fit_phenology() by default opens a box to choose a file and try to read the file directly
+* better managment for file reading in phenology_swot()
+* if fit_phenology() is executed without formated data or parameterfit, it runs add_phenology() or par_init() first.
+* phenology() stores data in phenology environment.
+
             CHANGES IN VERSION 3.41    (2012-11-25)
             
 * add function phenology_swot() for rapid fit of nesting season
-* if standard error of parameters is not available, produce NA for SE of nest counts
+* if standard error of parameters is not available, produce NA for SE of nest counts rather than 0
 
             CHANGES IN VERSION 3.40    (2012-10-06)
 
@@ -30,7 +43,6 @@ Please note that only the most significant changes are reported here.
             CHANGES IN VERSION 3.33    (2012-05-31)
 
 * internal changes
-
 
             CHANGES IN VERSION 3.32    (2012-05-23)
 

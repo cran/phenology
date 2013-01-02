@@ -6,26 +6,28 @@
 #' @param help If TRUE, an help is displayed
 #' @description This function is used to compares the AIC of several outputs obtained with the same data but with different set of parameters.
 #' @examples
+#' \dontrun{
 #' # Read a file with data
 #' library("phenology")
-#' #' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
 #' data(Gratiot)
 #' # Generate a formated list nammed data_Gratiot 
-#' data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Fix parameter FLat to 0
 #' pfixed=c(Flat=0)
 #' # Generate initial points for the optimisation
 #' parg<-par_init(data_Gratiot, parametersfixed=pfixed)
 #' # Fit is done
-#' # result_Gratiot_Flat<-fit_phenology(data=data_Gratiot, parametersfit=parg2, parametersfixed=pfixed, trace=1)
+#' result_Gratiot_Flat<-fit_phenology(data=data_Gratiot, parametersfit=parg2, parametersfixed=pfixed, trace=1)
 #' data(result_Gratiot_Flat)
 #' # Generate initial points for the optimisation
 #' parg<-par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
-#' # result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
 #' data(result_Gratiot)
 #' # Compare both models
 #' outputAIC<-compare_AIC(list(full=result_Gratiot, Flat=result_Gratiot_Flat))
+#' }
 #' @export
 
 
@@ -49,10 +51,14 @@ if (!is.null(result)) {
 			aic<-NULL
 			name<-names(result)
 			for (i in 1:l) {
-				if (inherits(result[[i]], "NestsResult")) {
+				if (inherits(result[[i]], "NestsResult") | !is.null(result[[i]]$AIC)) {
 					aic<-c(aic, result[[i]]$AIC)
 				} else {
-					aic<-c(aic, 2*result[[i]]$value+2*(length(result[[i]]$par)))
+					if (!is.null(result[[i]]$aic)) {
+						aic<-c(aic, result[[i]]$aic)
+					} else {
+						aic<-c(aic, 2*result[[i]]$value+2*(length(result[[i]]$par)))
+					}
 				}
 			}
 			

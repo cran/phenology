@@ -73,7 +73,7 @@ for(countday in 1:nbjour) {
 #je somme
 sumnbcount<-sum(nbcount)
 
-if (pt$incertitude==0) {
+if (pt$incertitude==0 | pt$incertitude=="binomial") {
 
 # je calcule pour chaque jour qu'elle est la fraction du nombre de ponte par rapport au total                
 	nbcountrel<-nbcount/sumnbcount
@@ -98,7 +98,7 @@ for(countday in 1:nbjour) {
 
 } else {
 
-if (pt$incertitude==1) {
+if (pt$incertitude==1 | pt$incertitude=="sum") {
 
 # je suis sur la méthode 1 d'incertitude
 if (!zero) {
@@ -109,6 +109,8 @@ if (!zero) {
 
 
 } else {
+
+
 # je suis sur la méthode 2 d'incertitude
 	nbcountrel<-nbcount/sumnbcount
 	nbcountrel[nbcountrel==0]<-1E-9
@@ -140,7 +142,15 @@ N<-data$nombre[i]
 
 # je calcule déjà les dbnbinom pour toutes les solutions: 4/2/2012
 # il ma faut un tableau de 1:nbjour et de 0:N
-a<-matrix(rep(0, (N+1)*nbjour), nrow=N+1,ncol=nbjour)
+a <- try(matrix(rep(0, (N+1)*nbjour), nrow=N+1,ncol=nbjour), silent=TRUE)
+
+if (class(a)=="try-error") {
+
+	print("Too many incertitudes on the days. Use another incertitude method.")
+	return(Inf)
+
+}
+
 
 for(ii in deb:N) {
 	for(countday in 1:nbjour) {
@@ -162,6 +172,7 @@ p<-dmultinom(tb[ii,1:nbjour], prob=nbcountrel, log=TRUE)
 sump <- sump+exp(p)
 }
 lnli2 <- -log(sump)
+
 
 }
 

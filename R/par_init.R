@@ -15,7 +15,7 @@
 #' }
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
-#' data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
 #' parg<-par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
@@ -59,9 +59,9 @@ if (class(data)!="phenologydata") {
 
 par<-NULL
 
-bg <- 0
-pk <- 0
-ed <- 0
+bg <- NULL
+pk <- NULL
+ed <- NULL
 
 for(serie in 1:length(data)) {
 
@@ -108,9 +108,9 @@ if ((pkp<=bgp)||(pkp>=edp)) {
 	names(pkp)<-"Peak"
 	}
 	
-bg <- bg+bgp
-ed <- ed+edp
-pk <- pk+pkp
+bg <- c(bg, bgp)
+ed <- c(ed, edp)
+pk <- c(pk, pkp)
 
 #c(bg, pk, ed, Flat=2, mx1, mB1, mE1)
 
@@ -123,11 +123,13 @@ if (is.na(parametersfixed["Min"])) {
 	if ((is.na(parametersfixed["MinE"]))*(is.na(parametersfixed[c]))) {par<-c(par, mE1)}
 }
 
+# fin de la boucle des séries
+
 }
 
-if ((is.na(parametersfixed["Begin"])) && (is.na(parametersfixed["Length"])) && (is.na(parametersfixed["LengthB"]))) {par<-c(par, bg/length(data))}
-if ((is.na(parametersfixed["Peak"]))) {par<-c(par, pk/length(data))}
-if ((is.na(parametersfixed["End"])) && (is.na(parametersfixed["Length"])) && (is.na(parametersfixed["LengthE"]))) {par<-c(par, ed/length(data))}
+if ((is.na(parametersfixed["Begin"])) && (is.na(parametersfixed["Length"])) && (is.na(parametersfixed["LengthB"]))) {par<-c(par, Begin=(min(bg)+mean(bg))/2)}
+if ((is.na(parametersfixed["Peak"]))) {par<-c(par, Peak=mean(pk))}
+if ((is.na(parametersfixed["End"])) && (is.na(parametersfixed["Length"])) && (is.na(parametersfixed["LengthE"]))) {par<-c(par, End=(max(ed)+mean(ed))/2)}
 if ((is.na(parametersfixed["Flat"]))) {par<-c(par, Flat=2)}
 
 

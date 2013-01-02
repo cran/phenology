@@ -1,13 +1,14 @@
-#' add_format creates a new dataset.
-#' @title Create a new dataset or add a timeserie to a previous one.
+#' add_phenology creates a new dataset.
+#' @title Create a new dataset or add a timeserie to a previous dataset.
 #' @author Marc Girondot
-#' @return Return a list of formated data
-#' @param origin Previous data or NULL if no previous data exists
+#' @return Return a list of formated data that can be used ith fit_phenology()
+#' @param previous Previous data or NULL [default] if no previous data exists
 #' @param add The data to be added. It can be a set of several entities that uses the same reference and date format
 #' @param name The name of the monitored site
 #' @param reference as.Date('2001-12-31') The date used as 1st date
+#' @param month_ref If no reference date is given, use this month as a reference
+#' @param header If the data is read from a file, can be used to force header or not
 #' @param format The format of the date in the file. Several format can be set and the last one that give compatible result is used
-#' @param adjust_ref If TRUE, the day and month of reference is unchanged but year is changed dependent on the first date of timeseries.
 #' @param help If TRUE, an help is displayed
 #' @description To create a new dataset, the syntaxe is \cr
 #' data<-add_format(add=newdata, name="Site", reference=as.Date('2001-12-31'), format='%d/%m/%y')\cr
@@ -32,31 +33,35 @@
 #' rookery of this name can be used.\cr
 #' Several rookeries can be included in the same file but in this case 
 #' the rookery name is obligatory at the third column.
-#' @examples 
+#' The simplest use of this function is just: \cr
+#' phen <- add_phenology()
+#' @examples
+#' \dontrun{
 #' library(phenology)
 #' # Read a file with data
-#' # Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
-#' data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
 #' parg<-par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
-#' # result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output<-plot_phenology(result=result_Gratiot, pdf=FALSE)
+#' }
 #' @export
 
 
-add_format <-
-function(origin=NULL, add=stop("A dataset must be indicated"), name=NULL, reference=NULL, format="%d/%m/%y", adjust_ref=TRUE, help=FALSE) {
+add_phenology <-
+function(add=file.choose(), name=NULL, reference=NULL, month_ref= NULL, header=NULL, format=NULL, previous=NULL, help=FALSE) {
 if(help) {
 	cat("To create a new dataset, the syntaxe is \n")
-	cat("data<-add_format(add=newdata, name='Site', \n")
+	cat("data<-add_phenology(add=newdata, name='Site', \n")
 	cat("+   reference=as.Date('2001-12-31'), format='%d/%m/%y')\n")
 	cat("To add a dataset to a previous one, the syntaxe is \n")
-	cat("data<-add_format(origin=previousdata, add=newdata, name='Site', \n")
+	cat("data<-add_phenology(previous=previousdata, add=newdata, name='Site', \n")
 	cat("+   reference=as.Date('2001-12-31'), format='%d/%m/%y')\n")
 	cat("\n")
 	cat("The dataset to be added must include 2 or 3 columns.\n")
@@ -72,49 +77,88 @@ if(help) {
 	cat("If only two columns are indicated, the name can be indicated as \n")
 	cat("a parameter of the function with name=. If no name is indicated,\n")
 	cat("the default name Site will be used, but take care, only one \n")
-	cat("rookery this name can be used.\n")
+	cat("rookery with this name can be used.\n")
 	cat("Several rookeries can be included in the same file but in this case\n")
 	cat("the rookery name is obligatory at the third column.\n")
 } else {
 
-if (class(origin)!="phenologydata" && !is.null(origin)) {
-  cat("The origin variable must be already formatted\n")
-  return()
+# name=NULL; reference=NULL; month_ref= NULL; header=NULL; format=NULL; adjust_ref=TRUE; previous=NULL; help=FALSE
+# add=file.choose()
+  
+if (class(previous)!="phenologydata" && !is.null(previous)) {
+  cat("The previous dataset must be already formatted\n")
+  return(invisible())
 }
   
-# if (is.null(add) || !exists(as.character(substitute(add)))) {
+
+if(class(add)=="try-error") {
+	cat("No file has been chosen !\n")
+	return(invisible())
+
+}	
+
+nm <- NULL
+
+if (class(add)=="character") {
+# j'ai utilisé le file.choose
+
+	nm <- add
+	add <- lapply(add,readLines, warn=FALSE)
+  addec <- add[[1]]
+	add[[1]] <- addec[addec!=""]
+	
+}
+	
+## if (is.null(add) || !exists(as.character(substitute(add)))) {
 if (is.null(add)) {
 	cat("Data to be added does not exist !\n")
-  return()
+	return(invisible())
 }
 
+
+rp <- phenology:::.read_phenology(add, header, reference, month_ref, format, nm)
+
+add <- rp$DATA
+reference <- rp$reference
+format <- rp$format
+  
+
 # print(paste("1: ", name))
-if (!is.data.frame(add)) {
-	nbdatasets <- length(add)
-	addlist <- add
-	if (length(name)==nbdatasets) {
-		names(addlist) <- name
-	} else {
-		if (is.null(names(addlist))) {
-			print("The names of datasets are set to 'dataset'")
-			names(addlist) <- paste("dataset", 1:nbdatasets, sep="")
-		}
-	}
-	name <- NULL
-} else {
+# là j'ai une liste avec les databases
+# if (!is.data.frame(add)) {
+# 	nbdatasets <- length(add)
+# 	addlist <- add
+# 	if (length(name)==nbdatasets) {
+# 		names(addlist) <- name
+# 	} else {
+# 		if (is.null(names(addlist))) {
+# 			print("The names of datasets are set to 'dataset'")
+# 			names(addlist) <- paste("dataset", 1:nbdatasets, sep="")
+# 		}
+# 	}
+# 	name <- NULL
+# } else {
+# là je crée une liste
 	nbdatasets <- 1
 	addlist <- list(add)
-	if (is.null(name)) {
+if (is.null(name)) {
+	if (is.null(nm)) {
+    if (length(deparse(substitute(add)))==1) {
 		names(addlist) <- deparse(substitute(add))
+	    } else {
+	  names(addlist) <- "Rookery"
+	  }
 	} else {
-		names(addlist) <- name
+		names(addlist) <- basename(nm)
 	}
+} else {
+		names(addlist) <- name
 }
+
 
 
 # print(paste("2: ", name))
 
-XDate<-as.POSIXlt(reference)
 
 for (kk in 1:nbdatasets) {
 
@@ -135,71 +179,45 @@ for (kk in 1:nbdatasets) {
 		}
 	}
 
-	if (dim(add)[2]==2) {
-	
+  # 23122002
+  fin  <- FALSE
+	if (dim(add)[2]==2) {fin <- TRUE} else {
+    if (length(levels(factor(add[,3])))==1) fin <- TRUE
+	}
+  
+  
+	if (fin) {
+
+
 # J'ai deux colonnes et le nom des séries dans name
 	print(name)
 # Je n'ai pas de nom de site. Il n'y a donc qu'une seule série
 		colnames(add)=c("Date", "Nombre")	
 		add$Date<-as.character(add$Date)
 		add[, 2]<-as.character(add[, 2])
-# je prends la première date même si pas de ponte. Utilisé pour référence
-		adddate<-add[(add[,1]!=""),1][1]
-#		print(adddate)
 
 # je retire toutes les lignes pour lesquelles je n'ai pas d'observation de ponte - 19012012
 		add<-add[(add[,1]!="") & (!is.na(add[,1])) & (gsub("[0-9 ]", "", add[,2])=="") & (!is.na(add[,2])) & (add[,2]!=""),1:2]
 		
 		if (dim(add)[1]==0) {
 			print(paste("The timeseries", name, "is empty; check it"))
-		} else {
+			return(invisible())
+		} 
 
 		
 		# Je le mets en numérique: 21/3/2012
 		add[, 2]<-as.numeric(add[, 2])
-		# je viens d'avoir une nouvelle série
-		# il faut que je calcule la nouvelle référence
-		# > XDate<-as.POSIXlt(fd)
-		# > XDate
-		# [1] "2010-08-18 UTC"
-		# > XDate$year+1900 
-		# [1] 2010
-		# > XDate$year<-2011-1900
-		# > XDate
-		# [1] "2011-08-18 UTC"
 		
 		addT<-data.frame(Date=rep(as.Date("1900-01-01"), dim(add)[1]), Date2=rep(as.Date("1900-01-01"), dim(add)[1]), nombre=rep(NA, dim(add)[1]), ordinal=rep(NA, dim(add)[1]), ordinal2=rep(NA, dim(add)[1]), Modeled=rep(NA, dim(add)[1]), LnL=rep(NA, dim(add)[1]))
 		
-		reference_ec <- NULL
-		# Dans XDate j'ai la référence globale
-		if (adjust_ref) {
-			essai<-unlist(strsplit(adddate, "-"))
-			dtcorrect <- NULL
-			for (fd in 1:length(format)) {
-				dtencours <- as.Date(essai[1], format[fd])
-				referencetest <- XDate
-				dtencoursX <- as.POSIXlt(dtencours)
-				referencetest$year <- dtencoursX$year
-				ref <- as.numeric(dtencours-as.Date(referencetest)+1)
-#				print(paste(dtencours, referencetest, ref))
-				if (referencetest$year>0 & ref>=0 & ref<=366) {
-					dtcorrect <- dtencours
-					reference_ec <- as.Date(referencetest)
-				}
-			}
-		
-		} else {
-			reference_ec <- reference
-		
+
+		if (is.null(reference)) {		
+			print("No refence date can be calculated")
+			return(invisible())
 		}
 		
-		if (is.null(reference_ec)) {
 		
-			print("No refence date can be calculated")
-		
-		} else {
-		
-		print(paste("Reference: ", reference_ec))
+		print(paste("Reference: ", reference))
 		
 		# dans i la ligne en cours
 		for(i in 1:dim(add)[1]) {
@@ -209,7 +227,7 @@ for (kk in 1:nbdatasets) {
 			dtcorrect <- NULL
 			for (fd in 1:length(format)) {
 				dtencours <- as.Date(essai[1], format[fd])
-				ref <- as.numeric(dtencours-reference_ec+1)
+				ref <- as.numeric(dtencours-reference+1)
 				if (ref>=0 & ref<=366) {
 					dtcorrect <- dtencours
 				}
@@ -219,19 +237,19 @@ for (kk in 1:nbdatasets) {
 			if (is.na(addT$Date[i])) {
 				print(paste("Error date ", essai[1], sep=""))
 			} else {
-				addT$ordinal[i]<-as.numeric(addT$Date[i]-reference_ec+1)
+				addT$ordinal[i]<-as.numeric(addT$Date[i]-reference+1)
 				if (length(essai)==2) {
 					dtcorrect <- NULL
 					for (fd in 1:length(format)) {
 						dtencours <- as.Date(essai[2], format[fd])
-						ref <- as.numeric(dtencours-reference_ec+1)
+						ref <- as.numeric(dtencours-reference+1)
 						if (ref>=0 & ref<=366) {
 							dtcorrect <- dtencours
 						}
 					}
 							
 					addT$Date2[i]<-dtcorrect
-					addT$ordinal2[i]<-as.numeric(addT$Date2[i]-reference_ec+1)
+					addT$ordinal2[i]<-as.numeric(addT$Date2[i]-reference+1)
 				} else {
 					addT$Date2[i]<-NA
 					addT$ordinal2[i]<-NA
@@ -239,64 +257,51 @@ for (kk in 1:nbdatasets) {
 			}
 		}
 		addT$nombre<-add$Nombre
-		nb<-length(origin)
-		origin$kyYI876Uu<-addT
-		names(origin)[nb+1]<-name
-		}
-		# fin du teste sur reference_ec
-		}
+		nb<-length(previous)
+		previous$kyYI876Uu<-addT
+		names(previous)[nb+1]<-name
+
 		
 
 	} else {
-# J'ai un nom de site. Il n'y a donc peut-être plusieurs séries - 21012012
+# J'ai plus d'un nom de site. Il y a donc plusieurs séries - 21012012
 		colnames(add)=c("Date", "Nombre", "Site")	
 		add$Date<-as.character(add$Date)
-		add[, 2]<-as.character(add[, 2])
-# je retire toutes les lignes pour lesquelles je n'ai pas d'observation de ponte - 19012012
-# Non, seront retirées après sinon je perds la date de référence sans ponte
-#		add<-add[(add[,1]!="") & (!is.na(add[,1])) & (gsub("[0-9 ]", "", add[,2])=="") & (!is.na(add[,2])) & (add[,2]!=""),1:3]
 
 # Je le mets en numérique: 21/3/2012
 		add[, 2]<-as.numeric(add[, 2])
 		
-# il faut que je mette les noms sur les sites sans
-		siteencours=""
-		for(i in 1:dim(add)[1]) {
-			if (add$Site[i]=="") {add$Site[i]<-siteencours} else {siteencours<-add$Site[i]}
-		}
 # Maintenant j'ai tous les sites remplis
 # mais je dois avoir la liste des sites
 		fac <- factor(add$Site)
 # je génère un nouveau data.frame avec facteur par facteur
-		dtaorigin=origin
+		dtaorigin=previous
 		for(i in 1:length(levels(fac))) {
 			siteencours<-levels(fac)[i]
 			addencours<-add[add[,3]==siteencours, 1:2]
-#			print("ajout")
-#			print(siteencours)
-#			print(addencours)
-			dtaorigin<-add_format(origin=dtaorigin, add=addencours, name=siteencours, reference=reference, format=format, adjust_ref=adjust_ref)
+			dtaorigin<-add_phenology(previous=dtaorigin, add=addencours, name=siteencours, reference=NULL, month_ref= month_ref, format=format)
 		}
-		origin<-dtaorigin
+		previous<-dtaorigin
 
 	}
 	problem<-FALSE
-	for(i in 1:length(origin)) {
-		problem<-(problem) || (any(origin[[i]]$ordinal[!is.na(origin[[i]]$ordinal)]>365)) || (any(origin[[i]]$ordinal2[!is.na(origin[[i]]$ordinal2)]>365)) || (any(origin[[i]]$ordinal[!is.na(origin[[i]]$ordinal)]<0)) || (any(origin[[i]]$ordinal2[!is.na(origin[[i]]$ordinal2)]<0))
+	for(i in 1:length(previous)) {
+		problem<-(problem) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]>365)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]>365)) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]<0)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]<0))
 
 	}
 #	print(problem)
 	if (problem) {
 		cat("Problem in at least one date; check them. Take care about format used.\n")
 		cat("Within a file, all dates must conform to the same format.\n")
+		cat("Data should not be longer than one year for a site at the same time.\n")
 	}	
 	
 
 }
 
-class(origin) <- "phenologydata"
+class(previous) <- "phenologydata"
 
-return(origin)
+return(previous)
 
 	
 }

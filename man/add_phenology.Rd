@@ -1,15 +1,14 @@
-\name{add_format}
-\alias{add_format}
-\title{Create a new dataset or add a timeserie to a previous one.}
+\name{add_phenology}
+\alias{add_phenology}
+\title{Create a new dataset or add a timeserie to a previous dataset.}
 \usage{
-  add_format(origin = NULL,
-    add = stop("A dataset must be indicated"), name = NULL,
-    reference = NULL, format = "\%d/\%m/\%y",
-    adjust_ref = TRUE, help = FALSE)
+  add_phenology(add = file.choose(), name = NULL,
+    reference = NULL, month_ref = NULL, header = NULL,
+    format = NULL, previous = NULL, help = FALSE)
 }
 \arguments{
-  \item{origin}{Previous data or NULL if no previous data
-  exists}
+  \item{previous}{Previous data or NULL [default] if no
+  previous data exists}
 
   \item{add}{The data to be added. It can be a set of
   several entities that uses the same reference and date
@@ -20,18 +19,21 @@
   \item{reference}{as.Date('2001-12-31') The date used as
   1st date}
 
+  \item{month_ref}{If no reference date is given, use this
+  month as a reference}
+
+  \item{header}{If the data is read from a file, can be
+  used to force header or not}
+
   \item{format}{The format of the date in the file. Several
   format can be set and the last one that give compatible
   result is used}
 
-  \item{adjust_ref}{If TRUE, the day and month of reference
-  is unchanged but year is changed dependent on the first
-  date of timeseries.}
-
   \item{help}{If TRUE, an help is displayed}
 }
 \value{
-  Return a list of formated data
+  Return a list of formated data that can be used ith
+  fit_phenology()
 }
 \description{
   To create a new dataset, the syntaxe is \cr
@@ -61,25 +63,28 @@
   care, only one rookery of this name can be used.\cr
   Several rookeries can be included in the same file but in
   this case the rookery name is obligatory at the third
-  column.
+  column. The simplest use of this function is just: \cr
+  phen <- add_phenology()
 }
 \details{
-  add_format creates a new dataset.
+  add_phenology creates a new dataset.
 }
 \examples{
+\dontrun{
 library(phenology)
 # Read a file with data
-# Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 data(Gratiot)
 # Generate a formatted list nammed data_Gratiot
-data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
+data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
 parg<-par_init(data_Gratiot, parametersfixed=NULL)
 # Run the optimisation
-# result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
 data(result_Gratiot)
 # Plot the phenology and get some stats
 output<-plot_phenology(result=result_Gratiot, pdf=FALSE)
+}
 }
 \author{
   Marc Girondot

@@ -28,7 +28,7 @@
 #' }
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
-#' data_Gratiot<-add_format(origin=NULL, add=Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
 #' parg<-par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
@@ -58,7 +58,7 @@ if(help || (is.null(data) && is.null(result))) {
 	cat("plot_phenology(result=res, series=c(1,3,4), pdf=TRUE, ...)\n")
 	cat("x can be 'all' to print all the series at one time. In this\n")
 	cat("case pdf should be TRUE if graphs are necessary.\n")
-	cat("Optional parameters ... are:\n")
+	cat("Optional parameters ... are for example:\n")
 	cat("xlab: Label for X axis [default Months]\n")
 	cat("ylab: Label for Y axis [default Number]\n")
 	cat("ylim: maximum value for Y axis [default estimated from data]\n")
@@ -69,7 +69,8 @@ if(help || (is.null(data) && is.null(result))) {
 
 out <- list()
 
-pnp<-as.list(c(...))
+# pnp<-as.list(c(...))
+
 
 if (is.null(data))  {data<-result$data}
 
@@ -79,7 +80,7 @@ series <- as.numeric(series)
 
 for(kseries in 1:length(series)) {
 
-reference<-data[[series[kseries]]]$Date[1]-(data[[series[kseries]]]$ordinal[1]+1)
+reference<-data[[series[kseries]]]$Date[1]-data[[series[kseries]]]$ordinal[1]+1
 
 if (!is.null(result)) {
 	# si il y en a pas estimable, je les mets à 0
@@ -181,13 +182,14 @@ setTxtProgressBar(pb, j)
 
 # j'ai tous les paramètres dans xpar
 # maintenant tous les paramètre fixés appraissent dans resfit
-	xparec <- .format_par(par2[j,], nmser)
+	xparec <- phenology:::.format_par(par2[j,], nmser)
+	
+	xparec <<- xparec
+	
+	ponte2[j,1:365]=phenology:::.daily_count(1:365, xparec, print=FALSE)
 	
 	
-	ponte2[j,1:365]=.daily_count(1:365, xparec, print=FALSE)
-	
-	
-# je viens de générer les pontes du jour j
+# je viens de générer les pontes du réplicat j
 }
 
 ## je calcule les écart-types des nb de pontes générées chaque jour
@@ -201,9 +203,9 @@ out1<-c(estimate1=mnponte, sd1=sdponte)
 # dans ponte2[nbsimul 1:replicate.CI, jour 1:365] j'ai la donnée théorique
 for(i in 1:dim(data[[series[kseries]]])[1]) {
 		if (!is.na(data[[series[kseries]]]$ordinal2[i])) {
-			for(j in (1+data[[series[kseries]]]$ordinal[i]):data[[series[kseries]]]$ordinal2[i]) {
-					ponte2[1:replicate.CI, j]<-0
-			}
+			#for(j in (1+data[[series[kseries]]]$ordinal[i]):data[[series[kseries]]]$ordinal2[i]) {
+					ponte2[1:replicate.CI, (1+data[[series[kseries]]]$ordinal[i]):data[[series[kseries]]]$ordinal2[i]]<-0
+			#}
 		}
 }
 
@@ -222,9 +224,9 @@ out1 <- c(out1, CI_Min=max(mnponte-2*sdponte, sum(data[[series[kseries]]]$nombre
 
 ## je remplis le tableau val avec les nb théoriques
 
-xparec <- .format_par(parres, nmser)
+xparec <- phenology:::.format_par(parres, nmser)
 
-val[1:365, "Theor"]=.daily_count(1:365, xparec, print=FALSE)
+val[1:365, "Theor"]=phenology:::.daily_count(1:365, xparec, print=FALSE)
 
 ## je remplis le tableau val avec les nb théoriques +/- 2 SD
 for(i in 1:365) {val[i, "Theor-2SE"]=max(0, val[i, "Theor"]-2*sd2[i])}
@@ -243,21 +245,14 @@ for(i in 1:365) {val[i, "Theor+2SD"]=min(c(subset(0:trunc(3*val[i, "Theor"]), pn
 vmaxx<-c(reference, reference+364)
 
 
-
-if (is.null(pnp$ylim)) {
-
-	if ((!is.null(data)) && (!is.null(parres))) {
-		vmaxy<-c(0, max(val[, "Theor+2SD"], data[[series[kseries]]]$nombre[(is.na(data[[series[kseries]]]$ordinal2)) & (!is.na(data[[series[kseries]]]$nombre))]))
-	} else {
-		if (!is.null(data)) {
-			vmaxy<-c(0, max(data[[series[kseries]]]$nombre[(is.na(data[[series[kseries]]]$ordinal2)) & (!is.na(data[[series[kseries]]]$nombre))]))
-		} else {
-			vmaxy<-c(0, max(val[, "Theor+2SD"]))
-		}
-	}
+if ((!is.null(data)) && (!is.null(parres))) {
+	vmaxy<-c(0, max(val[, "Theor+2SD"], data[[series[kseries]]]$nombre[(is.na(data[[series[kseries]]]$ordinal2)) & (!is.na(data[[series[kseries]]]$nombre))]))
 } else {
-
-	vmaxy<-ifelse(length(pnp$ylim)==1, c(0, pnp$ylim), pnp$ylim)
+	if (!is.null(data)) {
+		vmaxy<-c(0, max(data[[series[kseries]]]$nombre[(is.na(data[[series[kseries]]]$ordinal2)) & (!is.na(data[[series[kseries]]]$nombre))]))
+	} else {
+		vmaxy<-c(0, max(val[, "Theor+2SD"]))
+	}
 }
 
 if (vmaxy[2]==0) vmaxy[2] <- 0.1
@@ -265,10 +260,10 @@ if (vmaxy[2]==0) vmaxy[2] <- 0.1
 x<-seq(from=reference, to=reference+364, by="1 day")
 
 
-xlab<-ifelse(is.null(pnp$xlab), "Months", pnp$xlab)
-ylab<-ifelse(is.null(pnp$ylab), "Number", pnp$ylab)
-pch<-ifelse(is.null(pnp$pch), 16, pnp$pch)
-cex<-ifelse(is.null(pnp$cex), 0.5, pnp$cex)
+# xlab<-ifelse(is.null(pnp$xlab), "Months", pnp$xlab)
+# ylab<-ifelse(is.null(pnp$ylab), "Number", pnp$ylab)
+# pch<-ifelse(is.null(pnp$pch), 16, pnp$pch)
+# cex<-ifelse(is.null(pnp$cex), 0.5, pnp$cex)
 
 if (moon) {
 	moony<-vmaxy[2]*1.06
@@ -289,9 +284,14 @@ if (ncpt==2) {pdf(paste(names(data[series[kseries]]),".pdf", sep=""))}
 
 ## je fais les graphiques
 ## Pour les dates seules
-par(new=FALSE);
+par(new=FALSE)
 
-plot(x, rep(0, 365) , type="n", xlim=vmaxx, ylim=vmaxy, bty="n", xlab=xlab, ylab=ylab)
+pnp <- modifyList(list(xlab="Months", ylab="Counts", main=names(data[series[kseries]]), 
+	pch=16, cex=0.5, xlim=vmaxx, ylim=vmaxy, type="n", bty="n"), as.list(c(...)))
+	
+
+do.call(plot, modifyList(pnp, list(x=x, y=rep(0, 365))))
+
 
 if (moon) {
 	points(x[mpT1], rep(moony, length(x[mpT1])), cex=1, bg="black", col="black", pch=21, xpd=TRUE)
@@ -302,16 +302,21 @@ if (moon) {
 #	points(x[mpT4]-8, rep(moony, length(x[mpT4])), cex=3, bg="white", col="white", pch=21)
 }
 
-par(new=TRUE);
+par(new=TRUE)
 
 
 if (!is.null(data)) {
-plot(data[[series[kseries]]]$Date[is.na(data[[series[kseries]]]$Date2)], data[[series[kseries]]]$nombre[is.na(data[[series[kseries]]]$Date2)] , 
-	type="p", xlim=vmaxx, ylim=vmaxy, xlab="", ylab="", axes=FALSE, bty="n", cex=cex, col="black", pch=pch)
+
+
+pnp2 <- modifyList(pnp, list(xlab="", ylab="", main="", axes=FALSE, col="black", type="p"))
+
+	
+do.call(plot, modifyList(pnp2, list(x=data[[series[kseries]]]$Date[is.na(data[[series[kseries]]]$Date2)], y=data[[series[kseries]]]$nombre[is.na(data[[series[kseries]]]$Date2)])))
+
 
 
 ## Pour les dates avec incertitudes
-par(new=TRUE);
+par(new=TRUE)
 for(i in 1:dim(data[[series[kseries]]])[1]) {
 	if (!is.na(data[[series[kseries]]]$ordinal2[i])) {
 		x0<-data[[series[kseries]]]$Date[i]
@@ -325,23 +330,29 @@ for(i in 1:dim(data[[series[kseries]]])[1]) {
 
 
 
-par(new=TRUE);
+par(new=TRUE)
 }
 
 if (!is.null(parres)) {
 
-plot((reference+val[, "days"]),val[, "Theor"] , type="l", xlim=vmaxx, ylim=vmaxy,  xlab="", ylab="", axes = FALSE, bty="n");
-par(new=TRUE);
-plot((reference+val[, "days"]),val[, "Theor-2SE"] , type="l", xlim=vmaxx, ylim=vmaxy, xlab="", ylab="", axes = FALSE, lty=2, bty="n");
-par(new=TRUE);
-plot((reference+val[, "days"]),val[, "Theor+2SE"],  type="l", xlim=vmaxx, ylim=vmaxy, xlab="", ylab="", axes = FALSE, lty=2, bty="n");
-par(new=TRUE);
-plot((reference+val[, "days"]),val[, "Theor-2SD"],  type="l", xlim=vmaxx, ylim=vmaxy, xlab="", ylab="", axes = FALSE, lty=2, bty="n", col="red");
-par(new=TRUE);
-plot((reference+val[, "days"]), val[, "Theor+2SD"], type="l", xlim=vmaxx, ylim=vmaxy, xlab="", ylab="", axes = FALSE, lty=2, bty="n", col="red");
+pnp3 <- modifyList(pnp, list(xlab="", ylab="", main="", axes=FALSE, col="black", type="l"))
+
+
+do.call(plot, modifyList(pnp3, list(x=reference+val[, "days"], y=val[, "Theor"])))
+par(new=TRUE)
+pnp3 <- modifyList(pnp, list(xlab="", ylab="", main="", axes=FALSE, col="black", type="l", lty=2))
+do.call(plot, modifyList(pnp3, list(x=reference+val[, "days"], y=val[, "Theor-2SE"])))
+par(new=TRUE)
+do.call(plot, modifyList(pnp3, list(x=reference+val[, "days"], y=val[, "Theor+2SE"])))
+par(new=TRUE)
+pnp3 <- modifyList(pnp, list(xlab="", ylab="", main="", axes=FALSE, type="l", lty=2, col="red"))
+do.call(plot, modifyList(pnp3, list(x=reference+val[, "days"], y=val[, "Theor-2SD"])))
+par(new=TRUE)
+do.call(plot, modifyList(pnp3, list(x=reference+val[, "days"], y=val[, "Theor+2SD"])))
+
 }
 
-mtext(names(data[series[kseries]]), side=3, line=1)
+# mtext(names(data[series[kseries]]), side=3, line=1)
 
 if (ncpt==2) dev.off()
 
@@ -358,7 +369,7 @@ names(out2) <- nmser
 out <- c(out, out2)
 
 }
-mtext(names(data[series[kseries]]), side=3, line=1)
+# mtext(names(data[series[kseries]]), side=3, line=1)
 
 
 }
