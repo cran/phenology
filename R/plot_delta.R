@@ -4,8 +4,6 @@
 #' @return Return None
 #' @param map A map generated with map_phenology
 #' @param Phi Phi value or NULL
-#' @param pdf TRUE or FALSE, indicates if a pdf file is generated.
-#' @param pdfname Name of pdf file
 #' @param help If TRUE, an help is displayed
 #' @description This function plots a likelihood lineplot obtained after map_phenology.
 #' @examples
@@ -33,14 +31,14 @@
 #' # map_Gratiot<-map_phenology(data=data_Gratiot, Phi=seq(from=0.1, to=20, length.out=100), parametersfit=parg2, parametersfixed=pfixed)
 #' data(map_Gratiot)
 #' # Plot the min(-Ln L) for Delta varying with Phi equal to the value for maximum likelihood
-#' plot_delta(map=map_Gratiot, pdf=FALSE)
+#' plot_delta(map=map_Gratiot)
 #' # Plot the min(-Ln L) for Delta varying with Phi the nearest to 15
-#' plot_delta(map=map_Gratiot, Phi=15, pdf=FALSE)
+#' plot_delta(map=map_Gratiot, Phi=15)
 #' }
 #' @export
 
 plot_delta <-
-function(map=NULL, Phi=NULL, pdf=FALSE, pdfname="Map.pdf", help=FALSE) {
+function(map=NULL, Phi=NULL, help=FALSE) {
 
 if(help || is.null(map)) {
 	cat("This function plots a likelihood lineplot obtained after map_phenology.\n")
@@ -66,14 +64,5 @@ effetDelta<-map$input[i0,]
 
 plot(map$Delta, effetDelta, type="l", xlab="Delta", ylab="-Ln L", xlim=xregle, bty="n", main=paste(map$Data, " - Phi=", map$Phi[i0], sep=""))
 
-if (pdf) {
-
-pdf(pdfname)
-
-plot(map$Delta, effetDelta, type="l", xlab="Delta", ylab="-Ln L", xlim=xregle, bty="n", main=paste(map$Data, " - Phi=", map$Phi[i0], sep=""))
-
-dev.off()
-
-}
 }
 }

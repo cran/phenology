@@ -2,7 +2,8 @@
 \alias{read_folder}
 \title{Open all file present in a folder and create a list with these files}
 \usage{
-  read_folder(folder = ".", read = read.delim, ...)
+  read_folder(folder = try(file.choose(), silent = TRUE),
+    read = read.delim, ...)
 }
 \arguments{
   \item{folder}{Where to search for files}

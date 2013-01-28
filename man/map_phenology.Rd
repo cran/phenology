@@ -6,7 +6,7 @@
     parametersfixed = NA,
     Phi = seq(from = 0.2, to = 20, length.out = 100),
     Delta = NULL, method_incertitude = 2,
-    zero_counts = TRUE, help = FALSE)
+    zero_counts = TRUE, progressbar = TRUE, help = FALSE)
 }
 \arguments{
   \item{data}{dataset generated with add_format}
@@ -28,6 +28,9 @@
   whether the zeros have been recorder for each of these
   timeseries. Defaut is TRUE for all.}
 
+  \item{progressbar}{If FALSE, do not show the progress
+  bar}
+
   \item{help}{If TRUE, an help is displayed}
 }
 \value{
@@ -35,7 +38,8 @@
 }
 \description{
   This function generates a map of likelihood varying Phi
-  and Delta.
+  and Delta.\cr When Delta is not given, the same precision
+  as Phi is used.
 }
 \details{
   map_phenology generates a likelihood map.
@@ -64,13 +68,13 @@ parg2<-c(Beta=0.5, parg1["Theta"])
 # map_Gratiot<-map_phenology(data=data_Gratiot, Phi=seq(from=0.1, to=20, length.out=100), parametersfit=parg2, parametersfixed=pfixed)
 data(map_Gratiot)
 # Plot the map
-plot_map(map=map_Gratiot, pdf=FALSE, col=heat.colors(128))
+plot(map_Gratiot, col=heat.colors(128))
 # Plot the min(-Ln L) for Phi varying at any delta value
-plot_phi(map=map_Gratiot, pdf=FALSE)
+plot_phi(map=map_Gratiot)
 # Plot the min(-Ln L) for Delta varying with Phi equal to the value for maximum likelihood
-plot_delta(map=map_Gratiot, pdf=FALSE)
+plot_delta(map=map_Gratiot)
 # Plot the min(-Ln L) for Delta varying with Phi the nearest to 15
-plot_delta(map=map_Gratiot, Phi=15, pdf=FALSE)
+plot_delta(map=map_Gratiot, Phi=15)
 }
 \author{
   Marc Girondot

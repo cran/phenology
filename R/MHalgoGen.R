@@ -21,10 +21,12 @@ colnames(varp)<-c(rownames(parameters), "Ln L")
 colnames(varp2)<-c(rownames(parameters), "Ln L")
 
 
-for(i in 1:nbvar) varp[1, i]<-as.numeric(parameters[i, 'Init'])
+# for(i in 1:nbvar) varp[1, i]<-as.numeric(parameters[i, 'Init'])
+varp[1, 1:nbvar]<-as.numeric(parameters[1:nbvar, 'Init'])
+
 varp[1, "Ln L"]<- (-likelihood(data, varp[1, 1:nbvar]))
 cpt<-1
-varp2[cpt, 1:nbvar]<-varp[1, i]
+varp2[cpt, 1:nbvar]<-varp[1, 1:nbvar]
 varp2[cpt, "Ln L"]<-varp[1, "Ln L"]
 cpt<-2
 
@@ -38,7 +40,10 @@ if (trace) {
 MaxL<-varp[1,]
 
 sdg=NULL
-for(i in 1:nbvar) sdg<-c(sdg, as.numeric(parameters[i, 'SDProp']))
+
+# 18/1/2013
+# for(i in 1:nbvar) sdg<-c(sdg, as.numeric(parameters[i, 'SDProp']))
+sdg<-c(sdg, as.numeric(parameters[1:nbvar, 'SDProp']))
 
 Prior<-matrix(as.numeric(parameters[,2:3]), ncol=2)
 

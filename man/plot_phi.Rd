@@ -2,16 +2,10 @@
 \alias{plot_phi}
 \title{Plot the best likelihood for fixed Phi value.}
 \usage{
-  plot_phi(map = NULL, pdf = FALSE, pdfname = "Map.pdf",
-    help = FALSE)
+  plot_phi(map = NULL, help = FALSE)
 }
 \arguments{
   \item{map}{A map generated with map_phenology}
-
-  \item{pdf}{TRUE or FALSE, indicates if a pdf file is
-  generated.}
-
-  \item{pdfname}{Name of pdf file}
 
   \item{help}{If TRUE, an help is displayed}
 }
@@ -49,7 +43,7 @@ parg2<-c(Beta=0.5, parg1["Theta"])
 # map_Gratiot<-map_phenology(data=data_Gratiot, Phi=seq(from=0.1, to=20, length.out=100), parametersfit=parg2, parametersfixed=pfixed)
 data(map_Gratiot)
 # Plot the min(-Ln L) for Phi varying at any delta value
-plot_phi(map=map_Gratiot, pdf=FALSE)
+plot_phi(map=map_Gratiot)
 }
 \author{
   Marc Girondot

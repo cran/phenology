@@ -12,8 +12,10 @@
 #'                           1 is an alternative more rapid but biased.\cr
 #' @param zero_counts Example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 #'                    been recorder for each of these timeseries. Defaut is TRUE for all.
+#' @param progressbar If FALSE, do not show the progress bar
 #' @param help If TRUE, an help is displayed
-#' @description This function generates a map of likelihood varying Phi and Delta.
+#' @description This function generates a map of likelihood varying Phi and Delta.\cr
+#' When Delta is not given, the same precision as Phi is used.
 #' @examples
 #' library("phenology")
 #' # Read a file with data
@@ -38,17 +40,17 @@
 #' # map_Gratiot<-map_phenology(data=data_Gratiot, Phi=seq(from=0.1, to=20, length.out=100), parametersfit=parg2, parametersfixed=pfixed)
 #' data(map_Gratiot)
 #' # Plot the map
-#' plot_map(map=map_Gratiot, pdf=FALSE, col=heat.colors(128))
+#' plot(map_Gratiot, col=heat.colors(128))
 #' # Plot the min(-Ln L) for Phi varying at any delta value
-#' plot_phi(map=map_Gratiot, pdf=FALSE)
+#' plot_phi(map=map_Gratiot)
 #' # Plot the min(-Ln L) for Delta varying with Phi equal to the value for maximum likelihood
-#' plot_delta(map=map_Gratiot, pdf=FALSE)
+#' plot_delta(map=map_Gratiot)
 #' # Plot the min(-Ln L) for Delta varying with Phi the nearest to 15
-#' plot_delta(map=map_Gratiot, Phi=15, pdf=FALSE)
+#' plot_delta(map=map_Gratiot, Phi=15)
 #' @export
 
 map_phenology <-
-function(data=NULL, parametersfit=NULL, parametersfixed=NA, Phi=seq(from=0.2,to=20, length.out=100), Delta=NULL, method_incertitude=2, zero_counts=TRUE, help=FALSE) {
+function(data=NULL, parametersfit=NULL, parametersfixed=NA, Phi=seq(from=0.2,to=20, length.out=100), Delta=NULL, method_incertitude=2, zero_counts=TRUE, progressbar=TRUE, help=FALSE) {
 if (help || is.null(data)) {
 	cat("This function generates a map of likelihood varying Phi and Delta.\n")
 	cat("map<-map_phenology(data=dataset, parametersfit=par, parametersfixed=pfixed,\n")
@@ -138,7 +140,7 @@ if (is.na(parametersfixed["Phi"])) {parametersfixed<-c(parametersfixed, Phi=0)}
 if (is.na(parametersfixed["Delta"])) {parametersfixed<-c(parametersfixed, Delta=0)}
 
 	
-pb<-txtProgressBar(min=0, max=LDelta, style=3)
+if (progressbar) pb<-txtProgressBar(min=0, max=LDelta, style=3)
 
 #parpre1<-parametersfit
 parpre<-parametersfit
@@ -178,15 +180,15 @@ for(i in 1:LPhi) {
   input[i,j]<-resul$value
   }
 #  Sys.sleep(0)
-setTxtProgressBar(pb, j)
+if (progressbar) setTxtProgressBar(pb, j)
 }
 }
 
 
 Dv=as.vector(input)
-pos=which.min(Dv)
+pos=which.min(Dv)-1
 j0=floor(pos/nrow(input))+1
-i0=pos%%nrow(input)
+i0=pos%%nrow(input)+1
 print(paste("The minimum -Ln likelihood is ", input[i0, j0], sep=""))
 print(paste("For Phi=",Phivalue[i0],sep=""))
 print(paste("And Delta=",Deltavalue[j0],sep=""))

@@ -2,6 +2,15 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 3.44    (2013-01-28)
+            
+* add parameter progressbar = TRUE/FALSE for plot and map_phenology() to be used with Sweave
+* plot_phenology() and plot_map() removed
+* correct a bug when xlim or ylim were used with plot.phenology()
+* remove the pdf option for plot.phenology
+* correction of bug in the .MHalgoGen() function
+* correct a display bug for maximum likelihood in map_phenology()
+
             CHANGES IN VERSION 3.42-3.43    (2013-01-02)
             
 * first likelihood is stored in mcmcComposite

@@ -47,7 +47,7 @@ pfixed=c(Flat=0, Tau=1)
 # result_Gratiot1<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=pfixed, trace=1)
 data(result_Gratiot1)
 # Plot the phenology
-output1<-plot_phenology(result_Gratiot1, moon=TRUE)
+output1<-plot(result_Gratiot1, moon=TRUE)
 # Extract the fitted parameters
 parg1<-extract_result(result_Gratiot1)
 # Shift sunusoid information to the '1'
@@ -60,7 +60,7 @@ parg<-c(parg2, Alpha=0.5, Beta=0.8, Delta=3, Phi=10)
 # result_Gratiot2<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=pfixed, trace=1)
 data(result_Gratiot2)
 # Plot the phenology
-output2<-plot_phenology(result_Gratiot2, moon=TRUE)
+output2<-plot(result_Gratiot2, moon=TRUE)
 }
 \author{
   Marc Girondot

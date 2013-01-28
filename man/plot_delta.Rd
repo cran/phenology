@@ -2,18 +2,12 @@
 \alias{plot_delta}
 \title{Plot a likelihood lineplot obtained after map_phenology.}
 \usage{
-  plot_delta(map = NULL, Phi = NULL, pdf = FALSE,
-    pdfname = "Map.pdf", help = FALSE)
+  plot_delta(map = NULL, Phi = NULL, help = FALSE)
 }
 \arguments{
   \item{map}{A map generated with map_phenology}
 
   \item{Phi}{Phi value or NULL}
-
-  \item{pdf}{TRUE or FALSE, indicates if a pdf file is
-  generated.}
-
-  \item{pdfname}{Name of pdf file}
 
   \item{help}{If TRUE, an help is displayed}
 }
@@ -53,9 +47,9 @@ parg2<-c(Beta=0.5, parg1["Theta"])
 # map_Gratiot<-map_phenology(data=data_Gratiot, Phi=seq(from=0.1, to=20, length.out=100), parametersfit=parg2, parametersfixed=pfixed)
 data(map_Gratiot)
 # Plot the min(-Ln L) for Delta varying with Phi equal to the value for maximum likelihood
-plot_delta(map=map_Gratiot, pdf=FALSE)
+plot_delta(map=map_Gratiot)
 # Plot the min(-Ln L) for Delta varying with Phi the nearest to 15
-plot_delta(map=map_Gratiot, Phi=15, pdf=FALSE)
+plot_delta(map=map_Gratiot, Phi=15)
 }
 }
 \author{

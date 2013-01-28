@@ -3,8 +3,8 @@
 #' \tabular{ll}{
 #'  Package: \tab phenology\cr
 #'  Type: \tab Package\cr
-#'  Version: \tab 3.43\cr
-#'  Date: \tab 2013-01-02\cr
+#'  Version: \tab 3.44\cr
+#'  Date: \tab 2013-01-28\cr
 #'  License: \tab GPL (>= 2)\cr
 #'  LazyLoad: \tab yes\cr
 #'  }
@@ -37,7 +37,7 @@
 #' result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
-#' output<-plot_phenology(result=result_Gratiot, pdf=FALSE)
+#' output<-plot(result_Gratiot)
 #' }
 
 NULL

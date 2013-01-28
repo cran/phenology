@@ -3,8 +3,6 @@
 #' @author Marc Girondot
 #' @return Return None
 #' @param map A map generated with map_phenology
-#' @param pdf TRUE or FALSE, indicates if a pdf file is generated.
-#' @param pdfname Name of pdf file
 #' @param help If TRUE, an help is displayed
 #' @description The function "plot_phi" plots the best likelihood for each Phi value.
 #' @examples
@@ -31,12 +29,12 @@
 #' # map_Gratiot<-map_phenology(data=data_Gratiot, Phi=seq(from=0.1, to=20, length.out=100), parametersfit=parg2, parametersfixed=pfixed)
 #' data(map_Gratiot)
 #' # Plot the min(-Ln L) for Phi varying at any delta value
-#' plot_phi(map=map_Gratiot, pdf=FALSE)
+#' plot_phi(map=map_Gratiot)
 #' @export
 
 
 plot_phi <-
-function(map=NULL, pdf=FALSE, pdfname="Map.pdf", help=FALSE) {
+function(map=NULL, help=FALSE) {
 
 if(help || is.null(map)) {
 	cat("This function plots a likelihood lineplot obtained after map_phenology.\n")
@@ -49,14 +47,6 @@ effetphi<-NULL
 for(i in 1:length(map$Phi)) effetphi<-c(effetphi, min(map$input[i,], na.rm=TRUE))
 plot(map$Phi, effetphi, type="l", xlab="Phi", ylab="-Ln L", bty="n", main=map$Data)
 
-if (pdf) {
 
-pdf(pdfname)
-
-plot(map$Phi, effetphi, type="l", xlab="Phi", ylab="-Ln L", bty="n", main=map$Data)
-
-dev.off()
-
-}
 }
 }

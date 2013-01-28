@@ -67,7 +67,7 @@ function(header=NULL, reference=NULL, month_ref= NULL, format=NULL) {
 
 				result <- list(result1, result2, result3, result4)[which.min(c(2*(result1$value+length(result1$par)), 2*(result2$value+length(result2$par)), 2*(result3$value+length(result3$par)), 2*(result4$value+length(result4$par))))][[1]]
 
-				out <- plot_phenology(result=result, series="all", moon=FALSE)
+				out <- plot(result, series="all", moon=FALSE)
 				
 				out
 			

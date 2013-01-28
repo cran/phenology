@@ -16,7 +16,11 @@
 #' @export
 
 
-read_folder <- function(folder=".", read=read.delim, ...) {
+read_folder <- function(folder=try(file.choose(), silent=TRUE), read=read.delim, ...) {
+
+	if (class(folder)!="try-error") {
+
+	folder <- dirname(folder)
 
 	lf <- list.files(folder)
 	
@@ -44,6 +48,7 @@ read_folder <- function(folder=".", read=read.delim, ...) {
 	} else {
 		print("No file in folder/directory or folder/directory does not exist")
 		return(NULL)
+	}
 	}
 
 }
