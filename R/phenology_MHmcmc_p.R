@@ -3,25 +3,30 @@
 #' @author Marc Girondot
 #' @return A matrix with the parameters
 #' @param result An object obtained after a SearchR fit
+#' @param accept If TRUE, does not wait for 
 #' @description Interactive script used to generate set of parameters to be used with phenology_MHmcmc().\cr
 #' @examples 
 #' library(phenology)
 #' # Read a file with data
-#' # Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+#' \dontrun{
+#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
+#' }
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
-#' data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
+#' 		reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
 #' parg<-par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
-#' ## not run
-#' # result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
-#' ## end not run
+#' \dontrun{
+#' result_Gratiot<-fit_phenology(data=data_Gratiot, 
+#' 		parametersfit=parg, parametersfixed=NULL, trace=1)
+#' }
 #' data(result_Gratiot)
 #' # Generate set of priors for Bayesian analysis
-#' ## not run
-#' ## pmcmc <- phenology_MHmcmc_p(result_Gratiot)
-#' ## end not run
+#' \dontrun{
+#' pmcmc <- phenology_MHmcmc_p(result_Gratiot)
+#' }
 #' pmcmc <- structure(c("dunif", "dunif", "dunif", "dunif", "dunif", "dunif", 
 #' "dunif", "dunif", "0", "0", "0", "0", "0", "0", "0", "0", "200", 
 #' "365", "200", "50", "200", "5", "5", "10", "2", "2", "2", "2", 
@@ -35,7 +40,7 @@
 #' "Init")))
 #' @export
 
-phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be provided")) {
+phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be provided"), accept=FALSE) {
 
 if (class(result)!="phenology") {
 	cat("An output from fit_phenology() must be provided\n")
@@ -194,6 +199,10 @@ rownames(parametersMCMC)<-names(par)
 
 parameters <- parametersMCMC
 
+if (accept) {
+	return(parameters)
+} else {
+
 	repeat {
 
 cat("Proposition:\n")
@@ -268,6 +277,7 @@ if (f=="q") {
 
 }
 
+}
 
 }
 

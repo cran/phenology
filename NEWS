@@ -2,6 +2,24 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 3.47    (2013-06-03)
+            
+* New format for exemple to be compatible with R 3.10
+
+            CHANGES IN VERSION 3.46    (2013-04-08)
+            
+* New parameter accept for phenology_MHmcmc_p() to run the function in batch mode
+* Correct the resolution for prior curve in plot()
+
+            CHANGES IN VERSION 3.45    (2013-02-23)
+            
+* Correction for onAttach() to allow the package to load if internet is present but does not anwser as expected.
+* compare_AIC() can use list of several object and then the AIC is summed.
+* New functions as.mcmc.Composite() and as.par.mcmcComposite().
+* compare_AIC() shows only 3 digits.
+* compare_AIC() can uses list object summarizing data.
+
+
             CHANGES IN VERSION 3.44    (2013-01-28)
             
 * add parameter progressbar = TRUE/FALSE for plot and map_phenology() to be used with Sweave

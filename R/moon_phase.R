@@ -17,8 +17,10 @@
 #' moon_phase(as.Date("2001-12-31"))
 #' moon_phase(as.Date("14/04/2010", "%d/%m/%Y"))
 #' moon_phase(as.Date("22/06/07", "%d/%m/%y"))
-#' moon_phase(seq(from=as.Date("2012-03-01"), to=as.Date("2012-04-15"), by="days"))
-#' moon_phase(seq(from=as.Date("2012-03-01"), to=as.Date("2012-04-15"), by="days"), phase=TRUE)
+#' moon_phase(seq(from=as.Date("2012-03-01"), 
+#'		to=as.Date("2012-04-15"), by="days"))
+#' moon_phase(seq(from=as.Date("2012-03-01"), 
+#' 		to=as.Date("2012-04-15"), by="days"), phase=TRUE)
 #' @export
 
 moon_phase<- function(date=NULL, phase=FALSE) {

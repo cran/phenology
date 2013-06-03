@@ -14,12 +14,20 @@
     if (!inherits(description, "try-error")) {
         recent <- sub("<td>", "", description[14, 1])
         recent <- sub("</td></tr>", "", recent)
+        
+        if (recent!="") {
 
             if (as.numeric(actual) < as.numeric(recent)) {
                 m <- paste("Your version is ", actual, ". Most recent is ", recent, sep="")
 	      packageStartupMessage(m)
                 packageStartupMessage("Use update.packages() to update...")
             }
+        } else {
+          m <- paste("Your version is ", actual)
+          m <- paste(m, ". No internet connection is available to check for update.")
+          packageStartupMessage(m)
+        }
+        
 
     } else {
                 m <- paste("Your version is ", actual)

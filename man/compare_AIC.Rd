@@ -2,12 +2,10 @@
 \alias{compare_AIC}
 \title{Compares the AIC of several outputs}
 \usage{
-  compare_AIC(result = NULL, help = FALSE)
+  compare_AIC(...)
 }
 \arguments{
-  \item{result}{A list with the results to be compared}
-
-  \item{help}{If TRUE, an help is displayed}
+  \item{...}{Successive results to be compared as lists}
 }
 \value{
   A list with DeltaAIC and Akaike weight for the models.
@@ -15,7 +13,13 @@
 \description{
   This function is used to compares the AIC of several
   outputs obtained with the same data but with different
-  set of parameters.
+  set of parameters.\cr The parameters must be lists with
+  $aic or $AIC or $value and $par elements.\cr If several
+  objects are within the same list, there AIC is sumed.\cr
+  For example, compare_AIC(g1=list(group), g2=list(separe1,
+  separe2)) can be used to compare a single model onto two
+  different sets of data against each set of data fited
+  with its own set of parameters.
 }
 \details{
   compare_AIC compares the AIC of several outputs obtained
@@ -25,24 +29,27 @@
 \dontrun{
 # Read a file with data
 library("phenology")
-Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
+Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 data(Gratiot)
 # Generate a formated list nammed data_Gratiot
-data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
+refdate <- as.Date("2001-01-01")
+data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=refdate, format="\%d/\%m/\%Y")
 # Fix parameter FLat to 0
 pfixed=c(Flat=0)
 # Generate initial points for the optimisation
 parg<-par_init(data_Gratiot, parametersfixed=pfixed)
 # Fit is done
-result_Gratiot_Flat<-fit_phenology(data=data_Gratiot, parametersfit=parg2, parametersfixed=pfixed, trace=1)
+result_Gratiot_Flat<-fit_phenology(data=data_Gratiot, parametersfit=parg2,
+		parametersfixed=pfixed, trace=1)
 data(result_Gratiot_Flat)
 # Generate initial points for the optimisation
 parg<-par_init(data_Gratiot, parametersfixed=NULL)
 # Run the optimisation
-result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+result_Gratiot<-fit_phenology(data=data_Gratiot,
+		parametersfit=parg, parametersfixed=NULL, trace=1)
 data(result_Gratiot)
 # Compare both models
-outputAIC<-compare_AIC(list(full=result_Gratiot, Flat=result_Gratiot_Flat))
+outputAIC<-compare_AIC(full=result_Gratiot, Flat=result_Gratiot_Flat)
 }
 }
 \author{

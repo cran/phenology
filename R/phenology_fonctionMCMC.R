@@ -1,6 +1,3 @@
-
-
-
 .phenology_fonctionMCMC <- function(data, x) {
 
 

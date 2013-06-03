@@ -3,8 +3,8 @@
 #' \tabular{ll}{
 #'  Package: \tab phenology\cr
 #'  Type: \tab Package\cr
-#'  Version: \tab 3.44\cr
-#'  Date: \tab 2013-01-28\cr
+#'  Version: \tab 3.46\cr
+#'  Date: \tab 2013-04-08\cr
 #'  License: \tab GPL (>= 2)\cr
 #'  LazyLoad: \tab yes\cr
 #'  }
@@ -30,11 +30,13 @@
 #' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
-#' data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
+#' 		reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
 #' parg<-par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
-#' result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' result_Gratiot<-fit_phenology(data=data_Gratiot, 
+#' 		parametersfit=parg, parametersfixed=NULL, trace=1)
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output<-plot(result_Gratiot)

@@ -15,7 +15,9 @@
 #' @examples
 #' library(phenology)
 #' # Read a file with data
-#' # Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
+#' \dontrun{
+#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
+#' }
 #' data(Gratiot)
 #' @format data.frame with the morning date in the first column and the nest counts on the second one.
 NULL

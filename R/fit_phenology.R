@@ -9,7 +9,7 @@
 #' @param maxit Number of iterations for search before checking if it converges. If it does not converge, it will continue to search for. Default is 500.
 #' @param method_incertitude 'multinomial' [default] is the correct one from a statistical point of view;\cr
 #'                           'binomial' is an aproximate method more rapid and using less memory;\cr
-#'                           'sum' is an alternative more rapid but potentially biased.
+#'                           'sum' is an alternative more rapid but potentially biased (not sure).
 #' @param zero_counts example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 #'                    been recorder for each of these timeseries. Defaut is TRUE for all.
 #' @param hessian If FALSE does not estimate se of parameters
@@ -35,11 +35,13 @@
 #' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
-#' data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
+#' 		reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
 #' parg<-par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
-#' result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' result_Gratiot<-fit_phenology(data=data_Gratiot, 
+#' 		parametersfit=parg, parametersfixed=NULL, trace=1)
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output<-plot(result_Gratiot)

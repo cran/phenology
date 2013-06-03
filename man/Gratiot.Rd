@@ -16,7 +16,9 @@
 \examples{
 library(phenology)
 # Read a file with data
-# Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
+\dontrun{
+Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
+}
 data(Gratiot)
 }
 \author{
