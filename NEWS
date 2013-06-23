@@ -2,6 +2,15 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 3.49    (2013-06-22)
+
+* Minor change in add_phenology()
+* New function plot_add()
+* New function ScalePreviousPlot()
+* New function plot_errbar()
+* New function ChangeCoordinate()
+
+
             CHANGES IN VERSION 3.47    (2013-06-03)
             
 * New format for exemple to be compatible with R 3.10

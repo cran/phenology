@@ -148,7 +148,7 @@ col2 <- FALSE
 				}
 
 				
-# j'ai le fichier mais peut-\0xEAtre 3 colonnes
+# j'ai le fichier mais peut-etre 3 colonnes
 
 
 				if (dim(DATA)[2]==3) {
@@ -157,7 +157,7 @@ col2 <- FALSE
 					plage <- levels(as.factor(DATA[,3]))
 				} else {
 					if (is.null(nm)) {
-						plage <- "Roockery"
+						plage <- paste("Roockery", runif(1, 1, 10000))
 					} else {
 						plage <- basename(nm)
 					}
@@ -185,7 +185,9 @@ col2 <- FALSE
 					reference <- as.Date(paste(year, "-01-01", sep=""))
 				}
 				} else {
-				
+# si month_ref > premier mois de la série, c'est l'année n-1
+				mois <- as.numeric(es[mpos, 1])
+				if (mois<month_ref) year <- as.character(as.numeric(year)-1)
 				reference <- as.Date(paste(year, "-", month_ref, "-01", sep=""))
 				
 				}

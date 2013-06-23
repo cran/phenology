@@ -2,7 +2,7 @@
 #' @title Create a new dataset or add a timeserie to a previous dataset.
 #' @author Marc Girondot
 #' @return Return a list of formated data that can be used ith fit_phenology()
-#' @param previous Previous data or NULL [default] if no previous data exists
+#' @param previous Name of previous data formated with add_phenology or NULL [default] if no previous data exists
 #' @param add The data to be added. It can be a set of several entities that uses the same reference and date format
 #' @param name The name of the monitored site
 #' @param reference as.Date('2001-12-31') The date used as 1st date
@@ -11,12 +11,14 @@
 #' @param format The format of the date in the file. Several format can be set and the last one that give compatible result is used
 #' @param help If TRUE, an help is displayed
 #' @description To create a new dataset, the syntaxe is \cr
-#' data<-add_phenology(add=newdata, name="Site", reference=as.Date('2001-12-31'), format='%d/%m/%y')\cr
+#' data<-add_phenology(add=newdata, name="Site", reference=as.Date('2001-12-31'), 
+#' format='%d/%m/%y')\cr
 #' To add a dataset to a previous one, the syntaxe is \cr
-#' data<-add_phenology(origin=previousdata, add=newdata, name='Site', reference=as.Date('2001-12-31'), adjust_ref=TRUE, format='%d/%m/%y')\cr
+#' data<-add_phenology(previous=previousdata, add=newdata, name='Site', 
+#' reference=as.Date('2001-12-31'), adjust_ref=TRUE, format='%d/%m/%y')\cr
 #' To add several timeseries at the same time with '%d/%m/%y'or '%d/%m/%Y' date format:
-#' data<-add_phenology(add=list(newdata1, newdata2), name=c('Site1', 'Site2'), reference=as.Date('2001-12-31'), format=c('%d/%m/%y', '%d/%m/%Y'))\cr
-#' \cr
+#' data<-add_phenology(add=list(newdata1, newdata2), name=c('Site1', 'Site2'), 
+#' reference=as.Date('2001-12-31'), format=c('%d/%m/%y', '%d/%m/%Y'))\cr
 #' The dataset to be added must include 2 or 3 columns.\cr
 #' The first one is the date in the format specified by 
 #' the parameter format=. If the number of nests is known 
@@ -43,11 +45,13 @@
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' refdate <- as.Date("2001-01-01")
-#' data_Gratiot<-add_phenology(Gratiot, name="Complete", reference=refdate, format="%d/%m/%Y")
+#' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
+#' 	reference=refdate, format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
 #' parg<-par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
-#' result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL, trace=1)
+#' result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, 
+#' 	parametersfixed=NULL, trace=1)
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output<-plot(result_Gratiot)
@@ -123,22 +127,6 @@ add <- rp$DATA
 reference <- rp$reference
 format <- rp$format
   
-
-# print(paste("1: ", name))
-# là j'ai une liste avec les databases
-# if (!is.data.frame(add)) {
-# 	nbdatasets <- length(add)
-# 	addlist <- add
-# 	if (length(name)==nbdatasets) {
-# 		names(addlist) <- name
-# 	} else {
-# 		if (is.null(names(addlist))) {
-# 			print("The names of datasets are set to 'dataset'")
-# 			names(addlist) <- paste("dataset", 1:nbdatasets, sep="")
-# 		}
-# 	}
-# 	name <- NULL
-# } else {
 # là je crée une liste
 	nbdatasets <- 1
 	addlist <- list(add)
@@ -147,7 +135,7 @@ if (is.null(name)) {
     if (length(deparse(substitute(add)))==1) {
 		names(addlist) <- deparse(substitute(add))
 	    } else {
-	  names(addlist) <- "Rookery"
+	  names(addlist) <- paste("Rookery", runif(1, 1, 10000))
 	  }
 	} else {
 		names(addlist) <- basename(nm)
