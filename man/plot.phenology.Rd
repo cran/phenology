@@ -24,7 +24,7 @@
   FALSE}
 
   \item{replicate.CI}{Number of replicates for estimation
-  of confidence interval.}
+  of confidence interval}
 
   \item{progressbar}{If FALSE, do not show the progress
   bar}

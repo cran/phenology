@@ -2,7 +2,16 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
-            CHANGES IN VERSION 3.49    (2013-06-22)
+            CHANGES IN VERSION 3.50    (2013-07-10)
+            
+* Correct a bug for scale of prior in plot.mcmcComposite()
+* If prior is uniform, changed the scale to show all prior
+* Parameters x.plus, x.minus, y.plus, and y.minus in plot_errbar to define absolut position of ends of error bars.
+* Minor change in print.phenologyout()
+* Add add=FALSE parameter to plot_errbar()
+* New function barplot_errbar()
+
+            CHANGES IN VERSION 3.49    (2013-06-23)
 
 * Minor change in add_phenology()
 * New function plot_add()
@@ -13,7 +22,7 @@ Please note that only the most significant changes are reported here.
 
             CHANGES IN VERSION 3.47    (2013-06-03)
             
-* New format for exemple to be compatible with R 3.10
+* New format of examples to be compatible with R 3.10
 
             CHANGES IN VERSION 3.46    (2013-04-08)
             

@@ -54,7 +54,7 @@
 #' @method plot mcmcComposite
 #' @export
 
-plot.mcmcComposite<-function(x, ... , chain=1, parameters=1) {
+plot.mcmcComposite <- function(x, ... , chain=1, parameters=1) {
 
 resultMCMC <- x
 
@@ -105,17 +105,30 @@ vals <- mcmc[[chain]][,variable]
 
 	x <- vals
 
+if (Parameters[variable, "Density"]=="dunif") {
+	L <- modifyList(list(ylab="Density", xlab=rownames(Parameters)[[variable]], main="", freq=FALSE, 
+	xlim=as.numeric(c(Parameters[variable,"Prior1"], Parameters[variable,"Prior2"]))+c(-10, 10)), list(x=x, ...)) 
+
+} else {
 	L <- modifyList(list(ylab="Density", xlab=rownames(Parameters)[[variable]], main="", freq=FALSE), list(x=x, ...)) 
+}
 
 	do.call(hist, L) 
 
 	par(new=TRUE)
 
-	x2 <- (par("usr")[1]+par("usr")[2]*26)/27
-	x1 <- x2*26-par("usr")[2]/0.04
+#	x2 <- (par("usr")[1]+par("usr")[2]*26)/27
+#	x1 <- x2*26-par("usr")[2]/0.04
+	
+	scl <- ScalePreviousPlot()
+	
+	yl <- c(0, max(get(Parameters[variable, "Density"])(seq(from=scl$xlim[1], to=scl$xlim[2], length=100), 
+		as.numeric(Parameters[variable,"Prior1"]),as.numeric(Parameters[variable,"Prior2"]))))
 
-	plot(seq(from=x1, to=x2, length=100), get(Parameters[variable, "Density"])(seq(from=x1, to=x2, length=100), 
-	as.numeric(Parameters[variable,"Prior1"]),as.numeric(Parameters[variable,"Prior2"])), type="l", col="red", xlab="", ylab="", axes = FALSE, xlim=c(x1, x2), main="")
+	plot(seq(from=scl$xlim[1], to=scl$xlim[2], length=100), 
+		get(Parameters[variable, "Density"])(seq(from=scl$xlim[1], to=scl$xlim[2], length=100), 
+		as.numeric(Parameters[variable,"Prior1"]),as.numeric(Parameters[variable,"Prior2"])), type="l", 
+		col="red", xlab="", ylab="", axes = FALSE, xlim=scl$xlim, main="", ylim=yl)
 
 	legend("topright", c("Prior", "Posterior"), lty=1, col=c('red', 'black'), bty = "n")
 

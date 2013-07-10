@@ -15,7 +15,7 @@
 #' @param parameters Set of parameters to be changed
 #' @param series Number of series to be analyzed or 'all'
 #' @param moon If TRUE, the moon phase is ploted. Default is FALSE
-#' @param replicate.CI Number of replicates for estimation of confidence interval.
+#' @param replicate.CI Number of replicates for estimation of confidence interval
 #' @param progressbar If FALSE, do not show the progress bar
 #' @param help If TRUE, an help is displayed
 #' @description The function plot.phenology plots the phenology graph from a result object.
@@ -51,7 +51,8 @@
 
 plot.phenology <- 
 	function(x, ..., data=NULL, parameters=NULL, parametersfixed=NA, 
-	series="all", moon=FALSE, replicate.CI=1000, progressbar=TRUE, help=FALSE) {
+	series="all", moon=FALSE, replicate.CI=1000, 
+	progressbar=TRUE, help=FALSE) {
 
 # data=NULL; parameters=NULL; parametersfixed=NA; series="all"; moon=FALSE; replicate.CI=1000; progressbar=TRUE; help=FALSE
     

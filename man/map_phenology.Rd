@@ -25,7 +25,7 @@
   biased.\cr}
 
   \item{zero_counts}{Example c(TRUE, TRUE, FALSE) indicates
-  whether the zeros have been recorder for each of these
+  whether the zeros have been recorded for each of these
   timeseries. Defaut is TRUE for all.}
 
   \item{progressbar}{If FALSE, do not show the progress

@@ -66,7 +66,7 @@ if ( (help) || (is.null(data)) || (class(data)=="try-error") ) {
 	cat("method_incertitude='binomial' is an aproximate method more rapid.\n")
 	cat("method_incertitude='sum' is an alternative more rapid but potentially biased.\n")
 	cat("zero_counts=c(TRUE, TRUE, FALSE) indicates whether the zeros have\n")
-	cat("been recorder for each of these timeseries. Defaut is TRUE for all.\n")
+	cat("been recorded for each of these timeseries. Defaut is TRUE for all.\n")
 	cat("hessian=FALSE does not estimate se of parameters.\n")
 } else {
 

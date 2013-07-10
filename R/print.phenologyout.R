@@ -45,9 +45,9 @@ print.phenologyout <- function(x, ...) {
 
 	cat("Estimation without the observed data\n")
 	if (sdponte>=1e-4) {
-		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+4)), "\n", sep="")
+		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+5)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+5)), "\n", sep="")
 	} else {
-		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD NA\n", sep="")
+		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+5)), " ; SD NA\n", sep="")
 	}
 
 	mnponte<-x[[i]]$estimates[3]
@@ -55,15 +55,15 @@ print.phenologyout <- function(x, ...) {
 
 	cat("Estimation taking into account the observed data\n")
 	if (sdponte>=1e-4) {
-		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+4)), "\n", sep="")
+		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+5)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+5)), "\n", sep="")
 	} else {
-		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+4)), " ; SD NA\n", sep="")
+		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+5)), " ; SD NA\n", sep="")
 	}
 
 	mnponte1<-x[[i]]$estimates[5]
 	mnponte2<-x[[i]]$estimates[6]
 
-	cat("95% confidence interval: ", format(mnponte1, digits=floor(log10(mnponte1)+4)), " - ", format(mnponte2, digits=floor(log10(mnponte2)+4)))
+	cat("95% confidence interval: ", format(mnponte1, digits=floor(log10(mnponte1)+5)), " - ", format(mnponte2, digits=floor(log10(mnponte2)+5)))
 
 	}
 

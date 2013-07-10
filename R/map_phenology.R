@@ -11,7 +11,7 @@
 #'                           0 is an aproximate method more rapid; \cr
 #'                           1 is an alternative more rapid but biased.\cr
 #' @param zero_counts Example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
-#'                    been recorder for each of these timeseries. Defaut is TRUE for all.
+#'                    been recorded for each of these timeseries. Defaut is TRUE for all.
 #' @param progressbar If FALSE, do not show the progress bar
 #' @param help If TRUE, an help is displayed
 #' @description This function generates a map of likelihood varying Phi and Delta.\cr
