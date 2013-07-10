@@ -1,6 +1,6 @@
-38c029c7630b136c5de242d5a7f12d40 *DESCRIPTION
+4ff6d84c00c948d45c3c1c9c42522d11 *DESCRIPTION
 727a3b8e838ad67c9ea6911f779903b6 *NAMESPACE
-086bb402662323fb65ea4fa50dfc3018 *NEWS
+e7f738d0d115c2b0c89bd0e13f5b4eae *NEWS
 91e313332a2a3cf59155dd357096ab5c *R/BE_to_LBLE.R
 df272d5c86a07873d933f2091053ecdd *R/ChangeCoordinate.R
 3f3986e4a8debc750793df827f2500ed *R/Gratiot.R
@@ -27,9 +27,9 @@ e67f7dfb93c3186ae536e7ecd9cadd48 *R/barplot_errbar.R
 8bdfe30d8b8b07793d517665147a106c *R/map_Gratiot.R
 aaa6efb6d3e761736ccbea899be0bfe4 *R/map_phenology.R
 1aa1aa033cfc8f9d21e118de6b6549af *R/moon_phase.R
-e1fc1b36321ca63046ba6c2ed8c7cd2a *R/onAttach.R
+b6aa05c53866bc2c78b34d74d1c8cf7e *R/onAttach.R
 26c85d2788eaa7b43c20da9da14ee40f *R/par_init.R
-c2d6e5c4451558597b1373b8c9336b4f *R/phenology-package.R
+92483720aa1e5975e57cdd6b8eb0a85a *R/phenology-package.R
 634f48f7b92f64ee9322d9f975c87cf5 *R/phenology-swot.R
 2b9956bef63c8e6b2b85cde02b166658 *R/phenology.R
 7e78ac24847ab323e6e5566d7d3322b6 *R/phenology_MHmcmc_p.R
@@ -86,7 +86,7 @@ c55c5df513f4a0a4bdf5e106efed1018 *man/growlnotify.Rd
 bf6e8dc5c8ce9990f278bdf36a3688dd *man/map_phenology.Rd
 abbf355749b36b5f566759d7a1514458 *man/moon_phase.Rd
 6c804357275c92c1b45142a9de91affa *man/par_init.Rd
-a6566fb9270d29afc4751c1bf89ef273 *man/phenology-package.Rd
+31f67f12248d495953bada48ad31d0a8 *man/phenology-package.Rd
 c1b6830f8c50870b9cfa948d4cdeeae9 *man/phenology.Rd
 220cdfc81dae5ff0dbc8e346a2324492 *man/phenology_MHmcmc.Rd
 f848447379f9d4db1a94771d4df7ab8e *man/phenology_MHmcmc_p.Rd
