@@ -3,7 +3,8 @@
 #' @author Marc Girondot
 #' @return Nothing
 #' @param ... Parameters for plot()
-#' @description To plot data, just add use it as a normal plot
+#' @description To plot data, just add use it as a normal plot. It will plot 
+#' the new data without axes, or labels for axes.
 #' @examples
 #' plot(x=1:100, y=sin(1:100), type="l", bty="n", xlim=c(1,200), xlab="x", ylab="y")
 #' plot_add(x=1:200, y=cos(1:200), type="l", bty="n", col="red")
@@ -16,6 +17,6 @@ plot_add <- function(...)
 	par.plot <- list(...)
 
 	par.plot <- modifyList(par.plot, list(xlab="", ylab="", main="", axes=FALSE, 
-	xlim= ScalePreviousPlot()$xlim, ylim= ScalePreviousPlot()$ylim))
+	xlim= ScalePreviousPlot()$xlim[1:2], ylim=ScalePreviousPlot()$ylim[1:2]))
 	do.call(plot, par.plot) 
   }

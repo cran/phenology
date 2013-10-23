@@ -65,7 +65,7 @@ plot_errbar <- function(...,
   if (add) {
   	s <- ScalePreviousPlot()
   	par(new=TRUE)
-  	par.plot <- modifyList(par.plot, list(xlim=s$xlim, ylim=s$ylim, xlab="", ylab="", main="", axes=FALSE))
+  	par.plot <- modifyList(par.plot, list(xlim=s$xlim[1:2], ylim=s$ylim[1:2], xlab="", ylab="", main="", axes=FALSE))
   }
   do.call(plot, par.plot) 
   
@@ -99,8 +99,8 @@ plot_errbar <- function(...,
 
 if (errbar.y.polygon) {
 # je dois faire un polygon
-	vx <- c(x, x[length(x):1])
-	vy <- c(y-errbar.y.minus, (y+errbar.y.plus)[length(y):1])
+	vx <- c(x, rev(x))
+	vy <- c(y-errbar.y.minus, rev(y+errbar.y.plus))
 	errbar.y.polygon.list <- modifyList(errbar.y.polygon.list, list(x=vx, y=vy))
 	do.call(polygon, errbar.y.polygon.list)
 

@@ -121,7 +121,8 @@ if (is.null(add)) {
 }
 
 
-rp <- phenology:::.read_phenology(add, header, reference, month_ref, format, nm)
+#rp <- phenology:::.read_phenology(add, header, reference, month_ref, format, nm)
+rp <- .read_phenology(add, header, reference, month_ref, format, nm)
 
 add <- rp$DATA
 reference <- rp$reference

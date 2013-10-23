@@ -1,10 +1,10 @@
 #' adapt_parameters get the fitted parameters from a result object.
-#' @title Extract the parameters from a set of parameters ton conform on a dataset.
+#' @title Extract the parameters from a set of parameters to be used with another dataset.
 #' @author Marc Girondot
 #' @return Return the set of parameters
 #' @param parameters A set of parameters
 #' @param data A dataset of counts
-#' @description The function "adapt_parameters" extracts the set of parameters to be used for a subset of data. All the uncessary parameters are removed. It can be used when a set of beaches are fitted first and after only one of these beaches is fitted again.
+#' @description The function "adapt_parameters" extracts the set of parameters to be used with a subset of data. All the uncessary parameters are removed. It can be used when a set of beaches are fitted first and after only one of these beaches is fitted again.
 #' @examples
 #' library(phenology)
 #' # Read a file with data
@@ -36,7 +36,8 @@ x <- gsub("^MinB_", "", x)
 x <- gsub("^MinE_", "", x)
 
 y <- names(data)
-y <- c(y, "Peak", "Length", "LengthB", "LengthE", "Begin", "End", "Phi", "Delta", "Alpha", "Beta", "Tau",
+y <- c(y, "Peak", "Length", "LengthB", "LengthE", "Begin", "End", "Phi", "Delta", "Alpha", "Beta", "Tau", 
+"PMin", "PMinB", "PMinE",
 "Phi1", "Delta1", "Alpha1", "Beta1", "Tau1",
 "Phi2", "Delta2", "Alpha2", "Beta2", "Tau2", "Theta")
 

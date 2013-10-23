@@ -2,9 +2,10 @@
 #' @title Plot the result of a MCMC search
 #' @author Marc Girondot
 #' @return None
-#' @param x A mcmcComposite object obtained after MHmcmc()
+#' @param x A mcmcComposite object obtained after phenology_fonctionMCMC()
 #' @param chain The chain to use
 #' @param parameters Name of parameters or their number (see description)
+#' @param legend If FALSE, the legend is not shown
 #' @param ... Graphical parameters to be send to hist()
 #' @description Plot the result of a MCMC search.\cr
 #' The parameters to use can be called by:\cr
@@ -15,9 +16,6 @@
 #' @examples 
 #' library(phenology)
 #' # Read a file with data
-#' \dontrun{
-#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
-#' }
 #' data(Gratiot)
 #' # Generate a formatted list named data_Gratiot 
 #' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
@@ -31,30 +29,17 @@
 #' }
 #' data(result_Gratiot)
 #' # Generate set of priors for Bayesian analysis
+#' pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept=TRUE)
 #' \dontrun{
-#' pmcmc <- phenology_MHmcmc_p(result_Gratiot)
-#' }
-#' pmcmc <- structure(c("dunif", "dunif", "dunif", "dunif", "dunif", "dunif", 
-#' "dunif", "dunif", "0", "0", "0", "0", "0", "0", "0", "0", "200", 
-#' "365", "200", "50", "200", "5", "5", "10", "2", "2", "2", "2", 
-#' "2", "2", "2", "2", "0", "0", "0", "0", "0", "0", "0", "0", "200", 
-#' "365", "200", "50", "200", "5", "5", "10", "95.826796339888", 
-#' "175.36499338462", "62.4313052780003", "6.77668901451618e-05", 
-#' "33.1138407661406", "0.21779065736816", "0.424368825094697", 
-#' "3.58302217559733"), .Dim = c(8L, 7L), .Dimnames = list(c("LengthB", 
-#' "Peak", "LengthE", "Flat", "Max_Gratiot", "MinB_Gratiot", "MinE_Gratiot", 
-#' "Theta"), c("Density", "Prior1", "Prior2", "SDProp", "Min", "Max", 
-#' "Init")))
-#' \dontrun{
-#' res_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000, 
+#' result_Gratiot_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000, 
 #' 		parametersMCMC = pmcmc, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
-#' data(res_mcmc)
-#' plot(res_mcmc, parameters=3, xlim=c(230, 330))
 #' }
+#' data(result_Gratiot_mcmc)
+#' plot(result_Gratiot_mcmc, parameters=3, xlim=c(230, 330))
 #' @method plot mcmcComposite
 #' @export
 
-plot.mcmcComposite <- function(x, ... , chain=1, parameters=1) {
+plot.mcmcComposite <- function(x, ... , chain=1, parameters=1, legend=TRUE) {
 
 resultMCMC <- x
 
@@ -128,10 +113,10 @@ if (Parameters[variable, "Density"]=="dunif") {
 	plot(seq(from=scl$xlim[1], to=scl$xlim[2], length=100), 
 		get(Parameters[variable, "Density"])(seq(from=scl$xlim[1], to=scl$xlim[2], length=100), 
 		as.numeric(Parameters[variable,"Prior1"]),as.numeric(Parameters[variable,"Prior2"])), type="l", 
-		col="red", xlab="", ylab="", axes = FALSE, xlim=scl$xlim, main="", ylim=yl)
-
+		col="red", xlab="", ylab="", axes = FALSE, xlim=scl$xlim[1:2], main="", ylim=yl)
+if (legend) {
 	legend("topright", c("Prior", "Posterior"), lty=1, col=c('red', 'black'), bty = "n")
-
+}
     }
   }
 }

@@ -1,0 +1,27 @@
+\name{chr}
+\alias{chr}
+\title{Return the characters defined by the codes}
+\usage{
+  chr(n)
+}
+\arguments{
+  \item{n}{The vector with codes}
+}
+\value{
+  A string with characters defined by the codes
+}
+\description{
+  Return a string with characters defined by the codes
+}
+\details{
+  chr returns the characters defined by the codes
+}
+\examples{
+chr(65:75)
+chr(unlist(tapply(144:175, 144:175, function(x) {c(208, x)})))
+}
+\author{
+  Based on this blog:
+  http://datadebrief.blogspot.com/2011/03/ascii-code-table-in-r.html
+}
+

@@ -1,6 +1,6 @@
 \name{adapt_parameters}
 \alias{adapt_parameters}
-\title{Extract the parameters from a set of parameters ton conform on a dataset.}
+\title{Extract the parameters from a set of parameters to be used with another dataset.}
 \usage{
   adapt_parameters(data = stop("Datasets is mandatory for this function"),
     parameters = stop("Set of parameters is mandatory for this function"))
@@ -15,7 +15,7 @@
 }
 \description{
   The function "adapt_parameters" extracts the set of
-  parameters to be used for a subset of data. All the
+  parameters to be used with a subset of data. All the
   uncessary parameters are removed. It can be used when a
   set of beaches are fitted first and after only one of
   these beaches is fitted again.

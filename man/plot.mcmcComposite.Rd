@@ -3,15 +3,18 @@
 \title{Plot the result of a MCMC search}
 \usage{
   \method{plot}{mcmcComposite} (x, ..., chain = 1,
-    parameters = 1)
+    parameters = 1, legend = TRUE)
 }
 \arguments{
-  \item{x}{A mcmcComposite object obtained after MHmcmc()}
+  \item{x}{A mcmcComposite object obtained after
+  phenology_fonctionMCMC()}
 
   \item{chain}{The chain to use}
 
   \item{parameters}{Name of parameters or their number (see
   description)}
+
+  \item{legend}{If FALSE, the legend is not shown}
 
   \item{...}{Graphical parameters to be send to hist()}
 }
@@ -30,9 +33,6 @@
 \examples{
 library(phenology)
 # Read a file with data
-\dontrun{
-Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
-}
 data(Gratiot)
 # Generate a formatted list named data_Gratiot
 data_Gratiot<-add_phenology(Gratiot, name="Complete",
@@ -46,26 +46,13 @@ result_Gratiot<-fit_phenology(data=data_Gratiot,
 }
 data(result_Gratiot)
 # Generate set of priors for Bayesian analysis
+pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept=TRUE)
 \dontrun{
-pmcmc <- phenology_MHmcmc_p(result_Gratiot)
-}
-pmcmc <- structure(c("dunif", "dunif", "dunif", "dunif", "dunif", "dunif",
-"dunif", "dunif", "0", "0", "0", "0", "0", "0", "0", "0", "200",
-"365", "200", "50", "200", "5", "5", "10", "2", "2", "2", "2",
-"2", "2", "2", "2", "0", "0", "0", "0", "0", "0", "0", "0", "200",
-"365", "200", "50", "200", "5", "5", "10", "95.826796339888",
-"175.36499338462", "62.4313052780003", "6.77668901451618e-05",
-"33.1138407661406", "0.21779065736816", "0.424368825094697",
-"3.58302217559733"), .Dim = c(8L, 7L), .Dimnames = list(c("LengthB",
-"Peak", "LengthE", "Flat", "Max_Gratiot", "MinB_Gratiot", "MinE_Gratiot",
-"Theta"), c("Density", "Prior1", "Prior2", "SDProp", "Min", "Max",
-"Init")))
-\dontrun{
-res_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000,
+result_Gratiot_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000,
 		parametersMCMC = pmcmc, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
-data(res_mcmc)
-plot(res_mcmc, parameters=3, xlim=c(230, 330))
 }
+data(result_Gratiot_mcmc)
+plot(result_Gratiot_mcmc, parameters=3, xlim=c(230, 330))
 }
 \author{
   Marc Girondot

@@ -11,7 +11,8 @@
   Nothing
 }
 \description{
-  To plot data, just add use it as a normal plot
+  To plot data, just add use it as a normal plot. It will
+  plot the new data without axes, or labels for axes.
 }
 \details{
   plot_add adds a plot to a previous one

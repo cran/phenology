@@ -36,6 +36,7 @@ print.phenologyout <- function(x, ...) {
 	cat(paste("\nNumber of timeseries: ", length(x), "\n", sep=""))
 	for (i in 1:length(x)) {
 		nmser <- names(x)[i]
+		cat(rep("-", nchar(nmser)), "\n", sep="")
 		cat(paste("\n", nmser, "\n", sep=""))
 		cat(rep("-", nchar(nmser)), "\n", sep="")
 

@@ -194,11 +194,13 @@ if (progressbar) setTxtProgressBar(pb, j)
 
 # j'ai tous les paramètres dans xpar
 # maintenant tous les paramètre fixés appraissent dans resfit
-	xparec <- phenology:::.format_par(par2[j,], nmser)
+#	xparec <- phenology:::.format_par(par2[j,], nmser)
+	xparec <- .format_par(par2[j,], nmser)
 	
 #	xparec <<- xparec
 	
-	ponte2[j,1:365]=phenology:::.daily_count(1:365, xparec, print=FALSE)
+#	ponte2[j,1:365] <- phenology:::.daily_count(1:365, xparec, print=FALSE)
+	ponte2[j,1:365] <- .daily_count(1:365, xparec, print=FALSE)
 	
 	
 # je viens de générer les pontes du réplicat j
@@ -211,7 +213,7 @@ mnponte<-mean(apply(ponte2, 1, sum))
 sdponte<-sd(apply(ponte2, 1, sum))
 out1<-c(estimate1=mnponte, sd1=sdponte)
 
-
+# si c'est une donnée observée avec une série de dates, je mets à 0 la série
 # dans ponte2[nbsimul 1:replicate.CI, jour 1:365] j'ai la donnée théorique
 for(i in 1:dim(data[[series[kseries]]])[1]) {
 		if (!is.na(data[[series[kseries]]]$ordinal2[i])) {
@@ -221,11 +223,12 @@ for(i in 1:dim(data[[series[kseries]]])[1]) {
 		}
 }
 
-for(i in 1:dim(data[[series[kseries]]])[1]) {
-	ponte2[1:replicate.CI, data[[series[kseries]]]$ordinal[i]]<-data[[series[kseries]]]$nombre[i]
+nobs <- data[[series[kseries]]]$nombre
+dobs <- data[[series[kseries]]]$ordinal
+l <- length(dobs)
+for(i in 1:l) {
+	ponte2[1:replicate.CI, dobs[i]]<-nobs[i]
 }
-
-
 
 mnponte<-mean(apply(ponte2, 1, sum))
 sdponte<-sd(apply(ponte2, 1, sum))
@@ -236,9 +239,12 @@ out1 <- c(out1, CI_Min=max(mnponte-2*sdponte, sum(data[[series[kseries]]]$nombre
 
 ## je remplis le tableau val avec les nb théoriques
 
-xparec <- phenology:::.format_par(parres, nmser)
+#xparec <- phenology:::.format_par(parres, nmser)
+xparec <- .format_par(parres, nmser)
 
-val[1:365, "Theor"]=phenology:::.daily_count(1:365, xparec, print=FALSE)
+# val[1:365, "Theor"]=phenology:::.daily_count(1:365, xparec, print=FALSE)
+val[1:365, "Theor"] <- .daily_count(1:365, xparec, print=FALSE)
+
 
 ## je remplis le tableau val avec les nb théoriques +/- 2 SD
 for(i in 1:365) {val[i, "Theor-2SE"]=max(0, val[i, "Theor"]-2*sd2[i])}

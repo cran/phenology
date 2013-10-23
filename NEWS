@@ -2,6 +2,16 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 3.53-3.54    (2013-10-23)
+            
+* New functions asc() and chr() to manipulate UTF-8 codes
+* Function ScalePreviousPlot() returns also the range, the center and the position of labels
+
+            CHANGES IN VERSION 3.52    (2013-08-05)
+            
+* New function used to toggle between Min and PMin parameters
+* new parameter legend=TRUE for plot.mcmcComposite()
+
             CHANGES IN VERSION 3.51    (2013-07-10)
             
 * New version of the update check at startup
