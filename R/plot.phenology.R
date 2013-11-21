@@ -18,6 +18,7 @@
 #' @param replicate.CI Number of replicates for estimation of confidence interval
 #' @param progressbar If FALSE, do not show the progress bar
 #' @param help If TRUE, an help is displayed
+#' @param growlnotify If False, does not send growl notification
 #' @description The function plot.phenology plots the phenology graph from a result object.
 #' @examples
 #' \dontrun{
@@ -52,9 +53,9 @@
 plot.phenology <- 
 	function(x, ..., data=NULL, parameters=NULL, parametersfixed=NA, 
 	series="all", moon=FALSE, replicate.CI=1000, 
-	progressbar=TRUE, help=FALSE) {
+	progressbar=TRUE, help=FALSE, growlnotify=TRUE) {
 
-# data=NULL; parameters=NULL; parametersfixed=NA; series="all"; moon=FALSE; replicate.CI=1000; progressbar=TRUE; help=FALSE
+# data=NULL; parameters=NULL; parametersfixed=NA; series="all"; moon=FALSE; replicate.CI=1000; progressbar=TRUE; help=FALSE; growlnotify=TRUE
     
     result <- x
     
@@ -380,7 +381,7 @@ out <- c(out, out2)
 
 }
 
-	growlnotify('Plot is done!')
+	if (growlnotify) growlnotify('Plot is done!')
 	
 	class(out) <- "phenologyout"
 	

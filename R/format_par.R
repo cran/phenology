@@ -42,9 +42,9 @@ xparec["Theta"]<-abs(xparec["Theta"])
 if (!is.na(xparec["MinB"])) {xparec["MinB"]=abs(xparec["MinB"])}
 if (!is.na(xparec["MinE"])) {xparec["MinE"]=abs(xparec["MinE"])}
 if (!is.na(xparec["Min"])) {xparec["Min"]=abs(xparec["Min"])}
-if (!is.na(xparec["Pmin"])) {xparec["PMin"]=abs(xparec["PMin"])}
-if (!is.na(xparec["PminB"])) {xparec["PMinB"]=abs(xparec["PMinB"])}
-if (!is.na(xparec["PminE"])) {xparec["PMinE"]=abs(xparec["PMinE"])}
+if (!is.na(xparec["PMin"])) {xparec["PMin"]=abs(xparec["PMin"])}
+if (!is.na(xparec["PMinB"])) {xparec["PMinB"]=abs(xparec["PMinB"])}
+if (!is.na(xparec["PMinE"])) {xparec["PMinE"]=abs(xparec["PMinE"])}
 if (!is.na(xparec["Max"])) {xparec["Max"]=abs(xparec["Max"])}
 if (!is.na(xparec["Length"])) {
 	xparec["Length"]=abs(xparec["Length"])

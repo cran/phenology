@@ -14,27 +14,27 @@
 #' data<-add_phenology(add=newdata, name="Site", reference=as.Date('2001-12-31'), 
 #' format='%d/%m/%y')\cr
 #' To add a dataset to a previous one, the syntaxe is \cr
-#' data<-add_phenology(previous=previousdata, add=newdata, name='Site', 
+#' data<-add_phenology(previous=previousdata, add=newdata, name='Site', \cr
 #' reference=as.Date('2001-12-31'), adjust_ref=TRUE, format='%d/%m/%y')\cr
-#' To add several timeseries at the same time with '%d/%m/%y'or '%d/%m/%Y' date format:
-#' data<-add_phenology(add=list(newdata1, newdata2), name=c('Site1', 'Site2'), 
+#' To add several timeseries at the same time with '%d/%m/%y'or '%d/%m/%Y' date format:\cr
+#' data<-add_phenology(add=list(newdata1, newdata2), name=c('Site1', 'Site2'),\cr 
 #' reference=as.Date('2001-12-31'), format=c('%d/%m/%y', '%d/%m/%Y'))\cr
 #' The dataset to be added must include 2 or 3 columns.\cr
-#' The first one is the date in the format specified by 
-#' the parameter format=. If the number of nests is known 
-#' for an exact data, then only one date must be indicated 
-#' If the number of nests is known for a range of date, the 
+#' The first one is the date in the format specified by\cr 
+#' the parameter format=. If the number of nests is known\cr 
+#' for an exact data, then only one date must be indicated\cr 
+#' If the number of nests is known for a range of date, the\cr 
 #' first and last dates must be separated but a - (dash).\cr
 #' For example: 1/2/2000-10/2/2000\cr
-#' The second column is the number of nests observed for 
+#' The second column is the number of nests observed for\cr 
 #' this date or this range of dates.\cr
 #' The third column is optional and is the name of the rookery.\cr
-#' If only two columns are indicated, the name can be indicated as 
-#' a parameter of the function with name=. If no name is indicated, 
-#' the default name Site will be used, but take care, only one 
+#' If only two columns are indicated, the name can be indicated as\cr 
+#' a parameter of the function with name=. If no name is indicated,\cr 
+#' the default name Site will be used, but take care, only one \cr
 #' rookery of this name can be used.\cr
-#' Several rookeries can be included in the same file but in this case 
-#' the rookery name is obligatory at the third column.
+#' Several rookeries can be included in the same file but in this case\cr 
+#' the rookery name is obligatory at the third column.\cr
 #' The simplest use of this function is just: \cr
 #' phen <- add_phenology()
 #' @examples

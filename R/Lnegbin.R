@@ -30,8 +30,9 @@ nmser<-names(datatot[k])
 zero<- pt$zerocounts[k]
 deb<-ifelse(zero, 0, 1)
 	
-# je fais un fonction où j'envoie les paramètres et la série et il renvoie ceux à utiliser directement
+# je fais une fonction où j'envoie les paramètres et la série et il renvoie ceux à utiliser directement
 	xparec<-.format_par(xpar, nmser)
+#  if (xparec["MinE"]<0) print(xpar, xparec)
 	th<-xparec["Theta"]
 
 for (i in 1:dim(data)[1]) 
@@ -46,12 +47,13 @@ for (i in 1:dim(data)[1])
 #######################
 
 # ici je devrais aussi faire le calcul en conditionnel
-       			sumnbcount<-.daily_count(data$ordinal[i],xparec, print=FALSE)
+       			sumnbcount<-.daily_count(data$ordinal[i], xparec, print=FALSE)
 # dans zero j'ai l'information si je prends les 0 ou non pour cette série
        			if (!zero) {
        				lnli2 <- -log(dnbinom(data$nombre[i], size=th, mu=sumnbcount, log=FALSE)/(1-dnbinom(0, size=th, mu=sumnbcount, log=FALSE)))
 				} else {
        				lnli2 <- -dnbinom(data$nombre[i], size=th, mu=sumnbcount, log=TRUE)
+ #      				if (is.na(lnli2)) print(xparec)
        			}
 
         	} else {

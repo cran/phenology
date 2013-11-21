@@ -15,6 +15,7 @@
 #' @param hessian If FALSE does not estimate se of parameters
 #' @param help If TRUE, an help is displayed
 #' @param silent If TRUE does not show any message
+#' @param growlnotify If False, does not send growl notification
 #' @description Function of the package phenology to fit parameters to timeseries.\cr
 #' To fit data, the syntaxe is :\cr
 #' Result<-fit_phenology(data=dataset, parametersfit=par, parametersfixed=pfixed, trace=1, method_incertitude=2, zero_counts=TRUE, hessian=TRUE)\cr
@@ -51,7 +52,7 @@
 
 fit_phenology <-
 function(data=file.choose(), parametersfit=NULL, parametersfixed=NULL, trace=1, maxit=500, method_incertitude="multinomial", 
-	zero_counts=TRUE, hessian=TRUE, help=FALSE, silent=FALSE) {
+	zero_counts=TRUE, hessian=TRUE, help=FALSE, silent=FALSE, growlnotify=TRUE) {
 if ( (help) || (is.null(data)) || (class(data)=="try-error") ) {
 	cat("To fit data, the syntaxe is :\n")
 	cat("Result<-fit_phenology(data=dataset, parametersfit=par, parametersfixed=pfixed, trace=1,\n")
@@ -300,7 +301,7 @@ if (!silent) cat(paste("Parameters=", format(length(resul$par), digits=max(3, tr
 if (!silent) cat(paste("AIC=", format(2*resul$value+2*length(resul$par), digits=max(3, trunc(log10(2*resul$value+2*length(resul$par)))+4)), "\n", sep=""))
 
 	
-if (!silent) growlnotify('Fit is done!')
+if (!silent & growlnotify) growlnotify('Fit is done!')
 	
 
 return(resul)

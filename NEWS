@@ -2,6 +2,12 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 3.55    (2013-11-21)
+            
+* New function MinBMinE_to_Min
+* new parameter growlnotify for fit_phenology and plot.phenology
+* correcton of a bug to prevent PMinE to become negatif
+
             CHANGES IN VERSION 3.53-3.54    (2013-10-23)
             
 * New functions asc() and chr() to manipulate UTF-8 codes
