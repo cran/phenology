@@ -1,12 +1,15 @@
-#' read_folder opens all files from a folder
-#' @title Open all file present in a folder and create a list with these files
+#' read_folder reads all files present in a folder
+#' @title Reads all files present in a folder and creates a list with the the content of these files
 #' @author Marc Girondot
 #' @return Return a list of the data in the files of the folder (directory for windows users)
-#' @param folder Where to search for files
-#' @param read Function used to read file. Ex: read.delim
+#' @param folder Where to search for files; can be or a file path or a folder path
+#' @param wildcard Define which files are to be read (examples: "*.*", "*.xls", "essai*.txt")
+#' @param read Function used to read file. Ex: read.delim or read.xls from gdata package
 #' @param ... Parameters send to the read function
-#' @description To create a new list, the syntaxe is \cr
+#' @description To create a list, the syntax is \cr
 #' datalist<-read_folder(folder=".", read=read.delim, header=FALSE)\cr
+#' Return NULL with a warning if the folder does not exist or is empty.\cr
+#' The names of the elements of the list are the filenames.\cr
 #' @examples 
 #' \dontrun{
 #' library(phenology)
@@ -16,39 +19,35 @@
 #' @export
 
 
-read_folder <- function(folder=try(file.choose(), silent=TRUE), read=read.delim, ...) {
+read_folder <- function(folder=try(file.choose(), silent=TRUE), 
+                        wildcard="*.*", read=read.delim, ...) {
 
 	if (class(folder)!="try-error") {
-
-	folder <- dirname(folder)
-
-	lf <- list.files(folder)
+    fi <- file.info(folder)
+    if (is.na(fi$isdir)) {
+      warning("Folder/directory does not exist")
+      return(invisible())
+    }
+    if (!fi$isdir) {
+      folder <- dirname(folder)
+    }
+    lf <- Sys.glob(file.path(folder, wildcard))
+  	ladd <- list()
 	
-	ladd <- list()
-	
-	if (length(lf)!=0) {
-	
-	previous<-getwd()
-	
-	setwd(folder)
-	
-	for (i in 1:length(lf)) {
-	
-		linter <- read(lf[i], ...)
-		ladd <- c(ladd, list(linter))
-	
-	}
-	
-	names(ladd) <- lf
-	
-	setwd(previous)
-	
-	return(ladd)
-	
-	} else {
-		print("No file in folder/directory or folder/directory does not exist")
-		return(NULL)
-	}
+    	if (length(lf)!=0) {
+	      previous<-getwd()
+	      setwd(folder)
+	    	for (i in 1:length(lf)) {
+      		linter <- read(lf[i], ...)
+		      ladd <- c(ladd, list(linter))	
+      	}
+      	names(ladd) <- lf
+      	setwd(previous)
+      	return(ladd)
+	    } else {
+	      warning("No selected files in folder/directory")
+		    return(invisible())
+	    }
 	}
 
 }

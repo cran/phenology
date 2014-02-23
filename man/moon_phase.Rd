@@ -2,7 +2,7 @@
 \alias{moon_phase}
 \title{Moon phase based on a date}
 \usage{
-  moon_phase(date = NULL, phase = FALSE)
+moon_phase(date = NULL, phase = FALSE)
 }
 \arguments{
   \item{date}{A date in known format}
@@ -11,21 +11,21 @@
   FL LQ will be returned}
 }
 \value{
-  Return a value describing the moon phase:\cr 0 and 100
-  are full moon, 50 is new moon, 25 last quarter and 75
-  first quater
+Return a value describing the moon phase:\cr 0 and 100 are
+full moon, 50 is new moon, 25 last quarter and 75 first
+quater
 }
 \description{
-  The script give an index (base 100) that represents moon
-  phase. If the value lays between:\cr 0 and 1.6931595 or
-  98.3068405 and 100, it is full moon,\cr 23.3068405 and
-  26.6931595, last quarter,\cr 48.3068405 and 51.6931595,
-  new moon,\cr 73.3068405 and 76.6931595, first quarter\cr
-  When phase is set to TRUE, a character representing the
-  moon phase is returned.
+The script give an index (base 100) that represents moon
+phase. If the value lays between:\cr 0 and 1.6931595 or
+98.3068405 and 100, it is full moon,\cr 23.3068405 and
+26.6931595, last quarter,\cr 48.3068405 and 51.6931595, new
+moon,\cr 73.3068405 and 76.6931595, first quarter\cr When
+phase is set to TRUE, a character representing the moon
+phase is returned.
 }
 \details{
-  moon_phase calculates the moon phase based on a date.
+moon_phase calculates the moon phase based on a date.
 }
 \examples{
 library("phenology")
@@ -38,7 +38,7 @@ moon_phase(seq(from=as.Date("2012-03-01"),
 		to=as.Date("2012-04-15"), by="days"), phase=TRUE)
 }
 \author{
-  Marc Girondot \email{marc.girondot@u-psud.fr}
+Marc Girondot \email{marc.girondot@u-psud.fr}
 }
 \keyword{Lunar}
 \keyword{Lune}

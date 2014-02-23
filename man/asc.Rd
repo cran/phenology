@@ -2,26 +2,26 @@
 \alias{asc}
 \title{Return the codes (in UTF-8) of a string}
 \usage{
-  asc(x)
+asc(x)
 }
 \arguments{
   \item{x}{The string to be analyzed}
 }
 \value{
-  A vector with ITF-8 codes of a string
+A vector with ITF-8 codes of a string
 }
 \description{
-  Return the codes (in UTF-8) of a string
+Return the codes (in UTF-8) of a string
 }
 \details{
-  asc returns the codes (in UTF-8) of a string
+asc returns the codes (in UTF-8) of a string
 }
 \examples{
 asc("abcd")
 asc("ABCD")
 }
 \author{
-  Based on this blog:
-  http://datadebrief.blogspot.com/2011/03/ascii-code-table-in-r.html
+Based on this blog:
+http://datadebrief.blogspot.com/2011/03/ascii-code-table-in-r.html
 }
 

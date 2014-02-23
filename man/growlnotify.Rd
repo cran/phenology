@@ -2,7 +2,7 @@
 \alias{growlnotify}
 \title{Send growl notification for MacOs X system.}
 \usage{
-  growlnotify(textinfo = "", help = FALSE)
+growlnotify(textinfo = "", help = FALSE)
 }
 \arguments{
   \item{textinfo}{Text to display in the growlnotify
@@ -11,19 +11,19 @@
   \item{help}{If TRUE, an help is displayed}
 }
 \value{
-  None
+None
 }
 \description{
-  This function is used to send a notification to Mac user.
+This function is used to send a notification to Mac user.
 }
 \details{
-  growlnotify send growl notification for MacOs X systems.
+growlnotify send growl notification for MacOs X systems.
 }
 \examples{
 # If growlnotify is used on a non-mac system, it just quits.
 growlnotify("It works if you are on a Mac with GrowNotify installed!")
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

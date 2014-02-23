@@ -2,20 +2,20 @@
 \alias{as.mcmc.mcmcComposite}
 \title{Extract mcmc object from the result of MHmcmc to be used with coda package}
 \usage{
-  \method{as.mcmc}{mcmcComposite} (x)
+\method{as.mcmc}{mcmcComposite}(x)
 }
 \arguments{
   \item{x}{A result MHmcmc search}
 }
 \value{
-  A mcmc.list object
+A mcmc.list object
 }
 \description{
-  Take a mcmcComposite object and create a mcmc.list object
+Take a mcmcComposite object and create a mcmc.list object
 }
 \details{
-  as.mcmc Extract mcmc object from the result of MHmcmc to
-  be used with coda package
+as.mcmc Extract mcmc object from the result of MHmcmc to be
+used with coda package
 }
 \examples{
 \dontrun{
@@ -25,6 +25,6 @@ mcmc <- as.mcmc(result_Gratiot_mcmc)
 }
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

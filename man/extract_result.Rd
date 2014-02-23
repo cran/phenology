@@ -2,7 +2,7 @@
 \alias{extract_result}
 \title{Extract the set of parameters from a result object.}
 \usage{
-  extract_result(result = NULL, help = FALSE)
+extract_result(result = NULL, help = FALSE)
 }
 \arguments{
   \item{result}{A result file}
@@ -10,16 +10,16 @@
   \item{help}{If TRUE, an help is displayed}
 }
 \value{
-  Return the set of fitted parameters
+Return the set of fitted parameters
 }
 \description{
-  The function "extract_result" permits to extract the set
-  of parameters from a result object obtained after
-  fit_phenology.
+The function "extract_result" permits to extract the set of
+parameters from a result object obtained after
+fit_phenology.
 }
 \details{
-  extract_result get the fitted parameters from a result
-  object.
+extract_result get the fitted parameters from a result
+object.
 }
 \examples{
 library(phenology)
@@ -42,6 +42,6 @@ parg1<-extract_result(result_Gratiot)
 }
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

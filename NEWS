@@ -2,9 +2,18 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 3.57    (2014-02-23)
+            
+* Parameter folder of function read_folder() accept or a file or a folder
+* New parameter wildcard for function read_folder()
+
+            CHANGES IN VERSION 3.56    (2013-12-09)
+            
+* new function ind_long_lat()
+
             CHANGES IN VERSION 3.55    (2013-11-21)
             
-* New function MinBMinE_to_Min
+* New function MinBMinE_to_Min()
 * new parameter growlnotify for fit_phenology and plot.phenology
 * correcton of a bug to prevent PMinE to become negatif
 

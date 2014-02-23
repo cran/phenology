@@ -1,28 +1,35 @@
 \name{read_folder}
 \alias{read_folder}
-\title{Open all file present in a folder and create a list with these files}
+\title{Reads all files present in a folder and creates a list with the the content of these files}
 \usage{
-  read_folder(folder = try(file.choose(), silent = TRUE),
-    read = read.delim, ...)
+read_folder(folder = try(file.choose(), silent = TRUE), wildcard = "*.*",
+  read = read.delim, ...)
 }
 \arguments{
-  \item{folder}{Where to search for files}
+  \item{folder}{Where to search for files; can be or a file
+  path or a folder path}
 
-  \item{read}{Function used to read file. Ex: read.delim}
+  \item{wildcard}{Define which files are to be read
+  (examples: "*.*", "*.xls", "essai*.txt")}
+
+  \item{read}{Function used to read file. Ex: read.delim or
+  read.xls from gdata package}
 
   \item{...}{Parameters send to the read function}
 }
 \value{
-  Return a list of the data in the files of the folder
-  (directory for windows users)
+Return a list of the data in the files of the folder
+(directory for windows users)
 }
 \description{
-  To create a new list, the syntaxe is \cr
-  datalist<-read_folder(folder=".", read=read.delim,
-  header=FALSE)\cr
+To create a list, the syntax is \cr
+datalist<-read_folder(folder=".", read=read.delim,
+header=FALSE)\cr Return NULL with a warning if the folder
+does not exist or is empty.\cr The names of the elements of
+the list are the filenames.\cr
 }
 \details{
-  read_folder opens all files from a folder
+read_folder reads all files present in a folder
 }
 \examples{
 \dontrun{
@@ -32,6 +39,6 @@ Gratiot<-read_folder(".")
 }
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

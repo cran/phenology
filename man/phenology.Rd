@@ -2,18 +2,18 @@
 \alias{phenology}
 \title{Help for phenology package.}
 \usage{
-  phenology()
+phenology()
 }
 \value{
-  None
+None
 }
 \description{
-  Help function for phenology package.
+Help function for phenology package.
 }
 \details{
-  phenology is the help function for phenology package.
+phenology is the help function for phenology package.
 }
 \author{
-  Marc Girondot \email{marc.girondot@u-psud.fr}
+Marc Girondot \email{marc.girondot@u-psud.fr}
 }
 

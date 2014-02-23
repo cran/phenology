@@ -2,7 +2,7 @@
 \alias{summary.phenologymap}
 \title{Print information on a phenologymap object.}
 \usage{
-  \method{summary}{phenologymap} (object, ...)
+\method{summary}{phenologymap}(object, ...)
 }
 \arguments{
   \item{object}{A map generated with map_phenology.}
@@ -10,11 +10,11 @@
   \item{...}{Not used}
 }
 \value{
-  Return None
+Return None
 }
 \description{
-  summary.phenologymap print information on a phenologymap
-  object
+summary.phenologymap print information on a phenologymap
+object
 }
 \examples{
 library("phenology")
@@ -55,6 +55,6 @@ data(map_Gratiot)
 summary(map_Gratiot)
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

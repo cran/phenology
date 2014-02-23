@@ -2,8 +2,8 @@
 \alias{plot.mcmcComposite}
 \title{Plot the result of a MCMC search}
 \usage{
-  \method{plot}{mcmcComposite} (x, ..., chain = 1,
-    parameters = 1, legend = TRUE)
+\method{plot}{mcmcComposite}(x, ..., chain = 1, parameters = 1,
+  legend = TRUE)
 }
 \arguments{
   \item{x}{A mcmcComposite object obtained after
@@ -19,16 +19,16 @@
   \item{...}{Graphical parameters to be send to hist()}
 }
 \value{
-  None
+None
 }
 \description{
-  Plot the result of a MCMC search.\cr The parameters to
-  use can be called by:\cr parameters="all"\cr
-  parameters=1:4\cr parameters=c("PAR1", "PAR2", "PAR5")\cr
-  parameters=c(TRUE, TRUE, FALSE, TRUE)\cr
+Plot the result of a MCMC search.\cr The parameters to use
+can be called by:\cr parameters="all"\cr parameters=1:4\cr
+parameters=c("PAR1", "PAR2", "PAR5")\cr parameters=c(TRUE,
+TRUE, FALSE, TRUE)\cr
 }
 \details{
-  plot.mcmcComposite plots the result of a MCMC search
+plot.mcmcComposite plots the result of a MCMC search
 }
 \examples{
 library(phenology)
@@ -55,6 +55,6 @@ data(result_Gratiot_mcmc)
 plot(result_Gratiot_mcmc, parameters=3, xlim=c(230, 330))
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

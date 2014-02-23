@@ -2,8 +2,8 @@
 \alias{add_SD}
 \title{Add SD for a fixed parameter.}
 \usage{
-  add_SD(parametersfixed = NULL, parameters = NULL,
-    SD = NULL, help = FALSE)
+add_SD(parametersfixed = NULL, parameters = NULL, SD = NULL,
+  help = FALSE)
 }
 \arguments{
   \item{parametersfixed}{Set of fixed parameters}
@@ -15,14 +15,14 @@
   \item{help}{If TRUE, an help is displayed}
 }
 \value{
-  The parameters set with the new SD value
+The parameters set with the new SD value
 }
 \description{
-  This function is used to add standard deviation for a
-  fixed parameter.
+This function is used to add standard deviation for a fixed
+parameter.
 }
 \details{
-  add_SD adds SD for a fixed parameter.
+add_SD adds SD for a fixed parameter.
 }
 \examples{
 library(phenology)
@@ -32,6 +32,6 @@ pfixed<-c(Flat=0, Min=0)
 pfixed<-add_SD(parametersfixed=pfixed, parameters="Flat", SD=5)
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

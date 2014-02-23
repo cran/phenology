@@ -61,6 +61,15 @@ plot_errbar <- function(...,
                         errbar.y.polygon.list=list(NULL), 
                         add=FALSE) 
   {
+  
+  # errbar.x=NULL; errbar.y=NULL; errbar.x.plus=NULL; errbar.x.minus=NULL; errbar.y.plus=NULL; errbar.y.minus=NULL; x.plus=NULL; x.minus=NULL; y.plus=NULL; y.minus=NULL; errbar.tick=1/50; errbar.lwd=par("lwd"); errbar.lty=par("lty"); errbar.col=par("fg"); errbar.y.polygon=FALSE; errbar.y.polygon.list=list(NULL); add=FALSE
+  # par.plot <- list(x=x.axis, y=CTE, las=1, type="l", xlim=c(as.Date("1997-01-01"), as.Date("2014-01-01")), ylim=c(28, 32), bty="n", xlab="Year", ylab=expression("constant incubation temperature (" *degree*"C)"), xaxt="n")
+  # y.plus=CTE.plus
+  # y.minus=CTE.moins
+  # errbar.y.polygon=TRUE
+  # errbar.y.polygon.list=list(border=NA, col=rgb(0, 0, 0, 0.5))
+  
+  
   par.plot <- list(...)
   if (add) {
   	s <- ScalePreviousPlot()

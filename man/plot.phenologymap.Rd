@@ -2,9 +2,8 @@
 \alias{plot.phenologymap}
 \title{Plot a likelihood map with Delta and Phi varying.}
 \usage{
-  \method{plot}{phenologymap} (x, ...,
-    col = heat.colors(128), xlab = "Phi", ylab = "Delta",
-    help = FALSE)
+\method{plot}{phenologymap}(x, ..., col = heat.colors(128), xlab = "Phi",
+  ylab = "Delta", help = FALSE)
 }
 \arguments{
   \item{x}{A map generated with map_phenology.}
@@ -21,15 +20,15 @@
   \item{help}{If TRUE, an help is displayed}
 }
 \value{
-  Return None
+Return None
 }
 \description{
-  This function plots a likelihood map obtained after
-  map_phenology.
+This function plots a likelihood map obtained after
+map_phenology.
 }
 \details{
-  plot.phenologymap plots a likelihood map with Delta and
-  Phi varying.
+plot.phenologymap plots a likelihood map with Delta and Phi
+varying.
 }
 \examples{
 \dontrun{
@@ -66,6 +65,6 @@ plot(map_Gratiot, col=heat.colors(128))
 }
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

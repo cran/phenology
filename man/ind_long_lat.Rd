@@ -1,0 +1,44 @@
+\name{ind_long_lat}
+\alias{ind_long_lat}
+\title{Return or the index in ncdf object from lat/longitude or inverse}
+\usage{
+ind_long_lat(ncdf = stop("The ncdf data must be supplied"), long = NA,
+  lat = NA, indice.long = NA, indice.lat = NA)
+}
+\arguments{
+  \item{ncdf}{a ncdf object}
+
+  \item{long}{longitude in decimal format}
+
+  \item{lat}{latitude in decimal format}
+
+  \item{indice.long}{Index of longitude}
+
+  \item{indice.lat}{Index of latitude}
+}
+\value{
+Or the index in ncdf object from lat/longitude or inverse
+}
+\description{
+Return or the index in ncdf object from lat/longitude or
+inverse
+}
+\details{
+ind_long_lat is used to manage ncdf information
+}
+\examples{
+\dontrun{
+url <- "ftp://ftp.cdc.noaa.gov/Datasets/noaa.oisst.v2.highres/"
+url <- paste0(url, "sst.day.mean.2012.v2.nc")
+dest <- paste(Sys.getenv("HOME"), "/sst.day.mean.2012.v2.nc", sep="")
+download.file(url, dest)
+library("ncdf4")
+dta2012<-nc_open(paste(Sys.getenv("HOME"), "/sst.day.mean.2012.v2.nc", sep=""))
+indices <- ind_long_lat(ncdf=dta2012, lat=5.89, long=-20.56)
+coordinates <- ind_long_lat(ncdf=dta2012, indice.lat=20, indice.long=30)
+}
+}
+\author{
+Marc Girondot
+}
+

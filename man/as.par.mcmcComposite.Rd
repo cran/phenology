@@ -2,23 +2,23 @@
 \alias{as.par.mcmcComposite}
 \title{Extract parameters at maximum likelihood from the result of MHmcmc}
 \usage{
+
   as.par.mcmcComposite(x = stop("A result obtained from MHmcmc must be provided"))
 }
 \arguments{
   \item{x}{A result from MHmcmc search}
 }
 \value{
-  A vector with parameters at maximum likelihood
+A vector with parameters at maximum likelihood
 }
 \description{
-  Take a mcmcComposite object and create a vector object
-  with parameter value at maximum likelihood. It also says
-  at which iteration the maximum lihelihood has been
-  observed.
+Take a mcmcComposite object and create a vector object with
+parameter value at maximum likelihood. It also says at
+which iteration the maximum lihelihood has been observed.
 }
 \details{
-  as.par.mcmcComposite Extract parameters at maximum
-  likelihood from the result of MHmcmc
+as.par.mcmcComposite Extract parameters at maximum
+likelihood from the result of MHmcmc
 }
 \examples{
 \dontrun{
@@ -28,6 +28,6 @@ x <- as.par.mcmcComposite(result_Gratiot_mcmc)
 }
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

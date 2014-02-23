@@ -2,28 +2,28 @@
 \alias{compare_AIC}
 \title{Compares the AIC of several outputs}
 \usage{
-  compare_AIC(...)
+compare_AIC(...)
 }
 \arguments{
   \item{...}{Successive results to be compared as lists}
 }
 \value{
-  A list with DeltaAIC and Akaike weight for the models.
+A list with DeltaAIC and Akaike weight for the models.
 }
 \description{
-  This function is used to compares the AIC of several
-  outputs obtained with the same data but with different
-  set of parameters.\cr The parameters must be lists with
-  $aic or $AIC or $value and $par elements.\cr If several
-  objects are within the same list, there AIC is sumed.\cr
-  For example, compare_AIC(g1=list(group), g2=list(separe1,
-  separe2)) can be used to compare a single model onto two
-  different sets of data against each set of data fited
-  with its own set of parameters.
+This function is used to compares the AIC of several
+outputs obtained with the same data but with different set
+of parameters.\cr The parameters must be lists with $aic or
+$AIC or $value and $par elements.\cr If several objects are
+within the same list, there AIC is sumed.\cr For example,
+compare_AIC(g1=list(group), g2=list(separe1, separe2)) can
+be used to compare a single model onto two different sets
+of data against each set of data fited with its own set of
+parameters.
 }
 \details{
-  compare_AIC compares the AIC of several outputs obtained
-  with the same data.
+compare_AIC compares the AIC of several outputs obtained
+with the same data.
 }
 \examples{
 \dontrun{
@@ -53,6 +53,6 @@ outputAIC<-compare_AIC(full=result_Gratiot, Flat=result_Gratiot_Flat)
 }
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

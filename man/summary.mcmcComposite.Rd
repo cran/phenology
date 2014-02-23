@@ -2,8 +2,7 @@
 \alias{summary.mcmcComposite}
 \title{Summarize the result of a MCMC search}
 \usage{
-  \method{summary}{mcmcComposite} (object, ...,
-    chain = NULL)
+\method{summary}{mcmcComposite}(object, ..., chain = NULL)
 }
 \arguments{
   \item{object}{A mcmcComposite object obtained after
@@ -14,14 +13,14 @@
   \item{chain}{The chain to use}
 }
 \value{
-  A summary of the result
+A summary of the result
 }
 \description{
-  Summary for the result of a MCMC search
+Summary for the result of a MCMC search
 }
 \details{
-  summary.mcmcComposite get info on the result of a MCMC
-  search
+summary.mcmcComposite get info on the result of a MCMC
+search
 }
 \examples{
 library(phenology)
@@ -64,6 +63,6 @@ summary(res_mcmc)
 }
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

@@ -2,22 +2,22 @@
 \alias{LBLE_to_L}
 \title{Transform a set of parameters from LengthB LengthE format to Length}
 \usage{
-  LBLE_to_L(parameters = stop("Set of parameters must be given"))
+LBLE_to_L(parameters = stop("Set of parameters must be given"))
 }
 \arguments{
   \item{parameters}{Set of current parameters}
 }
 \value{
-  Return the set of modified parameters
+Return the set of modified parameters
 }
 \description{
-  This function is used to transform a set of parameters
-  that uses LengthB and LengthE to a set of parameters uses
-  Length.
+This function is used to transform a set of parameters that
+uses LengthB and LengthE to a set of parameters uses
+Length.
 }
 \details{
-  LBLE_to_L transforms a set of parameters from LengthB
-  LengthE format to Length.
+LBLE_to_L transforms a set of parameters from LengthB
+LengthE format to Length.
 }
 \examples{
 \dontrun{
@@ -37,6 +37,6 @@ parg1<-LBLE_to_L(parameters=parg)
 parg2<-L_to_LBLE(parameters=parg1)
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

@@ -2,10 +2,10 @@
 \alias{phenology_MHmcmc}
 \title{Run the Metropolis-Hastings algorithm for data}
 \usage{
-  phenology_MHmcmc(result = stop("An output from searchR must be provided"),
-    n.iter = 10000,
-    parametersMCMC = stop("A model generated with phenology_MHmcmc_p() must be provided"),
-    n.chains = 4, n.adapt = 0, thin = 1, trace = FALSE)
+phenology_MHmcmc(result = stop("An output from searchR must be provided"),
+  n.iter = 10000,
+  parametersMCMC = stop("A model generated with phenology_MHmcmc_p() must be provided"),
+  n.chains = 4, n.adapt = 0, thin = 1, trace = FALSE)
 }
 \arguments{
   \item{n.iter}{Number of iterations for each step}
@@ -26,22 +26,22 @@
   \item{trace}{True or False, shows progress}
 }
 \value{
-  A list with resultMCMC being mcmc.list object, resultLnL
-  being likelihoods and parametersMCMC being the parameters
-  used
+A list with resultMCMC being mcmc.list object, resultLnL
+being likelihoods and parametersMCMC being the parameters
+used
 }
 \description{
-  Run the Metropolis-Hastings algorithm for data.\cr Deeply
-  modified from a MCMC script by Olivier Martin (INRA,
-  Paris-Grignon).\cr The number of iterations is
-  n.iter+n.adapt+1 because the initial likelihood is also
-  displayed.\cr I recommend that thin=1 because the method
-  to estimate SE uses resampling.\cr As initial point is
-  maximum likelihood, n.adapt = 0 seems a good solution.
+Run the Metropolis-Hastings algorithm for data.\cr Deeply
+modified from a MCMC script by Olivier Martin (INRA,
+Paris-Grignon).\cr The number of iterations is
+n.iter+n.adapt+1 because the initial likelihood is also
+displayed.\cr I recommend that thin=1 because the method to
+estimate SE uses resampling.\cr As initial point is maximum
+likelihood, n.adapt = 0 seems a good solution.
 }
 \details{
-  phenology_MHmcmc runs the Metropolis-Hastings algorithm
-  for data (Bayesian MCMC)
+phenology_MHmcmc runs the Metropolis-Hastings algorithm for
+data (Bayesian MCMC)
 }
 \examples{
 library(phenology)
@@ -82,6 +82,6 @@ parametersMCMC = pmcmc, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
 }
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

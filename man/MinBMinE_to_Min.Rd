@@ -2,22 +2,21 @@
 \alias{MinBMinE_to_Min}
 \title{Transform a set of parameters from MinB and MinE to Min}
 \usage{
-  MinBMinE_to_Min(parameters = stop("A set of parameters must be indicated"))
+MinBMinE_to_Min(parameters = stop("A set of parameters must be indicated"))
 }
 \arguments{
   \item{parameters}{Set of current parameters}
 }
 \value{
-  Return a set of modified parameters
+Return a set of modified parameters
 }
 \description{
-  This function is used to transform a set of parameters
-  that uses MinB and MinE to a set of parameters that uses
-  Min.
+This function is used to transform a set of parameters that
+uses MinB and MinE to a set of parameters that uses Min.
 }
 \details{
-  MinBMinE_to_Min transforms a set of parameters from MinB
-  and MinE to Min
+MinBMinE_to_Min transforms a set of parameters from MinB
+and MinE to Min
 }
 \examples{
 # Read a file with data
@@ -32,6 +31,6 @@ parg<-par_init(data_Gratiot)
 parg1<-MinBMinE_to_Min(parameters=parg)
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

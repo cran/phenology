@@ -2,9 +2,9 @@
 \alias{likelihood_phenology}
 \title{Estimate the likelihood of timeseries based on a set of parameters.}
 \usage{
-  likelihood_phenology(data = NULL, parametersfit = NULL,
-    parametersfixed = NULL, zero_counts = NULL,
-    method_incertitude = NULL, result = NULL)
+likelihood_phenology(data = NULL, parametersfit = NULL,
+  parametersfixed = NULL, zero_counts = NULL, method_incertitude = NULL,
+  result = NULL)
 }
 \arguments{
   \item{data}{Dataset generated with add_format}
@@ -25,15 +25,15 @@
   \item{result}{An object obtained after fit_phenology()}
 }
 \value{
-  The likelihood of the data with the parameters
+The likelihood of the data with the parameters
 }
 \description{
-  This function is used to estimate the likelihood based on
-  a set of parameters.
+This function is used to estimate the likelihood based on a
+set of parameters.
 }
 \details{
-  likelihood_phenology estimate likelihood for a set of
-  parameters.
+likelihood_phenology estimate likelihood for a set of
+parameters.
 }
 \examples{
 \dontrun{
@@ -50,6 +50,6 @@ likelihood_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL
 }
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

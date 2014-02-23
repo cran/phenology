@@ -2,7 +2,7 @@
 \alias{print.phenologymap}
 \title{Print information on a phenologymap object.}
 \usage{
-  \method{print}{phenologymap} (x, ...)
+\method{print}{phenologymap}(x, ...)
 }
 \arguments{
   \item{x}{A map generated with map_phenology.}
@@ -10,11 +10,11 @@
   \item{...}{Not used}
 }
 \value{
-  Return None
+Return None
 }
 \description{
-  print.phenologymap print information on a phenologymap
-  object
+print.phenologymap print information on a phenologymap
+object
 }
 \examples{
 library("phenology")
@@ -55,6 +55,6 @@ data(map_Gratiot)
 map_Gratiot
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

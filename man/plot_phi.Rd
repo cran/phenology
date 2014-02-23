@@ -2,7 +2,7 @@
 \alias{plot_phi}
 \title{Plot the best likelihood for fixed Phi value.}
 \usage{
-  plot_phi(map = NULL, help = FALSE)
+plot_phi(map = NULL, help = FALSE)
 }
 \arguments{
   \item{map}{A map generated with map_phenology}
@@ -10,14 +10,14 @@
   \item{help}{If TRUE, an help is displayed}
 }
 \value{
-  Return None
+Return None
 }
 \description{
-  The function "plot_phi" plots the best likelihood for
-  each Phi value.
+The function "plot_phi" plots the best likelihood for each
+Phi value.
 }
 \details{
-  plot_phi plots the best likelihood for fixed Phi value.
+plot_phi plots the best likelihood for fixed Phi value.
 }
 \examples{
 library("phenology")
@@ -57,6 +57,6 @@ data(map_Gratiot)
 plot_phi(map=map_Gratiot)
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

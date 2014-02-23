@@ -2,8 +2,7 @@
 \alias{shift_sinusoid}
 \title{Shift sinusoid information.}
 \usage{
-  shift_sinusoid(parameters = NULL, from = "", to = "1",
-    help = FALSE)
+shift_sinusoid(parameters = NULL, from = "", to = "1", help = FALSE)
 }
 \arguments{
   \item{parameters}{set of parameters}
@@ -15,14 +14,14 @@
   \item{help}{If TRUE, an help is displayed}
 }
 \value{
-  Return a set of modified parameters
+Return a set of modified parameters
 }
 \description{
-  This function is used to shift sinusoid parameters from
-  '', '1' or '2'.
+This function is used to shift sinusoid parameters from '',
+'1' or '2'.
 }
 \details{
-  shift_sinusoid shift sinusoid information.
+shift_sinusoid shift sinusoid information.
 }
 \examples{
 # Read a file with data
@@ -77,6 +76,6 @@ output2<-plot(result_Gratiot2, moon=TRUE)
 data(result_Gratiot2)
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

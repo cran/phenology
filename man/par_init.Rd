@@ -2,8 +2,8 @@
 \alias{par_init}
 \title{Calculate initial set of parameters.}
 \usage{
-  par_init(data = stop("A dataset must be provided"),
-    parametersfixed = NA, help = FALSE)
+par_init(data = stop("A dataset must be provided"), parametersfixed = NA,
+  help = FALSE)
 }
 \arguments{
   \item{data}{Dataset generated with add_phenology()}
@@ -13,15 +13,14 @@
   \item{help}{If TRUE, an help is displayed}
 }
 \value{
-  The initial set of parameters
+The initial set of parameters
 }
 \description{
-  This function is used to generate a first set of
-  parameters that is expected to be not to far from the
-  final.
+This function is used to generate a first set of parameters
+that is expected to be not to far from the final.
 }
 \details{
-  par_init calculates initial set of parameters.
+par_init calculates initial set of parameters.
 }
 \examples{
 \dontrun{
@@ -43,6 +42,6 @@ output<-plot(result_Gratiot)
 }
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

@@ -2,7 +2,7 @@
 \alias{plot_delta}
 \title{Plot a likelihood lineplot obtained after map_phenology.}
 \usage{
-  plot_delta(map = NULL, Phi = NULL, help = FALSE)
+plot_delta(map = NULL, Phi = NULL, help = FALSE)
 }
 \arguments{
   \item{map}{A map generated with map_phenology}
@@ -12,15 +12,14 @@
   \item{help}{If TRUE, an help is displayed}
 }
 \value{
-  Return None
+Return None
 }
 \description{
-  This function plots a likelihood lineplot obtained after
-  map_phenology.
+This function plots a likelihood lineplot obtained after
+map_phenology.
 }
 \details{
-  plot_delta plots the likelihood delta for fixed Phi
-  value.
+plot_delta plots the likelihood delta for fixed Phi value.
 }
 \examples{
 \dontrun{
@@ -59,6 +58,6 @@ plot_delta(map=map_Gratiot, Phi=15)
 }
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

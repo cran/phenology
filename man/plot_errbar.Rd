@@ -2,14 +2,12 @@
 \alias{plot_errbar}
 \title{Plot a xy graph with error bar on x and/or y}
 \usage{
-  plot_errbar(..., errbar.x = NULL, errbar.y = NULL,
-    errbar.x.plus = NULL, errbar.x.minus = NULL,
-    errbar.y.plus = NULL, errbar.y.minus = NULL,
-    x.plus = NULL, x.minus = NULL, y.plus = NULL,
-    y.minus = NULL, errbar.tick = 1/50,
-    errbar.lwd = par("lwd"), errbar.lty = par("lty"),
-    errbar.col = par("fg"), errbar.y.polygon = FALSE,
-    errbar.y.polygon.list = list(NULL), add = FALSE)
+plot_errbar(..., errbar.x = NULL, errbar.y = NULL, errbar.x.plus = NULL,
+  errbar.x.minus = NULL, errbar.y.plus = NULL, errbar.y.minus = NULL,
+  x.plus = NULL, x.minus = NULL, y.plus = NULL, y.minus = NULL,
+  errbar.tick = 1/50, errbar.lwd = par("lwd"), errbar.lty = par("lty"),
+  errbar.col = par("fg"), errbar.y.polygon = FALSE,
+  errbar.y.polygon.list = list(NULL), add = FALSE)
 }
 \arguments{
   \item{...}{Parameters for plot() such as main= or ylim=}
@@ -63,23 +61,23 @@
   \item{add}{If true, add the graph to the previous one.}
 }
 \value{
-  Nothing
+Nothing
 }
 \description{
-  To plot data, just use it as a normal plot but add the
-  errbar.x and errbar.y values or errbar.x.minus,
-  errbar.x.plus if bars for x axis are asymetric and
-  errbar.y.minus, errbar.y.plus if bars for y axis are
-  asymetric. Use x.plus, x.minus, y.plus and y.minus to set
-  absolut limits for error bars. Note that x.plus and
-  x.minus have priority over errbar.x, errbar.x.minus and
-  errbar.x.plus and that y.plus and y.minus have priority
-  over errbar.y, errbar.y.minus and errbar.y.plus. The
-  parameter errbar.y.polygon=TRUE permits to define error
-  as an envolop for y axis.
+To plot data, just use it as a normal plot but add the
+errbar.x and errbar.y values or errbar.x.minus,
+errbar.x.plus if bars for x axis are asymetric and
+errbar.y.minus, errbar.y.plus if bars for y axis are
+asymetric. Use x.plus, x.minus, y.plus and y.minus to set
+absolut limits for error bars. Note that x.plus and x.minus
+have priority over errbar.x, errbar.x.minus and
+errbar.x.plus and that y.plus and y.minus have priority
+over errbar.y, errbar.y.minus and errbar.y.plus. The
+parameter errbar.y.polygon=TRUE permits to define error as
+an envolop for y axis.
 }
 \details{
-  plot_errbar plot a xy graph with error bar on x and/or y
+plot_errbar plot a xy graph with error bar on x and/or y
 }
 \examples{
 plot_errbar(1:100, rnorm(100, 1, 2),
@@ -97,6 +95,6 @@ plot_errbar(x=x, y=y, xlab="axe x", ylab="axe y", bty="n", xlim=c(1,20),
 		errbar.y.polygon.list=list(border=NA, col=rgb(0, 0, 0, 0.5)))
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

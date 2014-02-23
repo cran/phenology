@@ -3,15 +3,15 @@
 \alias{phenology-package}
 \title{The package phenology}
 \description{
-  A package to fit seasonality counts
+A package to fit seasonality counts
 }
 \details{
-  Fit a parametric function that describes phenology
+Fit a parametric function that describes phenology
 
-  \tabular{ll}{ Package: \tab phenology\cr Type: \tab
-  Package\cr Version: \tab 3.55 build 358\cr Date: \tab
-  2013-11-21\cr License: \tab GPL (>= 2)\cr LazyLoad: \tab
-  yes\cr }
+\tabular{ll}{ Package: \tab phenology\cr Type: \tab
+Package\cr Version: \tab 3.57 build 360\cr Date: \tab
+2014-02-23\cr License: \tab GPL (>= 2)\cr LazyLoad: \tab
+yes\cr }
 }
 \examples{
 library(phenology)
@@ -33,22 +33,22 @@ output<-plot(result_Gratiot)
 }
 }
 \author{
-  Marc Girondot \email{marc.girondot@u-psud.fr}
+Marc Girondot \email{marc.girondot@u-psud.fr}
 }
 \references{
-  Girondot, M. 2010. Estimating density of animals during
-  migratory waves: application to marine turtles at nesting
-  site.  Endangered Species Research, 12, 85-105.
+Girondot, M. 2010. Estimating density of animals during
+migratory waves: application to marine turtles at nesting
+site.  Endangered Species Research, 12, 85-105.
 
-  Girondot, M. 2010. Editorial: The zero counts. Marine
-  Turtle Newsletter, 129, 5-6.
+Girondot, M. 2010. Editorial: The zero counts. Marine
+Turtle Newsletter, 129, 5-6.
 }
 \seealso{
-  Girondot, M., Rivalan, P., Wongsopawiro, R., Briane,
-  J.-P., Hulin, V., Caut, S., Guirlet, E. & Godfrey, M. H.
-  2006. Phenology of marine turtle nesting revealed by a
-  statistical model of the nesting season. BMC Ecology, 6,
-  11.
+Girondot, M., Rivalan, P., Wongsopawiro, R., Briane, J.-P.,
+Hulin, V., Caut, S., Guirlet, E. & Godfrey, M. H. 2006.
+Phenology of marine turtle nesting revealed by a
+statistical model of the nesting season. BMC Ecology, 6,
+11.
 }
 \keyword{Ecology}
 \keyword{Phenology}

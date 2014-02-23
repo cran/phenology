@@ -2,8 +2,9 @@
 \alias{phenology_MHmcmc_p}
 \title{Generates set of parameters to be used with phenology_MHmcmc()}
 \usage{
+
   phenology_MHmcmc_p(result = stop("An output from fit_phenology() must be provided"),
-    accept = FALSE)
+  accept = FALSE)
 }
 \arguments{
   \item{result}{An object obtained after a fit_phenology()
@@ -12,15 +13,15 @@
   \item{accept}{If TRUE, does not wait for use interaction}
 }
 \value{
-  A matrix with the parameters
+A matrix with the parameters
 }
 \description{
-  Interactive script used to generate set of parameters to
-  be used with phenology_MHmcmc().\cr
+Interactive script used to generate set of parameters to be
+used with phenology_MHmcmc().\cr
 }
 \details{
-  phenology_MHmcmc_p generates set of parameters to be used
-  with MHmcmc()
+phenology_MHmcmc_p generates set of parameters to be used
+with MHmcmc()
 }
 \examples{
 library(phenology)
@@ -41,6 +42,6 @@ data(result_Gratiot)
 pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept=TRUE)
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

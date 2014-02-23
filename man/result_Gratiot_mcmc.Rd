@@ -3,15 +3,17 @@
 \alias{result_Gratiot_mcmc}
 \title{Result of the mcmc for Leatherback nest counts}
 \format{A mcmcComposite object with mcmc result.}
+\usage{
+result_Gratiot_mcmc
+}
 \description{
-  Result of the mcmc for Leatherback nest counts from
-  Gratiot et al. (2006) Figure 1 The phenology has been
-  fitted with MinE, MinB, Max, Flat, LengthB, LengthE,
-  Peak, Theta.
+Result of the mcmc for Leatherback nest counts from Gratiot
+et al. (2006) Figure 1 The phenology has been fitted with
+MinE, MinB, Max, Flat, LengthB, LengthE, Peak, Theta.
 }
 \details{
-  Result of the mcmc for Leatherback nest counts from
-  Gratiot et al. (2006) Figure 1
+Result of the mcmc for Leatherback nest counts from Gratiot
+et al. (2006) Figure 1
 }
 \examples{
 library(phenology)
@@ -19,13 +21,13 @@ library(phenology)
 data(result_Gratiot_mcmc)
 }
 \author{
-  Marc Girondot \email{marc.girondot@u-psud.fr}
+Marc Girondot \email{marc.girondot@u-psud.fr}
 }
 \references{
-  Gratiot, N., Gratiot, J., de Thoisy, B. & Kelle, L. 2006.
-  Estimation of marine turtles nesting season from
-  incomplete data ; statistical adjustment of a sinusoidal
-  function. Animal Conservation, 9, 95-102.
+Gratiot, N., Gratiot, J., de Thoisy, B. & Kelle, L. 2006.
+Estimation of marine turtles nesting season from incomplete
+data ; statistical adjustment of a sinusoidal function.
+Animal Conservation, 9, 95-102.
 }
 \keyword{datasets}
 

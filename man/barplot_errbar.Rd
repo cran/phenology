@@ -2,11 +2,10 @@
 \alias{barplot_errbar}
 \title{Plot a barplot graph with error bar on y}
 \usage{
-  barplot_errbar(..., errbar.y = NULL,
-    errbar.y.plus = NULL, errbar.y.minus = NULL,
-    y.plus = NULL, y.minus = NULL, errbar.tick = 1/50,
-    errbar.lwd = par("lwd"), errbar.lty = par("lty"),
-    errbar.col = par("fg"), add = FALSE)
+barplot_errbar(..., errbar.y = NULL, errbar.y.plus = NULL,
+  errbar.y.minus = NULL, y.plus = NULL, y.minus = NULL,
+  errbar.tick = 1/50, errbar.lwd = par("lwd"), errbar.lty = par("lty"),
+  errbar.col = par("fg"), add = FALSE)
 }
 \arguments{
   \item{...}{Parameters for barplot() such as main= or
@@ -40,18 +39,18 @@
   \item{add}{If true, add the graph to the previous one.}
 }
 \value{
-  Nothing
+Nothing
 }
 \description{
-  To plot data, just use it as a normal barplot but add the
-  errbar.y values or errbar.y.minus, errbar.y.plus if bars
-  for y axis are asymetric. Use y.plus and y.minus to set
-  absolut limits for error bars. Note that y.plus and
-  y.minus have priority over errbar.y, errbar.y.minus and
-  errbar.y.plus.
+To plot data, just use it as a normal barplot but add the
+errbar.y values or errbar.y.minus, errbar.y.plus if bars
+for y axis are asymetric. Use y.plus and y.minus to set
+absolut limits for error bars. Note that y.plus and y.minus
+have priority over errbar.y, errbar.y.minus and
+errbar.y.plus.
 }
 \details{
-  plot_errbar plot a barplot with error bar on y
+plot_errbar plot a barplot with error bar on y
 }
 \examples{
 barplot_errbar(rnorm(10, 10, 3),
@@ -64,6 +63,6 @@ barplot_errbar(y,
             		y.plus=y+2)
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 

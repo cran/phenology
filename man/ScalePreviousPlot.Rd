@@ -2,17 +2,17 @@
 \alias{ScalePreviousPlot}
 \title{Return the scale of the previous plot}
 \usage{
-  ScalePreviousPlot()
+ScalePreviousPlot()
 }
 \value{
-  A list with xlim and ylim
+A list with xlim and ylim
 }
 \description{
-  Return a list with the limits of the previous plot, the
-  center, the range, and the position of label on this axe.
+Return a list with the limits of the previous plot, the
+center, the range, and the position of label on this axe.
 }
 \details{
-  ScalePreviousPlot returns the scale of the previous plot
+ScalePreviousPlot returns the scale of the previous plot
 }
 \examples{
 par(xaxs="i", yaxs="i")
@@ -31,6 +31,6 @@ text(x=ScalePreviousPlot()$xlim["center"], y=ScalePreviousPlot()$ylim["label"],
   xpd=TRUE, "Legend for X axes", pos=1)
 }
 \author{
-  Marc Girondot
+Marc Girondot
 }
 
