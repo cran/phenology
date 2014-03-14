@@ -1,0 +1,51 @@
+\name{getTide}
+\alias{getTide}
+\title{Annual tide calendar for one particular location}
+\usage{
+getTide(file = NULL, year = stop("Year must be indicated"), location = 0,
+  latitude = NA, longitude = NA, tz = "")
+}
+\arguments{
+  \item{file}{An html file from the site
+  http://tides.mobilegeographics.com/}
+
+  \item{location}{Code based on
+  http://tides.mobilegeographics.com/}
+
+  \item{year}{Year to get the calendar}
+
+  \item{latitude}{The latitude of the tide information}
+
+  \item{longitude}{The longitude of the tide information}
+
+  \item{tz}{Timezone}
+}
+\value{
+Return a data.frame with tide calendar:\cr Level is the
+tide level, Tide is the High or Low Tide information and
+Date.Time is the date/time in POSIXlt format.
+}
+\description{
+The script extract tide information from
+http://tides.mobilegeographics.com/ into a data.frame.
+}
+\details{
+getTide gets the annual tide calendar for one particular
+location.
+}
+\examples{
+\dontrun{
+library("phenology")
+lat <- 5.74
+long <- -54
+Awala2004 <- getTide(year=2004, longitude=long, latitude=lat, tz="America/Cayenne")
+with(Awala2004, plot(Date.Time, Level, bty="n", las=1, type="l",
+xlab=paste("Year", as.POSIXlt(Date.Time[1])$year+1900),
+ylab="Tide level in m"))
+}
+}
+\author{
+Marc Girondot \email{marc.girondot@u-psud.fr}
+}
+\keyword{Tide}
+

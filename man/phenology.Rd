@@ -1,19 +1,26 @@
 \name{phenology}
 \alias{phenology}
-\title{Help for phenology package.}
+\title{Run a shiny application for basic functions of phenology}
 \usage{
 phenology()
 }
 \value{
-None
+Nothing
 }
 \description{
-Help function for phenology package.
+Run a shiny application for basic functions of phenology
 }
 \details{
-phenology is the help function for phenology package.
+phenology runs a shiny application for basic functions of
+phenology
+}
+\examples{
+\dontrun{
+library(phenology)
+phenology()
+}
 }
 \author{
-Marc Girondot \email{marc.girondot@u-psud.fr}
+Marc Girondot
 }
 

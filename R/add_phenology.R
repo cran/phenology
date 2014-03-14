@@ -99,19 +99,16 @@ if (class(previous)!="phenologydata" && !is.null(previous)) {
 if(class(add)=="try-error") {
 	cat("No file has been chosen !\n")
 	return(invisible())
-
 }	
 
 nm <- NULL
 
 if (class(add)=="character") {
 # j'ai utilisé le file.choose
-
 	nm <- add
 	add <- lapply(add,readLines, warn=FALSE)
   addec <- add[[1]]
 	add[[1]] <- addec[addec!=""]
-	
 }
 	
 ## if (is.null(add) || !exists(as.character(substitute(add)))) {
@@ -127,7 +124,12 @@ rp <- .read_phenology(add, header, reference, month_ref, format, nm)
 add <- rp$DATA
 reference <- rp$reference
 format <- rp$format
-  
+
+
+if (dim(add)[2]==3) {
+  if (all(add[1,3]==add[,3])) name <- add[1,3]
+}
+# je ne comprends rien 14/3/2014
 # là je crée une liste
 	nbdatasets <- 1
 	addlist <- list(add)

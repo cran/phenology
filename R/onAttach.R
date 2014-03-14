@@ -1,7 +1,7 @@
 .onAttach <- function(libname, pkgname) {
     actual <- utils::packageDescription(pkgname)[["Version"]]
 
-    packageStartupMessage(paste("Welcome in package", pkgname, "!"))
+    packageStartupMessage(paste("Welcome in package", pkgname, "version", actual))
     
 #	essai <- available.packages(contriburl = "http://cran.at.r-project.org/")
 	

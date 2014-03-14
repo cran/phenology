@@ -3,11 +3,12 @@
 \title{Return or the index in ncdf object from lat/longitude or inverse}
 \usage{
 ind_long_lat(ncdf = stop("The ncdf data must be supplied"), long = NA,
-  lat = NA, indice.long = NA, indice.lat = NA)
+  lat = NA, indice.long = NA, indice.lat = NA, name.lon = "lon",
+  name.lat = "lat")
 }
 \arguments{
-  \item{ncdf}{an object read from library ncdf4 or library
-  RnetCDF}
+  \item{ncdf}{an object read from package ncdf4, RnetCDF or
+  ncdf}
 
   \item{long}{longitude in decimal format}
 
@@ -16,6 +17,12 @@ ind_long_lat(ncdf = stop("The ncdf data must be supplied"), long = NA,
   \item{indice.long}{Index of longitude}
 
   \item{indice.lat}{Index of latitude}
+
+  \item{name.lon}{Name of argument for longitude, default
+  is lon}
+
+  \item{name.lat}{Name of argument for latitude, default is
+  lat}
 }
 \value{
 Or the index in ncdf object from lat/longitude or inverse
@@ -34,11 +41,15 @@ url <- paste0(url, "sst.day.mean.2012.v2.nc")
 dest <- paste(Sys.getenv("HOME"), "/sst.day.mean.2012.v2.nc", sep="")
 download.file(url, dest)
 library("ncdf4")
-dta2012<-nc_open(dest)
+dta2012 <- nc_open(dest)
 indices <- ind_long_lat(ncdf=dta2012, lat=5.89, long=-20.56)
 coordinates <- ind_long_lat(ncdf=dta2012, indice.lat=20, indice.long=30)
 library("RNetCDF")
-dta2012<-open.nc(dest)
+dta2012 <- open.nc(dest)
+indices <- ind_long_lat(ncdf=dta2012, lat=5.89, long=-20.56)
+coordinates <- ind_long_lat(ncdf=dta2012, indice.lat=20, indice.long=30)
+library("ncdf")
+dta2012 <- open.ncdf(dest)
 indices <- ind_long_lat(ncdf=dta2012, lat=5.89, long=-20.56)
 coordinates <- ind_long_lat(ncdf=dta2012, indice.lat=20, indice.long=30)
 }
