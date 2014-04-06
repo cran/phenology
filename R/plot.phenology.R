@@ -180,9 +180,7 @@ for(i in 1:length(parres)) par2[,i]=rnorm(replicate.CI, mean=as.numeric(parres[i
 ponte2=matrix(rep(NA, 365*replicate.CI), ncol=365)
 
 # affiche le nom de la série
-cat("\n", nmser, "\n", sep="")
-
-cat("\n")
+# message("\n", nmser, "\n")
 
 if (progressbar) pb<-txtProgressBar(min=1, max=replicate.CI, style=3)
 

@@ -30,7 +30,7 @@ shinyServer(function(input, output, session) {
                             reference=NULL, month_ref= NULL, 
                             format=NULL, nm=dest)
       Formated <- add_phenology(previous=NULL, add=rp$DATA, 
-                                reference=rp$reference, format=rp$format)
+                                reference=rp$reference, format=rp$format, silent=TRUE)
       
  #     withProgress(session, min=1, max=5, {setProgress(message = 'Calculation in progress', detail = 'This may take a while...')
         

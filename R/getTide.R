@@ -25,8 +25,11 @@
 #' }
 #' @export
 
-getTide <- function(file=NULL, year=stop("Year must be indicated"), 
+getTide <- function(file=NULL, year=as.POSIXlt(Sys.time())$year+1900, 
 	location=0, latitude=NA, longitude=NA, tz="") {
+  
+  # file=NULL; year=as.POSIXlt(Sys.time())$year+1900;location=0;latitude=NA;longitude=NA;tz=""
+  # longitude=4.01; latitude=6.4
   if (!is.na(latitude) & !is.na(longitude)) {
     locationTide <- NULL
     load(file=paste0(system.file("Tide", package="phenology"), "/locationTide.rda"))
@@ -44,7 +47,7 @@ n.rows <- lapply(n.rows, function(t) {ifelse(is.null(t), 1, t)})
 n.rows <- unlist(n.rows)
 
 tl <- Sys.getlocale(category = "LC_TIME")
-Sys.setlocale(category = "LC_TIME", locale = "en_US.UTF-8" )
+Sys.setlocale(category = "LC_TIME", locale = gsub(".._..(.+)", "en_US\\1", tl) )
 Tide.Calendar <- NULL
 months <- which(n.rows>27)
 for (month in 1:12) {
@@ -53,8 +56,9 @@ for (month in 1:12) {
   # Read morning high tide
   for (col in 2:6) {
   Time <- gsub("([0-9]+:[0-9]+ [AP]M) .+", "\\1", table[,col])
+  
   Date.Time <- strptime(paste(Date, Time), format="%Y-%m-%d %I:%M %p", tz=tz)
-  Level <- gsub("[0-9]+:[0-9]+ [AP]M .+ / ([0123456789-\\.]+) m", "\\1", table[,col])
+  Level <- gsub("[0-9]+:[0-9]+ [AP]M .+ / (-?[\\.0-9]+) m", "\\1", table[,col])
   Tide.Calendar <- rbind(Tide.Calendar, data.frame(Date.Time=Date.Time, Level=as.numeric(Level), 
                                                    Tide=c("High Tide", "Low Tide", "High Tide", 
                                                           "Low Tide", "High Tide")[col-1], 

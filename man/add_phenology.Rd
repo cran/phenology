@@ -4,7 +4,7 @@
 \usage{
 add_phenology(add = file.choose(), name = NULL, reference = NULL,
   month_ref = NULL, header = NULL, format = NULL, previous = NULL,
-  help = FALSE)
+  silent = FALSE, help = FALSE)
 }
 \arguments{
   \item{previous}{Name of previous data formated with
@@ -29,6 +29,9 @@ add_phenology(add = file.choose(), name = NULL, reference = NULL,
   \item{format}{The format of the date in the file. Several
   format can be set and the last one that give compatible
   result is used}
+
+  \item{silent}{Does information about added timeseries is
+  shown}
 
   \item{help}{If TRUE, an help is displayed}
 }

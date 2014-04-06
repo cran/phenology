@@ -2,8 +2,8 @@
 \alias{getTide}
 \title{Annual tide calendar for one particular location}
 \usage{
-getTide(file = NULL, year = stop("Year must be indicated"), location = 0,
-  latitude = NA, longitude = NA, tz = "")
+getTide(file = NULL, year = as.POSIXlt(Sys.time())$year + 1900,
+  location = 0, latitude = NA, longitude = NA, tz = "")
 }
 \arguments{
   \item{file}{An html file from the site

@@ -9,6 +9,7 @@
 #' @param month_ref If no reference date is given, use this month as a reference
 #' @param header If the data is read from a file, can be used to force header or not
 #' @param format The format of the date in the file. Several format can be set and the last one that give compatible result is used
+#' @param silent Does information about added timeseries is shown
 #' @param help If TRUE, an help is displayed
 #' @description To create a new dataset, the syntaxe is \cr
 #' data<-add_phenology(add=newdata, name="Site", reference=as.Date('2001-12-31'), 
@@ -60,7 +61,8 @@
 
 
 add_phenology <-
-function(add=file.choose(), name=NULL, reference=NULL, month_ref= NULL, header=NULL, format=NULL, previous=NULL, help=FALSE) {
+function(add=file.choose(), name=NULL, reference=NULL, month_ref= NULL, header=NULL, 
+         format=NULL, previous=NULL, silent=FALSE, help=FALSE) {
 if(help) {
 	cat("To create a new dataset, the syntaxe is \n")
 	cat("data<-add_phenology(add=newdata, name='Site', \n")
@@ -101,11 +103,11 @@ if(class(add)=="try-error") {
 	return(invisible())
 }	
 
-nm <- NULL
+nm <- name
 
 if (class(add)=="character") {
 # j'ai utilisé le file.choose
-	nm <- add
+	nm <- ifelse(is.null(name), add, name)
 	add <- lapply(add,readLines, warn=FALSE)
   addec <- add[[1]]
 	add[[1]] <- addec[addec!=""]
@@ -182,7 +184,7 @@ for (kk in 1:nbdatasets) {
 
 
 # J'ai deux colonnes et le nom des séries dans name
-	print(name)
+	if (!silent) message(name)
 # Je n'ai pas de nom de site. Il n'y a donc qu'une seule série
 		colnames(add)=c("Date", "Nombre")	
 		add$Date<-as.character(add$Date)
@@ -192,7 +194,7 @@ for (kk in 1:nbdatasets) {
 		add<-add[(add[,1]!="") & (!is.na(add[,1])) & (gsub("[0-9 ]", "", add[,2])=="") & (!is.na(add[,2])) & (add[,2]!=""),1:2]
 		
 		if (dim(add)[1]==0) {
-			print(paste("The timeseries", name, "is empty; check it"))
+		  if (!silent) warning(paste("The timeseries", name, "is empty; check it"))
 			return(invisible())
 		} 
 
@@ -204,12 +206,12 @@ for (kk in 1:nbdatasets) {
 		
 
 		if (is.null(reference)) {		
-			print("No refence date can be calculated")
+			warning("No refence date can be calculated")
 			return(invisible())
 		}
 		
 		
-		print(paste("Reference: ", reference))
+    if (!silent) message(paste("Reference: ", reference))
 		
 		# dans i la ligne en cours
 		for(i in 1:dim(add)[1]) {
@@ -227,7 +229,7 @@ for (kk in 1:nbdatasets) {
 			
 			addT$Date[i] <- dtcorrect
 			if (is.na(addT$Date[i])) {
-				print(paste("Error date ", essai[1], sep=""))
+				warning(paste("Error date ", essai[1], sep=""))
 			} else {
 				addT$ordinal[i]<-as.numeric(addT$Date[i]-reference+1)
 				if (length(essai)==2) {
@@ -283,9 +285,9 @@ for (kk in 1:nbdatasets) {
 	}
 #	print(problem)
 	if (problem) {
-		cat("Problem in at least one date; check them. Take care about format used.\n")
-		cat("Within a file, all dates must conform to the same format.\n")
-		cat("Data should not be longer than one year for a site at the same time.\n")
+		warning(paste("Problem in at least one date; check them. Take care about format used.\n", 
+                  "Within a file, all dates must conform to the same format.\n",
+                  "Data should not be longer than one year for a site at the same time."))
 	}	
 	
 

@@ -7,8 +7,8 @@ ind_long_lat(ncdf = stop("The ncdf data must be supplied"), long = NA,
   name.lat = "lat")
 }
 \arguments{
-  \item{ncdf}{an object read from package ncdf4, RnetCDF or
-  ncdf}
+  \item{ncdf}{an object read from package ncdf4 or ncdf [I
+  can't install RNetCDF on R 3.1]}
 
   \item{long}{longitude in decimal format}
 
@@ -44,10 +44,10 @@ library("ncdf4")
 dta2012 <- nc_open(dest)
 indices <- ind_long_lat(ncdf=dta2012, lat=5.89, long=-20.56)
 coordinates <- ind_long_lat(ncdf=dta2012, indice.lat=20, indice.long=30)
-library("RNetCDF")
-dta2012 <- open.nc(dest)
-indices <- ind_long_lat(ncdf=dta2012, lat=5.89, long=-20.56)
-coordinates <- ind_long_lat(ncdf=dta2012, indice.lat=20, indice.long=30)
+# library("RNetCDF")
+# dta2012 <- open.nc(dest)
+# indices <- ind_long_lat(ncdf=dta2012, lat=5.89, long=-20.56)
+# coordinates <- ind_long_lat(ncdf=dta2012, indice.lat=20, indice.long=30)
 library("ncdf")
 dta2012 <- open.ncdf(dest)
 indices <- ind_long_lat(ncdf=dta2012, lat=5.89, long=-20.56)

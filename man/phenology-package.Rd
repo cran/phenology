@@ -9,8 +9,8 @@ A package to fit seasonality counts
 Fit a parametric function that describes phenology
 
 \tabular{ll}{ Package: \tab phenology\cr Type: \tab
-Package\cr Version: \tab 3.62 build 367\cr Date: \tab
-2014-03-14\cr License: \tab GPL (>= 2)\cr LazyLoad: \tab
+Package\cr Version: \tab 3.63 build 369\cr Date: \tab
+2014-04-06\cr License: \tab GPL (>= 2)\cr LazyLoad: \tab
 yes\cr }
 }
 \examples{
