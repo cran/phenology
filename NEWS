@@ -2,11 +2,27 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 3.69    (2014-06-21)
+
+* New function map.scale2() and compassRose2() to change the colors of text and lines
+
+            CHANGES IN VERSION 3.66-3.68    (2014-06-04)
+
+* New function clean.knitr() to clean folder after knitr compile
+* New function local.search() to search a file on local disk
+* XML package is no more required but suggested
+* New function logLik() for phenology class
+
+            CHANGES IN VERSION 3.64-3.65    (2014-04-27)
+            
+* Add compatibility of ind_lat_lon() with RNetCDF package
+* Change in ind_lat_lon() to make it more general
+
             CHANGES IN VERSION 3.63    (2014-04-06)
             
 * Correct two bugs in function getTide() (when levels are negative and when system cannot use utf-8)
 * add_phenology() now keeps the name of timeseries added
-* New parameter silent for add_phenology()
+* New parameter silent=TRUE/FALSE for add_phenology()
 
             CHANGES IN VERSION 3.61-3.62    (2014-03-14)
             

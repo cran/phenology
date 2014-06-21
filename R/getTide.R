@@ -12,6 +12,7 @@
 #' @param tz Timezone
 #' @description The script extract tide information from 
 #' http://tides.mobilegeographics.com/ into a data.frame.
+#' The presence of XLM package is necessary for this function.
 #' @keywords Tide
 #' @examples
 #' \dontrun{
@@ -27,6 +28,12 @@
 
 getTide <- function(file=NULL, year=as.POSIXlt(Sys.time())$year+1900, 
 	location=0, latitude=NA, longitude=NA, tz="") {
+  
+  if (any(installed.packages()[,1]=="XML")) {
+	require("XML") } else {
+    warning("XML package is necessary for this function")
+    return()
+	}
   
   # file=NULL; year=as.POSIXlt(Sys.time())$year+1900;location=0;latitude=NA;longitude=NA;tz=""
   # longitude=4.01; latitude=6.4
