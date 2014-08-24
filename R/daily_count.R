@@ -20,7 +20,7 @@ if(help) {
 	cat("This function is for internal use only. The syntaxe is :\n")
 	cat(".daily_count(day, xpar)\n")
 	cat("With xpar<-c(par, pfixed) being the list of parameters.\n")
-	cat("It must be preceeded by a call to xpar<-.format_par(xpar, serie, help=FALSE).\n")
+	cat("It must be preceeded by a call to xpar<-phenology:::.format_par(xpar, serie, help=FALSE).\n")
 } else {
 
 	

@@ -15,7 +15,7 @@
 
 
 as.par.mcmcComposite <-
-function(x=stop("A result obtained from MHmcmc must be provided")) {
+function(x) {
 
 	L <- x$resultLnL[[1]]
 	p <- x$resultMCMC[,][[1]]

@@ -44,29 +44,41 @@ ind_long_lat<-function(ncdf=stop("The ncdf data must be supplied"),
   
   if (class(ncdf)=="ncdf4") {
     maxindicelt <- ncdf$dim[[name.lat]]$len
-    maxlt <- ncdf$dim[[name.lat]]$vals[maxindicelt]
-    minlt <- ncdf$dim[[name.lat]]$vals[1]
+    lt <- ncdf$dim[[name.lat]]$vals
+    lg <- ncdf$dim[[name.lon]]$vals
+    maxlt <- lt[maxindicelt]
+    minlt <- lt[1]
     maxindicelg <- ncdf$dim[[name.lon]]$len
-    maxlg <- ncdf$dim[[name.lon]]$vals[maxindicelg]
-    minlg <- ncdf$dim[[name.lon]]$vals[1]
+    maxlg <- lg[maxindicelg]
+    minlg <- lg[1]
   }
   
   if (class(ncdf)=="ncdf") {
     maxindicelt <- ncdf$dim[[name.lat]]$len
-    maxlt <- ncdf$dim[[name.lat]]$vals[maxindicelt]
-    minlt <- ncdf$dim[[name.lat]]$vals[1]
-    maxindicelg <- ncdf$dim[[name.lon]]$len   
-    maxlg <- ncdf$dim[[name.lon]]$vals[maxindicelg]
-    minlg <- ncdf$dim[[name.lon]]$vals[1]
+    lt <- ncdf$dim[[name.lat]]$vals
+    maxlt <- lt[maxindicelt]
+    minlt <- lt[1]
+    maxindicelg <- ncdf$dim[[name.lon]]$len
+    lg <- ncdf$dim[[name.lon]]$vals
+    maxlg <- lg[maxindicelg]
+    minlg <- lg[1]
   }
   
-  if (class(ncdf)=="NetCDF") {    
-    maxindicelt <- dim.inq.nc(ncdf, name.lat)$length
-    maxlt <- var.get.nc(ncfile=ncdf, variable=name.lat)[maxindicelt]
-    minlt <- var.get.nc(ncfile=ncdf, variable=name.lat)[1]
-    maxindicelg <- dim.inq.nc(ncdf, name.lon)$length
-    maxlg <- var.get.nc(ncfile=ncdf, variable=name.lon)[maxindicelg]
-    minlg <- var.get.nc(ncfile=ncdf, variable=name.lon)[1]   
+  if (class(ncdf)=="NetCDF") {
+        
+ 	if (!requireNamespace("RNetCDF", quietly = TRUE)) {
+	  warning("RNetCDF package is necessary for this object")
+	  return()
+	}
+	
+    maxindicelt <- RNetCDF::dim.inq.nc(ncfile=ncdf, name.lat)$length
+    lt <- RNetCDF::var.get.nc(ncfile=ncdf, variable=name.lat)
+    maxlt <- lt[maxindicelt]
+    minlt <- lt[1]
+    maxindicelg <- RNetCDF::dim.inq.nc(ncfile=ncdf, name.lon)$length
+    lg <- RNetCDF::var.get.nc(ncfile=ncdf, variable=name.lon)
+    maxlg <- lg[maxindicelg]
+    minlg <- lg[1]   
   }
   
   if (is.null(maxindicelt) | is.null(maxindicelg)) {
@@ -93,8 +105,8 @@ ind_long_lat<-function(ncdf=stop("The ncdf data must be supplied"),
 } else {
   if (!is.na(indice.long) & !is.na(indice.lat)) {
     # Je fournis les indices et je calcule les coordonnées
-    return(c(long=as.numeric(indice.long)*360/maxindicelg-minlg, 
-             lat=(as.numeric(indice.lat)-1)*180/maxindicelt+minlt))
+    return(c(long=lt[indice.long], 
+             lat=lg[indice.lat]))
     
   } else {
     warning("Check the parameters")

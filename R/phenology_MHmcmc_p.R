@@ -6,29 +6,44 @@
 #' @param accept If TRUE, does not wait for use interaction
 #' @description Interactive script used to generate set of parameters to be used with phenology_MHmcmc().\cr
 #' @examples 
+#' \dontrun{
 #' library(phenology)
-#' # Read a file with data
 #' data(Gratiot)
-#' # Generate a formatted list nammed data_Gratiot 
+#' # Generate a formatted list named data_Gratiot 
 #' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
-#' 		reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#'   	reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
 #' parg<-par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
-#' \dontrun{
 #' result_Gratiot<-fit_phenology(data=data_Gratiot, 
 #' 		parametersfit=parg, parametersfixed=NULL, trace=1)
-#' }
-#' data(result_Gratiot)
 #' # Generate set of priors for Bayesian analysis
-#' pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept=TRUE)
+#' pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept = TRUE)
+#' result_Gratiot_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000, 
+#' parametersMCMC = pmcmc, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
+#' # Get standard error of parameters
+#' summary(result_Gratiot_mcmc)
+#' # Make diagnostics of the mcmc results using coda package
+#' mcmc <- as.mcmc(result_Gratiot_mcmc)
+#' require(coda)
+#' heidel.diag(mcmc)
+#' raftery.diag(mcmc)
+#' autocorr.diag(mcmc)
+#' acf(mcmc[[1]][,"LengthB"], lag.max=200, bty="n", las=1)
+#' acf(mcmc[[1]][,"Max_Gratiot"], lag.max=50, bty="n", las=1)
+#' batchSE(mcmc, batchSize=100)
+#' # The batch standard error procedure is usually thought to 
+#' # be not as accurate as the time series methods used in summary
+#' summary(mcmc)$statistics[,"Time-series SE"]
+#' plot(result_Gratiot_mcmc, parameters=3, las=1, xlim=c(-10, 300))
+#' }
 #' @export
 
 phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be provided"), accept=FALSE) {
 
 if (class(result)!="phenology") {
-	cat("An output from fit_phenology() must be provided\n")
-	return()
+  warning("An output from fit_phenology() must be provided")
+  return()
 }
 
 # d'abord je sors les paramètres à utiliser
@@ -60,19 +75,19 @@ LengthB <- c("dunif", 0, 200, 2, 0, 200, ifelse(is.na(par["LengthB"]), 100, par[
 Max <- c("dunif", 0, 200, 2, 0, 200, ifelse(is.na(par["Max"]), 100, par["Max"]))
 
 # "PMin"
-PMin <- c("dunif", 0, 10, 2, 0, 10, ifelse(is.na(par["PMin"]), 2, par["Pmin"]))
+PMin <- c("dunif", 0, 10, 2, 0, 10, ifelse(is.na(par["PMin"]), 2, par["PMin"]))
 
 # "Min"
 Min <- c("dunif", 0, 5, 2, 0, 5, ifelse(is.na(par["Min"]), 1, par["Min"]))
 
 # "PMinE"
-PMinE <- c("dunif", 0, 10, 2, 0, 10, ifelse(is.na(par["PMinE"]), 2, par["PminE"]))
+PMinE <- c("dunif", 0, 10, 2, 0, 10, ifelse(is.na(par["PMinE"]), 2, par["PMinE"]))
 
 # "MinE"
 MinE <- c("dunif", 0, 5, 2, 0, 5, ifelse(is.na(par["MinE"]), 1, par["MinE"]))
 
 # "PMinB"
-PMinB <- c("dunif", 0, 10, 2, 0, 10, ifelse(is.na(par["PMinB"]), 2, par["PminB"]))
+PMinB <- c("dunif", 0, 10, 2, 0, 10, ifelse(is.na(par["PMinB"]), 2, par["PMinB"]))
 
 # "MinB"
 MinB <- c("dunif", 0, 5, 2, 0, 5, ifelse(is.na(par["MinB"]), 1, par["MinB"]))
@@ -264,5 +279,19 @@ if (f=="q") {
 }
 
 }
+
+for (i in 1:nrow(parameters)) {
+  if (parameters[i, "Density"]=="dunif") {
+    mn <- max(as.numeric(parameters[i, "Prior1"]), as.numeric(parameters[i, "Min"]))    
+  } else {
+    mn <- as.numeric(parameters[i, "Min"])
+    mx <- as.numeric(parameters[i, "Max"])
+  }  
+  if (findInterval(as.numeric(parameters[i, "Init"]), c(mn, mx)) != 1) {
+    parameters[i, "Init"] <- as.character(mn+(mx-mn)/2)
+    warning(paste("Initial value for parameter ", rownames(parameters)[i], " was out of range; It is corrected. Check it.")) 
+  }
+}
+
 
 }

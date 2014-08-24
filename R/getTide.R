@@ -28,12 +28,11 @@
 
 getTide <- function(file=NULL, year=as.POSIXlt(Sys.time())$year+1900, 
 	location=0, latitude=NA, longitude=NA, tz="") {
-  
-  if (any(installed.packages()[,1]=="XML")) {
-	require("XML") } else {
+        
+  if (!requireNamespace("XML", quietly = TRUE)) {
     warning("XML package is necessary for this function")
     return()
-	}
+  }
   
   # file=NULL; year=as.POSIXlt(Sys.time())$year+1900;location=0;latitude=NA;longitude=NA;tz=""
   # longitude=4.01; latitude=6.4
@@ -48,7 +47,7 @@ getTide <- function(file=NULL, year=as.POSIXlt(Sys.time())$year+1900,
 } else {
   theurl <- file
 }
-tables <- readHTMLTable(theurl, stringsAsFactors=FALSE)
+tables <- XML::readHTMLTable(theurl, stringsAsFactors=FALSE)
 n.rows <- lapply(tables, function(t) dim(t)[1])
 n.rows <- lapply(n.rows, function(t) {ifelse(is.null(t), 1, t)})
 n.rows <- unlist(n.rows)

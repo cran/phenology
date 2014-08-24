@@ -12,17 +12,16 @@ Fit a parametric function that describes phenology
 \tabular{ll}{
  Package: \tab phenology\cr
  Type: \tab Package\cr
- Version: \tab 3.69 build 375\cr
- Date: \tab 2014-06-21\cr
+ Version: \tab 3.72 build 379\cr
+ Date: \tab 2014-08-24\cr
  License: \tab GPL (>= 2)\cr
  LazyLoad: \tab yes\cr
  }
 }
 \examples{
+\dontrun{
 library(phenology)
 # Read a file with data
-\dontrun{
-Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 data(Gratiot)
 # Generate a formatted list nammed data_Gratiot
 data_Gratiot<-add_phenology(Gratiot, name="Complete",

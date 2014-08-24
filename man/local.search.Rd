@@ -25,6 +25,7 @@ local.search() returns path of file serached in local disk based on its file nam
 \examples{
 \dontrun{
 RnwFiles <- local.search("*.Rnw")
+nc.files <- local.search("*.nc", folder=paste0("'",getwd(),"'"))
 }
 }
 \author{

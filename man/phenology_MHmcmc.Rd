@@ -3,7 +3,8 @@
 \alias{phenology_MHmcmc}
 \title{Run the Metropolis-Hastings algorithm for data}
 \usage{
-phenology_MHmcmc(result = stop("An output from searchR must be provided"),
+
+  phenology_MHmcmc(result = stop("An output from fit_phenology() must be provided"),
   n.iter = 10000,
   parametersMCMC = stop("A model generated with phenology_MHmcmc_p() must be provided"),
   n.chains = 4, n.adapt = 0, thin = 1, trace = FALSE)
@@ -37,41 +38,36 @@ As initial point is maximum likelihood, n.adapt = 0 seems a good solution.
 phenology_MHmcmc runs the Metropolis-Hastings algorithm for data (Bayesian MCMC)
 }
 \examples{
-library(phenology)
-# Read a file with data
 \dontrun{
-Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
-}
+library(phenology)
 data(Gratiot)
 # Generate a formatted list named data_Gratiot
 data_Gratiot<-add_phenology(Gratiot, name="Complete",
-		reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
+    reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
 parg<-par_init(data_Gratiot, parametersfixed=NULL)
 # Run the optimisation
-\dontrun{
 result_Gratiot<-fit_phenology(data=data_Gratiot,
 		parametersfit=parg, parametersfixed=NULL, trace=1)
-}
-data(result_Gratiot)
 # Generate set of priors for Bayesian analysis
-\dontrun{
-pmcmc <- phenology_MHmcmc_p(result_Gratiot)
-}
-pmcmc <- structure(c("dunif", "dunif", "dunif", "dunif", "dunif", "dunif",
-"dunif", "dunif", "0", "0", "0", "0", "0", "0", "0", "0", "200",
-"365", "200", "50", "200", "5", "5", "10", "2", "2", "2", "2",
-"2", "2", "2", "2", "0", "0", "0", "0", "0", "0", "0", "0", "200",
-"365", "200", "50", "200", "5", "5", "10", "95.826796339888",
-"175.36499338462", "62.4313052780003", "6.77668901451618e-05",
-"33.1138407661406", "0.21779065736816", "0.424368825094697",
-"3.58302217559733"), .Dim = c(8L, 7L), .Dimnames = list(c("LengthB",
-"Peak", "LengthE", "Flat", "Max_Gratiot", "MinB_Gratiot", "MinE_Gratiot",
-"Theta"), c("Density", "Prior1", "Prior2", "SDProp", "Min", "Max",
-"Init")))
-\dontrun{
-res_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000,
+pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept = TRUE)
+result_Gratiot_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000,
 parametersMCMC = pmcmc, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
+# Get standard error of parameters
+summary(result_Gratiot_mcmc)
+# Make diagnostics of the mcmc results using coda package
+mcmc <- as.mcmc(result_Gratiot_mcmc)
+require(coda)
+heidel.diag(mcmc)
+raftery.diag(mcmc)
+autocorr.diag(mcmc)
+acf(mcmc[[1]][,"LengthB"], lag.max=200, bty="n", las=1)
+acf(mcmc[[1]][,"Max_Gratiot"], lag.max=50, bty="n", las=1)
+batchSE(mcmc, batchSize=100)
+# The batch standard error procedure is usually thought to
+# be not as accurate as the time series methods used in summary
+summary(mcmc)$statistics[,"Time-series SE"]
+plot(result_Gratiot_mcmc, parameters=3, las=1, xlim=c(-10, 300))
 }
 }
 \author{

@@ -16,6 +16,8 @@
 #' Rotation is in degrees counterclockwise.
 #' @examples
 #' \dontrun{
+#' library("maps")
+#' library("phenology")
 #' map("world", "China")
 #' compassRose2(x=110, y=35, col.arrows.light="grey")
 #' }

@@ -2,6 +2,21 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 3.71-3.72    (2014-08-24)
+
+* Breaks for plot mcmc objects with uniform distribution use min and max as limits
+* New parameter to help scaling prior vs posterior in plot mcmc objects
+* Better examples for MCMC
+* phenology_MHmcmc_p() check is initial values are out of range
+* Correct bug for phenology_MHmcmc_p() with pMin, pMinE, pMinB
+* Correct bug for ind_long_lat() using indices
+* New way to use RNetCDF and XML packages which are only suggested
+* New function convert.tz() to convert POSIXlt or POSIXct date-time from one timezone to an other
+
+            CHANGES IN VERSION 3.70    (2014-07-07)
+
+* Correct of bug in toggle_Min_PMin()
+
             CHANGES IN VERSION 3.69    (2014-06-21)
 
 * New function map.scale2() and compassRose2() to change the colors of text and lines

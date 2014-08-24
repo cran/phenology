@@ -10,6 +10,7 @@
 #' @examples
 #' \dontrun{
 #' RnwFiles <- local.search("*.Rnw")
+#' nc.files <- local.search("*.nc", folder=paste0("'",getwd(),"'"))
 #' }
 #' @export
 

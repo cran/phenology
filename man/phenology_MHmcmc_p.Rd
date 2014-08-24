@@ -22,22 +22,37 @@ Interactive script used to generate set of parameters to be used with phenology_
 phenology_MHmcmc_p generates set of parameters to be used with MHmcmc()
 }
 \examples{
+\dontrun{
 library(phenology)
-# Read a file with data
 data(Gratiot)
-# Generate a formatted list nammed data_Gratiot
+# Generate a formatted list named data_Gratiot
 data_Gratiot<-add_phenology(Gratiot, name="Complete",
-		reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
+  	reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
 parg<-par_init(data_Gratiot, parametersfixed=NULL)
 # Run the optimisation
-\dontrun{
 result_Gratiot<-fit_phenology(data=data_Gratiot,
 		parametersfit=parg, parametersfixed=NULL, trace=1)
-}
-data(result_Gratiot)
 # Generate set of priors for Bayesian analysis
-pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept=TRUE)
+pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept = TRUE)
+result_Gratiot_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000,
+parametersMCMC = pmcmc, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
+# Get standard error of parameters
+summary(result_Gratiot_mcmc)
+# Make diagnostics of the mcmc results using coda package
+mcmc <- as.mcmc(result_Gratiot_mcmc)
+require(coda)
+heidel.diag(mcmc)
+raftery.diag(mcmc)
+autocorr.diag(mcmc)
+acf(mcmc[[1]][,"LengthB"], lag.max=200, bty="n", las=1)
+acf(mcmc[[1]][,"Max_Gratiot"], lag.max=50, bty="n", las=1)
+batchSE(mcmc, batchSize=100)
+# The batch standard error procedure is usually thought to
+# be not as accurate as the time series methods used in summary
+summary(mcmc)$statistics[,"Time-series SE"]
+plot(result_Gratiot_mcmc, parameters=3, las=1, xlim=c(-10, 300))
+}
 }
 \author{
 Marc Girondot

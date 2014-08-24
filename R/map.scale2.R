@@ -7,20 +7,22 @@
 #' @param relwidth Proportion of width of display to be used for the scale. The default is 0.15.
 #' @param metric If TRUE, the distance gauge will be in km, otherwise miles.
 #' @param ratio If FALSE, the scale ratio of the map is not displayed.
-#' @param linecol The color of lines for the gauge.
+#' @param col.line The color of lines for the gauge.
 #' @param ... Further plotting parameters may be specified as for the command text().
 #' @description Adds a scale to an existing map, both as a ratio and a distance gauge.
 #' If x or y are not specified, this will be taken to be near the lower left corner of the map.
 #' @examples
 #' \dontrun{
+#' library("maps")
+#' library("phenology")
 #' map("world", "China")
-#' map.scale2()
+#' map.scale2(col.line = "red", col="blue")
 #' }
 #' @export
 
 
 map.scale2 <- function (x, y, relwidth = 0.15, metric = TRUE, ratio = TRUE, 
-                        linecol = "black", ...) 
+                        col.line = "black", ...) 
 {
   format.pretty <- function(x, digits = 2) {
     x = signif(x, 2)
@@ -60,7 +62,7 @@ map.scale2 <- function (x, y, relwidth = 0.15, metric = TRUE, ratio = TRUE,
     linexy[3 * i + 1, ] <- c(x + i * dx, y)
     linexy[3 * i + 2, ] <- c(x + i * dx, y + dy)
   }
-  lines(linexy, col = linecol)
+  lines(linexy, col = col.line)
   text(x + ats/perdeg, y + dy - 0.5 * cxy[2], labs, adj = c(0.4, 
                                                             0.5), ...)
   if (ratio) 

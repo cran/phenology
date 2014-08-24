@@ -4,7 +4,7 @@
 \title{Add Scale to Existing Unprojected Map}
 \usage{
 map.scale2(x, y, relwidth = 0.15, metric = TRUE, ratio = TRUE,
-  linecol = "black", ...)
+  col.line = "black", ...)
 }
 \arguments{
 \item{x}{Location of left end of distance gauge.}
@@ -17,7 +17,7 @@ map.scale2(x, y, relwidth = 0.15, metric = TRUE, ratio = TRUE,
 
 \item{ratio}{If FALSE, the scale ratio of the map is not displayed.}
 
-\item{linecol}{The color of lines for the gauge.}
+\item{col.line}{The color of lines for the gauge.}
 
 \item{...}{Further plotting parameters may be specified as for the command text().}
 }
@@ -33,8 +33,10 @@ map.scale2 Add Scale to Existing Unprojected Map
 }
 \examples{
 \dontrun{
+library("maps")
+library("phenology")
 map("world", "China")
-map.scale2()
+map.scale2(col.line = "red", col="blue")
 }
 }
 \author{

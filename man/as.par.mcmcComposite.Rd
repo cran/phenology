@@ -3,8 +3,7 @@
 \alias{as.par.mcmcComposite}
 \title{Extract parameters at maximum likelihood from the result of MHmcmc}
 \usage{
-
-  as.par.mcmcComposite(x = stop("A result obtained from MHmcmc must be provided"))
+as.par.mcmcComposite(x)
 }
 \arguments{
 \item{x}{A result from MHmcmc search}

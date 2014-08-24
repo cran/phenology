@@ -72,7 +72,7 @@ function(parameters=stop("A set of parameters must be indicated")) {
 		names(pmin_p) <- "PMin"
 		n <- names(p)
 		p <- p[!((substr(n, 1, 3)=="Min") & (substr(n, 1, 4)!="MinE") & (substr(n, 1, 4)!="MinB"))]
-		p <- c(p, min_p)
+		p <- c(p, pmin_p)
 	}
 
 	if (any(MB)) {

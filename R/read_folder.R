@@ -1,5 +1,5 @@
 #' read_folder reads all files present in a folder
-#' @title Reads all files present in a folder and creates a list with the the content of these files
+#' @title Reads all files present in a folder and creates a list with the content of these files
 #' @author Marc Girondot
 #' @return Return a list of the data in the files of the folder (directory for windows users)
 #' @param folder Where to search for files; can be or a file path or a folder path
