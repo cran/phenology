@@ -1,4 +1,4 @@
-#' convert.ts Convert one Date-Time from one timezone to another
+#' convert.tz Convert one Date-Time from one timezone to another
 #' @title Convert one Date-Time from one timezone to another
 #' @author Marc Girondot
 #' @return A POSIXlt date converted
@@ -8,10 +8,10 @@
 #' Available timezones can be shown using OlsonNames()
 #' @examples
 #' d <- as.POSIXlt("2010-01-01 17:34:20", tz="UTC")
-#' convert.ts(d, tz="America/Guatemala")
+#' convert.tz(d, tz="America/Guatemala")
 #' @export
 
 
-convert.ts <- function(x, tz=Sys.timezone()) {
+convert.tz <- function(x, tz=Sys.timezone()) {
 return(as.POSIXct(format(as.POSIXct(x), tz=tz, usetz=TRUE), tz=tz))
 }

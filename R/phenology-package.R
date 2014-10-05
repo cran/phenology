@@ -3,8 +3,8 @@
 #' \tabular{ll}{
 #'  Package: \tab phenology\cr
 #'  Type: \tab Package\cr
-#'  Version: \tab 3.72 build 379\cr
-#'  Date: \tab 2014-08-24\cr
+#'  Version: \tab 4.0 build 315\cr
+#'  Date: \tab 2014-05-10\cr
 #'  License: \tab GPL (>= 2)\cr
 #'  LazyLoad: \tab yes\cr
 #'  }
@@ -16,6 +16,9 @@
 #' @references Girondot, M. 2010. Estimating density of animals during 
 #'             migratory waves: application to marine turtles at nesting site. 
 #'             Endangered Species Research, 12, 85-105.
+#' @references Girondot M. and Rizzo A. In press. Bayesian framework to integrate 
+#'             traditional ecological knowledge into ecological modeling: A case 
+#'             study. Journal of Ethnobiology.
 #' @references Girondot, M. 2010. Editorial: The zero counts. Marine 
 #'             Turtle Newsletter, 129, 5-6.
 #' @keywords Seasonality Phenology Ecology

@@ -2,6 +2,14 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 4.0    (2014-10-05)
+            
+* Remove phenology-swot() and keep only phenology() for web application
+* Function convert.ts() renamed convert.tz()
+* New tests for add_phenology()
+* The parameter trace for mcmc can take an integer value to tell how many intermediate results must be shown
+* Simplification of ind_lat_lon()
+
             CHANGES IN VERSION 3.71-3.72    (2014-08-24)
 
 * Breaks for plot mcmc objects with uniform distribution use min and max as limits
@@ -11,7 +19,7 @@ Please note that only the most significant changes are reported here.
 * Correct bug for phenology_MHmcmc_p() with pMin, pMinE, pMinB
 * Correct bug for ind_long_lat() using indices
 * New way to use RNetCDF and XML packages which are only suggested
-* New function convert.tz() to convert POSIXlt or POSIXct date-time from one timezone to an other
+* New function convert.ts() to convert POSIXlt or POSIXct date-time from one timezone to an other
 
             CHANGES IN VERSION 3.70    (2014-07-07)
 

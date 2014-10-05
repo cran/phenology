@@ -87,20 +87,15 @@ ind_long_lat<-function(ncdf=stop("The ncdf data must be supplied"),
   }
   
   if (!is.na(long) & !is.na(lat)) {
-
-    if (long==0) long <- 0.0001
-    if (long==360) long <- 359.9999
-    if (lat==90) lat <- 89.9999
+    # Je fournis les coordonnées et je calcule les indices
+    
+    # dans lt les latitudes
+    which.min(abs(lt-lat))
 
     long<-long%%360
-    alg<-(maxindicelg-1)/(maxlg-minlg)
-    blg<-1-alg*minlg
-
     lat<-((lat+90)%%180)-90
-    alt<-(maxindicelt-1)/(maxlt-minlt)
-    blt<-1-alt*minlt
 
-    return(c(indice.long=round(alg*long+blg), indice.lat=round(alt*lat+blt)))
+    return(c(indice.long=which.min(abs(lg-long)), indice.lat=which.min(abs(lt-lat))))
     
 } else {
   if (!is.na(indice.long) & !is.na(indice.lat)) {

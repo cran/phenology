@@ -13,7 +13,8 @@
 
 
 .read_phenology <-
-function(obj_list=NULL, header=NULL, reference=NULL, month_ref= NULL, format=NULL, nm=NULL) {
+function(obj_list=NULL, header=NULL, reference=NULL, month_ref= NULL, format=NULL, 
+         nm=NULL, sep.dates=NULL) {
 
 # obj_list=NULL; header=NULL; reference=NULL; month_ref= NULL; format=NULL; nm=NULL
     
@@ -105,7 +106,7 @@ if (class(obj_list)=="list") {
   
       # DATA[,1] j'ai les dates
 			
-        essai <- unlist(as.data.frame(strsplit(DATA[,1], "-"), stringsAsFactors=FALSE))
+        essai <- unlist(as.data.frame(strsplit(DATA[,1], sep.dates), stringsAsFactors=FALSE))
 
 				es <- as.data.frame(strsplit(essai, dtaspl), stringsAsFactors=FALSE)
 

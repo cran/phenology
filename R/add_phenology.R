@@ -6,11 +6,11 @@
 #' @param add The data to be added. It can be a set of several entities that uses the same reference and date format
 #' @param name The name of the monitored site
 #' @param reference as.Date('2001-12-31') The date used as 1st date
+#' @param sep.dates Separator used to separate dates when incertitude is included
 #' @param month_ref If no reference date is given, use this month as a reference
 #' @param header If the data is read from a file, can be used to force header or not
 #' @param format The format of the date in the file. Several format can be set and the last one that give compatible result is used
 #' @param silent Does information about added timeseries is shown
-#' @param help If TRUE, an help is displayed
 #' @description To create a new dataset, the syntaxe is \cr
 #' data<-add_phenology(add=newdata, name="Site", reference=as.Date('2001-12-31'), 
 #' format='%d/%m/%y')\cr
@@ -38,6 +38,9 @@
 #' the rookery name is obligatory at the third column.\cr
 #' The simplest use of this function is just: \cr
 #' phen <- add_phenology()
+#' Some problems that can occur:\cr
+#' If a name is defined as a third column of a data.frame and a name is defined also with name=, the third column has priority.\cr
+#' Two different timeseries MUST have different name.
 #' @examples
 #' \dontrun{
 #' library(phenology)
@@ -61,45 +64,20 @@
 
 
 add_phenology <-
-function(add=file.choose(), name=NULL, reference=NULL, month_ref= NULL, header=NULL, 
-         format=NULL, previous=NULL, silent=FALSE, help=FALSE) {
-if(help) {
-	cat("To create a new dataset, the syntaxe is \n")
-	cat("data<-add_phenology(add=newdata, name='Site', \n")
-	cat("+   reference=as.Date('2001-12-31'), format='%d/%m/%y')\n")
-	cat("To add a dataset to a previous one, the syntaxe is \n")
-	cat("data<-add_phenology(previous=previousdata, add=newdata, name='Site', \n")
-	cat("+   reference=as.Date('2001-12-31'), format='%d/%m/%y')\n")
-	cat("\n")
-	cat("The dataset to be added must include 2 or 3 columns.\n")
-	cat("The first one is the date in the format specified by\n")
-	cat("the parameter format=. If the number of nests is known \n")
-	cat("for an exact data, then only one date must be indicated\n")
-	cat("If the number of nests is known for a range of date, the\n")
-	cat("first and last dates must be separated but a -.\n")
-	cat("For example: 1/2/2000-10/2/2000\n")
-	cat("The second column is the number of nests observed for\n")
-	cat("this date or this range of dates.\n")
-	cat("The third column is optional and is the name of the rookery.\n")
-	cat("If only two columns are indicated, the name can be indicated as \n")
-	cat("a parameter of the function with name=. If no name is indicated,\n")
-	cat("the default name Site will be used, but take care, only one \n")
-	cat("rookery with this name can be used.\n")
-	cat("Several rookeries can be included in the same file but in this case\n")
-	cat("the rookery name is obligatory at the third column.\n")
-} else {
+function(add=file.choose(), name=NULL, reference=NULL, month_ref= NULL, sep.dates="-", 
+         header=NULL, format=NULL, previous=NULL, silent=FALSE) {
+
 
 # name=NULL; reference=NULL; month_ref= NULL; header=NULL; format=NULL; adjust_ref=TRUE; previous=NULL; help=FALSE
 # add=file.choose()
   
 if (class(previous)!="phenologydata" && !is.null(previous)) {
-  cat("The previous dataset must be already formatted\n")
+  warning("The previous dataset must be already formated!")
   return(invisible())
 }
-  
 
 if(class(add)=="try-error") {
-	cat("No file has been chosen !\n")
+	warning("No file has been chosen!")
 	return(invisible())
 }	
 
@@ -115,13 +93,18 @@ if (class(add)=="character") {
 	
 ## if (is.null(add) || !exists(as.character(substitute(add)))) {
 if (is.null(add)) {
-	cat("Data to be added does not exist !\n")
+	warning("Data to be added does not exist!")
 	return(invisible())
 }
 
 
-#rp <- phenology:::.read_phenology(add, header, reference, month_ref, format, nm)
-rp <- .read_phenology(add, header, reference, month_ref, format, nm)
+#rp <- phenology:::.read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
+rp <- .read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
+
+if (substr(gsub("[0-9]", "", format), 1, 1)==sep.dates) {
+  warning("The date separator is used also within a date. It is not possible.")
+  return(invisible())
+}
 
 add <- rp$DATA
 reference <- rp$reference
@@ -216,7 +199,7 @@ for (kk in 1:nbdatasets) {
 		# dans i la ligne en cours
 		for(i in 1:dim(add)[1]) {
 		
-			essai<-unlist(strsplit(add$Date[i], "-"))
+			essai<-unlist(strsplit(add$Date[i], sep.dates))
 			
 			dtcorrect <- NULL
 			for (fd in 1:length(format)) {
@@ -295,8 +278,10 @@ for (kk in 1:nbdatasets) {
 
 class(previous) <- "phenologydata"
 
-return(previous)
-
-	
+if (length(unique(names(previous)))!=length(names(previous))) {
+  warning("The names of timesseries must be unique.")
+  return(invisible())
 }
+
+return(previous)
 }
