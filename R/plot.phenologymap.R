@@ -7,7 +7,6 @@
 #' @param col Colors could be heat.colors(128) or rainbow(64) or col=gray(c(seq(0, 1, length.out=128)))
 #' @param xlab Label for x axis
 #' @param ylab Label for y axis
-#' @param help If TRUE, an help is displayed
 #' @description This function plots a likelihood map obtained after map_phenology.
 #' @examples
 #' \dontrun{
@@ -49,23 +48,10 @@
 
 plot.phenologymap <- 
   
-  function(x, ..., col=heat.colors(128), xlab="Phi", ylab="Delta", help=FALSE) {
+  function(x, ..., col=heat.colors(128), xlab="Phi", ylab="Delta") {
+
+        map <- x
     
-    map <- x
-    
-    if(help || is.null(map)) {
-      cat("This function plots a likelihood map obtained after map_phenology.\n")
-      cat("The syntaxe is:\n")
-      cat("plot_map(mapx)\n")
-      cat("The color can be changed using the optional parameter col, for example\n")
-      cat("col=heat.colors(128) or rainbow(64) or col=gray(c(seq(0, 1, length.out=128)))\n")
-      
-    } else {
-      
-      
-      require(grDevices)
-      require(graphics)
-      
       x <- map$Phi
       y <- map$Delta
       
@@ -75,8 +61,5 @@ plot.phenologymap <-
       image.plot(x, y, input, col=col, axes=TRUE, xlab=xlab, ylab=ylab, nlevel = length(col))
       image.plot(x, y, input, zlim=c(min(input, na.rm=TRUE), max(input, na.rm=TRUE)), col=col, axes=TRUE, xlab="Phi", ylab="Delta", nlevel = length(col))
       
-        
-      
-      
-    }
+
   }

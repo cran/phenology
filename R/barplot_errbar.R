@@ -42,7 +42,6 @@ barplot_errbar <- function(...,
   {
 # errbar.y=NULL; errbar.y.plus=NULL; errbar.y.minus=NULL; y.plus=NULL; y.minus=NULL; errbar.tick=1/50; errbar.lwd=par("lwd"); errbar.lty=par("lty"); errbar.col=par("fg"); add=FALSE 
 
-  
   par.plot <- list(...)
   if (add) {
   	s <- ScalePreviousPlot()

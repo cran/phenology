@@ -2,6 +2,14 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 4.0.4    (2015-01-29)
+            
+* The hidden function .MHalgoGen has three new parameters for very long MCMC profiling.
+* Correct a bug for add_phenology() when month_ref is indicated
+* Correct a cosmetic bug in print.phenologyout()
+* Length parameter can now be associated with a beach
+* New function insidesearch() to search for a string in files within a folder
+
             CHANGES IN VERSION 4.0    (2014-10-05)
             
 * Remove phenology-swot() and keep only phenology() for web application

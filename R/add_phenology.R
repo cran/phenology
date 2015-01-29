@@ -68,13 +68,22 @@ function(add=file.choose(), name=NULL, reference=NULL, month_ref= NULL, sep.date
          header=NULL, format=NULL, previous=NULL, silent=FALSE) {
 
 
-# name=NULL; reference=NULL; month_ref= NULL; header=NULL; format=NULL; adjust_ref=TRUE; previous=NULL; help=FALSE
+# name=NULL; reference=NULL; month_ref= NULL; header=NULL; sep.dates="-"; format=NULL; previous=NULL; silent=FALSE
 # add=file.choose()
   
 if (class(previous)!="phenologydata" && !is.null(previous)) {
   warning("The previous dataset must be already formated!")
   return(invisible())
 }
+  
+  if (!is.null(format)) {
+    dtaspl <- substr(gsub("[%dmYy]", "", format), 1, 1)
+    if (sep.dates==dtaspl) {
+    warning("Separator between day, month and year cannot be the same as the separator between two dates")
+      return(invisible())
+    }
+  }
+  
 
 if(class(add)=="try-error") {
 	warning("No file has been chosen!")
@@ -98,7 +107,8 @@ if (is.null(add)) {
 }
 
 
-#rp <- phenology:::.read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
+# rp <- phenology:::.read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
+
 rp <- .read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
 
 if (substr(gsub("[0-9]", "", format), 1, 1)==sep.dates) {

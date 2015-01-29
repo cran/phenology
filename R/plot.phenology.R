@@ -56,7 +56,6 @@ plot.phenology <-
 	progressbar=TRUE, help=FALSE, growlnotify=TRUE) {
 
 # data=NULL; parameters=NULL; parametersfixed=NA; series="all"; moon=FALSE; replicate.CI=1000; progressbar=TRUE; help=FALSE; growlnotify=TRUE
-    
     result <- x
     
 if(help || (is.null(data) && is.null(result))) {

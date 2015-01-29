@@ -17,8 +17,15 @@ function(obj_list=NULL, header=NULL, reference=NULL, month_ref= NULL, format=NUL
          nm=NULL, sep.dates=NULL) {
 
 # obj_list=NULL; header=NULL; reference=NULL; month_ref= NULL; format=NULL; nm=NULL
-    
+# rp <- .read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
+# obj_list=add; header=header;reference=reference;month_ref=month_ref; format=format; nm=nm;sep.dates=sep.dates
+
+if (!is.null(format)) {
+dtaspl <- substr(gsub("[%dmYy]", "", format), 1, 1)
+  } else {
 dtaspl <- "/"
+warning("Separator between day, month and year is supposed to be the / character")
+}
   
 if (class(obj_list)=="list") {
 
@@ -55,8 +62,6 @@ if (class(obj_list)=="list") {
 				if (is.null(header)) {
 				
 				dta <- obj_list_df[2,1]
-				dtaspl <- "/"
-				
 				dta <- obj_list_df[1,1]
 				if (length(grep(dtaspl, dta))!=0) {header <- FALSE} else {header <- TRUE}				
 				}
@@ -110,20 +115,29 @@ if (class(obj_list)=="list") {
 
 				es <- as.data.frame(strsplit(essai, dtaspl), stringsAsFactors=FALSE)
 
-				y <- "%y"
-				an <- max(c(max(nchar(es[1,])), max(nchar(es[2,])), max(nchar(es[3,]))))
-				if (an==4) y <- "%Y"
-      
-				
 				nf <- length(levels(as.factor(as.numeric(es[1,]))))
 				nf <- c(nf, length(levels(as.factor(as.numeric(es[2,])))))
 				nf <- c(nf, length(levels(as.factor(as.numeric(es[3,])))))
 				
-				ypos <- which.min(nf)
-				dpos <- which.max(nf)
-				mpos <- c(1:3)[-c(ypos, dpos)]
+				
 				
 				if (is.null(format)) {
+				  
+				  y <- "%y"
+				  an <- max(c(max(nchar(es[1,])), max(nchar(es[2,])), max(nchar(es[3,]))))
+				  if (an==4) y <- "%Y"
+				  
+				  maxdt <- c(max(as.numeric(es[1,])), 
+				             max(as.numeric(es[2,])), 
+				             max(as.numeric(es[3,])))
+				  
+				  ypos <- which(maxdt>31)
+				  if (identical(ypos, integer(0))) ypos <- 3
+				  
+				  dpos <- which(maxdt>12)
+				  if (length(dpos)==2) dpos <- dpos[dpos!=ypos]
+				  
+				  mpos <- c(1:3)[-c(ypos, dpos)]
 				
 				if (ypos == 1) {format <- y} else {
 					if (dpos==1) {format <- "%d"} else {format <- "%m"}}
@@ -133,6 +147,15 @@ if (class(obj_list)=="list") {
 				format <- paste(format, dtaspl, sep="")
 				if (ypos == 3) {format <- paste(format, y, sep="") } else {
 					if (dpos==3) {format <- paste(format, "%d", sep="")} else {format <- paste(format, "%m", sep="")}}				
+				} else {
+				  # j'ai format. Je dois prendre mpos, dpos et ypos de format
+				  dpos <- which(strsplit(format, dtaspl)[[1]]=="%d")
+				  mpos <- which(strsplit(format, dtaspl)[[1]]=="%m")
+				if (identical(which(strsplit(format, dtaspl)[[1]]=="%y"), integer(0))) {
+				  ypos <- which(strsplit(format, dtaspl)[[1]]=="%Y")
+				} else {
+				  ypos <- which(strsplit(format, dtaspl)[[1]]=="%y")
+				}
 				}
 # j'ai le fichier mais peut-etre 3 colonnes
 
@@ -152,7 +175,6 @@ if (class(obj_list)=="list") {
 				
 				
 				if (is.null(reference)) {
-				
 				year <- min(as.numeric(es[ypos,]))
 				if (year == 0 & max(as.numeric(es[ypos,])) == 99) year=1999
 				if (year<100) {

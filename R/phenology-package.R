@@ -3,12 +3,12 @@
 #' \tabular{ll}{
 #'  Package: \tab phenology\cr
 #'  Type: \tab Package\cr
-#'  Version: \tab 4.0 build 315\cr
-#'  Date: \tab 2014-05-10\cr
+#'  Version: \tab 4.0.4 build 321\cr
+#'  Date: \tab 2015-01-29\cr
 #'  License: \tab GPL (>= 2)\cr
 #'  LazyLoad: \tab yes\cr
 #'  }
-#' @title The package phenology
+#' @title Tools to Manage a Parametric Function that Describes Phenology
 #' @author Marc Girondot \email{marc.girondot@@u-psud.fr}
 #' @docType package
 #' @name phenology-package

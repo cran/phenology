@@ -4,9 +4,24 @@
 # ------------------------
 
 .MHalgoGen<-function(n.iter=10000, parameters=NULL, data=NULL, likelihood=NULL, 
-n.chains = 4, n.adapt = 100, thin=30, trace=FALSE)
+n.chains = 4, n.adapt = 100, thin=30, trace=FALSE, 
+intermediate=NULL, filename="intermediate.Rdata",
+previous=NULL)
 {
 
+  # itr <- list(chain=kk, iter=i, varp2=varp2, res=res)
+  if (is.null(previous)) {
+    deb_kk <- 1
+    deb_i <- 2
+    res <- as.list(NULL)
+    deb_varp2 <- matrix(rep(NA, (nbvar+1)*(n.adapt+n.iter+2)), ncol=nbvar+1)
+  } else {
+    deb_kk <- previous$chain
+    deb_i <- previous$iter
+    res <- previous$res
+    deb_varp2 <- previous$varp2
+  }
+  
 t <- as.character(trace)
 pt <- NULL
 if (t=="TRUE") {pt <- 1;tf <- TRUE}
@@ -22,12 +37,13 @@ cpt_trace <- 0
 res<-as.list(NULL)
 resL<-as.list(NULL)
 
-for (kk in 1:n.chains) {
+for (kk in deb_kk:n.chains) {
 
 # Initialisation
 nbvar<-dim(parameters)[1]
 varp<-matrix(rep(NA, (nbvar+1)*(n.adapt+n.iter+2)), ncol=nbvar+1)
-varp2<-matrix(rep(NA, (nbvar+1)*(n.adapt+n.iter+2)), ncol=nbvar+1)
+varp2<-deb_varp2
+deb_varp2 <- matrix(rep(NA, (nbvar+1)*(n.adapt+n.iter+2)), ncol=nbvar+1)
 
 colnames(varp)<-c(rownames(parameters), "Ln L")
 colnames(varp2)<-c(rownames(parameters), "Ln L")
@@ -65,7 +81,7 @@ dfun<-parameters[,"Density"]
 
 
 # Itérations
-for (i in 2:(n.adapt+n.iter+1))
+for (i in deb_i:(n.adapt+n.iter+1))
 {
 	newvarp<-varp[i-1, 1:nbvar]
 	for (j in 1:nbvar) {	
@@ -100,7 +116,15 @@ for (i in 2:(n.adapt+n.iter+1))
 	    cat(paste("Chain ", kk, ": [", i, "] ", as.numeric(varp[i, "Ln L"]), "\n", sep=""))
       cpt_trace <- 0
     }
-  }
+	}
+		
+		# est-ce que je sauve où j'en suis
+		if (!is.null(intermediate))
+		if (i %% intermediate==0) {
+		  itr <- list(chain=kk, iter=i, varp2=varp2, res=res)
+		  save(itr, file=filename)
+		}
+		
 }
 
 lp <- as.mcmc(varp2[1:(cpt-1), 1:nbvar])
