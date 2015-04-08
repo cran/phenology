@@ -5,7 +5,7 @@
 \alias{phenology-package}
 \title{Tools to Manage a Parametric Function that Describes Phenology}
 \description{
-A package to fit seasonality counts
+Functions used to fit and test the phenology of species based on counts.
 }
 \details{
 Fit a parametric function that describes phenology
@@ -13,8 +13,8 @@ Fit a parametric function that describes phenology
 \tabular{ll}{
  Package: \tab phenology\cr
  Type: \tab Package\cr
- Version: \tab 4.0.4 build 321\cr
- Date: \tab 2015-01-29\cr
+ Version: \tab 4.1 build 328\cr
+ Date: \tab 2015-04-08\cr
  License: \tab GPL (>= 2)\cr
  LazyLoad: \tab yes\cr
  }

@@ -9,11 +9,16 @@
 #' @param n.adapt Number of iterations before to store outputs
 #' @param thin Number of iterations between each stored output
 #' @param trace True or False, shows progress
+#' @param filename If intermediate is not NULL, save intermediate result in this file
+#' @param intermediate Period for saving intermediate result, NULL for no save
+#' @param previous Previous result to be continued. Can be the filename in which intermediate results are saved.
 #' @description Run the Metropolis-Hastings algorithm for data.\cr
-#' Deeply modified from a MCMC script by Olivier Martin (INRA, Paris-Grignon).\cr
 #' The number of iterations is n.iter+n.adapt+1 because the initial likelihood is also displayed.\cr
-#' I recommend that thin=1 because the method to estimate SE uses resampling.\cr
-#' As initial point is maximum likelihood, n.adapt = 0 seems a good solution.
+#' I recommend thin=1 because the method to estimate SE uses resampling.\cr
+#' As initial point is maximum likelihood, n.adapt = 0 is a good solution.\cr
+#' The parameters intermediate and filename are used to save intermediate results every 'intermediate' iterations (for example 1000). Results are saved in a file of name filename.\cr
+#' The parameter previous is used to indicate the list that has been save using the parameters intermediate and filename. It permits to continue a mcmc search.\cr
+#' These options are used to prevent the consequences of computer crash or if the run is very very long and computer processes at time limited.\cr
 #' @examples 
 #' \dontrun{
 #' library(phenology)
@@ -51,8 +56,17 @@
 
 phenology_MHmcmc<-function(result=stop("An output from fit_phenology() must be provided"), n.iter=10000, 
 parametersMCMC=stop("A model generated with phenology_MHmcmc_p() must be provided"), n.chains = 4, 
-n.adapt = 0, thin=1, trace=FALSE)
-{
+n.adapt = 0, thin=1, trace=FALSE, intermediate=NULL, filename="intermediate.Rdata", previous=NULL) {
+  
+  if (is.character(previous)) {
+    itr <- NULL
+    load(previous)
+    previous <- itr
+    rm(itr)
+    print("Continue previous mcmc run")
+  } else {
+    print(parametersMCMC)
+  }
 
   if (class(result)!="phenology") {
     warning("An output from fit_phenology() must be provided")
@@ -69,7 +83,7 @@ parameters <- parametersMCMC
 
 print(parameters)
 
-out <- .MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, n.chains = n.chains, n.adapt = n.adapt, thin=thin, trace=trace, data=pt, likelihood=.phenology_fonctionMCMC)
+out <- MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, n.chains = n.chains, n.adapt = n.adapt, thin=thin, trace=trace, data=pt, likelihood=.phenology_fonctionMCMC)
 
 return(out)
 

@@ -178,6 +178,10 @@ for (i in 1:length(par)) {
 			priors <- c(priors, list(c("dunif", 0, 365, 2, 0, 365, par[i])))
 			names(priors)[length(priors)] <- names(par[i])
 		}
+  if (substr(names(par[i]), 1, 5)=="Length_") {
+    priors <- c(priors, list(c("dunif", 0, 100, 2, 0, 100, par[i])))
+    names(priors)[length(priors)] <- names(par[i])
+  }
 }
 
 

@@ -3,8 +3,8 @@
 #' \tabular{ll}{
 #'  Package: \tab phenology\cr
 #'  Type: \tab Package\cr
-#'  Version: \tab 4.0.4 build 321\cr
-#'  Date: \tab 2015-01-29\cr
+#'  Version: \tab 4.1 build 328\cr
+#'  Date: \tab 2015-04-08\cr
 #'  License: \tab GPL (>= 2)\cr
 #'  LazyLoad: \tab yes\cr
 #'  }
@@ -12,7 +12,7 @@
 #' @author Marc Girondot \email{marc.girondot@@u-psud.fr}
 #' @docType package
 #' @name phenology-package
-#' @description A package to fit seasonality counts
+#' @description Functions used to fit and test the phenology of species based on counts.
 #' @references Girondot, M. 2010. Estimating density of animals during 
 #'             migratory waves: application to marine turtles at nesting site. 
 #'             Endangered Species Research, 12, 85-105.

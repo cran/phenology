@@ -8,7 +8,8 @@
   phenology_MHmcmc(result = stop("An output from fit_phenology() must be provided"),
   n.iter = 10000,
   parametersMCMC = stop("A model generated with phenology_MHmcmc_p() must be provided"),
-  n.chains = 4, n.adapt = 0, thin = 1, trace = FALSE)
+  n.chains = 4, n.adapt = 0, thin = 1, trace = FALSE,
+  intermediate = NULL, filename = "intermediate.Rdata", previous = NULL)
 }
 \arguments{
 \item{result}{An object obtained after a SearchR fit}
@@ -24,16 +25,24 @@
 \item{thin}{Number of iterations between each stored output}
 
 \item{trace}{True or False, shows progress}
+
+\item{intermediate}{Period for saving intermediate result, NULL for no save}
+
+\item{filename}{If intermediate is not NULL, save intermediate result in this file}
+
+\item{previous}{Previous result to be continued. Can be the filename in which intermediate results are saved.}
 }
 \value{
 A list with resultMCMC being mcmc.list object, resultLnL being likelihoods and parametersMCMC being the parameters used
 }
 \description{
 Run the Metropolis-Hastings algorithm for data.\cr
-Deeply modified from a MCMC script by Olivier Martin (INRA, Paris-Grignon).\cr
 The number of iterations is n.iter+n.adapt+1 because the initial likelihood is also displayed.\cr
-I recommend that thin=1 because the method to estimate SE uses resampling.\cr
-As initial point is maximum likelihood, n.adapt = 0 seems a good solution.
+I recommend thin=1 because the method to estimate SE uses resampling.\cr
+As initial point is maximum likelihood, n.adapt = 0 is a good solution.\cr
+The parameters intermediate and filename are used to save intermediate results every 'intermediate' iterations (for example 1000). Results are saved in a file of name filename.\cr
+The parameter previous is used to indicate the list that has been save using the parameters intermediate and filename. It permits to continue a mcmc search.\cr
+These options are used to prevent the consequences of computer crash or if the run is very very long and computer processes at time limited.\cr
 }
 \details{
 phenology_MHmcmc runs the Metropolis-Hastings algorithm for data (Bayesian MCMC)
