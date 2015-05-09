@@ -13,13 +13,13 @@
 #' @param silent Does information about added timeseries is shown
 #' @description To create a new dataset, the syntaxe is \cr
 #' data<-add_phenology(add=newdata, name="Site", reference=as.Date('2001-12-31'), 
-#' format='%d/%m/%y')\cr
+#' format='\%d/\%m/\%y')\cr
 #' To add a dataset to a previous one, the syntaxe is \cr
 #' data<-add_phenology(previous=previousdata, add=newdata, name='Site', \cr
-#' reference=as.Date('2001-12-31'), adjust_ref=TRUE, format='%d/%m/%y')\cr
-#' To add several timeseries at the same time with '%d/%m/%y'or '%d/%m/%Y' date format:\cr
+#' reference=as.Date('2001-12-31'), adjust_ref=TRUE, format="\%Y-\%m-\%d") \cr
+#' To add several timeseries at the same time with '\%d/\%m/\%y' or '\%d/\%m/\%Y' date format:\cr
 #' data<-add_phenology(add=list(newdata1, newdata2), name=c('Site1', 'Site2'),\cr 
-#' reference=as.Date('2001-12-31'), format=c('%d/%m/%y', '%d/%m/%Y'))\cr
+#' reference=as.Date('2001-12-31'), format=c('\%d/\%m/\%y', '\%d/\%m/\%Y'))\cr
 #' The dataset to be added must include 2 or 3 columns.\cr
 #' The first one is the date in the format specified by\cr 
 #' the parameter format=. If the number of nests is known\cr 
@@ -72,22 +72,19 @@ function(add=file.choose(), name=NULL, reference=NULL, month_ref= NULL, sep.date
 # add=file.choose()
   
 if (class(previous)!="phenologydata" && !is.null(previous)) {
-  warning("The previous dataset must be already formated!")
-  return(invisible())
+  stop("The previous dataset must be already formated!")
 }
   
   if (!is.null(format)) {
     dtaspl <- substr(gsub("[%dmYy]", "", format), 1, 1)
     if (sep.dates==dtaspl) {
-    warning("Separator between day, month and year cannot be the same as the separator between two dates")
-      return(invisible())
+    stop("Separator between day, month and year cannot be the same as the separator between two dates")
     }
   }
   
 
 if(class(add)=="try-error") {
-	warning("No file has been chosen!")
-	return(invisible())
+	stop("No file has been chosen!")
 }	
 
 nm <- name
@@ -102,8 +99,7 @@ if (class(add)=="character") {
 	
 ## if (is.null(add) || !exists(as.character(substitute(add)))) {
 if (is.null(add)) {
-	warning("Data to be added does not exist!")
-	return(invisible())
+	stop("Data to be added does not exist!")
 }
 
 
@@ -112,8 +108,7 @@ if (is.null(add)) {
 rp <- .read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
 
 if (substr(gsub("[0-9]", "", format), 1, 1)==sep.dates) {
-  warning("The date separator is used also within a date. It is not possible.")
-  return(invisible())
+  stop("The date separator is used also within a date. It is not possible.")
 }
 
 add <- rp$DATA

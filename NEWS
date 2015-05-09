@@ -2,6 +2,12 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
 Please note that only the most significant changes are reported here.
 
+            CHANGES IN VERSION 4.2    (2015-05-09)
+            
+* New function fitRMU()
+* Correct add_phenology() description
+* Correct a bug if no fixed parameter is included
+
             CHANGES IN VERSION 4.1    (2015-04-08)
 
 * growlnotify(), MHalgoGen(), as.mcmc.mcmcComposite(), as.par.mcmcComposite(), summary.mcmcComposite(), plot.mcmcComposite(), plot_add(), ScalePreviousPlot(), plot_errbar(), ChangeCoordinate(), barplot_errbar(), chr(), asc(), ind_long_lat(), getTide(), clean.knitr(), local.search(), map.scale2(), compassRose2(), convert.tz(), insidesearch(), moon_phase(), compare_AIC(), read_folder() are transfered in new package HelpersMG

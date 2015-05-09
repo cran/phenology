@@ -8,16 +8,18 @@
 
 
 
-.format_par <-
-function(xpar, serie) {
+.format_par <- function(xpar, serie) {
   
 #  xpar <- c(Min=12, Peak_Alpha=15, Peak_Beta=-16, Theta=16, Begin=15);serie="Alpha"
 
+#  xpar_courant <<- xpar
+#  save.image("courant.RData")
+
   nxparec <- strsplit(names(xpar), "_")
-  ec <- unlist(lapply(nxparec, function(x) ifelse(length(x)>1, x[[2]]==serie, TRUE)))
+  ec <- sapply(nxparec, function(x) ifelse(length(x)>1, x[[2]]==serie, TRUE))
   
   xparec <- xpar[ec]
-  names(xparec) <- unlist(lapply(nxparec[ec], function(x) x[[1]]))
+  names(xparec) <- sapply(nxparec[ec], function(x) x[[1]])
 
 if (is.na(xparec["MinB"]) && is.na(xparec["PMinB"]) && is.na(xparec["Min"]) && is.na(xparec["PMin"])) {xparec["MinB"]<-0}
 if (is.na(xparec["MinE"]) && is.na(xparec["PMinE"]) && is.na(xparec["Min"]) && is.na(xparec["PMin"])) {xparec["MinE"]<-0}

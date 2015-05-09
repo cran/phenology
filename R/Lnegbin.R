@@ -17,15 +17,14 @@ sum=0
 # je mets tous les paramètres dans xpar
 	xpar<-c(x, pt$fixed)
 
-
-for(k in 1:length(pt$data)) {
+	datatot <- pt$data
+	
+for(k in seq_along(datatot)) {
 
 # print(paste("pop", k))
-
-datatot<-pt$data
 data<-datatot[[k]]
 # quel est le nom de la série en cours
-nmser<-names(datatot[k])
+nmser<-names(datatot)[k]
 # Prend en compte les 0 ou non 5/2/2012
 zero<- pt$zerocounts[k]
 deb<-ifelse(zero, 0, 1)

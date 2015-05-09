@@ -13,7 +13,6 @@
 #' @param zero_counts example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 #'                    been recorder for each of these timeseries. Defaut is TRUE for all.
 #' @param hessian If FALSE does not estimate se of parameters
-#' @param help If TRUE, an help is displayed
 #' @param silent If TRUE does not show any message
 #' @param growlnotify If False, does not send growl notification
 #' @description Function of the package phenology to fit parameters to timeseries.\cr
@@ -21,8 +20,6 @@
 #' Result<-fit_phenology(data=dataset, parametersfit=par, parametersfixed=pfixed, trace=1, method_incertitude=2, zero_counts=TRUE, hessian=TRUE)\cr
 #' or if no parameter is fixed :\cr
 #' Result<-fit_phenology(data=dataset, parametersfit=par)\cr
-#' or\cr
-#' fit_phenology(help=TRUE) to have the help !\cr
 #' Add trace=1 [default] to have information on the fit progression or trace=0 to hide information on the fit progression.\cr
 #' method_incertitude='multinomial' [default] is the correct one from a statistical point of view.\cr
 #' method_incertitude='binomial' is an alternative more rapid.\cr
@@ -51,41 +48,24 @@
 
 
 fit_phenology <-
-function(data=file.choose(), parametersfit=NULL, parametersfixed=NULL, trace=1, maxit=500, method_incertitude="multinomial", 
-	zero_counts=TRUE, hessian=TRUE, help=FALSE, silent=FALSE, growlnotify=TRUE) {
-if ( (help) || (is.null(data)) || (class(data)=="try-error") ) {
-	cat("To fit data, the syntaxe is :\n")
-	cat("Result<-fit_phenology(data=dataset, parametersfit=par, parametersfixed=pfixed, trace=1,\n")
-	cat("+      method_incertitude=2, zero_counts=TRUE, hessian=TRUE)\n")
-	cat("or if no parameter is fixed :\n")
-	cat("Result<-fit_phenology(data=dataset, parametersfit=par)\n")
-	cat("or\n")	
-	cat("fit_phenology(help=TRUE) to have this help !\n")
-	cat("Add trace=1 [default] to have information on the fit progression.\n")
-	cat("or trace=0 to hide information on the fit progression.\n")
-	cat("method_incertitude='multinomial' [default] is the correct one from a statistical point of view.\n")
-	cat("method_incertitude='binomial' is an aproximate method more rapid.\n")
-	cat("method_incertitude='sum' is an alternative more rapid but potentially biased.\n")
-	cat("zero_counts=c(TRUE, TRUE, FALSE) indicates whether the zeros have\n")
-	cat("been recorded for each of these timeseries. Defaut is TRUE for all.\n")
-	cat("hessian=FALSE does not estimate se of parameters.\n")
-} else {
+function(data=file.choose(), parametersfit=NULL, parametersfixed=NULL, 
+         trace=1, maxit=500, method_incertitude="multinomial", 
+         zero_counts=TRUE, hessian=TRUE, silent=FALSE, growlnotify=TRUE) {
 
+# data=NULL; parametersfit=NULL; parametersfixed=NA; trace=1; maxit=500; method_incertitude="multinomial"; zero_counts=TRUE; hessian=TRUE; silent=FALSE; growlnotify=TRUE
+# data=lf; parametersfit=parg; parametersfixed=NULL; trace=1
 
-if (is.null(parametersfixed)) {parametersfixed<-NA}
+#  if (is.null(parametersfixed)) {parametersfixed<-NA}
 
 if (method_incertitude!="sum" & method_incertitude!="binomial" & method_incertitude!="multinomial" 
 	& method_incertitude!=0 & method_incertitude!=1 & method_incertitude!=2) {
-  print("method_incertitude must be 'sum', 'binomial' or 'multinomial'")
-  return(invisible())
+  stop("method_incertitude must be 'sum', 'binomial' or 'multinomial'")
 }
 
 
 if (class(data)=="character") {
 # j'ai utilisé le file.choose
-
 	data <- lapply(data,readLines, warn=FALSE)
-		
 }
 
 if (class(data)!="phenologydata") {
@@ -94,7 +74,7 @@ if (class(data)!="phenologydata") {
 }
 
 if (is.null(parametersfit)) {
-	print("No initial parameters set has been defined. I estimate one using par_init().")
+	print("No initial parameters set has been defined. I estimate one set using par_init().")
 	parametersfit <- par_init(data, parametersfixed=parametersfixed)
 }
 
@@ -102,13 +82,13 @@ if (is.null(parametersfit)) {
 	
 if (length(zero_counts)==1) {zero_counts<-rep(zero_counts, length(data))}
 if (length(zero_counts)!=length(data)) {
-	print("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) and with the same number of logical values (TRUE or FALSE) than the number of series analyzed.")
-	return(invisible())
+	stop("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) and with the same number of logical values (TRUE or FALSE) than the number of series analyzed.")
 }
 
 
 	repeat {
 		resul<-optim(parametersfit, .Lnegbin, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts) , method="BFGS",control=list(trace=trace, REPORT=1, maxit=maxit),hessian=FALSE)
+#		resul<-optim(parametersfit, phenology:::.Lnegbin, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts) , method="BFGS",control=list(trace=trace, REPORT=1, maxit=maxit),hessian=FALSE)
 		if (resul$convergence==0) break
 		parametersfit<-resul$par
 		if (!silent) print("Convergence is not acheived. Optimization continues !")
@@ -186,10 +166,11 @@ if (!silent) cat(paste("Series: ", names(resul$data[kl]), "\n", sep=""))
 # la date de référence est resul$data[[kl]][1, "Date"]-resul$data[[kl]][1, "ordinal"]+1
 ref <- resul$data[[kl]][1, "Date"]-resul$data[[kl]][1, "ordinal"]+1
 intdtout <- c(reference=ref)
+# save(list = ls(all.names = TRUE), file = "total.RData", envir = environment())
 
 par <- .format_par(c(resfit, parametersfixed), names(resul$data[kl]))
 sepfixed <- parametersfixed[strtrim(names(parametersfixed), 3)=="sd#"]
-names(sepfixed) <- substring(names(sepfixed), 4)
+if (!is.null(sepfixed)) names(sepfixed) <- substring(names(sepfixed), 4)
 se <- c(res_se, sepfixed)
 
 d1 <- ref+par["Peak"]
@@ -237,7 +218,7 @@ if (!is.na(se["Begin"])) {
 		d3 <- ref+par["Peak"]-l+2*sel
 	}
 }
-if (!is.null(d2)) {
+if (!is.null(d2) & !is.na(d2)) {
 if (!silent) 	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
 	intdtout <- c(intdtout, BeginCI1=as.numeric(d2), BeginCI2=as.numeric(d3))
 } else {
@@ -278,7 +259,7 @@ if (!is.na(se["End"])) {
 		d3 <- ref+par["Peak"]+l+2*sel
 	}
 }
-if (!is.null(d2)) {
+if (!is.null(d2) & !is.na(d2)) {
 if (!silent) 	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
 	intdtout <- c(intdtout, EndCI1=as.numeric(d2), EndCI2=as.numeric(d3))
 } else {
@@ -307,5 +288,4 @@ if (!silent & growlnotify) growlnotify('Fit is done!')
 return(resul)
 
 }
-	
-}
+
