@@ -24,11 +24,10 @@
 #' parg<-par_init(data_Gratiot, parametersfixed=NULL)
 #' # Estimate likelihood with this initial set of parameters
 #' likelihood_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL)
+#' # Or directly from a result object
+#' likelihood_phenology(result=result_Gratiot)
 #' }
 #' @export
-
-
-
 
 likelihood_phenology <-
 function(data=NULL, parametersfit=NULL, parametersfixed=NULL, zero_counts=NULL, method_incertitude=NULL, result=NULL) {
@@ -37,8 +36,7 @@ function(data=NULL, parametersfit=NULL, parametersfixed=NULL, zero_counts=NULL, 
 
 if (!is.null(result)) {
   if (class(result) != "phenology") {
-    cat("The object result must be the result of a fit_phenology()\n")
-    return()
+    stop("The object result must be the result of a fit_phenology()")
   }
 
   if (is.null(data)) {data <- result$data}
@@ -49,25 +47,23 @@ if (!is.null(result)) {
 
 }
 
-if (!is.null(data)) {
-  if (class(data) != "phenologydata") {
-    cat("The data object must be the result of a add_format()\n")
-    return()
-  }
-}
+# if (!is.null(data)) {
+#   if (class(data) != "phenologydata") {
+#     stop("The data object must be the result of a add_format()")
+#   }
+# }
 
 
-if (is.null(parametersfixed)) {parametersfixed<-NA}
+# if (is.null(parametersfixed)) {parametersfixed <- NA}
 if (is.null(method_incertitude)) {method_incertitude <- 0}
 if (is.null(zero_counts)) {zero_counts <- TRUE}
 	
-	if (length(zero_counts)==1) {zero_counts<-rep(zero_counts, length(data))}
+	if (length(zero_counts)==1) {zero_counts <- rep(zero_counts, length(data))}
 	if (length(zero_counts)!=length(data)) {
-		print("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) or possess the same number of logical values than the number of series analyzed.")
-		return()
+		stop("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) or possess the same number of logical values than the number of series analyzed.")
 	}
 	
-LnL<-.Lnegbin(parametersfit, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts))
+LnL <- getFromNamespace(".Lnegbin", ns="phenology")(parametersfit, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts))
 	
 	return(LnL)
 

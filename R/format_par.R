@@ -12,6 +12,8 @@
   
 #  xpar <- c(Min=12, Peak_Alpha=15, Peak_Beta=-16, Theta=16, Begin=15);serie="Alpha"
 
+  xpar <- na.omit(xpar)
+  
 #  xpar_courant <<- xpar
 #  save.image("courant.RData")
 

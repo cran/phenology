@@ -5,7 +5,7 @@
 \title{Plot the phenology from a result.}
 \usage{
 \method{plot}{phenology}(x, ..., data = NULL, parameters = NULL,
-  parametersfixed = NA, series = "all", moon = FALSE,
+  parametersfixed = NULL, series = "all", moon = FALSE,
   replicate.CI = 1000, progressbar = TRUE, help = FALSE,
   growlnotify = TRUE)
 }

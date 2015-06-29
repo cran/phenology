@@ -45,6 +45,8 @@ data_Gratiot<-add_phenology(Gratiot, name="Complete",
 parg<-par_init(data_Gratiot, parametersfixed=NULL)
 # Estimate likelihood with this initial set of parameters
 likelihood_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL)
+# Or directly from a result object
+likelihood_phenology(result=result_Gratiot)
 }
 }
 \author{

@@ -23,7 +23,7 @@ add_phenology(add = file.choose(), name = NULL, reference = NULL,
 
 \item{format}{The format of the date in the file. Several format can be set and the last one that give compatible result is used}
 
-\item{previous}{Name of previous data formated with add_phenology or NULL [default] if no previous data exists}
+\item{previous}{Previous data formated with add_phenology or NULL [default] if no previous data exist}
 
 \item{silent}{Does information about added timeseries is shown}
 }
@@ -60,13 +60,16 @@ The simplest use of this function is just: \cr
 phen <- add_phenology()
 Some problems that can occur:\cr
 If a name is defined as a third column of a data.frame and a name is defined also with name=, the third column has priority.\cr
-Two different timeseries MUST have different name.
+Two different timeseries MUST have different name and character _ is forbiden in timeseries names.
 }
 \details{
 add_phenology creates a new dataset.
 }
 \examples{
 \dontrun{
+# Get the lastest version at:
+# install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz",
+     repos=NULL, type="source")
 library(phenology)
 # Read a file with data
 Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)

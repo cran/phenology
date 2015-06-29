@@ -8,6 +8,8 @@
 
 .Lnegbin <- function(x, pt) {
 
+  
+#  if (length(pt)==1 & names(pt)[1]=="pt") pt <- pt$pt
 #.phenology.env<- NULL
 #rm(.phenology.env)
 
@@ -22,15 +24,15 @@ sum=0
 for(k in seq_along(datatot)) {
 
 # print(paste("pop", k))
-data<-datatot[[k]]
+data <- datatot[[k]]
 # quel est le nom de la série en cours
-nmser<-names(datatot)[k]
+nmser <- names(datatot)[k]
 # Prend en compte les 0 ou non 5/2/2012
-zero<- pt$zerocounts[k]
-deb<-ifelse(zero, 0, 1)
+zero <- pt$zerocounts[k]
+deb <- ifelse(zero, 0, 1)
 	
 # je fais une fonction où j'envoie les paramètres et la série et il renvoie ceux à utiliser directement
-	xparec<-.format_par(xpar, nmser)
+	xparec <- getFromNamespace(".format_par", ns="phenology")(xpar, nmser)
 #  if (xparec["MinE"]<0) print(xpar, xparec)
 	th<-xparec["Theta"]
 

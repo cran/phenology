@@ -24,12 +24,12 @@
 #' library(phenology)
 #' data(Gratiot)
 #' # Generate a formatted list named data_Gratiot 
-#' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
+#' data_Gratiot <- add_phenology(Gratiot, name="Complete", 
 #'     reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
-#' parg<-par_init(data_Gratiot, parametersfixed=NULL)
+#' parg <- par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
-#' result_Gratiot<-fit_phenology(data=data_Gratiot, 
+#' result_Gratiot <- fit_phenology(data=data_Gratiot, 
 #' 		parametersfit=parg, parametersfixed=NULL, trace=1)
 #' # Generate set of priors for Bayesian analysis
 #' pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept = TRUE)
@@ -58,19 +58,19 @@ phenology_MHmcmc<-function(result=stop("An output from fit_phenology() must be p
 parametersMCMC=stop("A model generated with phenology_MHmcmc_p() must be provided"), n.chains = 4, 
 n.adapt = 0, thin=1, trace=FALSE, intermediate=NULL, filename="intermediate.Rdata", previous=NULL) {
   
+  # result <- result_Gratiot; n.iter <- 10000;parametersMCMC <- pmcmc; n.chains = 1; n.adapt = 0; thin = 1; trace = FALSE
+  # intermediate=NULL; filename="intermediate.Rdata"; previous=NULL
+  
   if (is.character(previous)) {
     itr <- NULL
     load(previous)
     previous <- itr
     rm(itr)
     print("Continue previous mcmc run")
-  } else {
-    print(parametersMCMC)
   }
 
   if (class(result)!="phenology") {
-    warning("An output from fit_phenology() must be provided")
-    return()
+    stop("An output from fit_phenology() must be provided")
   }
   
 
@@ -78,12 +78,9 @@ n.adapt = 0, thin=1, trace=FALSE, intermediate=NULL, filename="intermediate.Rdat
 
 pt=list(data=result$data, fixed=result$parametersfixed, incertitude=result$method_incertitude, zerocounts=result$zero_counts)
 
+print(parametersMCMC)
 
-parameters <- parametersMCMC
-
-print(parameters)
-
-out <- MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, n.chains = n.chains, n.adapt = n.adapt, thin=thin, trace=trace, data=pt, likelihood=.phenology_fonctionMCMC)
+out <- MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, n.chains = n.chains, n.adapt = n.adapt, thin=thin, trace=trace, pt=pt, likelihood=getFromNamespace(".Lnegbin", ns="phenology"))
 
 return(out)
 

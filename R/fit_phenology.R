@@ -53,7 +53,7 @@ function(data=file.choose(), parametersfit=NULL, parametersfixed=NULL,
          zero_counts=TRUE, hessian=TRUE, silent=FALSE, growlnotify=TRUE) {
 
 # data=NULL; parametersfit=NULL; parametersfixed=NA; trace=1; maxit=500; method_incertitude="multinomial"; zero_counts=TRUE; hessian=TRUE; silent=FALSE; growlnotify=TRUE
-# data=lf; parametersfit=parg; parametersfixed=NULL; trace=1
+# data=lf; parametersfit=parg; parametersfixed=pfixed; trace=1
 
 #  if (is.null(parametersfixed)) {parametersfixed<-NA}
 
@@ -87,7 +87,11 @@ if (length(zero_counts)!=length(data)) {
 
 
 	repeat {
-		resul<-optim(parametersfit, .Lnegbin, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts) , method="BFGS",control=list(trace=trace, REPORT=1, maxit=maxit),hessian=FALSE)
+		resul<-optim(parametersfit, .Lnegbin, 
+		             pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts) , 
+		             method="BFGS",
+		             control=list(trace=trace, REPORT=1, maxit=maxit),
+		             hessian=FALSE)
 #		resul<-optim(parametersfit, phenology:::.Lnegbin, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts) , method="BFGS",control=list(trace=trace, REPORT=1, maxit=maxit),hessian=FALSE)
 		if (resul$convergence==0) break
 		parametersfit<-resul$par

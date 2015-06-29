@@ -42,8 +42,7 @@
 phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be provided"), accept=FALSE) {
 
 if (class(result)!="phenology") {
-  warning("An output from fit_phenology() must be provided")
-  return()
+  stop("An output from fit_phenology() must be provided")
 }
 
 # d'abord je sors les paramètres à utiliser
@@ -188,7 +187,6 @@ for (i in 1:length(par)) {
 prencours <- NULL
 
 for (i in 1:length(par)) {
-
 	prencours <- c(prencours, priors[[names(par)[i]]])
 }
 
@@ -197,7 +195,10 @@ for (i in 1:length(par)) {
 parametersMCMC <- matrix(prencours, ncol=7, byrow=T)
 colnames(parametersMCMC) <- c("Density", "Prior1", "Prior2", "SDProp", "Min", "Max", "Init")
 rownames(parametersMCMC)<-names(par)
+parametersMCMC <- as.data.frame(parametersMCMC, stringsAsFactors = FALSE)
 
+for (i in 2:7)
+  parametersMCMC[,i] <- as.numeric(parametersMCMC[,i])
 
 
 parameters <- parametersMCMC
@@ -235,10 +236,10 @@ if (f=="q") {
 	
 	cat(paste("Distribution of the prior, Minimum (Enter for default ",parameters[variable, "Prior1"], "):", sep=""))
 	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Prior1"] <- f
+	if (length(f)!=0) parameters[variable, "Prior1"] <- as.numeric(f)
 	cat(paste("Distribution of the prior, Maximum (Enter for default ",parameters[variable, "Prior2"], "):", sep=""))
 	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Prior2"] <- f
+	if (length(f)!=0) parameters[variable, "Prior2"] <- as.numeric(f)
 	
 	} else {
 	
@@ -246,19 +247,19 @@ if (f=="q") {
 	
 	cat(paste("Distribution of the prior, Mean (Enter for default ",parameters[variable, "Prior1"], "):", sep=""))
 	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Prior1"] <- f
+	if (length(f)!=0) parameters[variable, "Prior1"] <- as.numeric(f)
 	cat(paste("Distribution of the prior, Standard deviation (Enter for default ",parameters[variable, "Prior2"], "):", sep=""))
 	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Prior2"] <- f
+	if (length(f)!=0) parameters[variable, "Prior2"] <- as.numeric(f)
 	
 	} else {
 
 	cat(paste("Distribution of the prior, value 1 (Enter for default ",parameters[variable, "Prior1"], "):", sep=""))
 	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Prior1"] <- f
+	if (length(f)!=0) parameters[variable, "Prior1"] <- as.numeric(f)
 	cat(paste("Distribution of the prior, value 2 (Enter for default ",parameters[variable, "Prior2"], "):", sep=""))
 	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Prior2"] <- f
+	if (length(f)!=0) parameters[variable, "Prior2"] <- as.numeric(f)
 
 	}
 	}
@@ -266,16 +267,16 @@ if (f=="q") {
 	
 	cat(paste("SD of new proposition (Enter for default ",parameters[variable, "SDProp"], "):", sep=""))
 	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "SDProp"] <- f
+	if (length(f)!=0) parameters[variable, "SDProp"] <- as.numeric(f)
 	cat(paste("Minimum for the parameter (default ",parameters[variable, "Min"], "):", sep=""))
 	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Min"] <- f
+	if (length(f)!=0) parameters[variable, "Min"] <- as.numeric(f)
 	cat(paste("Maximum for the parameter (Enter for default ",parameters[variable, "Max"], "):", sep=""))
 	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Max"] <- f
+	if (length(f)!=0) parameters[variable, "Max"] <- as.numeric(f)
 	cat(paste("Initial value (Enter for default ",parameters[variable, "Init"], "):", sep=""))
 	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Init"] <- f
+	if (length(f)!=0) parameters[variable, "Init"] <- as.numeric(f)
 	}
 
 }
@@ -293,7 +294,7 @@ for (i in 1:nrow(parameters)) {
   }  
   if (findInterval(as.numeric(parameters[i, "Init"]), c(mn, mx)) != 1) {
     parameters[i, "Init"] <- as.character(mn+(mx-mn)/2)
-    warning(paste("Initial value for parameter ", rownames(parameters)[i], " was out of range; It is corrected. Check it.")) 
+    warning(paste0("Initial value for parameter ", rownames(parameters)[i], " was out of range; It has been corrected. Check it.")) 
   }
 }
 

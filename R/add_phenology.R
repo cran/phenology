@@ -2,7 +2,7 @@
 #' @title Create a new dataset or add a timeserie to a previous dataset.
 #' @author Marc Girondot
 #' @return Return a list of formated data that can be used ith fit_phenology()
-#' @param previous Name of previous data formated with add_phenology or NULL [default] if no previous data exists
+#' @param previous Previous data formated with add_phenology or NULL [default] if no previous data exist
 #' @param add The data to be added. It can be a set of several entities that uses the same reference and date format
 #' @param name The name of the monitored site
 #' @param reference as.Date('2001-12-31') The date used as 1st date
@@ -40,9 +40,12 @@
 #' phen <- add_phenology()
 #' Some problems that can occur:\cr
 #' If a name is defined as a third column of a data.frame and a name is defined also with name=, the third column has priority.\cr
-#' Two different timeseries MUST have different name.
+#' Two different timeseries MUST have different name and character _ is forbiden in timeseries names.
 #' @examples
 #' \dontrun{
+#' # Get the lastest version at:
+#' # install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", 
+#'      repos=NULL, type="source")
 #' library(phenology)
 #' # Read a file with data
 #' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
@@ -76,8 +79,7 @@ if (class(previous)!="phenologydata" && !is.null(previous)) {
 }
   
   if (!is.null(format)) {
-    dtaspl <- substr(gsub("[%dmYy]", "", format), 1, 1)
-    if (sep.dates==dtaspl) {
+    if (any(grepl(sep.dates, format))) {
     stop("Separator between day, month and year cannot be the same as the separator between two dates")
     }
   }
@@ -107,7 +109,7 @@ if (is.null(add)) {
 
 rp <- .read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
 
-if (substr(gsub("[0-9]", "", format), 1, 1)==sep.dates) {
+if (any(grepl(sep.dates, rp$format))) {
   stop("The date separator is used also within a date. It is not possible.")
 }
 
@@ -283,10 +285,16 @@ for (kk in 1:nbdatasets) {
 
 class(previous) <- "phenologydata"
 
-if (length(unique(names(previous)))!=length(names(previous))) {
-  warning("The names of timesseries must be unique.")
-  return(invisible())
+
+if (any(grepl("_", names(previous)))) {
+  print("The character _ is forbinden in names of timesseries. It has been changed to -.")
+  names(previous) <- gsub("_", "-", names(previous))
 }
+
+if (any(duplicated(names(previous)))) {
+  stop("The names of timesseries must be unique.")
+}
+
 
 return(previous)
 }

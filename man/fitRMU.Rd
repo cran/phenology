@@ -2,49 +2,78 @@
 % Please edit documentation in R/fitRMU.R
 \name{fitRMU}
 \alias{fitRMU}
-\title{Adjusts incomplete timeseries with various constraints.}
+\title{Adjust incomplete timeseries with various constraints.}
 \usage{
-fitRMU(data = stop("data parameter must be provided"), method = "Constant",
-  nbiter = 100, RMU.name = NULL, parameters = NULL,
-  parametersfixed = NULL, optim = "BFGS", replicate.CI = 1000,
+fitRMU(RMU.data = stop("data parameter must be provided"), RMU.names = NULL,
+  model.trend = "Constant", model.rookeries = "Constant",
+  model.SD = "Zero", parameters = NULL, parametersfixed = NULL,
+  SE = NULL, method = "BFGS", replicate.CI = 1000,
   colname.year = "Year", control = list(trace = 1, REPORT = 100, maxit =
-  nbiter))
+  500), optim = "optim", maxL = 1e+09, scale = TRUE)
 }
 \arguments{
-\item{data}{A data.frame with a column Year and two columns per rookery}
+\item{RMU.data}{A data.frame with a column Year (the name is defined in colname.year) and two columns per rookery defined in RMU.names}
 
-\item{method}{Can be Constant, Year-specific or Exponential}
+\item{RMU.names}{A dataframe with two columns indicating name of columns for mean and standard error for roockerys}
 
-\item{nbiter}{Maximum number of iterations before to show intermediate results}
+\item{model.trend}{Can be Constant, Exponential or Year-specific}
 
-\item{RMU.name}{A dataframe with two columns indicating name of columns for mean and standard error for roockerys}
+\item{model.rookeries}{Description temporal change in rookeries proportion. It be Constant, First-order or Second-order}
+
+\item{model.SD}{Can be Zero or Constant. See description.}
 
 \item{parameters}{Parameters to fit}
 
 \item{parametersfixed}{Parameters that are fixed}
 
-\item{optim}{Method of optim}
+\item{SE}{Parameters SE for example from fitRMU_MHmcmc()}
 
-\item{replicate.CI}{Number of replicates to estimate CI}
+\item{method}{Method of optimization, default is BFGS}
+
+\item{replicate.CI}{Number of replicates to estimate CI of proportion for each rookery}
 
 \item{colname.year}{Name of the column to be used as time index}
 
 \item{control}{List for control parameters of optim}
+
+\item{optim}{Function to be called for optimization, default is optim but it could be optimx}
+
+\item{maxL}{If an error is produced during the estimation of likelihood, replace -Ln L by this value}
+
+\item{scale}{Default is "auto". If FALSE, no scaling is done. It can be a vector with scale for each parameter.}
 }
 \value{
-Return a list with two components: df_final and result
+Return a list with the results from optim and synthesis for proportions and numbers
 }
 \description{
-The data must be a data.frame with the first column being Year \cr
+The data must be a data.frame with the first column being years \cr
 and two columns for each beach: the average and the se for the estimate.\cr
-The correspondance between mean and se for each rookery are given in the RMU.name data.frame.\cr
+The correspondance between mean and se for each rookery are given in the RMU.names data.frame.\cr
+In the result list, the mean proportions for each rookeries are in $proportions, $proportions.CI.0.05 and $proportions.CI.0.95.\cr
+The names of beach columns must not begin by T_, SD_, a0_, a1_ or a2_ and cannot be r.\cr
+A RMU is the acronyme for Regional Managment Unit. See:\cr
+Wallace, B.P., DiMatteo, A.D., Hurley, B.J., Finkbeiner, E.M., Bolten, A.B.,
+Chaloupka, M.Y., Hutchinson, B.J., Abreu-Grobois, F.A., Amorocho, D., Bjorndal, K.A.,
+Bourjea, J., Bowen, B.W., Dueñas, R.B., Casale, P., Choudhury, B.C., Costa, A.,
+Dutton, P.H., Fallabrino, A., Girard, A., Girondot, M., Godfrey, M.H., Hamann, M.,
+López-Mendilaharsu, M., Marcovaldi, M.A., Mortimer, J.A., Musick, J.A., Nel, R.,
+Seminoff, J.A., Troëng, S., Witherington, B., Mast, R.B., 2010. Regional
+management units for marine turtles: a novel framework for prioritizing
+conservation and research across multiple scales. PLoS One 5, e15465.\cr
+Standard deviation for each value is supposed to be additive based on both the
+observed SE (in the RMU.data object) and a constant value dependent on the rookery
+if model.SD is equal to Constant. This value is fixed to zero for model.SD="Zero".\cr
+The support for optimx is still experimental. It has been fully tested only with
+BFGS and Nelder-Mead method. Several methods can be used in a single run for optimx. In this
+case the best likelihood is used at the end.
 }
 \details{
-fitRMU adjusts incomplete timeseries
+fitRMU is used to estimate missing information when several linked values are observed along a timeseries
 }
 \examples{
 \dontrun{
-RMU.name.AtlanticW <- data.frame(mean=c("Yalimapo.French.Guiana",
+library("phenology")
+RMU.names.AtlanticW <- data.frame(mean=c("Yalimapo.French.Guiana",
                                          "Galibi.Suriname",
                                          "Irakumpapy.French.Guiana"),
                                  se=c("se_Yalimapo.French.Guiana",
@@ -64,27 +93,70 @@ data.AtlanticW <- data.frame(Year=c(1990:2000),
       se_Irakumpapy.French.Guiana=c(23.2, 29.7, 22.5, 226, NA,
                                  130, 29, 67, NA, 15, 20))
 
-cst <- fitRMU(data=data.AtlanticW, RMU.name=RMU.name.AtlanticW,
-               colname.year="Year", method="Constant")
-expo <- fitRMU(data=data.AtlanticW, RMU.name=RMU.name.AtlanticW,
-               colname.year="Year", method="Exponential")
-YS <- fitRMU(data=data.AtlanticW, RMU.name=RMU.name.AtlanticW,
-               colname.year="Year", method="Year-specific")
+cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
+               colname.year="Year", model.trend="Constant",
+               model.SD="Zero")
+# Example with optimx
+require("optimx")
+cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
+               colname.year="Year", model.trend="Constant",
+               model.SD="Zero", optim="optimx", method=c("Nelder-Mead","BFGS"),
+               control = list(trace = 0, REPORT = 100, maxit = 500))
+expo <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
+               colname.year="Year", model.trend="Exponential",
+               model.SD="Zero")
+YS <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
+             colname.year="Year", model.trend="Year-specific",
+             model.SD="Zero")
+YS1 <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
+             colname.year="Year", model.trend="Year-specific",
+             model.SD="Zero", model.rookeries="First-order")
+YS1_cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
+             colname.year="Year", model.trend="Year-specific",
+             model.SD="Constant", model.rookeries="First-order",
+             parameters=YS1$par)
+YS2 <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
+             colname.year="Year", model.trend="Year-specific",
+             model.SD="Zero", model.rookeries="Second-order",
+             parameters=YS1$par)
+YS2_cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
+             colname.year="Year", model.trend="Year-specific",
+             model.SD="Constant", model.rookeries="Second-order",
+             parameters=YS1_cst$par)
 
-compare_AIC(Constant=cst$result, Exponential=expo$result,
-YearSpecific=YS$result)
+compare_AIC(Constant=cst, Exponential=expo,
+YearSpecific=YS)
 
-barplot_errbar(YS$mean, y.plus = YS$CI.0.95,
-y.minus = YS$CI.0.05, las=1, ylim=c(0, 0.7),
+compare_AIC(YearSpecific_ProportionsFirstOrder_Zero=YS1,
+YearSpecific_ProportionsFirstOrder_Constant=YS1_cst)
+
+compare_AIC(YearSpecific_ProportionsConstant=YS,
+           YearSpecific_ProportionsFirstOrder=YS1,
+           YearSpecific_ProportionsSecondOrder=YS2)
+
+compare_AIC(YearSpecific_ProportionsFirstOrder=YS1_cst,
+           YearSpecific_ProportionsSecondOrder=YS2_cst)
+
+barplot_errbar(YS1_cst$proportions[1, ], y.plus = YS1_cst$proportions.CI.0.95[1, ],
+y.minus = YS1_cst$proportions.CI.0.05[1, ], las=1, ylim=c(0, 0.7),
 main="Proportion of the different rookeries in the region")
 
-plot_errbar(1990:2000, YS$result$par[paste0("T", 1990:2000)],
-bty="n", las=1, ylab="Nest number", xlab="Nesting season",
-errbar.y=2*YS$result$SE[paste0("T", 1990:2000)], ylim=c(0, 12000),
-main="Total number of nests in all the rookeries in the region")
+plot(cst, main="Use of different beaches along the time", what="total")
+plot(expo, main="Use of different beaches along the time", what="total")
+plot(YS2_cst, main="Use of different beaches along the time", what="total")
+
+plot(YS1, main="Use of different beaches along the time")
+plot(YS1_cst, main="Use of different beaches along the time")
+plot(YS1_cst, main="Use of different beaches along the time", what="numbers")
+
 }
 }
 \author{
 Marc Girondot
+}
+\seealso{
+Other Fill gaps in RMU: \code{\link{fitRMU_MHmcmc_p}};
+  \code{\link{fitRMU_MHmcmc}}; \code{\link{logLik.fitRMU}};
+  \code{\link{plot.fitRMU}}
 }
 

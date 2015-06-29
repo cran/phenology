@@ -51,42 +51,20 @@
 #plot.phenology <- function(x, ...) {
 
 plot.phenology <- 
-	function(x, ..., data=NULL, parameters=NULL, parametersfixed=NA, 
+	function(x, ..., data=NULL, parameters=NULL, parametersfixed=NULL, 
 	series="all", moon=FALSE, replicate.CI=1000, 
 	progressbar=TRUE, help=FALSE, growlnotify=TRUE) {
 
-# data=NULL; parameters=NULL; parametersfixed=NA; series="all"; moon=FALSE; replicate.CI=1000; progressbar=TRUE; help=FALSE; growlnotify=TRUE
+# data=NULL; parameters=NULL; parametersfixed=NULL; series="all"; moon=FALSE; replicate.CI=1000; progressbar=TRUE; help=FALSE; growlnotify=TRUE
     result <- x
     
-if(help || (is.null(data) && is.null(result))) {
-	cat("The syntaxe of this function is :\n")
-	cat("plot(result) or \n")
-	cat("plot(result=res, series=x)\n")
-	cat("with res being the output of fit_phenology.\n")
-	cat("series is used to indicate the series to plot.\n")
-	cat("If only the data must be printed, use :\n")
-	cat("plot(data=dataset, series=x)\n")
-	cat("x can be a vector with all the series to be printed, for example\n")
-	cat("plot(result=res, series=c(1,3,4))\n")
-	cat("x can be 'all' to print all the series at one time. In this\n")
-	cat("case pdf should be TRUE if graphs are necessary.\n")
-	cat("Optional parameters, for example:\n")
-	cat("xlab: Label for X axis [default Months]\n")
-	cat("ylab: Label for Y axis [default Number]\n")
-	cat("ylim: maximum value for Y axis [default estimated from data]\n")
-	cat("cex: size of the points [default 0.5]\n")
-	cat("pch: symbol of the points [default 16]\n")
-	
-} else {
+
 
 out <- list()
 
-# pnp<-as.list(c(...))
+if (is.null(data)) data <- result$data
 
-
-if (is.null(data))  {data<-result$data}
-
-if (series[1]=="all") {series <- c(1:length(data))}
+if (series[1]=="all") series <- c(1:length(data))
 
 series <- as.numeric(series)
 
@@ -99,8 +77,8 @@ if (!is.null(result)) {
 	res_se<-result$se
 
 	## je stocke les données ajustées dans parres
-	parres<-result$par
-	parametersfixed<-result$parametersfixed
+	parres <- result$par
+	parametersfixed <- result$parametersfixed
 	
 } else {
 	# je n ai pas de result, je lis parameters
@@ -109,13 +87,14 @@ if (!is.null(result)) {
 }
 
 
-res_se[is.na(res_se)]<-0
+res_se[is.na(res_se)] <- 0
 
 
 # length(result$par) donne le nombre de paramètres pour lesquels on a result
 # length(parametersfixed) donne le nombre de paramètres fixés
 # je passe les parametersfixed en revue pour savoir si le sd# est fourni pour ce paramètre
 
+if (!is.null(parametersfixed)) {
 if (!all(is.na(parametersfixed))) {
 
 for(i in 1:length(parametersfixed)) {
@@ -125,17 +104,17 @@ for(i in 1:length(parametersfixed)) {
 # sinon, je mets le sd à 0
 
 	if (substr(nm,1,3)!="sd#")	{
-		parres<-c(parres, parametersfixed[i])
-		if (is.na(parametersfixed[paste("sd#", nm, sep="")])) {
+		parres <- c(parres, parametersfixed[i])
+		if (is.na(parametersfixed[paste0("sd#", nm)])) {
 # je n'ai pas de sd pour ce paramètre
 			res_se<-c(res_se, 0)
 		} else {
 # j'ai un sd pour ce paramètre		
-			res_se<-c(res_se, parametersfixed[paste("sd#", nm, sep="")])
+			res_se<-c(res_se, parametersfixed[paste0("sd#", nm)])
 		}
 	}
 }
-
+}
 }
 
 ## crée un tableau dans lequel on met ce qu'on va utiliser pour le graph
@@ -283,7 +262,7 @@ x<-seq(from=reference, to=reference+364, by="1 day")
 
 if (moon) {
 	moony<-vmaxy[2]*1.06
-	mp<-moon_phase(x, phase=TRUE)
+	mp<-moon.info(x, phase=TRUE)
 	mpT1<-ifelse((mp!="FM") | (is.na(mp)), FALSE, TRUE)
 	mpT2<-ifelse((mp!="NM") | (is.na(mp)), FALSE, TRUE)
 #	mpT3<-ifelse((mp!="FQ") | (is.na(mp)), FALSE, TRUE)
@@ -376,7 +355,7 @@ out <- c(out, out2)
 
 }
 
-}
+
 
 	if (growlnotify) growlnotify('Plot is done!')
 	

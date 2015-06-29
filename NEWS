@@ -1,6 +1,14 @@
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
-Please note that only the most significant changes are reported here.
+            CHANGES IN VERSION 4.2.3  (2015-06-29)
+            
+* New models for fitRMU()
+* New functions plot.fitRMU(), logLik.fitRMU(), fitRMU_MHmcmc_p() and fitRMU_MHmcmc()
+* Test if names of timeseries has a _ character and change it with a warning
+* phenology_MHmcmc_p() returns a data.frame and no more a matrix
+* The lastest version can always been installed using:
+    install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", repos=NULL, type="source")
+* Require package HelpersMG version higher or equal than 1.2
 
             CHANGES IN VERSION 4.2    (2015-05-09)
             
@@ -10,7 +18,7 @@ Please note that only the most significant changes are reported here.
 
             CHANGES IN VERSION 4.1    (2015-04-08)
 
-* growlnotify(), MHalgoGen(), as.mcmc.mcmcComposite(), as.par.mcmcComposite(), summary.mcmcComposite(), plot.mcmcComposite(), plot_add(), ScalePreviousPlot(), plot_errbar(), ChangeCoordinate(), barplot_errbar(), chr(), asc(), ind_long_lat(), getTide(), clean.knitr(), local.search(), map.scale2(), compassRose2(), convert.tz(), insidesearch(), moon_phase(), compare_AIC(), read_folder() are transfered in new package HelpersMG
+* growlnotify(), MHalgoGen(), as.mcmc.mcmcComposite(), as.par.mcmcComposite(), summary.mcmcComposite(), plot.mcmcComposite(), plot_add(), ScalePreviousPlot(), plot_errbar(), ChangeCoordinate(), barplot_errbar(), chr(), asc(), ind_long_lat(), getTide(), clean.knitr(), local.search(), map.scale2(), compassRose2(), convert.tz(), insidesearch(), moon_phase(), compare_AIC(), read_folder() are transfered into new package HelpersMG
 * Desription conforms to new CRAN specification
 
             CHANGES IN VERSION 4.0.5    (2015-02-15)
