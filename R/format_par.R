@@ -32,7 +32,7 @@ if (is.na(xparec["MinE"]) && is.na(xparec["PMinE"]) && is.na(xparec["Min"]) && i
                        "Tau", "Tau1", "Tau2")))
   xparec[ec] <- abs(xparec[ec])
 
-xparec["Flat"]<-ifelse(is.na(xparec["Flat"]), 0, abs(xparec["Flat"]))
+xparec["Flat"] <- ifelse(is.na(xparec["Flat"]), 0, abs(xparec["Flat"]))
 
 if (!is.na(xparec["Length"])) {
 	xparec["Begin"]=xparec["Peak"]-xparec["Length"]

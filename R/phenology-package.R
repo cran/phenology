@@ -3,8 +3,8 @@
 #' \tabular{ll}{
 #'  Package: \tab phenology\cr
 #'  Type: \tab Package\cr
-#'  Version: \tab 4.2.4 build 336\cr
-#'  Date: \tab 2015-06-29\cr
+#'  Version: \tab 5.1 build 354\cr
+#'  Date: \tab 2016-05-02\cr
 #'  License: \tab GPL (>= 2)\cr
 #'  LazyLoad: \tab yes\cr
 #'  }
@@ -13,18 +13,18 @@
 #' @docType package
 #' @name phenology-package
 #' @description Functions used to fit and test the phenology of species based on counts.\cr
-#' The lastest version can always been installed using:\cr
-#' install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", repos=NULL, type="source")\cr
-#' Please note that only the most significant changes are reported in the NEWS.\cr
+#' Note that only the most significant changes are reported in the NEWS.\cr
 #' To do:\cr
-#' * I must finish to adapt fitRMU for all methods of optimx.\cr
-#' * Auto-scaling for optim.\cr
+#' * There are problems with SE for fitRMU().\cr
+#' * Auto-scaling for optim during fitRMU search.\cr
 #' * I must adapt TCF (total clutch frequency) fit from OCF-ECF (observed clutch frequency-estimated cluth frequency) table based on:\cr
 #'  Briane, J.-P., Rivalan, P., Girondot, M., 2007. The inverse problem applied to the Observed Clutch Frequency of Leatherbacks from Yalimapo beach, French Guiana. Chelonian Conservation and Biology 6, 63-69.\cr
 #' Until now it is an Excel spreadsheet.\cr
 #' * Fit tag-loss rate based on:\cr
 #' Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C., Girondot, M., 2005. Maximum likelihood estimates of tag loss in leatherback sea turtles. Journal of Wildlife Management 69, 540-548.\cr
-#' Until now it is a RealBasic software.
+#' Until now it is a RealBasic software.\cr
+#' The lastest version of this package can always been installed using:\cr
+#' install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", repos=NULL, type="source")
 #' @references Girondot, M. 2010. Estimating density of animals during 
 #'             migratory waves: application to marine turtles at nesting site. 
 #'             Endangered Species Research, 12, 85-105.

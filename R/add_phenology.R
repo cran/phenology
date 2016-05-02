@@ -11,33 +11,33 @@
 #' @param header If the data is read from a file, can be used to force header or not
 #' @param format The format of the date in the file. Several format can be set and the last one that give compatible result is used
 #' @param silent Does information about added timeseries is shown
-#' @description To create a new dataset, the syntaxe is \cr
-#' data<-add_phenology(add=newdata, name="Site", reference=as.Date('2001-12-31'), 
-#' format='\%d/\%m/\%y')\cr
-#' To add a dataset to a previous one, the syntaxe is \cr
-#' data<-add_phenology(previous=previousdata, add=newdata, name='Site', \cr
-#' reference=as.Date('2001-12-31'), adjust_ref=TRUE, format="\%Y-\%m-\%d") \cr
+#' @description To create a new dataset, the syntaxe is :\cr
+#' data <- add_phenology(add=newdata, name="Site", reference=as.Date('2001-12-31'), 
+#' format='\%d/\%m/\%y')\cr\cr
+#' To add a dataset to a previous one, the syntaxe is :\cr
+#' data <- add_phenology(previous=previousdata, add=newdata, name='Site', \cr
+#' reference=as.Date('2001-12-31'), adjust_ref=TRUE, format="\%Y-\%m-\%d") \cr\cr
 #' To add several timeseries at the same time with '\%d/\%m/\%y' or '\%d/\%m/\%Y' date format:\cr
 #' data<-add_phenology(add=list(newdata1, newdata2), name=c('Site1', 'Site2'),\cr 
-#' reference=as.Date('2001-12-31'), format=c('\%d/\%m/\%y', '\%d/\%m/\%Y'))\cr
+#' reference=as.Date('2001-12-31'), format=c('\%d/\%m/\%y', '\%d/\%m/\%Y'))\cr\cr
 #' The dataset to be added must include 2 or 3 columns.\cr
-#' The first one is the date in the format specified by\cr 
-#' the parameter format=. If the number of nests is known\cr 
-#' for an exact data, then only one date must be indicated\cr 
-#' If the number of nests is known for a range of date, the\cr 
+#' The first one is the date in the format specified by 
+#' the parameter format=. If the number of nests is known  
+#' for an exact data, then only one date must be indicated.\cr  
+#' If the number of nests is known for a range of date, the 
 #' first and last dates must be separated but a - (dash).\cr
-#' For example: 1/2/2000-10/2/2000\cr
-#' The second column is the number of nests observed for\cr 
+#' For example: 1/2/2000-10/2/2000\cr\cr
+#' The second column is the number of nests observed for 
 #' this date or this range of dates.\cr
-#' The third column is optional and is the name of the rookery.\cr
-#' If only two columns are indicated, the name can be indicated as\cr 
-#' a parameter of the function with name=. If no name is indicated,\cr 
-#' the default name Site will be used, but take care, only one \cr
-#' rookery of this name can be used.\cr
-#' Several rookeries can be included in the same file but in this case\cr 
-#' the rookery name is obligatory at the third column.\cr
+#' The third column is optional and is the name of the rookery.\cr\cr
+#' If only two columns are indicated, the name can be indicated as  
+#' a parameter of the function with name=. If no name is indicated,  
+#' the default name Site will be used, but take care, only one 
+#' rookery of this name can be used.\cr\cr
+#' Several rookeries can be included in the same file but in this case 
+#' the rookery name is obligatory at the third column.\cr\cr
 #' The simplest use of this function is just: \cr
-#' phen <- add_phenology()
+#' phen <- add_phenology()\cr\cr
 #' Some problems that can occur:\cr
 #' If a name is defined as a third column of a data.frame and a name is defined also with name=, the third column has priority.\cr
 #' Two different timeseries MUST have different name and character _ is forbiden in timeseries names.
@@ -52,16 +52,16 @@
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' refdate <- as.Date("2001-01-01")
-#' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
+#' data_Gratiot <- add_phenology(Gratiot, name="Complete", 
 #' 	reference=refdate, format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
-#' parg<-par_init(data_Gratiot, parametersfixed=NULL)
+#' parg <- par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
-#' result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, 
+#' result_Gratiot <- fit_phenology(data=data_Gratiot, parametersfit=parg, 
 #' 	parametersfixed=NULL, trace=1)
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
-#' output<-plot(result_Gratiot)
+#' output <- plot(result_Gratiot)
 #' }
 #' @export
 
@@ -270,7 +270,7 @@ for (kk in 1:nbdatasets) {
 	}
 	problem<-FALSE
 	for(i in 1:length(previous)) {
-		problem<-(problem) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]>365)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]>365)) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]<0)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]<0))
+		problem<-(problem) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]>366)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]>366)) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]<0)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]<0))
 
 	}
 #	print(problem)

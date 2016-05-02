@@ -1,11 +1,11 @@
 Package: phenology
 Type: Package
 Title: Tools to Manage a Parametric Function that Describes Phenology
-Version: 4.2.4
-Date: 2015-06-29
+Version: 5.1
+Date: 2016-05-02
 Author: Marc Girondot
 Maintainer: Marc Girondot <marc.girondot@u-psud.fr>
-Depends: fields, zoo, coda, HelpersMG (>= 1.2), shiny, R (>= 2.14.0)
+Depends: fields, zoo, coda, HelpersMG (>= 1.3.4), shiny, R (>= 2.14.0)
 Suggests: optimx
 Description: Functions used to fit and test the phenology of species based on counts.
 License: GPL-2
@@ -15,6 +15,6 @@ URL:
         http://max2.ese.u-psud.fr/epc/conservation/Girondot/Publications/Marine_Turtles_Nesting_Season.html
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2015-06-30 05:06:04 UTC; marc
+Packaged: 2016-05-02 08:51:31 UTC; marc
 Repository: CRAN
-Date/Publication: 2015-06-30 09:22:08
+Date/Publication: 2016-05-02 15:03:27

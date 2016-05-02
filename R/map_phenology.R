@@ -7,15 +7,20 @@
 #' @param parametersfit Set of parameters to be fitted
 #' @param Phi Phi values to be analyzed
 #' @param Delta Delta value to be analyzed
-#' @param method_incertitude 2 [default] is the correct one from a statistical point of view; \cr
-#'                           0 is an aproximate method more rapid; \cr
-#'                           1 is an alternative more rapid but biased.\cr
+#' @param method_incertitude 'combinatory' estimates likelihood of all combinations for nest numbers;\cr
+#'                           'convolution' [default] uses the exact likelihood of the sum of negative binomial distribution.
+#' @param infinite Number of iterations for dmnbinom() used for method_incertitude='convolution'
 #' @param zero_counts Example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 #'                    been recorded for each of these timeseries. Defaut is TRUE for all.
 #' @param progressbar If FALSE, do not show the progress bar
-#' @param help If TRUE, an help is displayed
 #' @description This function generates a map of likelihood varying Phi and Delta.\cr
-#' When Delta is not given, the same precision as Phi is used.
+#' 	Parameters are the same than for the fit_phenology() function except for trace that is disabled.\cr
+#' 	If Alpha, Beta or Tau are not indicated, Alpha and Tau are set to 0 and 1 and Beta is fitted.\cr
+#' 	Only one set of Alpha, Beta, Tau, Phi and Delta are used for all timeseries present in data.\cr
+#' 	Note that it is possible to fit or fixed Alpha[n], Beta[n], Tau[n], Phi[n] and Delta[n] with [n]=1 or 2 
+#' 	and then it is possible to use this function to establish the likelihood map for a 
+#' 	second or third sinusoids added to the global pattern.\cr
+#' 	If Delta is not specified, it is estimated from Phi and the same precision as Phi is used.\cr
 #' @examples
 #' library("phenology")
 #' # Read a file with data
@@ -61,32 +66,16 @@
 #' @export
 
 map_phenology <-
-function(data=NULL, parametersfit=NULL, parametersfixed=NA, Phi=seq(from=0.2,to=20, length.out=100), Delta=NULL, method_incertitude=2, zero_counts=TRUE, progressbar=TRUE, help=FALSE) {
-if (help || is.null(data)) {
-	cat("This function generates a map of likelihood varying Phi and Delta.\n")
-	cat("map<-map_phenology(data=dataset, parametersfit=par, parametersfixed=pfixed,\n")
-	cat("+      Phi=seq(from=0.2,to=20, length.out=100), Delta=seq(from=0, to=5, length.out=101),\n")	
-	cat("+      method_incertitude=2, zero_counts=TRUE)\n")
-	cat("or if no parameter is fixed and default is used:\n")
-	cat("map<-map_phenology(data=dataset, parametersfit=par)\n")
-	cat("or\n")	
-	cat("map_phenology(help=TRUE) to have this help !\n")
-	cat("parameters are the same than for the fit_phenology() function except for trace that is disabled.\n")
-	cat("If Alpha, Beta or Tau are not indicated, Alpha and Tau are set to 0 and 1 and Beta is fitted.\n")
-	cat("Only one set of Alpha, Beta, Tau, Phi and Delta are used for all timeseries present in data.\n")
-	cat("Note that it is possible to fit or fixed Alpha[n], Beta[n], Tau[n], Phi[n] and Delta[n] with [n]=1 or 2\n")
-	cat("and then it is possible to use this function to establish the likelihood map for a\n")
-	cat("second or third sinusoids added to the global pattern.\n")
-	cat("If Delta is not specified, it is estimated from Phi.\n")
-	cat("See Girondot, M., Rivalan, P., Wongsopawiro, R., Briane, J.-P., Hulin, V., Caut, S., Guirlet, E. \n")
-	cat("& Godfrey, M.H. (2006) Phenology of marine turtle nesting revealed by a statistical model of the \n")
-	cat("nesting season. BMC Ecology, 6, 11.\n")
-	cat("for an exemple.\n")
-
-} else {
+function(data=NULL, parametersfit=NULL, parametersfixed=NA, 
+         Phi=seq(from=0.2,to=20, length.out=100), Delta=NULL, infinite=50, 
+         method_incertitude="convolution", zero_counts=TRUE, progressbar=TRUE) {
 
 #.phenology.env<- NULL
 #rm(.phenology.env)
+  
+  method_incertitude <- tolower(method_incertitude)
+  if (method_incertitude=="convolution") method_incertitude <- 1
+  if (method_incertitude=="combinatory") method_incertitude <- 2
 
 if (is.null(parametersfixed)) {parametersfixed<-NA}
 if (is.null(parametersfit)) {parametersfit<-NA}
@@ -107,29 +96,20 @@ LPhi<-length(Phivalue)
 LDelta<-length(Deltavalue)
 
 # SET MATRIX
-matrix(data=NA, LPhi, LDelta) ->input
-
-#	.phenology.env <<- new.env(parent=.GlobalEnv)
-#	assign("data", data, envir=.phenology.env)
-#	assign("fixed", parametersfixed, envir=.phenology.env)
-#	assign("incertitude", method_incertitude, envir=.phenology.env)
-
+matrix(data=NA, LPhi, LDelta) -> input
 
 	if (length(zero_counts)==1) {zero_counts<-rep(zero_counts, length(data))}
 	if (length(zero_counts)!=length(data)) {
-		print("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) or possess the same number of logical values than the number of series analyzed.")
-		return()
+		stop("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) or possess the same number of logical values than the number of series analyzed.")
 	}
-
-#	assign("zerocounts", zero_counts, envir=.phenology.env)
 
 
 # si ni Alpha ni Beta ne sont à ajuster, je mets Beta
 if (is.na(parametersfit["Alpha"]) && is.na(parametersfit["Beta"])) {
 	if (all(is.na(parametersfit))) {
-		parametersfit<-c(Beta=0)
+		parametersfit <- c(Beta=0)
 	} else {
-		parametersfit<-c(parametersfit, Beta=0)
+		parametersfit <- c(parametersfit, Beta=0)
 	}
 }
 
@@ -174,9 +154,11 @@ for(i in 1:LPhi) {
 
     repeat {
     	    	
-		resul<-optim(par, .Lnegbin, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts), method="BFGS",control=list(trace=0, REPORT=1, maxit=500),hessian=FALSE)
+		resul<-optim(par, getFromNamespace(".Lnegbin", ns="phenology"), 
+		             pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, 
+		                     zerocounts=zero_counts, out=TRUE, infinite=infinite), method="BFGS",control=list(trace=0, REPORT=1, maxit=500),hessian=FALSE)
 		if (resul$convergence==0) break
-		par<-resul$par
+		par <- resul$par
 		# print("Convergence is not achieved. Optimization continues !")
 	}
 	
@@ -211,5 +193,4 @@ class(outputmap) <- "phenologymap"
 
 return(outputmap)
 
-}
 }

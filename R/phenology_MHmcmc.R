@@ -76,11 +76,23 @@ n.adapt = 0, thin=1, trace=FALSE, intermediate=NULL, filename="intermediate.Rdat
 
 # likelihood <- .phenology_fonctionMCMC
 
-pt=list(data=result$data, fixed=result$parametersfixed, incertitude=result$method_incertitude, zerocounts=result$zero_counts)
+pt=list(data=result$data, fixed=result$parametersfixed, incertitude=result$method_incertitude, zerocounts=result$zero_counts, infinite=result$infinite, out=TRUE)
 
 print(parametersMCMC)
 
 out <- MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, n.chains = n.chains, n.adapt = n.adapt, thin=thin, trace=trace, pt=pt, likelihood=getFromNamespace(".Lnegbin", ns="phenology"))
+
+fin <- try(summary(out), silent=TRUE)
+
+if (class(fin)=="try-error") {
+  lp <- rep(NA, nrow(out$parametersMCMC$parameters))
+  names(lp) <- rownames(out$parametersMCMC$parameters)
+  out <- c(out, SD=list(lp))
+} else {
+  out <- c(out, SD=list(fin$statistics[,"SD"]))
+}
+
+class(out) <- "mcmcComposite"
 
 return(out)
 

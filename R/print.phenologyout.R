@@ -50,7 +50,7 @@ print.phenologyout <- function(x, ...) {
 	if (sdponte>=1e-4) {
 		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+5)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+5)), "\n", sep="")
 	} else {
-		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+5)), " ; SD NA\n", sep="")
+		cat("Total number of counts: ", format(mnponte, digits=3, nsmall=3), " ; SD NA\n", sep="")
 	}
 
 	mnponte<-x[[i]]$estimates[3]
@@ -60,14 +60,17 @@ print.phenologyout <- function(x, ...) {
 	if (sdponte>=1e-4) {
 		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+5)), " ; SD ", format(sdponte, digits=floor(log10(sdponte)+5)), "\n", sep="")
 	} else {
-		cat("Total number of counts: ", format(mnponte, digits=floor(log10(mnponte)+5)), " ; SD NA\n", sep="")
+		cat("Total number of counts: ", format(mnponte, digits=3, nsmall=3), " ; SD NA\n", sep="")
 	}
 
 	mnponte1<-x[[i]]$estimates[5]
 	mnponte2<-x[[i]]$estimates[6]
 
-	cat("95% confidence interval: ", format(mnponte1, digits=floor(log10(mnponte1)+5)), " - ", format(mnponte2, digits=floor(log10(mnponte2)+5)))
-
+	if ((mnponte1==0) | (mnponte2==0)) {
+	  cat("95% confidence interval: Non available") 
+	} else {
+	  cat("95% confidence interval: ", format(mnponte1, digits=floor(log10(mnponte1)+5)), " - ", format(mnponte2, digits=floor(log10(mnponte2)+5)))
+  }
 	}
 
 }

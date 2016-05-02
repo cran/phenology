@@ -4,7 +4,7 @@
 #' @return The initial set of parameters
 #' @param data Dataset generated with add_phenology()
 #' @param parametersfixed Set of fixed parameters
-#' @param help If TRUE, an help is displayed
+#' @param add.cofactors Names of cofactors that will be used (see fit_phenology)
 #' @description This function is used to generate a first set of parameters
 #' that is expected to be not to far from the final.\cr
 #' The parameters can be:\cr
@@ -21,15 +21,15 @@
 #' \dontrun{
 #' library(phenology)
 #' # Read a file with data
-#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
+#' Gratiot <- read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
-#' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
+#' data_Gratiot <- add_phenology(Gratiot, name="Complete", 
 #' 		reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
-#' parg<-par_init(data_Gratiot, parametersfixed=NULL)
+#' parg <- par_init(data_Gratiot, parametersfixed=NULL)
 #' # Run the optimisation
-#' result_Gratiot<-fit_phenology(data=data_Gratiot, 
+#' result_Gratiot <- fit_phenology(data=data_Gratiot, 
 #' 		parametersfit=parg, parametersfixed=NULL, trace=1)
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
@@ -39,30 +39,13 @@
 
 
 par_init <-
-function(data=stop("A dataset must be provided"), parametersfixed=NA, help=FALSE) {
+function(data=stop("A dataset must be provided"), parametersfixed=NA, add.cofactors=NULL) {
 
-if(help) {
-	cat("This function is used to generate a first set of parameters\n")
-	cat("that is expected to be not to far from the final\n")
-	cat("parameters after fitting.\n")
-	cat("The general syntax is:\n")
-	cat("par<-par_init(data=dataset, parametersfixed=parfixed)\n")
-	cat("with parfixed being the list of parameters that should\n")
-	cat("not be fitted. The parameter names are:\n")
-	cat("Begin Peak End Flat Max Min MinE MinB Theta\n")
-	cat("For example: parfixed<-c(Min=0, Flat=0)\n")
-	cat("means that both Min and Flat parameters must be\n")
-	cat("forced to 0.\n")
-	cat("To use the B and E formulation, you\n")
-	cat("must convert this set of parameters using:\n")
-	cat("par<-LBLE_to_BE(par)\n")
-	cat("Use the function add_SE to add standard error to fixed parameters.\n")
-} else {
 
-if (is.null(parametersfixed)) {parametersfixed<-NA}
+if (is.null(parametersfixed)) {parametersfixed <- NA}
 
 if (class(data)!="phenologydata") {
-  cat("Data must be formated first using the function add_format().\n")
+  cat("Data must be formated first using the function add_phenology().\n")
   return()
 }
 
@@ -140,14 +123,20 @@ if (is.na(parametersfixed["Min"])) {
 if ((is.na(parametersfixed["Begin"])) && (is.na(parametersfixed["Length"])) && (is.na(parametersfixed["LengthB"]))) {par<-c(par, Begin=(min(bg)+mean(bg))/2)}
 if ((is.na(parametersfixed["Peak"]))) {par<-c(par, Peak=mean(pk))}
 if ((is.na(parametersfixed["End"])) && (is.na(parametersfixed["Length"])) && (is.na(parametersfixed["LengthE"]))) {par<-c(par, End=(max(ed)+mean(ed))/2)}
-if ((is.na(parametersfixed["Flat"]))) {par<-c(par, Flat=2)}
+if (is.na(parametersfixed["Flat"])) {par<-c(par, Flat=2)}
 
-
-par<-c(par, Theta=5)
-
-par<-BE_to_LBLE(par)
-
-return(par)
+if (is.na(parametersfixed["Theta"])) {
+  par <- c(par, Theta=5)
 }
 
+
+par <- BE_to_LBLE(par)
+
+# 19/3/2016
+cof <- rep(0, length(add.cofactors))
+names(cof) <- add.cofactors
+
+cof <- cof[!(names(cof) %in% names(parametersfixed))]
+
+return(c(par, cof))
 }

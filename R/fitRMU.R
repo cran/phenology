@@ -16,7 +16,6 @@
 #' @param control List for control parameters of optim
 #' @param optim Function to be called for optimization, default is optim but it could be optimx
 #' @param maxL If an error is produced during the estimation of likelihood, replace -Ln L by this value
-#' @param scale Default is "auto". If FALSE, no scaling is done. It can be a vector with scale for each parameter.
 #' @family Fill gaps in RMU
 #' @description The data must be a data.frame with the first column being years \cr
 #' and two columns for each beach: the average and the se for the estimate.\cr
@@ -37,7 +36,7 @@
 #' if model.SD is equal to Constant. This value is fixed to zero for model.SD="Zero".\cr
 #' The support for optimx is still experimental. It has been fully tested only with
 #' BFGS and Nelder-Mead method. Several methods can be used in a single run for optimx. In this
-#' case the best likelihood is used at the end.
+#' case the best likelihood is used.
 #' @family Fill the gaps for RMU
 #' @examples
 #' \dontrun{
@@ -65,33 +64,41 @@
 #' cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
 #'                colname.year="Year", model.trend="Constant", 
 #'                model.SD="Zero")
+#' cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
+#'                colname.year="Year", model.trend="Constant", 
+#'                model.SD="Zero", 
+#'                control=list(trace=1, REPORT=100, maxit=500, parscale = c(3000, -0.2, 0.6)))
+#'                
 #' # Example with optimx
 #' require("optimx")
 #' cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
 #'                colname.year="Year", model.trend="Constant", 
 #'                model.SD="Zero", optim="optimx", method=c("Nelder-Mead","BFGS"), 
-#'                control = list(trace = 0, REPORT = 100, maxit = 500))
+#'                control = list(trace = 0, REPORT = 100, maxit = 500, 
+#'                parscale = c(3000, -0.2, 0.6)))
 #' expo <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
 #'                colname.year="Year", model.trend="Exponential", 
-#'                model.SD="Zero")
+#'                model.SD="Zero", optim="optimx", method=c("Nelder-Mead","BFGS"), 
+#'                control = list(trace = 0, REPORT = 100, maxit = 500, 
+#'                parscale = c(6000, -0.05, -0.25, 0.6)))
 #' YS <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
-#'              colname.year="Year", model.trend="Year-specific", 
-#'              model.SD="Zero")
+#'              colname.year="Year", model.trend="Year-specific", method=c("Nelder-Mead","BFGS"), 
+#'              optim="optimx", model.SD="Zero")
 #' YS1 <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
-#'              colname.year="Year", model.trend="Year-specific", 
-#'              model.SD="Zero", model.rookeries="First-order")
+#'              colname.year="Year", model.trend="Year-specific", method=c("Nelder-Mead","BFGS"), 
+#'              optim="optimx", model.SD="Zero", model.rookeries="First-order")
 #' YS1_cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
 #'              colname.year="Year", model.trend="Year-specific", 
 #'              model.SD="Constant", model.rookeries="First-order", 
-#'              parameters=YS1$par)
+#'              optim="optimx", parameters=YS1$par, method=c("Nelder-Mead","BFGS"))
 #' YS2 <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
 #'              colname.year="Year", model.trend="Year-specific",
 #'              model.SD="Zero", model.rookeries="Second-order", 
-#'              parameters=YS1$par)
+#'              optim="optimx", parameters=YS1$par, method=c("Nelder-Mead","BFGS"))
 #' YS2_cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
 #'              colname.year="Year", model.trend="Year-specific",
 #'              model.SD="Constant", model.rookeries="Second-order", 
-#'              parameters=YS1_cst$par)
+#'              optim="optimx", parameters=YS1_cst$par, method=c("Nelder-Mead","BFGS"))
 #'                
 #' compare_AIC(Constant=cst, Exponential=expo, 
 #' YearSpecific=YS)
@@ -132,20 +139,21 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
                  model.SD="Zero",  
                  parameters=NULL, parametersfixed=NULL, SE=NULL, method="BFGS",
                  replicate.CI=1000, colname.year="Year", 
-                 control=list(trace=1, REPORT=100, maxit=500), optim="optim", maxL=1E9, scale=TRUE) {
+                 control=list(trace=1, REPORT=100, maxit=500), optim="optim", maxL=1E9) {
   
-  # RMU.data=NA; RMU.names=NULL; model.trend="Constant"; scale=TRUE; model.rookeries="Constant"; model.SD="Zero"; optim="optim"; parameters=NULL; parametersfixed=NULL; method="BFGS"; replicate.CI=1000; colname.year="Year";SE=NULL;control=list(trace=1, REPORT=100, maxit=500);maxL=1E9
-  # RMU.data=data.AtlanticW; RMU.names=RMU.names.AtlanticW; colname.year="Year"; model.trend="Constant";model.rookeries="Constant";model.SD="Zero"
-  # RMU.data=table.RMU; RMU.names=RMU.names;colname.year="Year";model.trend="Constant";model.SD="Constant";maxL=1E10
-  # RMU.data=data.AtlanticW; RMU.names=RMU.names.AtlanticW; colname.year="Year"; model.trend="Constant"; model.SD="Zero"; optim="optimx"; method=c("Nelder-Mead","BFGS"); control = list(trace = 0, REPORT = 100, maxit = 500) 
-  # RMU.data=table.RMU; RMU.names=RMU.name;colname.year="Year"; model.trend="Exponential";model.rookeries="Constant";model.SD="Constant"; maxL=1E10; parameters=x;optim="optimx"; method=c("Nelder-Mead","BFGS");control = list(trace = 0, REPORT = 100, maxit = 500)
-                   model.trend <- tolower(model.trend)
-                   model.rookeries <- tolower(model.rookeries)
-                   model.SD <- tolower(model.SD)
+
+  # RMU.data=NULL; RMU.names=NULL; model.trend="Constant"; model.rookeries="Constant"; model.SD="Zero"; parameters=NULL; parametersfixed=NULL; SE=NULL; method="BFGS"; replicate.CI=1000; colname.year="Year";  control=list(trace=1, REPORT=100, maxit=500); optim="optim"; maxL=1E9
+  
+  # RMU.data=data.AtlanticW; RMU.names=RMU.names.AtlanticW; colname.year="Year"; model.trend="Constant"; model.SD="Zero"; optim="optimx"; method=c("Nelder-Mead","BFGS"); control = list(trace = 0, REPORT = 100, maxit = 500)
+  
+  model.trend <- tolower(model.trend)
+  model.rookeries <- tolower(model.rookeries)
+  model.SD <- tolower(model.SD)
                    
-  if (model.trend=="year-specific" | model.trend=="constant" | 
-      model.trend=="exponential")  {
-    
+  if (model.trend!="year-specific" & model.trend!="constant" & 
+      model.trend!="exponential")  {
+    stop("Unknown method.trend parameter. Possible ones are: Year-specific, Constant, or Exponential")
+  }    
 
   nm <- colnames(RMU.data)
   index.year <- which(nm==colname.year)
@@ -180,14 +188,17 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
   
   if (model.trend=="year-specific")  {
     # je fais mieux
+    # dans d j'ai les données moyennes
     intT <- d
+    # Je calcule les moyennes par plage
     cm <- colMeans(d, na.rm=TRUE)
-    
+    # Pour ceux qui ont un NA, je remplace par la moyenne de la colonne
     for (beach in 1:nbeach) intT[is.na(intT[,beach]),beach] <- cm[beach]
-    
+    # Je calcule la moyenne par année (je n'ai plus de NA)
     Tot <- rowMeans(intT)
     names(Tot) <- paste0("T_", RMU.data[,index.year])
-    SD <- apply(d, 2, function(x) sd(x, na.rm=TRUE))/8
+    # 10-12-2015, j'avais d, je remplace par intT 
+    SD <- apply(intT, 2, function(x) sd(x, na.rm=TRUE))/8
     names(SD) <- paste0("SD_", names(SD))
   }
   
@@ -261,28 +272,9 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
       }
     }
     
-    if (scale==TRUE) {
-#      scale.factor <- NULL
-#      Lini <- fun(x=x, fixed=parametersfixed, RMU.data=RMU.data, 
-#               index=index, model.trend=model.trend)
-#      ml <- NULL
-#      for (i in seq_along(x)) {
-#        xprime <- x
-#        xprime[i] <- xprime[i]+.01
-#        x, fixed, model.trend, data, colname.year=NULL, RMU.names=NULL, index=NULL
-#        ml <- c(ml, fun(x=xprime, fixed=parametersfixed, RMU.data=RMU.data, 
-#                     index=index, model.trend=model.trend))
-#      }
-      # (x+1)/parscale=1
+
       scale.factor <- rep(1, length(x))
-    } else {
-      if (scale==FALSE) {
-      scale.factor <- rep(1, length(x))
-      } else {
-        scale.factor <- scale
-      }
-    }
-    
+
     
     repeat {
     
@@ -291,14 +283,17 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
                                  index=index, model.trend=model.trend, method=method, 
                                  control=modifyList(control, list(parscale=scale.factor)), 
                                  hessian=is.null(SE)), silent=TRUE)
+          if (any(class(result)=="try-error")) stop("An error occurred during the fit. Check initial conditions.") 
+
           x <- result$par
           conv <- result[["convergence"]]
           value <- result$value
         } else {
-          result <- try(optimx::optimx(par=x, fn=fun, gr = NULL, fixed=parametersfixed, RMU.data=RMU.data, 
+          result <- try(getFromNamespace("optimx", ns="optimx")(par=x, fn=fun, gr = NULL, fixed=parametersfixed, RMU.data=RMU.data, 
                                  index=index, model.trend=model.trend, method=method, 
                                  control=modifyList(control, list(dowarn=FALSE, follow.on=TRUE)), 
                                  hessian=is.null(SE)), silent=TRUE)
+          if (any(class(result)=="try-error")) stop("An error occurred during the fit. Check initial conditions.") 
 
           minL <- dim(result)[1]
           nm <- names(x)
@@ -334,8 +329,8 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
       # Inverse the hessian matrix to get SE for each parameters
       mathessian <- result_list$hessian
       inversemathessian <- try(solve(mathessian), silent=TRUE)
-      if (class(inversemathessian)=="try-error") {
-        dd <- -1
+      if (any(class(inversemathessian)=="try-error")) {
+        dd <- x
       } else {
         dd <- diag(inversemathessian)
       }
@@ -352,6 +347,7 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
       res <- SE
     }
     result_list$AIC <- 2*value+2*length(x)
+    names(res) <- names(result_list$par)
     result_list$SE <- res
 
 #    print(paste("-Ln L=", result$value))
@@ -405,7 +401,7 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
 
 
     # maintenant je dois calculer le SD. La solution la plus simple est de faire la 
-    # somem et somme^2
+    # somme et somme^2
     mapparray <- array(data=NA, dim=c(nyear, nbeach, replicate.CI), 
                 dimnames=list(year=NULL, rookery=nabeach, replicate=NULL))
     for (replicate in 1:replicate.CI) {
@@ -517,10 +513,6 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
     class(result_list)="fitRMU"
     return(result_list)
     
-  } else {
-    stop("Unknown method.trend parameter. Possible ones are: Year-specific, Constant, or Exponential")
-  }
-  
 }
 
 

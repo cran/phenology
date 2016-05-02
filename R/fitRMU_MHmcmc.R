@@ -82,6 +82,18 @@ out <- MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, n.chains = n.chains, 
                  fixed=result$parametersfixed, RMU.data=result$RMU.data, model.trend=result$model.trend,
                  colname.year=result$colname.year, RMU.names=result$RMU.names)
 
+fin <- try(summary(out), silent=TRUE)
+
+if (class(fin)=="try-error") {
+  lp <- rep(NA, nrow(out$parametersMCMC$parameters))
+  names(lp) <- rownames(out$parametersMCMC$parameters)
+  out <- c(out, SD=list(lp))
+} else {
+  out <- c(out, SD=list(fin$statistics[,"SD"]))
+}
+
+class(out) <- "mcmcComposite"
+
 return(out)
 
 }

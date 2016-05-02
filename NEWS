@@ -1,6 +1,43 @@
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
-            CHANGES IN VERSION 4.2.3  (2015-06-29)
+            CHANGES IN VERSION 5.1  (2016-05-02)
+
+* Minor changes in documentation
+
+            CHANGES IN VERSION 5.0.3  (2016-04-09)
+
+* Add cofactors for daily effects in fit_phenology() - 5.0.0
+* method_incertitude are changed to 'convolution' or 'combinatory' - 5.0.0
+* Correct a bug for cofactor analysis - 5.0.1
+* Minor change in the output of plot() - 5.0.2
+* Add a zero parameter for fit_phenology() - 5.0.3
+* Bug correction for for cofactor analysis - 5.0.3
+
+            CHANGES IN VERSION 4.4-4.4.1  (2016-01-13)
+
+* The "sum" method_incertitude uses an exact method for the negative binomial distribution
+* The "binomial" method has been removed
+* Optimisation of the function .Lnegbin to be more rapid and to return also the likelihood of each observation
+* Require package HelpersMG version higher or equal than 1.3.4
+
+            CHANGES IN VERSION 4.3.1-4.3.6  (2015-12-09)
+
+* Object returns from MHmcmc has the correct class mcmcComposite - 4.3.1
+* Bisextile years are possible - 4.3.2
+* Theta can be a fixed parameter - 4.3.3
+* se for some parameters can be indicated manually in plot - 4.3.4
+* Better gestion of bisextil years in plot - 4.3.4
+* se indicated manually in plot replaced the previous ones if they exist - 4.3.5
+* plot.ftiRMU has a new parameter to change the order of series - 4.3.5
+* fit_phenology can produce positive likelihood without error - 4.3.6
+* correct a bug introduced in 4.3.5 for se managment - 4.3.6
+* print.phenologyout() can show data with very small se - 4.3.6
+
+            CHANGES IN VERSION 4.3  (2015-07-29)
+
+* Minor changes in fitRMU() and bugs corrections
+
+            CHANGES IN VERSION 4.2.3-4.2.4  (2015-06-29)
             
 * New models for fitRMU()
 * New functions plot.fitRMU(), logLik.fitRMU(), fitRMU_MHmcmc_p() and fitRMU_MHmcmc()
