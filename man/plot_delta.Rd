@@ -4,14 +4,14 @@
 \alias{plot_delta}
 \title{Plot a likelihood lineplot obtained after map_phenology.}
 \usage{
-plot_delta(map = NULL, Phi = NULL, help = FALSE)
+plot_delta(map = NULL, Phi = NULL, ...)
 }
 \arguments{
 \item{map}{A map generated with map_phenology}
 
 \item{Phi}{Phi value or NULL}
 
-\item{help}{If TRUE, an help is displayed}
+\item{...}{Parameters for plot}
 }
 \value{
 Return None

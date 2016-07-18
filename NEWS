@@ -1,5 +1,16 @@
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
+            CHANGES IN VERSION 5.2  (2016-07-17)
+
+* Correction for likelihod_phenology() - 5.1.1
+* Estimation of likelihoods for different beaches is ran in parallel - 5.1.1
+* Can add a list read using read_folder() - 5.1.2
+* phenology() function works again - 5.1.3
+* plot.phenologymap() plot only one heat map - 5.1.4
+* plot_phi() and plot_delta() are more flexible - 5.1.4
+* moon is not shown if xlim is used for plot.phenology() - 5.1.4
+* shiny application phenology() is better handeld - 5.2
+
             CHANGES IN VERSION 5.1  (2016-05-02)
 
 * Minor changes in documentation

@@ -6,7 +6,7 @@
 \usage{
 likelihood_phenology(data = NULL, parametersfit = NULL,
   parametersfixed = NULL, zero_counts = NULL, method_incertitude = NULL,
-  result = NULL)
+  result = NULL, infinite = 200, zero = 1e-09)
 }
 \arguments{
 \item{data}{Dataset generated with add_format}
@@ -23,6 +23,10 @@ been recorder for each of these timeseries. Defaut is TRUE for all.}
 1 is an alternative more rapid but biased.}
 
 \item{result}{An object obtained after fit_phenology()}
+
+\item{infinite}{Number of iterations for dSnbinom() used for method_incertitude='sum'}
+
+\item{zero}{If the theoretical nest number is under this value, this value wll be used}
 }
 \value{
 The likelihood of the data with the parameters

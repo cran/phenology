@@ -58,7 +58,7 @@ plot.phenologymap <-
       input<-map$input
             
       
-      image.plot(x, y, input, col=col, axes=TRUE, xlab=xlab, ylab=ylab, nlevel = length(col))
+     # image.plot(x, y, input, col=col, axes=TRUE, xlab=xlab, ylab=ylab, nlevel = length(col))
       image.plot(x, y, input, zlim=c(min(input, na.rm=TRUE), max(input, na.rm=TRUE)), col=col, axes=TRUE, xlab="Phi", ylab="Delta", nlevel = length(col))
       
 

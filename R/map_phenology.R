@@ -70,8 +70,7 @@ function(data=NULL, parametersfit=NULL, parametersfixed=NA,
          Phi=seq(from=0.2,to=20, length.out=100), Delta=NULL, infinite=50, 
          method_incertitude="convolution", zero_counts=TRUE, progressbar=TRUE) {
 
-#.phenology.env<- NULL
-#rm(.phenology.env)
+  # data=NULL; parametersfit=NULL; parametersfixed=NA;Phi=seq(from=0.2,to=20, length.out=100); Delta=NULL; infinite=50; method_incertitude="convolution"; zero_counts=TRUE; progressbar=TRUE
   
   method_incertitude <- tolower(method_incertitude)
   if (method_incertitude=="convolution") method_incertitude <- 1

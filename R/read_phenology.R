@@ -8,13 +8,15 @@
 #' @param month_ref Reference month. Generally will be 1 (January) or 7 (July).
 #' @param format Format for dates.
 #' @param nm Path for file or name
+#' @param sep.dates Character used as date separator
+#' @param silent Should warning b shown
 #' @description Function for package Phenology
 #' @export
 
 
 .read_phenology <-
 function(obj_list=NULL, header=NULL, reference=NULL, month_ref= NULL, format=NULL, 
-         nm=NULL, sep.dates=NULL) {
+         nm=NULL, sep.dates=NULL, silent=FALSE) {
 
 # obj_list=NULL; header=NULL; reference=NULL; month_ref= NULL; format=NULL; nm=NULL
 # rp <- .read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
@@ -24,7 +26,7 @@ if (!is.null(format)) {
 dtaspl <- substr(gsub("[%dmYy]", "", format), 1, 1)
   } else {
 dtaspl <- "/"
-warning("Separator between day, month and year is supposed to be the / character")
+if (!silent) warning("Separator between day, month and year is supposed to be the / character")
 }
   
 if (class(obj_list)=="list") {

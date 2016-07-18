@@ -4,12 +4,12 @@
 \alias{plot_phi}
 \title{Plot the best likelihood for fixed Phi value.}
 \usage{
-plot_phi(map = NULL, help = FALSE)
+plot_phi(map = NULL, ...)
 }
 \arguments{
 \item{map}{A map generated with map_phenology}
 
-\item{help}{If TRUE, an help is displayed}
+\item{...}{Parameters for plot}
 }
 \value{
 Return None

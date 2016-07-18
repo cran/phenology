@@ -4,7 +4,7 @@
 #' @return Return None
 #' @param map A map generated with map_phenology
 #' @param Phi Phi value or NULL
-#' @param help If TRUE, an help is displayed
+#' @param ... Parameters for plot
 #' @description This function plots a likelihood lineplot obtained after map_phenology.
 #' @examples
 #' \dontrun{
@@ -43,32 +43,26 @@
 #' }
 #' @export
 
-plot_delta <-
-function(map=NULL, Phi=NULL, help=FALSE) {
-
-if(help || is.null(map)) {
-	cat("This function plots a likelihood lineplot obtained after map_phenology.\n")
-	cat("The syntaxe is:\n")
-	cat("plot_delta(map=mapx, pdf=TRUE, pdfname='NameMap.pdf')\n")
-
-} else {
-
-input<-map$input
-
-if (is.null(Phi)) {
-	Dv=as.vector(input)
-	pos=which.min(Dv)
-	j0=floor(pos/nrow(input))+1
-	i0=pos%%nrow(input)
-} else {
-	i0<-which(map$Phi>=Phi)[1]
-}
-
-xregle<-c(0, 1+map$Phi[i0]/2)
-
-effetDelta<-map$input[i0,]
-
-plot(map$Delta, effetDelta, type="l", xlab="Delta", ylab="-Ln L", xlim=xregle, bty="n", main=paste(map$Data, " - Phi=", map$Phi[i0], sep=""))
-
-}
+plot_delta <- function(map=NULL, Phi=NULL, ...) {
+  
+  input<-map$input
+  
+  if (is.null(Phi)) {
+    Dv=as.vector(input)
+    pos=which.min(Dv)
+    j0=floor(pos/nrow(input))+1
+    i0=pos%%nrow(input)
+  } else {
+    i0 <- which(map$Phi>=Phi)[1]
+  }
+  
+  xregle <- c(0, 1+map$Phi[i0]/2)
+  
+  effetDelta <- map$input[i0,]
+  
+  do.call(plot, modifyList(list(x=map$Delta, y=effetDelta, type="l", 
+                                xlab="Delta", ylab="-Ln L", xlim=xregle, 
+                                bty="n", main=paste0("Phi=", map$Phi[i0])), 
+                           list(...)))
+  
 }

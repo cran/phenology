@@ -3,7 +3,7 @@
 #' @author Marc Girondot
 #' @return Return None
 #' @param map A map generated with map_phenology
-#' @param help If TRUE, an help is displayed
+#' @param ... Parameters for plot
 #' @description The function "plot_phi" plots the best likelihood for each Phi value.
 #' @examples
 #' library("phenology")
@@ -45,19 +45,10 @@
 
 
 plot_phi <-
-function(map=NULL, help=FALSE) {
-
-if(help || is.null(map)) {
-	cat("This function plots a likelihood lineplot obtained after map_phenology.\n")
-	cat("The syntaxe is:\n")
-	cat("plot_phi(map=mapx, pdf=TRUE, pdfname='NameMap.pdf')\n")
-
-} else {
+function(map=NULL, ...) {
 
 effetphi<-NULL
 for(i in 1:length(map$Phi)) effetphi<-c(effetphi, min(map$input[i,], na.rm=TRUE))
-plot(map$Phi, effetphi, type="l", xlab="Phi", ylab="-Ln L", bty="n", main=map$Data)
+do.call(plot, modifyList(list(x=map$Phi, y=effetphi, type="l", xlab="Phi", ylab="-Ln L", bty="n", main=""), list(...)))
 
-
-}
 }

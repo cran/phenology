@@ -2,7 +2,7 @@
 % Please edit documentation in R/phenology.R
 \name{phenology}
 \alias{phenology}
-\title{Run a shiny application for basic functions of phenology}
+\title{Run a shiny application for basic functions of phenology package}
 \usage{
 phenology()
 }
@@ -10,10 +10,10 @@ phenology()
 Nothing
 }
 \description{
-Run a shiny application for basic functions of phenology
+Run a shiny application for basic functions of phenology package
 }
 \details{
-phenology runs a shiny application for basic functions of phenology
+phenology runs a shiny application for basic functions of phenology package
 }
 \examples{
 \dontrun{

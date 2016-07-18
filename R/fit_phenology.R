@@ -11,7 +11,7 @@
 #'                           'convolution' [default] uses the exact likelihood of the sum of negative binomial distribution.
 #' @param zero_counts example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 #'                    been recorded for each of these timeseries. Defaut is TRUE for all.
-#' @param infinite Number of iterations for dmnbinom() used for method_incertitude='sum'
+#' @param infinite Number of iterations for dSnbinom() used for method_incertitude='sum'
 #' @param hessian If FALSE does not estimate se of parameters
 #' @param cofactors data.frame with a column Date and a column for each cofactor
 #' @param add.cofactors Names of the column of parameter cofactors to use as a cofactor

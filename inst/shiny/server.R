@@ -1,68 +1,96 @@
 library(shiny)
-# if (any(installed.packages()[,1]=="shinyIncubator")) library(shinyIncubator)
-# runApp(".", launch.browser = TRUE)
+package.phenology <- require('phenology')
 
-library(phenology)
-
-# Define server logic required to plot various variables against mpg
-
-shinyServer(function(input, output, session) {
+# Define server logic required to draw a histogram
+shinyServer(function(input, output) {
   
-
+  # Expression that generates a histogram. The expression is
+  # wrapped in a call to renderPlot to indicate that:
+  #
+  #  1) It is "reactive" and therefore should re-execute automatically
+  #     when inputs change
+  #  2) Its output type is a plot
+  
+  
+  output$distPlot <- renderPlot({
     
-    output$resultPlot=renderPlot({
+    if (!package.phenology) {
+      par(mar=c(0, 0, 0, 0))
+      plot(x=c(0, 1), y=c(0, 1), axes=FALSE, 
+           xaxt="n", yaxt="n", main="", 
+           xlab = "", ylab = "", 
+           xaxs="i", yaxs="i", type="n")
+      text(x = 0.5, y=0.5, labels = "The phenology package is not installed!", 
+           col="red", cex = 2)
+      text(x = 0.5, y=0.3, labels = "Contact your site administrator", 
+           col="green", cex = 2)
+    }
+    
+    if (is.null(input$file1) & package.phenology) {
+      par(mar=c(0, 0, 0, 0))
+      plot(x=c(0, 1), y=c(0, 1), axes=FALSE, 
+           xaxt="n", yaxt="n", main="", 
+           xlab = "", ylab = "", 
+           xaxs="i", yaxs="i", type="n")
+      text(x = 0.5, y=0.6, labels = "First, choose the model with the buttons down and then", 
+           col="red", cex = 2)
+      text(x = 0.5, y=0.5, labels = "load dataset using the button at the left.", 
+           col="red", cex = 2)
+      text(x = 0.5, y=0.4, labels = "When the model will be fitted, results will be shown here.", 
+           col="green", cex = 2)
+      text(x = 0.5, y=0.3, labels = "It can take one minute or more. Be patient!", 
+           col="green", cex = 2)
+      text(x = 0.5, y=0.2, labels = "It is better (more rapid) to load the dataset after choosing the model and the header option.", 
+           col="black", cex = 1)
       
-      # input$file1 will be NULL initially. After the user selects and uploads a 
-      # file, it will be a data frame with 'name', 'size', 'type', and 'datapath' 
-      # columns. The 'datapath' column will contain the local filenames where the 
-      # data can be found.
-        
+    }
+    if (!is.null(input$file1) & package.phenology) {
+      
       inFile <- input$file1
-      
-      if (is.null(inFile))
-        return(NULL)
-      # dest <- "/Users/marc/Documents/Espace_de_travail_R/Phenology/Cayenne/Complete.txt"
-      
       dest <- inFile$datapath
-      table <- readLines(dest, warn=FALSE)
       
-      rp <- .read_phenology(list(table), header=NULL, 
-                            reference=NULL, month_ref= NULL, 
-                            format=NULL, nm=dest)
-      Formated <- add_phenology(previous=NULL, add=rp$DATA, 
-                                reference=rp$reference, format=rp$format, silent=TRUE)
+      # dest <- "/Users/marc/Documents/Espace_de_travail_R/package_phenology/LUTH\ 2002/Yalimapo_2002_GS.txt"
       
- #     withProgress(session, min=1, max=5, {setProgress(message = 'Calculation in progress', detail = 'This may take a while...')
-        
-      pfixed <- c(Min=0, Flat=0)
+      table <- read.delim(dest, header = input$Header, stringsAsFactors = FALSE)
+      
+      lby <- ncol(table)
+      
+      if (lby == 3) {
+        nm <- levels(as.factor(table[, 3]))
+        if (length(nm)>1) nm <- NULL
+      } else {
+        nm <- inFile$name
+      }
+      
+      df2 <- table
+  
+      Formated <- add_phenology(add=df2, silent=TRUE, name=nm)
+
+      if (input$Min == 2) {
+        pfixed <- c(Flat=0)
+      } else {
+        pfixed <- c(Flat = 0, Min = 0)
+      }
       Par <- par_init(data=Formated, parametersfixed=pfixed)
- #     if ("package:shinyIncubator" %in% search() ) setProgress(value = 1)
-      result1 <- fit_phenology(data=Formated, parametersfit = Par, parametersfixed=pfixed, trace=0, silent=TRUE)
- #     x <- result1$par
- #     pfixed <- c(Flat=0)
- #     Par <- c(x, Min=0.1)
- #     if ("package:shinyIncubator" %in% search() ) setProgress(value = 2)
-#      result2 <- fit_phenology(data=Formated, parametersfit = Par, parametersfixed=pfixed, trace=0, silent=TRUE)
-#      pfixed <- c(Min=0)
- #     Par <- c(x, Flat=1)
- #     if ("package:shinyIncubator" %in% search() ) setProgress(value = 3)
- #     result3 <- fit_phenology(data=Formated, parametersfit = Par, parametersfixed=pfixed, trace=0, silent=TRUE)
- #     pfixed <- NULL
- #     Par <- c(x, Flat=1, Min=0.1)
-#      if ("package:shinyIncubator" %in% search() ) setProgress(value = 4)
-#      result4 <- fit_phenology(data=Formated, parametersfit = Par, parametersfixed=pfixed, trace=0, silent=TRUE)
+      if (input$Length == 1) Par <- LBLE_to_L(Par)
+      if (input$Min == 3) {
+        Par <- MinBMinE_to_Min(Par)
+        Par <- toggle_Min_PMin(Par)
+      }
       
-#      result <- list(result1, result2, result3, result4)[which.min(c(2*(result1$value+length(result1$par)), 2*(result2$value+length(result2$par)), 2*(result3$value+length(result3$par)), 2*(result4$value+length(result4$par))))][[1]]
-#      if ("package:shinyIncubator" %in% search() ) setProgress(value = 5)
-        result <- result1
-      x <- plot(result, series="all", moon=FALSE, progressbar = FALSE, 
+      zLogic <- ifelse(input$Zero==1, TRUE, FALSE)
+
+      result <- fit_phenology(data=Formated, parametersfit = Par,
+                              parametersfixed=pfixed, trace=0, silent=TRUE, 
+                              zero_counts = zLogic)
+      
+      # x <- installed.packages()
+      
+      x <- plot(result, series="all", moon=FALSE, progressbar = FALSE,
                 growlnotify = FALSE)
       
-      output$resultsInfo=renderPrint({print(x)})
-      
-      # End withProgress()
- #     })
-     })
-    
-  
+      output$resultsInfo <- renderPrint({print(x)})
+      output$resultsRaw <- renderPrint({print(result)})
+    }
+  })
 })

@@ -3,8 +3,8 @@
 #' \tabular{ll}{
 #'  Package: \tab phenology\cr
 #'  Type: \tab Package\cr
-#'  Version: \tab 5.1 build 354\cr
-#'  Date: \tab 2016-05-02\cr
+#'  Version: \tab 5.2 build 360\cr
+#'  Date: \tab 2016-07-17\cr
 #'  License: \tab GPL (>= 2)\cr
 #'  LazyLoad: \tab yes\cr
 #'  }

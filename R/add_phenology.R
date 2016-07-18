@@ -75,7 +75,7 @@ function(add=file.choose(), name=NULL, reference=NULL, month_ref= NULL, sep.date
 # add=file.choose()
   
 if (class(previous)!="phenologydata" && !is.null(previous)) {
-  stop("The previous dataset must be already formated!")
+  stop("The dataset indicated for previous parameter must be already formated!")
 }
   
   if (!is.null(format)) {
@@ -104,10 +104,23 @@ if (is.null(add)) {
 	stop("Data to be added does not exist!")
 }
 
+if (class(add)=="list") {
+  names(add) <- basename(names(add))
+  add_df <- data.frame(Date=as.character(), Number=as.numeric(), Beach=as.character())
+  for (i in seq_along(add)) {
+    if (!silent) print(i)
+    intermediate <- na.omit(add[[i]])
+    if (ncol(intermediate)==2) intermediate <- cbind(intermediate, Beach=names(add)[i])
+    colnames(intermediate) <- c("Date", "Number", "Beach")
+    add_df <- rbind(add_df, intermediate)
+  }
+  add <- add_df
+}
+
 
 # rp <- phenology:::.read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
 
-rp <- .read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
+rp <- .read_phenology(add, header, reference, month_ref, format, nm, sep.dates, silent)
 
 if (any(grepl(sep.dates, rp$format))) {
   stop("The date separator is used also within a date. It is not possible.")
@@ -204,7 +217,7 @@ for (kk in 1:nbdatasets) {
     if (!silent) message(paste("Reference: ", reference))
 		
 		# dans i la ligne en cours
-		for(i in 1:dim(add)[1]) {
+		for(i in 1:nrow(add)) {
 		
 			essai<-unlist(strsplit(add$Date[i], sep.dates))
 			
@@ -268,13 +281,13 @@ for (kk in 1:nbdatasets) {
 		previous<-dtaorigin
 
 	}
-	problem<-FALSE
+	problem <- FALSE
 	for(i in 1:length(previous)) {
 		problem<-(problem) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]>366)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]>366)) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]<0)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]<0))
 
 	}
 #	print(problem)
-	if (problem) {
+	if (problem & (!silent)) {
 		warning(paste("Problem in at least one date; check them. Take care about format used.\n", 
                   "Within a file, all dates must conform to the same format.\n",
                   "Data should not be longer than one year for a site at the same time."))
@@ -287,7 +300,7 @@ class(previous) <- "phenologydata"
 
 
 if (any(grepl("_", names(previous)))) {
-  print("The character _ is forbinden in names of timesseries. It has been changed to -.")
+  if (!silent) print("The character _ is forbiden in names of timesseries. It has been changed to -.")
   names(previous) <- gsub("_", "-", names(previous))
 }
 

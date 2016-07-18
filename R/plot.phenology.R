@@ -146,10 +146,10 @@ if (is.null(data)) {nmser=""} else {
 if (!is.null(parres)) {
 
 ## crée un tableau avec des réplicats des modèles
-par2=matrix(rep(NA, length(parres)*replicate.CI), ncol=length(parres))
+par2 <- matrix(rep(NA, length(parres)*replicate.CI), ncol=length(parres))
 
 ## On nomme les colonnes comme les noms des paramètres
-colnames(par2)=names(parres)
+colnames(par2) <- names(parres)
 
 
 # on générère replicate.CI jeux de paramètres à partir des paramètres obtenus en vraisemblance
@@ -293,8 +293,10 @@ do.call(plot, modifyList(pnp, list(x=x, y=rep(0, length(x)))))
 
 
 if (moon) {
-	points(x[mpT1], rep(moony, length(x[mpT1])), cex=1, bg="black", col="black", pch=21, xpd=TRUE)
-	points(x[mpT2], rep(moony, length(x[mpT2])), cex=1, bg="white", col="black", pch=21, xpd=TRUE)
+  xnewmoon <- ifelse(x[mpT1]>=ScalePreviousPlot()$xlim["begin"] & x[mpT1]<=ScalePreviousPlot()$xlim["end"], TRUE, FALSE)
+  xfullmoon <- ifelse(x[mpT2]>=ScalePreviousPlot()$xlim["begin"] & x[mpT2]<=ScalePreviousPlot()$xlim["end"], TRUE, FALSE)
+	points(x[mpT1][xnewmoon], rep(moony, length(x[mpT1]))[xnewmoon], cex=1, bg="black", col="black", pch=21, xpd=TRUE)
+	points(x[mpT2][xfullmoon], rep(moony, length(x[mpT2]))[xfullmoon], cex=1, bg="white", col="black", pch=21, xpd=TRUE)
 #	points(x[mpT3], rep(moony, length(x[mpT3])), cex=3, bg="black", col="black", pch=21)	
 #	points(x[mpT3]+8, rep(moony, length(x[mpT3])), cex=3, bg="white", col="white", pch=21)
 #	points(x[mpT4], rep(moony, length(x[mpT4])), cex=3, bg="black", col="black", pch=21)	

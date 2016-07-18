@@ -10,6 +10,8 @@
 #'                           1 is an alternative more rapid but biased.
 #' @param zero_counts example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 #'                    been recorder for each of these timeseries. Defaut is TRUE for all.
+#' @param infinite Number of iterations for dSnbinom() used for method_incertitude='sum'
+#' @param zero If the theoretical nest number is under this value, this value wll be used
 #' @param result An object obtained after fit_phenology()
 #' @description This function is used to estimate the likelihood based on a set of parameters.
 #' @examples
@@ -30,8 +32,11 @@
 #' @export
 
 likelihood_phenology <-
-function(data=NULL, parametersfit=NULL, parametersfixed=NULL, zero_counts=NULL, method_incertitude=NULL, result=NULL) {
+function(data=NULL, parametersfit=NULL, parametersfixed=NULL, zero_counts=NULL, 
+         method_incertitude=NULL, result=NULL, infinite=200, zero=1E-9) {
 
+ # data=NULL; parametersfit=NULL; parametersfixed=NULL; zero_counts=NULL; method_incertitude=NULL; result=NULL; infinite=200; zero=1E-9
+  
 # if result est donné, on prend les données dedans et on remplace celles introduites en plus
 
 if (!is.null(result)) {
@@ -63,7 +68,7 @@ if (is.null(zero_counts)) {zero_counts <- TRUE}
 		stop("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) or possess the same number of logical values than the number of series analyzed.")
 	}
 	
-LnL <- getFromNamespace(".Lnegbin", ns="phenology")(parametersfit, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts))
+LnL <- getFromNamespace(".Lnegbin", ns="phenology")(parametersfit, pt=list(data=data, fixed=parametersfixed, incertitude=method_incertitude, zerocounts=zero_counts, infinite=infinite, out=TRUE, zero=zero))
 	
 	return(LnL)
 

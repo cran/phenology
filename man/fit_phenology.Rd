@@ -24,7 +24,7 @@ fit_phenology(data = file.choose(), parametersfit = NULL,
 \item{method_incertitude}{'combinatory' estimates likelihood of all combinations for nest numbers;\cr
 'convolution' [default] uses the exact likelihood of the sum of negative binomial distribution.}
 
-\item{infinite}{Number of iterations for dmnbinom() used for method_incertitude='sum'}
+\item{infinite}{Number of iterations for dSnbinom() used for method_incertitude='sum'}
 
 \item{zero_counts}{example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 been recorded for each of these timeseries. Defaut is TRUE for all.}

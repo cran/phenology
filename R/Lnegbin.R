@@ -20,6 +20,8 @@
   sum=0
   # je mets tous les paramètres dans xpar
   xpar <- c(x, pt$fixed)
+  # Si out vaut TRUE, renvoie la somme des vraisemblances
+  # Sinon la vraisemblance de chaque série
   out <- pt$out
   
   datatot <- pt$data
@@ -27,14 +29,18 @@
   daily_count <- getFromNamespace(".daily_count", ns="phenology")
   format_par <- getFromNamespace(".format_par", ns="phenology")
   
-  for(k in seq_along(datatot)) {
+  # for(k in seq_along(datatot)) {
+  
+  rg <- mclapply(seq_along(datatot), function(k) {
+    
     
     # print(paste("pop", k))
     data <- datatot[[k]]
     # quel est le nom de la série en cours
     nmser <- names(datatot)[k]
     # Prend en compte les 0 ou non 5/2/2012
-    zero <- pt$zerocounts[k]
+    zero_counts <- pt$zerocounts[k]
+    zero <- pt$zero
     deb <- ifelse(zero, 0, 1)
     
     # je fais une fonction où j'envoie les paramètres et la série et il renvoie ceux à utiliser directement
@@ -42,12 +48,12 @@
     #  if (xparec["MinE"]<0) print(xpar, xparec)
     th <- xparec["Theta"]
     
-    for (i in 1:dim(data)[1]) 
+    for (i in 1:nrow(data)) 
     {
-
+      
       # est ce que j'ai une observation ?
       # transformé en 0 ou non avec zero TRUE ou FALSE: 5/2/2012
-      if ((data$nombre[i]!=0)||zero) {
+      if ((data$nombre[i]!=0)||zero_counts) {
         
         if (is.na(data$Date2[i])) {
           #######################
@@ -59,24 +65,24 @@
           
           # 19/3/2016: je dois inclure les cofacteurs
           if (!is.null(pt$add.cofactors)) {
- #           print("Nom des cofacteurs")
-#            print(pt$add.cofactor)
-#            print("Date")
-#            print(data$Date[i])
-#            print("Paramètres")
-#            print(xparec[pt$add.cofactor])
-#            print("Cofacteurs")
-#            print(pt$cofactors[ pt$cofactors$Date==data$Date[i], pt$add.cofactor] * xparec[pt$add.cofactor])
-#            print("Nombre avant cofacteurs")
-#            print(sumnbcount)
+            #           print("Nom des cofacteurs")
+            #            print(pt$add.cofactor)
+            #            print("Date")
+            #            print(data$Date[i])
+            #            print("Paramètres")
+            #            print(xparec[pt$add.cofactor])
+            #            print("Cofacteurs")
+            #            print(pt$cofactors[ pt$cofactors$Date==data$Date[i], pt$add.cofactor] * xparec[pt$add.cofactor])
+            #            print("Nombre avant cofacteurs")
+            #            print(sumnbcount)
             sumnbcount <- sumnbcount + sum(pt$cofactors[ pt$cofactors$Date==data$Date[i], pt$add.cofactor] * xparec[pt$add.cofactor])
-#            print("Nombre après cofacteurs")
-#            print(sumnbcount)
+            #            print("Nombre après cofacteurs")
+            #            print(sumnbcount)
             if (sumnbcount <= pt$zero) sumnbcount <- pt$zero
           }
           
           # dans zero j'ai l'information si je prends les 0 ou non pour cette série
-          if (!zero) {
+          if (!zero_counts) {
             lnli2 <- -log(dnbinom(data$nombre[i], size=th, mu=sumnbcount, log=FALSE)/(1-dnbinom(0, size=th, mu=sumnbcount, log=FALSE)))
           } else {
             lnli2 <- -dnbinom(data$nombre[i], size=th, mu=sumnbcount, log=TRUE)
@@ -98,7 +104,7 @@
           if (pt$incertitude==1 | pt$incertitude=="convolution") {
             
             # je suis sur la méthode 1 d'incertitude
-            if (!zero) {
+            if (!zero_counts) {
               lnli2 <- -log(dSnbinom(data$nombre[i], size=th, mu=nbcount, log=FALSE, infinite=infinite)/(1-dSnbinom(0, size=th, mu=nbcount, log=FALSE, infinite=infinite)))
             } else {
               lnli2 <- -dSnbinom(data$nombre[i], size=th, mu=nbcount, log=TRUE, infinite=infinite)
@@ -153,7 +159,7 @@
             
             for(ii in deb:N) {
               for(countday in 1:nbjour) {
-                if (!zero) {
+                if (!zero_counts) {
                   a[ii+1, countday] <- log(dnbinom(ii, size=th, mu=nbcount[countday], log=FALSE)/(1-dnbinom(0, size=th, mu=nbcount[countday], log=FALSE)))
                 } else {
                   a[ii+1, countday] <- dnbinom(ii, size=th, mu=nbcount[countday], log=TRUE)
@@ -191,14 +197,27 @@
       # fin de la boucle des jours
     }
     
-    sum <- sum + sum(datatot[[k]]$LnL, na.rm = TRUE)
+    # sum <- sum + sum(datatot[[k]]$LnL, na.rm = TRUE)
     
-    # fin de la boucle des séries
+    return(datatot[[k]])
   }
+  )
+  
+  sum <- sum(sapply(X = rg, function(x) sum(x$LnL, na.rm=TRUE)))
+  
+  # fin de la boucle des séries
+  #}
+  
+  if (is.infinite(sum)) {
+    save(x, file = "x.Rdata")
+    save(pt, file="pt.Rdata")
+  }
+  
   if (out) {
     return(sum)
-    } else {
-    return(datatot)
+  } else {
+    names(rg) <- names(datatot)
+    return(rg)
   }
   # fin de la fonction
 }
