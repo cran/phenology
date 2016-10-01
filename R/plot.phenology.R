@@ -20,6 +20,7 @@
 #' @param progressbar If FALSE, do not show the progress bar
 #' @param help If TRUE, an help is displayed
 #' @param growlnotify If False, does not send growl notification
+#' @param Plot Should the plot to be shown?
 #' @description The function plot.phenology plots the phenology graph from a result object.\cr
 #' If cofactors have been added, the plot does not show their effects.
 #' @examples
@@ -55,9 +56,9 @@
 plot.phenology <- 
 	function(x, ..., data=NULL, parameters=NULL, parametersfixed=NULL, se=NULL, 
 	series="all", moon=FALSE, replicate.CI=1000, 
-	progressbar=TRUE, help=FALSE, growlnotify=TRUE) {
+	progressbar=TRUE, help=FALSE, growlnotify=TRUE, Plot=TRUE) {
 
-# data=NULL; parameters=NULL; parametersfixed=NULL; se=NULL; series="all"; moon=FALSE; replicate.CI=1000; progressbar=TRUE; help=FALSE; growlnotify=TRUE
+# data=NULL; parameters=NULL; parametersfixed=NULL; se=NULL; series="all"; moon=FALSE; replicate.CI=1000; progressbar=TRUE; help=FALSE; growlnotify=TRUE; Plot=TRUE
     result <- x
     
 
@@ -289,10 +290,10 @@ pnp <- modifyList(list(xlab="Months", ylab="Counts", main=names(data[series[kser
 	pch=16, cex=0.5, xlim=vmaxx, ylim=vmaxy, type="n", bty="n"), list(...))
 	
 
-do.call(plot, modifyList(pnp, list(x=x, y=rep(0, length(x)))))
+if (Plot) do.call(plot, modifyList(pnp, list(x=x, y=rep(0, length(x)))))
 
 
-if (moon) {
+if (moon & Plot) {
   xnewmoon <- ifelse(x[mpT1]>=ScalePreviousPlot()$xlim["begin"] & x[mpT1]<=ScalePreviousPlot()$xlim["end"], TRUE, FALSE)
   xfullmoon <- ifelse(x[mpT2]>=ScalePreviousPlot()$xlim["begin"] & x[mpT2]<=ScalePreviousPlot()$xlim["end"], TRUE, FALSE)
 	points(x[mpT1][xnewmoon], rep(moony, length(x[mpT1]))[xnewmoon], cex=1, bg="black", col="black", pch=21, xpd=TRUE)
@@ -303,7 +304,7 @@ if (moon) {
 #	points(x[mpT4]-8, rep(moony, length(x[mpT4])), cex=3, bg="white", col="white", pch=21)
 }
 
-par(new=TRUE)
+if (Plot) par(new=TRUE)
 
 
 if (!is.null(data)) {
@@ -312,11 +313,12 @@ if (!is.null(data)) {
 pnp2 <- modifyList(pnp, list(xlab="", ylab="", main="", axes=FALSE, col="black", type="p"))
 
 	
-do.call(plot, modifyList(pnp2, list(x=data[[series[kseries]]]$Date[is.na(data[[series[kseries]]]$Date2)], y=data[[series[kseries]]]$nombre[is.na(data[[series[kseries]]]$Date2)])))
+if (Plot) do.call(plot, modifyList(pnp2, list(x=data[[series[kseries]]]$Date[is.na(data[[series[kseries]]]$Date2)], y=data[[series[kseries]]]$nombre[is.na(data[[series[kseries]]]$Date2)])))
 
 
 
 ## Pour les dates avec incertitudes
+if (Plot) {
 par(new=TRUE)
 for(i in 1:dim(data[[series[kseries]]])[1]) {
 	if (!is.na(data[[series[kseries]]]$ordinal2[i])) {
@@ -333,8 +335,9 @@ for(i in 1:dim(data[[series[kseries]]])[1]) {
 
 par(new=TRUE)
 }
+}
 
-if (!is.null(parres)) {
+if (!is.null(parres) & Plot) {
 
 pnp3 <- modifyList(pnp, list(xlab="", ylab="", main="", axes=FALSE, col="black", type="l"))
 

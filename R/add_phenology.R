@@ -120,7 +120,7 @@ if (class(add)=="list") {
 
 # rp <- phenology:::.read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
 
-rp <- .read_phenology(add, header, reference, month_ref, format, nm, sep.dates, silent)
+rp <- getFromNamespace(".read_phenology", ns="phenology")(add, header, reference, month_ref, format, nm, sep.dates, silent)
 
 if (any(grepl(sep.dates, rp$format))) {
   stop("The date separator is used also within a date. It is not possible.")

@@ -2,7 +2,8 @@
 #' @title Run a shiny application for basic functions of phenology package
 #' @author Marc Girondot
 #' @return Nothing
-#' @description Run a shiny application for basic functions of phenology package
+#' @description Run a shiny application for basic functions of phenology package.
+#' Thanks to Adriana Cortés Gomés and Joana Hancock for their help with translation.
 #' @examples
 #' \dontrun{
 #' library(phenology)
