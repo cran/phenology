@@ -12,8 +12,19 @@
 #' @keywords datasets
 #' @usage result_Gratiot
 #' @examples
+#' \dontrun{
 #' library(phenology)
+#' data(Gratiot)
+#' # Generate a formatted list nammed data_Gratiot 
+#' data_Gratiot <- add_phenology(Gratiot, name="Complete", 
+#' 		reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' # Generate initial points for the optimisation
+#' parg <- par_init(data_Gratiot, fixed.parameters=NULL)
+#' # Run the optimisation
+#' result_Gratiot <- fit_phenology(data=data_Gratiot, 
+#' 		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
 #' # Read a file with result
 #' data(result_Gratiot)
+#' }
 #' @format A list with Gratiot data and the result of the fit.
 NULL

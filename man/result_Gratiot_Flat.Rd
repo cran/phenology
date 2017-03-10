@@ -21,14 +21,13 @@ library(phenology)
 # Read a file with result
 data(result_Gratiot_Flat)
 }
-\author{
-Marc Girondot \email{marc.girondot@u-psud.fr}
-}
 \references{
 Gratiot, N., Gratiot, J., de Thoisy, B. & Kelle, L. 2006. 
             Estimation of marine turtles nesting season from incomplete 
             data ; statistical adjustment of a sinusoidal function. Animal 
             Conservation, 9, 95-102.
 }
+\author{
+Marc Girondot \email{marc.girondot@u-psud.fr}
+}
 \keyword{datasets}
-

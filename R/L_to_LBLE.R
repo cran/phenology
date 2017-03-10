@@ -16,7 +16,7 @@
 #' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
 #' 		reference=refdate, format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
-#' parg<-par_init(data_Gratiot, parametersfixed=NULL)
+#' parg<-par_init(data_Gratiot, fixed.parameters=NULL)
 #' # Change the parameters to Begin End format
 #' parg1<-LBLE_to_L(parameters=parg)
 #' # And change back to LengthB LengthE.

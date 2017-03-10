@@ -4,17 +4,18 @@
 \alias{map_phenology}
 \title{Generate a likelihood map varying Phi and Delta.}
 \usage{
-map_phenology(data = NULL, parametersfit = NULL, parametersfixed = NA,
-  Phi = seq(from = 0.2, to = 20, length.out = 100), Delta = NULL,
-  infinite = 50, method_incertitude = "convolution", zero_counts = TRUE,
-  progressbar = TRUE)
+map_phenology(data = NULL, fitted.parameters = NULL,
+  fixed.parameters = NA, Phi = seq(from = 0.2, to = 20, length.out = 100),
+  Delta = NULL, infinite = 50, method_incertitude = "convolution",
+  zero_counts = TRUE, progressbar = TRUE, cofactors = NULL,
+  add.cofactors = NULL, zero = 1e-09)
 }
 \arguments{
 \item{data}{dataset generated with add_format}
 
-\item{parametersfit}{Set of parameters to be fitted}
+\item{fitted.parameters}{Set of parameters to be fitted}
 
-\item{parametersfixed}{Set of fixed parameters}
+\item{fixed.parameters}{Set of fixed parameters}
 
 \item{Phi}{Phi values to be analyzed}
 
@@ -29,6 +30,12 @@ map_phenology(data = NULL, parametersfit = NULL, parametersfixed = NA,
 been recorded for each of these timeseries. Defaut is TRUE for all.}
 
 \item{progressbar}{If FALSE, do not show the progress bar}
+
+\item{cofactors}{data.frame with a column Date and a column for each cofactor}
+
+\item{add.cofactors}{Names of the column of parameter cofactors to use as a cofactor}
+
+\item{zero}{If the theoretical nest number is under this value, this value wll be used}
 }
 \value{
 Display a likelihood map
@@ -57,11 +64,11 @@ data(Gratiot)
 data_Gratiot<-add_phenology(Gratiot, name="Complete", 
 		reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
-parg<-par_init(data_Gratiot, parametersfixed=NULL)
+parg<-par_init(data_Gratiot, fixed.parameters=NULL)
 # Run the optimisation
 \dontrun{
 result_Gratiot<-fit_phenology(data=data_Gratiot, 
-		parametersfit=parg, parametersfixed=NULL, trace=1)
+		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
 }
 data(result_Gratiot)
 # Extract the fitted parameters
@@ -77,7 +84,7 @@ parg2<-c(Beta=0.5, parg1["Theta"])
 # Take care, it takes 20 hours ! The data map_Gratiot has the result
 \dontrun{
 map_Gratiot<-map_phenology(data=data_Gratiot, Phi=seq(from=0.1, to=20, length.out=100), 
-		parametersfit=parg2, parametersfixed=pfixed)
+		fitted.parameters=parg2, fixed.parameters=pfixed)
 }
 data(map_Gratiot)
 # Plot the map
@@ -92,4 +99,3 @@ plot_delta(map=map_Gratiot, Phi=15)
 \author{
 Marc Girondot
 }
-

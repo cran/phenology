@@ -37,4 +37,3 @@ parg2<-toggle_Min_PMin(parameters=parg1)
 \author{
 Marc Girondot
 }
-

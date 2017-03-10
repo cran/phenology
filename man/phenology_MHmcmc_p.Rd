@@ -30,10 +30,10 @@ data(Gratiot)
 data_Gratiot<-add_phenology(Gratiot, name="Complete", 
   	reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
-parg<-par_init(data_Gratiot, parametersfixed=NULL)
+parg<-par_init(data_Gratiot, fixed.parameters=NULL)
 # Run the optimisation
 result_Gratiot<-fit_phenology(data=data_Gratiot, 
-		parametersfit=parg, parametersfixed=NULL, trace=1)
+		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
 # Generate set of priors for Bayesian analysis
 pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept = TRUE)
 result_Gratiot_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000, 
@@ -58,4 +58,3 @@ plot(result_Gratiot_mcmc, parameters=3, las=1, xlim=c(-10, 300))
 \author{
 Marc Girondot
 }
-

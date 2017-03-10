@@ -9,7 +9,9 @@
   n.iter = 10000,
   parametersMCMC = stop("A model generated with phenology_MHmcmc_p() must be provided"),
   n.chains = 4, n.adapt = 0, thin = 1, trace = FALSE,
-  intermediate = NULL, filename = "intermediate.Rdata", previous = NULL)
+  adaptive = FALSE, adaptive.lag = 500, adaptive.fun = function(x) {    
+  ifelse(x > 0.234, 1.3, 0.7) }, intermediate = NULL,
+  filename = "intermediate.Rdata", previous = NULL)
 }
 \arguments{
 \item{result}{An object obtained after a SearchR fit}
@@ -24,7 +26,13 @@
 
 \item{thin}{Number of iterations between each stored output}
 
-\item{trace}{True or False, shows progress}
+\item{trace}{TRUE or FALSE, shows progress}
+
+\item{adaptive}{Should an adaptive process for SDProp be used}
+
+\item{adaptive.lag}{Lag to analyze the SDProp value in an adaptive content}
+
+\item{adaptive.fun}{Function used to change the SDProp}
 
 \item{intermediate}{Period for saving intermediate result, NULL for no save}
 
@@ -55,10 +63,10 @@ data(Gratiot)
 data_Gratiot <- add_phenology(Gratiot, name="Complete", 
     reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
-parg <- par_init(data_Gratiot, parametersfixed=NULL)
+parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 # Run the optimisation
 result_Gratiot <- fit_phenology(data=data_Gratiot, 
-		parametersfit=parg, parametersfixed=NULL, trace=1)
+		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
 # Generate set of priors for Bayesian analysis
 pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept = TRUE)
 result_Gratiot_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000, 
@@ -83,4 +91,3 @@ plot(result_Gratiot_mcmc, parameters=3, las=1, xlim=c(-10, 300))
 \author{
 Marc Girondot
 }
-

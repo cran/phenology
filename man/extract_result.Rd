@@ -4,12 +4,10 @@
 \alias{extract_result}
 \title{Extract the set of parameters from a result object.}
 \usage{
-extract_result(result = NULL, help = FALSE)
+extract_result(result = NULL)
 }
 \arguments{
 \item{result}{A result file}
-
-\item{help}{If TRUE, an help is displayed}
 }
 \value{
 Return the set of fitted parameters
@@ -31,10 +29,10 @@ data(Gratiot)
 data_Gratiot<-add_phenology(Gratiot, name="Complete", 
 		reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
-parg<-par_init(data_Gratiot, parametersfixed=NULL)
+parg<-par_init(data_Gratiot, fixed.parameters=NULL)
 # Run the optimisation
-# result_Gratiot<-fit_phenology(data=data_Gratiot, parametersfit=parg, 
-		parametersfixed=NULL, trace=1)
+# result_Gratiot<-fit_phenology(data=data_Gratiot, fitted.parameters=parg, 
+		fixed.parameters=NULL, trace=1)
 data(result_Gratiot)
 # Extract the fitted parameters
 parg1<-extract_result(result_Gratiot)
@@ -43,4 +41,3 @@ parg1<-extract_result(result_Gratiot)
 \author{
 Marc Girondot
 }
-

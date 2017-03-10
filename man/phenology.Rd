@@ -25,4 +25,3 @@ phenology()
 \author{
 Marc Girondot
 }
-

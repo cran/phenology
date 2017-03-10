@@ -24,14 +24,13 @@ Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt"
 }
 data(Gratiot)
 }
-\author{
-KWATA ONG -
-}
 \references{
 Gratiot, N., Gratiot, J., de Thoisy, B. & Kelle, L. 2006. 
             Estimation of marine turtles nesting season from incomplete 
             data ; statistical adjustment of a sinusoidal function. Animal 
             Conservation, 9, 95-102.
 }
+\author{
+KWATA ONG -
+}
 \keyword{datasets}
-

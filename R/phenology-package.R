@@ -3,8 +3,8 @@
 #' \tabular{ll}{
 #'  Package: \tab phenology\cr
 #'  Type: \tab Package\cr
-#'  Version: \tab 5.3 build 366\cr
-#'  Date: \tab 2016-10-01\cr
+#'  Version: \tab 5.4 build 382\cr
+#'  Date: \tab 2017-03-10\cr
 #'  License: \tab GPL (>= 2)\cr
 #'  LazyLoad: \tab yes\cr
 #'  }
@@ -24,6 +24,7 @@
 #' Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C., Girondot, M., 2005. Maximum likelihood estimates of tag loss in leatherback sea turtles. Journal of Wildlife Management 69, 540-548.\cr
 #' Until now it is a RealBasic software.\cr
 #' The lastest version of this package can always been installed using:\cr
+#' install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/HelpersMG.tar.gz", repos=NULL, type="source")\cr
 #' install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", repos=NULL, type="source")
 #' @references Girondot, M. 2010. Estimating density of animals during 
 #'             migratory waves: application to marine turtles at nesting site. 
@@ -57,10 +58,10 @@
 #' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
 #' 		reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
-#' parg<-par_init(data_Gratiot, parametersfixed=NULL)
+#' parg<-par_init(data_Gratiot, fixed.parameters=NULL)
 #' # Run the optimisation
 #' result_Gratiot<-fit_phenology(data=data_Gratiot, 
-#' 		parametersfit=parg, parametersfixed=NULL, trace=1)
+#' 		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output<-plot(result_Gratiot)

@@ -78,12 +78,11 @@ fitRMU_MCMC <- fitRMU_MHmcmc(result = cst, n.iter = 10000,
 parametersMCMC = pMCMC, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
 }
 }
-\author{
-Marc Girondot
-}
 \seealso{
 Other Fill gaps in RMU: \code{\link{fitRMU_MHmcmc_p}},
   \code{\link{fitRMU}}, \code{\link{logLik.fitRMU}},
   \code{\link{plot.fitRMU}}
 }
-
+\author{
+Marc Girondot
+}

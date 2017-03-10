@@ -26,7 +26,7 @@ if (!is.null(format)) {
 dtaspl <- substr(gsub("[%dmYy]", "", format), 1, 1)
   } else {
 dtaspl <- "/"
-if (!silent) warning("Separator between day, month and year is supposed to be the / character")
+if (!silent) message("Separator between day, month and year is supposed to be the / character")
 }
   
 if (class(obj_list)=="list") {
@@ -163,7 +163,7 @@ if (class(obj_list)=="list") {
 
 				if (dim(DATA)[2]==3) {
 					DATA[,3] <- ifelse(DATA[,3]=="", NA, DATA[,3])
-					DATA[,3] <- na.locf(DATA[,3])
+					DATA[,3] <-getFromNamespace(".repeat_last", ns="phenology")(DATA[,3])
 					plage <- levels(as.factor(DATA[,3]))
 				} else {
  					if (is.null(nm)) {

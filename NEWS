@@ -1,8 +1,32 @@
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
-            CHANGES IN VERSION 5.3  (2016-10-01)
+            CHANGES IN VERSION 5.4  (2017-03-10)
+
+* New version for CRAN - 5.4
+
+            CHANGES IN VERSION 5.3.15  (2017-03-03)
 
 * New version for CRAN - 5.3
+* par_init() better handle PMin - 5.3.1
+* New function AutoFitPhenology() - 5.3.2
+* Parallel computing in windows - 5.3.3
+* Adaptive mcmc - 5.3.3
+* Correction of parallel computing in windows - 5.3.4-5.3.5
+* parametersfixed is renammed fixed.parameters in fit_phenology(), par_init() and plot.phenology() - 5.3.6
+* parametersfit is renammed fitted.parameters in fit_phenology() - 5.3.6
+* Plot is renammed show.plot in plot.phenology() - 5.3.6
+* summary() returns an estimate of global nesting if mcmc object is indicated - 5.3.7
+* summary() returns the details day by day of quantiles -5.3.8
+* plot() can plot now the result of a mcmc object as quantiles - 5.3.8
+* Correct diverse bugs in phenology_MHmcmc() and map_phenology() - 5.3.9
+* summary.phenology() and plot.phenology() rewritten from scratch - 5.3.10
+* summary.phenology() uses matrix of variances-covariances for confidence interval - 5.3.10
+* fit_phenology() uses optimx() - 5.3.11
+* web version updated - 5.3.12
+* Remove dependency to zoo package but add optimx and numDeriv - 5.3.12
+* Change the function to estimate random number with vcov using lmf package - 5.3.13
+* summary.phenologyout() is more complete - 5.3.14
+* autfitphenology() can be used again - 5.3.15
 
             CHANGES IN VERSION 5.2.1-5.2.5  (2016-08-15)
 

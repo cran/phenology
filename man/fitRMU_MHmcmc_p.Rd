@@ -50,12 +50,11 @@ cst <- fitRMU(data=data.AtlanticW, RMU.name=RMU.name.AtlanticW,
 pMCMC <- fitRMU_MHmcmc_p(result=cst, accept=TRUE)
 }
 }
-\author{
-Marc Girondot
-}
 \seealso{
 Other Fill gaps in RMU: \code{\link{fitRMU_MHmcmc}},
   \code{\link{fitRMU}}, \code{\link{logLik.fitRMU}},
   \code{\link{plot.fitRMU}}
 }
-
+\author{
+Marc Girondot
+}

@@ -6,6 +6,23 @@ library(shiny)
 
 load(file="babel.Rdata")
 
+mycss <- "
+#plot-container {
+position: relative;
+}
+#loading-spinner {
+position: absolute;
+left: 50%;
+top: 50%;
+z-index: -1;
+margin-top: -33px;  /* half of the spinner's height */
+margin-left: -33px; /* half of the spinner's width */
+}
+#plot.recalculating {
+z-index: -2;
+}
+"
+
 radioButtons_withHTML <- function (inputId, label, choices, selected = NULL, inline = FALSE, 
                                    width = NULL) 
 {
@@ -56,15 +73,6 @@ shinyUI(fluidPage(
                                                                    )
                             , selected="gb"
                             , inline = TRUE) 
-    #   radioButtons(inputId="language"
-    #                , label=NULL
-    #                , choices=list(English="gb"
-    #                               , português="pt"
-    #                               , français="fr"
-    #                ) 
-    #                , selected="gb"
-    #                , inline = TRUE
-    # )
     , align="right")
   )
   
@@ -116,16 +124,13 @@ shinyUI(fluidPage(
   , sidebarLayout(
     sidebarPanel(
       wellPanel(
-        uiOutput("GSYalimapo_UI0")
-        , uiOutput("GSYalimapo_UI")
-      )
-      , wellPanel(
         uiOutput("ChargeData_UI")
         , fileInput("file1", label=NULL, accept=c('text/csv', 
                                                   'text/comma-separated-values',
                                                   'text/plain', '.csv'))
         , uiOutput("TitreCol_UI")
-        , actionButton("goButton", "Go!")
+        , uiOutput("ChargeExemple_UI")
+        , actionButton("goButton", "Go!", width	='100%')
         , uiOutput("NoteFormat_UI")
         )
       ,  wellPanel(
@@ -138,13 +143,21 @@ shinyUI(fluidPage(
         , uiOutput("MoisRef_UI")
         , uiOutput("NoteMoisRef_UI")
         , uiOutput("SerieGraphique_UI")
+#        , actionButton("DoPlot", "Plot series", width	='100%')
+ #       , uiOutput(outputId="result")
       )
       )
     ,
     
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput("distPlot")
+      tags$head(tags$style(HTML(mycss)))
+      , div(id = "plot-container",
+          tags$img(src = "spinner.gif",
+                   id = "loading-spinner"),
+          plotOutput("distPlot")
+      )
+      # plotOutput("distPlot")
       , uiOutput("NoteGraph_UI")
       , uiOutput("Synthese1_UI")
       , verbatimTextOutput(outputId="resultsInfo")

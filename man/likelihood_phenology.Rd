@@ -4,16 +4,17 @@
 \alias{likelihood_phenology}
 \title{Estimate the likelihood of timeseries based on a set of parameters.}
 \usage{
-likelihood_phenology(data = NULL, parametersfit = NULL,
-  parametersfixed = NULL, zero_counts = NULL, method_incertitude = NULL,
-  result = NULL, infinite = 200, zero = 1e-09)
+likelihood_phenology(data = NULL, fitted.parameters = NULL,
+  fixed.parameters = NULL, zero_counts = NULL, method_incertitude = NULL,
+  result = NULL, cofactors = NULL, add.cofactors = NULL, infinite = 200,
+  zero = 1e-09)
 }
 \arguments{
 \item{data}{Dataset generated with add_format}
 
-\item{parametersfit}{Set of parameters to be fitted}
+\item{fitted.parameters}{Set of parameters to be fitted}
 
-\item{parametersfixed}{Set of fixed parameters}
+\item{fixed.parameters}{Set of fixed parameters}
 
 \item{zero_counts}{example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 been recorder for each of these timeseries. Defaut is TRUE for all.}
@@ -23,6 +24,10 @@ been recorder for each of these timeseries. Defaut is TRUE for all.}
 1 is an alternative more rapid but biased.}
 
 \item{result}{An object obtained after fit_phenology()}
+
+\item{cofactors}{data.frame with a column Date and a column for each cofactor}
+
+\item{add.cofactors}{Names of the column of parameter cofactors to use as a cofactor}
 
 \item{infinite}{Number of iterations for dSnbinom() used for method_incertitude='sum'}
 
@@ -46,9 +51,9 @@ data(Gratiot)
 data_Gratiot<-add_phenology(Gratiot, name="Complete", 
 		reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
-parg<-par_init(data_Gratiot, parametersfixed=NULL)
+parg<-par_init(data_Gratiot, fixed.parameters=NULL)
 # Estimate likelihood with this initial set of parameters
-likelihood_phenology(data=data_Gratiot, parametersfit=parg, parametersfixed=NULL)
+likelihood_phenology(data=data_Gratiot, fitted.parameters=parg, fixed.parameters=NULL)
 # Or directly from a result object
 likelihood_phenology(result=result_Gratiot)
 }
@@ -56,4 +61,3 @@ likelihood_phenology(result=result_Gratiot)
 \author{
 Marc Girondot
 }
-

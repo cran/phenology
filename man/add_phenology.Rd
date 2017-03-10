@@ -79,10 +79,10 @@ refdate <- as.Date("2001-01-01")
 data_Gratiot <- add_phenology(Gratiot, name="Complete", 
 	reference=refdate, format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
-parg <- par_init(data_Gratiot, parametersfixed=NULL)
+parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 # Run the optimisation
-result_Gratiot <- fit_phenology(data=data_Gratiot, parametersfit=parg, 
-	parametersfixed=NULL, trace=1)
+result_Gratiot <- fit_phenology(data=data_Gratiot, fitted.parameters=parg, 
+	fixed.parameters=NULL, trace=1)
 data(result_Gratiot)
 # Plot the phenology and get some stats
 output <- plot(result_Gratiot)
@@ -91,4 +91,3 @@ output <- plot(result_Gratiot)
 \author{
 Marc Girondot
 }
-

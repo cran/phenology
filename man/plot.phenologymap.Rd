@@ -37,10 +37,10 @@ data(Gratiot)
 data_Gratiot<-add_phenology(Gratiot, name="Complete", 
 		reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
-parg<-par_init(data_Gratiot, parametersfixed=NULL)
+parg<-par_init(data_Gratiot, fixed.parameters=NULL)
 # Run the optimisation
 result_Gratiot<-fit_phenology(data=data_Gratiot, 
-		parametersfit=parg, parametersfixed=NULL, trace=1)
+		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
 data(result_Gratiot)
 # Extract the fitted parameters
 parg1<-extract_result(result_Gratiot)
@@ -55,7 +55,7 @@ parg2<-c(Beta=0.5, parg1["Theta"])
 # Take care, it takes 20 hours ! The data map_Gratiot has the result
 map_Gratiot<-map_phenology(data=data_Gratiot, 
 		Phi=seq(from=0.1, to=20, length.out=100), 
-		parametersfit=parg2, parametersfixed=pfixed)
+		fitted.parameters=parg2, fixed.parameters=pfixed)
 data(map_Gratiot)
 # Plot the map
 plot(map_Gratiot, col=heat.colors(128))
@@ -64,4 +64,3 @@ plot(map_Gratiot, col=heat.colors(128))
 \author{
 Marc Girondot
 }
-

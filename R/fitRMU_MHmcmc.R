@@ -75,11 +75,11 @@ n.adapt = 0, thin=1, trace=FALSE, intermediate=NULL, filename="intermediate.Rdat
   print(parametersMCMC)
   
   # x, fixed, model.trend, RMU.data, colname.year=NULL, RMU.names=NULL, index=NULL
-  # pt <- list(fixed=result$parametersfixed, RMU.data=result$RMU.data, model.trend=result$model.trend, colname.year=result$colname.year, RMU.names=result$RMU.names)
+  # pt <- list(fixed=result$fixed.parameters, RMU.data=result$RMU.data, model.trend=result$model.trend, colname.year=result$colname.year, RMU.names=result$RMU.names)
 
 out <- MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, n.chains = n.chains, n.adapt = n.adapt, 
                  thin=thin, trace=trace, likelihood=fun,
-                 fixed=result$parametersfixed, RMU.data=result$RMU.data, model.trend=result$model.trend,
+                 fixed=result$fixed.parameters, RMU.data=result$RMU.data, model.trend=result$model.trend,
                  colname.year=result$colname.year, RMU.names=result$RMU.names)
 
 fin <- try(summary(out), silent=TRUE)

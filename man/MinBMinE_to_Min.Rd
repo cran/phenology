@@ -35,4 +35,3 @@ parg1<-MinBMinE_to_Min(parameters=parg)
 \author{
 Marc Girondot
 }
-

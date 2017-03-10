@@ -55,10 +55,10 @@
 #' data_Gratiot <- add_phenology(Gratiot, name="Complete", 
 #' 	reference=refdate, format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
-#' parg <- par_init(data_Gratiot, parametersfixed=NULL)
+#' parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 #' # Run the optimisation
-#' result_Gratiot <- fit_phenology(data=data_Gratiot, parametersfit=parg, 
-#' 	parametersfixed=NULL, trace=1)
+#' result_Gratiot <- fit_phenology(data=data_Gratiot, fitted.parameters=parg, 
+#' 	fixed.parameters=NULL, trace=1)
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output <- plot(result_Gratiot)
@@ -209,8 +209,7 @@ for (kk in 1:nbdatasets) {
 		
 
 		if (is.null(reference)) {		
-			warning("No refence date can be calculated")
-			return(invisible())
+			stop("No refence date can be calculated")
 		}
 		
 		
@@ -288,7 +287,7 @@ for (kk in 1:nbdatasets) {
 	}
 #	print(problem)
 	if (problem & (!silent)) {
-		warning(paste("Problem in at least one date; check them. Take care about format used.\n", 
+		stop(paste("Problem in at least one date; check them. Take care about format used.\n", 
                   "Within a file, all dates must conform to the same format.\n",
                   "Data should not be longer than one year for a site at the same time."))
 	}	
@@ -302,6 +301,11 @@ class(previous) <- "phenologydata"
 if (any(grepl("_", names(previous)))) {
   if (!silent) print("The character _ is forbiden in names of timesseries. It has been changed to -.")
   names(previous) <- gsub("_", "-", names(previous))
+}
+
+if (any(grepl(" ", names(previous)))) {
+  if (!silent) print("The character ' ' is forbiden in names of timesseries. It has been changed to '.'.")
+  names(previous) <- gsub(" ", ".", names(previous))
 }
 
 if (any(duplicated(names(previous)))) {

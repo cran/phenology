@@ -50,12 +50,11 @@ logLik(cst)
 AIC(cst)
 }
 }
-\author{
-Marc Girondot
-}
 \seealso{
 Other Fill gaps in RMU: \code{\link{fitRMU_MHmcmc_p}},
   \code{\link{fitRMU_MHmcmc}}, \code{\link{fitRMU}},
   \code{\link{plot.fitRMU}}
 }
-
+\author{
+Marc Girondot
+}

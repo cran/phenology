@@ -7,7 +7,7 @@
 #' @param model.rookeries Description temporal change in rookeries proportion. It be Constant, First-order or Second-order
 #' @param model.SD Can be Zero or Constant. See description.
 #' @param parameters  Parameters to fit
-#' @param parametersfixed Parameters that are fixed
+#' @param fixed.parameters Parameters that are fixed
 #' @param SE Parameters SE for example from fitRMU_MHmcmc()
 #' @param replicate.CI Number of replicates to estimate CI of proportion for each rookery
 #' @param colname.year Name of the column to be used as time index
@@ -137,12 +137,12 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
                  RMU.names=NULL,
                  model.trend="Constant", model.rookeries="Constant",
                  model.SD="Zero",  
-                 parameters=NULL, parametersfixed=NULL, SE=NULL, method="BFGS",
+                 parameters=NULL, fixed.parameters=NULL, SE=NULL, method="BFGS",
                  replicate.CI=1000, colname.year="Year", 
                  control=list(trace=1, REPORT=100, maxit=500), optim="optim", maxL=1E9) {
   
 
-  # RMU.data=NULL; RMU.names=NULL; model.trend="Constant"; model.rookeries="Constant"; model.SD="Zero"; parameters=NULL; parametersfixed=NULL; SE=NULL; method="BFGS"; replicate.CI=1000; colname.year="Year";  control=list(trace=1, REPORT=100, maxit=500); optim="optim"; maxL=1E9
+  # RMU.data=NULL; RMU.names=NULL; model.trend="Constant"; model.rookeries="Constant"; model.SD="Zero"; parameters=NULL; fixed.parameters=NULL; SE=NULL; method="BFGS"; replicate.CI=1000; colname.year="Year";  control=list(trace=1, REPORT=100, maxit=500); optim="optim"; maxL=1E9
   
   # RMU.data=data.AtlanticW; RMU.names=RMU.names.AtlanticW; colname.year="Year"; model.trend="Constant"; model.SD="Zero"; optim="optimx"; method=c("Nelder-Mead","BFGS"); control = list(trace = 0, REPORT = 100, maxit = 500)
   
@@ -232,11 +232,11 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
     
     if (model.rookeries=="constant") {
       x <- c(Tot, a0)
-      parametersfixed <- c(parametersfixed, a1, a2)
+      fixed.parameters <- c(fixed.parameters, a1, a2)
     } else {
       if (model.rookeries=="first-order") {
         x <- c(Tot, a0, a1)
-      parametersfixed <- c(parametersfixed, a2)
+      fixed.parameters <- c(fixed.parameters, a2)
       } else {
         x <- c(Tot, a0, a1, a2)
       }
@@ -244,7 +244,7 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
     
     if (model.SD=="zero") {
       SD[] <- 0
-      parametersfixed <- c(parametersfixed, SD)
+      fixed.parameters <- c(fixed.parameters, SD)
     } else {
       x <- c(x, SD)
     }
@@ -266,9 +266,9 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
     # S'il y a des paramètres fixes, on les retire du jeu de paramètres à ajuster
     # ________________________________________________
     
-    if (!is.null(parametersfixed)) {
-      for(i in 1:length(parametersfixed)) {
-        x<-x[names(x)!=names(parametersfixed[i])]
+    if (!is.null(fixed.parameters)) {
+      for(i in 1:length(fixed.parameters)) {
+        x<-x[names(x)!=names(fixed.parameters[i])]
       }
     }
     
@@ -279,7 +279,7 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
     repeat {
     
         if (optim=="optim") {
-          result <- try(optim(par=x, fn=fun, gr = NULL, fixed=parametersfixed, RMU.data=RMU.data, 
+          result <- try(optim(par=x, fn=fun, gr = NULL, fixed=fixed.parameters, RMU.data=RMU.data, 
                                  index=index, model.trend=model.trend, method=method, 
                                  control=modifyList(control, list(parscale=scale.factor)), 
                                  hessian=is.null(SE)), silent=TRUE)
@@ -289,7 +289,7 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
           conv <- result[["convergence"]]
           value <- result$value
         } else {
-          result <- try(getFromNamespace("optimx", ns="optimx")(par=x, fn=fun, gr = NULL, fixed=parametersfixed, RMU.data=RMU.data, 
+          result <- try(getFromNamespace("optimx", ns="optimx")(par=x, fn=fun, gr = NULL, fixed=fixed.parameters, RMU.data=RMU.data, 
                                  index=index, model.trend=model.trend, method=method, 
                                  control=modifyList(control, list(dowarn=FALSE, follow.on=TRUE)), 
                                  hessian=is.null(SE)), silent=TRUE)
@@ -354,8 +354,8 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
     print(paste("Parameters=", length(x)))
     print(paste("AIC=", format(result_list$AIC, digit=floor(log(result_list$AIC)/log(10))+3)))
     
-    x <- c(x, parametersfixed)
-    sepf <- parametersfixed
+    x <- c(x, fixed.parameters)
+    sepf <- fixed.parameters
     sepf[] <- 0
     res <- c(res, sepf)
     
@@ -506,7 +506,7 @@ fitRMU<-function(RMU.data=stop("data parameter must be provided"),
     result_list$RMU.data <- RMU.data
     result_list$model.SD <- model.SD
     result_list$RMU.names <- RMU.names
-    result_list$parametersfixed <- parametersfixed
+    result_list$fixed.parameters <- fixed.parameters
     result_list$replicate.CI <- replicate.CI
     result_list$colname.year <- colname.year
 

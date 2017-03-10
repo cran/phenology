@@ -68,7 +68,7 @@ function(parameters=stop("A set of parameters must be indicated")) {
 	}
 
 	if (any(M)) {
-		pmin_p <- mean(100*parameters[M]/parameters[mx])
+		pmin_p <- mean(100*parameters[M]/ifelse(parameters[mx]==0, 0.1, parameters[mx]))
 		names(pmin_p) <- "PMin"
 		n <- names(p)
 		p <- p[!((substr(n, 1, 3)=="Min") & (substr(n, 1, 4)!="MinE") & (substr(n, 1, 4)!="MinB"))]
@@ -76,7 +76,7 @@ function(parameters=stop("A set of parameters must be indicated")) {
 	}
 
 	if (any(MB)) {
-		pmin_pb <- mean(100*parameters[MB]/parameters[mx])
+		pmin_pb <- mean(100*parameters[MB]/ifelse(parameters[mx]==0, 0.1, parameters[mx]))
 		names(pmin_pb) <- "PMinB"
 		n <- names(p)
 		p <- p[substr(n, 1, 4)!="MinB"]
@@ -84,7 +84,7 @@ function(parameters=stop("A set of parameters must be indicated")) {
 	}
 
 	if (any(ME)) {
-		pmin_pe <- mean(100*parameters[ME]/parameters[mx])
+		pmin_pe <- mean(100*parameters[ME]/ifelse(parameters[mx]==0, 0.1, parameters[mx]))
 		names(pmin_pe) <- "PMinE"
 		n <- names(p)
 		p <- p[substr(n, 1, 4)!="MinE"]

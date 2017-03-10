@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.phenology.R
 \name{print.phenology}
 \alias{print.phenology}
-\title{Print the result information from a result object.}
+\title{Print the result information from a result x.}
 \usage{
 \method{print}{phenology}(x, ...)
 }
@@ -18,7 +18,7 @@ None\cr
 The function print.phenology displays from a result.
 }
 \details{
-print.phenology prints the information from a result object.
+print.phenology prints the information from a result x.
 }
 \examples{
 library(phenology)
@@ -31,11 +31,11 @@ data(Gratiot)
 data_Gratiot<-add_phenology(Gratiot, name="Complete", 
 		reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
-parg<-par_init(data_Gratiot, parametersfixed=NULL)
+parg<-par_init(data_Gratiot, fixed.parameters=NULL)
 # Run the optimisation
 \dontrun{
 result_Gratiot<-fit_phenology(data=data_Gratiot, 
-		parametersfit=parg, parametersfixed=NULL, trace=1)
+		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
 }
 data(result_Gratiot)
 # Show the result
@@ -44,4 +44,3 @@ result_Gratiot
 \author{
 Marc Girondot
 }
-

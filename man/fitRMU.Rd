@@ -6,7 +6,7 @@
 \usage{
 fitRMU(RMU.data = stop("data parameter must be provided"), RMU.names = NULL,
   model.trend = "Constant", model.rookeries = "Constant",
-  model.SD = "Zero", parameters = NULL, parametersfixed = NULL,
+  model.SD = "Zero", parameters = NULL, fixed.parameters = NULL,
   SE = NULL, method = "BFGS", replicate.CI = 1000,
   colname.year = "Year", control = list(trace = 1, REPORT = 100, maxit =
   500), optim = "optim", maxL = 1e+09)
@@ -24,7 +24,7 @@ fitRMU(RMU.data = stop("data parameter must be provided"), RMU.names = NULL,
 
 \item{parameters}{Parameters to fit}
 
-\item{parametersfixed}{Parameters that are fixed}
+\item{fixed.parameters}{Parameters that are fixed}
 
 \item{SE}{Parameters SE for example from fitRMU_MHmcmc()}
 
@@ -157,12 +157,11 @@ plot(YS1_cst, main="Use of different beaches along the time", what="numbers")
 
 }
 }
-\author{
-Marc Girondot
-}
 \seealso{
 Other Fill gaps in RMU: \code{\link{fitRMU_MHmcmc_p}},
   \code{\link{fitRMU_MHmcmc}}, \code{\link{logLik.fitRMU}},
   \code{\link{plot.fitRMU}}
 }
-
+\author{
+Marc Girondot
+}

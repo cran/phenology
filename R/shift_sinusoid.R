@@ -5,7 +5,6 @@
 #' @param parameters set of parameters
 #' @param from The number of series to change
 #' @param to The number of series to change
-#' @param help If TRUE, an help is displayed
 #' @description This function is used to shift sinusoid parameters from '', '1' or '2'.
 #' @examples
 #' # Read a file with data
@@ -20,11 +19,11 @@
 #' # Fix parameter FLat to 0
 #' pfixed=c(Flat=0)
 #' # Generate initial points for the optimisation
-#' parg<-par_init(data_Gratiot, parametersfixed=pfixed)
+#' parg<-par_init(data_Gratiot, fixed.parameters=pfixed)
 #' # Fit is done
 #' \dontrun{
 #' result_Gratiot_Flat<-fit_phenology(data=data_Gratiot, 
-#' 		parametersfit=parg, parametersfixed=pfixed, trace=1)
+#' 		fitted.parameters=parg, fixed.parameters=pfixed, trace=1)
 #' }
 #' data(result_Gratiot_Flat)
 #' parg<-extract_result(result_Gratiot_Flat)
@@ -36,7 +35,7 @@
 #' # Run the optimisation
 #' \dontrun{
 #' result_Gratiot1<-fit_phenology(data=data_Gratiot, 
-#' 		parametersfit=parg, parametersfixed=pfixed, trace=1)
+#' 		fitted.parameters=parg, fixed.parameters=pfixed, trace=1)
 #' # Plot the phenology
 #' output1<-plot(result_Gratiot1, moon=TRUE)
 #' #' }
@@ -53,7 +52,7 @@
 #' # Run the optimisation
 #' \dontrun{
 #' result_Gratiot2<-fit_phenology(data=data_Gratiot, 
-#' 		parametersfit=parg, parametersfixed=pfixed, trace=1)
+#' 		fitted.parameters=parg, fixed.parameters=pfixed, trace=1)
 #' # Plot the phenology
 #' output2<-plot(result_Gratiot2, moon=TRUE)
 #' }
@@ -62,14 +61,8 @@
 
 
 shift_sinusoid <-
-function(parameters=NULL, from="", to="1", help=FALSE) {
-if(help) {
-	cat("This function is used to roll sinusoid parameters from '', '1' or '2'.\n")
-	cat("The syntax is par<-shift_sinusoid(parameters=value, from='1', to='2')\n")
-	cat("or\n")
-	cat("par<-shift_sinusoid(parameters=value, from='', to='1')\n")
+function(parameters=NULL, from="", to="1") {
 
-} else {
 if (!is.null(parameters) && (from!=to)) {
 
 	level<-from
@@ -84,6 +77,5 @@ if (!is.null(parameters) && (from!=to)) {
 	}
 	return(parameters)
 
-}
 }
 }

@@ -4,13 +4,13 @@
 \alias{par_init}
 \title{Calculate initial set of parameters.}
 \usage{
-par_init(data = stop("A dataset must be provided"), parametersfixed = NA,
+par_init(data = stop("A dataset must be provided"), fixed.parameters = NULL,
   add.cofactors = NULL)
 }
 \arguments{
 \item{data}{Dataset generated with add_phenology()}
 
-\item{parametersfixed}{Set of fixed parameters}
+\item{fixed.parameters}{Set of fixed parameters}
 
 \item{add.cofactors}{Names of cofactors that will be used (see fit_phenology)}
 }
@@ -44,10 +44,10 @@ data(Gratiot)
 data_Gratiot <- add_phenology(Gratiot, name="Complete", 
 		reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
-parg <- par_init(data_Gratiot, parametersfixed=NULL)
+parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 # Run the optimisation
 result_Gratiot <- fit_phenology(data=data_Gratiot, 
-		parametersfit=parg, parametersfixed=NULL, trace=1)
+		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
 data(result_Gratiot)
 # Plot the phenology and get some stats
 output<-plot(result_Gratiot)
@@ -56,4 +56,3 @@ output<-plot(result_Gratiot)
 \author{
 Marc Girondot
 }
-

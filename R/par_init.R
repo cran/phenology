@@ -3,7 +3,7 @@
 #' @author Marc Girondot
 #' @return The initial set of parameters
 #' @param data Dataset generated with add_phenology()
-#' @param parametersfixed Set of fixed parameters
+#' @param fixed.parameters Set of fixed parameters
 #' @param add.cofactors Names of cofactors that will be used (see fit_phenology)
 #' @description This function is used to generate a first set of parameters
 #' that is expected to be not to far from the final.\cr
@@ -27,10 +27,10 @@
 #' data_Gratiot <- add_phenology(Gratiot, name="Complete", 
 #' 		reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
-#' parg <- par_init(data_Gratiot, parametersfixed=NULL)
+#' parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 #' # Run the optimisation
 #' result_Gratiot <- fit_phenology(data=data_Gratiot, 
-#' 		parametersfit=parg, parametersfixed=NULL, trace=1)
+#' 		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output<-plot(result_Gratiot)
@@ -39,14 +39,14 @@
 
 
 par_init <-
-function(data=stop("A dataset must be provided"), parametersfixed=NA, add.cofactors=NULL) {
+function(data=stop("A dataset must be provided"), 
+         fixed.parameters=NULL, add.cofactors=NULL) {
 
 
-if (is.null(parametersfixed)) {parametersfixed <- NA}
+if (is.null(fixed.parameters)) {fixed.parameters <- NA}
 
 if (class(data)!="phenologydata") {
-  cat("Data must be formated first using the function add_phenology().\n")
-  return()
+  stop("Data must be formated first using the function add_phenology().")
 }
 
 
@@ -64,33 +64,33 @@ nb<-as.numeric(data[[serie]]$nombre)
 mx1<-max(nb, na.rm=TRUE)/2
 names(mx1)<-paste("Max_", names(data[serie]), sep="")
 
-if (is.na(parametersfixed["Min"])) {
+if (is.na(fixed.parameters["Min"]) & is.na(fixed.parameters["PMin"])) {
 
-mB1<-0.5
+mB1<-0.1
 names(mB1)<-paste("MinB_", names(data[serie]), sep="")
 
-mE1<-0.5
+mE1<-0.1
 names(mE1)<-paste("MinE_", names(data[serie]), sep="")
 
 }
 
-if (!is.na(parametersfixed["Peak"])) {
-	pkp<-parametersfixed["Peak"]
+if (!is.na(fixed.parameters["Peak"])) {
+	pkp<-fixed.parameters["Peak"]
 } else {
 	pkp<-od[which.max(nb)]
 	pkp<-rnorm(1, pkp, 5)
 	names(pkp)<-"Peak"
 }
 
-if (!is.na(parametersfixed["Begin"])) {
-	bgp<-parametersfixed["Begin"]
+if (!is.na(fixed.parameters["Begin"])) {
+	bgp<-fixed.parameters["Begin"]
 } else {
 	bgp<-od[1]+(pkp-od[1])/2
 	names(bgp)<-"Begin"
 }
 
-if (!is.na(parametersfixed["End"])) {
-	edp<-parametersfixed["End"]
+if (!is.na(fixed.parameters["End"])) {
+	edp<-fixed.parameters["End"]
 } else {
 	edp<-od[length(od)]-(od[length(od)]-pkp)/2
 	names(edp)<-"End"
@@ -108,24 +108,24 @@ pk <- c(pk, pkp)
 #c(bg, pk, ed, Flat=2, mx1, mB1, mE1)
 
 c<-paste("Max_", names(data[serie]), sep="")
-if (is.na(parametersfixed[c])) {par<-c(par, mx1)}
-if (is.na(parametersfixed["Min"])) {
+if (is.na(fixed.parameters[c])) {par<-c(par, mx1)}
+if (is.na(fixed.parameters["Min"]) & is.na(fixed.parameters["PMin"])) {
 	c<-paste("MinB_", names(data[serie]), sep="")
-	if ((is.na(parametersfixed["MinB"]))*(is.na(parametersfixed[c]))) {par<-c(par, mB1)}
+	if ((is.na(fixed.parameters["MinB"]))*(is.na(fixed.parameters[c]))) {par<-c(par, mB1)}
 	c<-paste("MinE_", names(data[serie]), sep="")
-	if ((is.na(parametersfixed["MinE"]))*(is.na(parametersfixed[c]))) {par<-c(par, mE1)}
+	if ((is.na(fixed.parameters["MinE"]))*(is.na(fixed.parameters[c]))) {par<-c(par, mE1)}
 }
 
 # fin de la boucle des séries
 
 }
 
-if ((is.na(parametersfixed["Begin"])) && (is.na(parametersfixed["Length"])) && (is.na(parametersfixed["LengthB"]))) {par<-c(par, Begin=(min(bg)+mean(bg))/2)}
-if ((is.na(parametersfixed["Peak"]))) {par<-c(par, Peak=mean(pk))}
-if ((is.na(parametersfixed["End"])) && (is.na(parametersfixed["Length"])) && (is.na(parametersfixed["LengthE"]))) {par<-c(par, End=(max(ed)+mean(ed))/2)}
-if (is.na(parametersfixed["Flat"])) {par<-c(par, Flat=2)}
+if ((is.na(fixed.parameters["Begin"])) && (is.na(fixed.parameters["Length"])) && (is.na(fixed.parameters["LengthB"]))) {par<-c(par, Begin=(min(bg)+mean(bg))/2)}
+if ((is.na(fixed.parameters["Peak"]))) {par<-c(par, Peak=mean(pk))}
+if ((is.na(fixed.parameters["End"])) && (is.na(fixed.parameters["Length"])) && (is.na(fixed.parameters["LengthE"]))) {par<-c(par, End=(max(ed)+mean(ed))/2)}
+if (is.na(fixed.parameters["Flat"])) {par<-c(par, Flat=2)}
 
-if (is.na(parametersfixed["Theta"])) {
+if (is.na(fixed.parameters["Theta"])) {
   par <- c(par, Theta=5)
 }
 
@@ -136,7 +136,7 @@ par <- BE_to_LBLE(par)
 cof <- rep(0, length(add.cofactors))
 names(cof) <- add.cofactors
 
-cof <- cof[!(names(cof) %in% names(parametersfixed))]
+cof <- cof[!(names(cof) %in% names(fixed.parameters))]
 
 return(c(par, cof))
 }
