@@ -1,6 +1,6 @@
 #' Leatherback nest counts from Gratiot et al. (2006) Figure 1
 #' @title Leatherback nest counts from Gratiot et al. (2006) Figure 1
-#' @author KWATA ONG - 
+#' @author KWATA ONG
 #' @docType data
 #' @name Gratiot
 #' @description Leatherback nest counts from Gratiot et al. (2006) Figure 1. These 

@@ -75,7 +75,7 @@ function(add=file.choose(), name=NULL, reference=NULL, month_ref= NULL, sep.date
 # add=file.choose()
   
 if (class(previous)!="phenologydata" && !is.null(previous)) {
-  stop("The dataset indicated for previous parameter must be already formated!")
+  stop("The previous dataset must be already formated using add_phenology()!")
 }
   
   if (!is.null(format)) {
@@ -160,7 +160,7 @@ if (is.null(name)) {
 for (kk in 1:nbdatasets) {
 
 	add <- addlist[[kk]]
-	name<-names(addlist)[kk]
+	name <- names(addlist)[kk]
 
 # print(paste("3: ", name))
 
@@ -275,7 +275,7 @@ for (kk in 1:nbdatasets) {
 		for(i in 1:length(levels(fac))) {
 			siteencours<-levels(fac)[i]
 			addencours<-add[add[,3]==siteencours, 1:2]
-			dtaorigin<-add_phenology(previous=dtaorigin, add=addencours, name=siteencours, reference=NULL, month_ref= month_ref, format=format)
+			dtaorigin<-add_phenology(previous=dtaorigin, add=addencours, name=siteencours, reference=reference, month_ref= month_ref, format=format)
 		}
 		previous<-dtaorigin
 

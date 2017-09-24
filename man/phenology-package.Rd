@@ -13,9 +13,6 @@ To do:\cr
 * I must adapt TCF (total clutch frequency) fit from OCF-ECF (observed clutch frequency-estimated cluth frequency) table based on:\cr
  Briane, J.-P., Rivalan, P., Girondot, M., 2007. The inverse problem applied to the Observed Clutch Frequency of Leatherbacks from Yalimapo beach, French Guiana. Chelonian Conservation and Biology 6, 63-69.\cr
 Until now it is an Excel spreadsheet.\cr
-* Fit tag-loss rate based on:\cr
-Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C., Girondot, M., 2005. Maximum likelihood estimates of tag loss in leatherback sea turtles. Journal of Wildlife Management 69, 540-548.\cr
-Until now it is a RealBasic software.\cr
 The lastest version of this package can always been installed using:\cr
 install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/HelpersMG.tar.gz", repos=NULL, type="source")\cr
 install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", repos=NULL, type="source")
@@ -26,8 +23,8 @@ Fit a parametric function that describes phenology
 \tabular{ll}{
  Package: \tab phenology\cr
  Type: \tab Package\cr
- Version: \tab 5.4 build 382\cr
- Date: \tab 2017-03-10\cr
+ Version: \tab 6.0 build 397\cr
+ Date: \tab 2017-09-24\cr
  License: \tab GPL (>= 2)\cr
  LazyLoad: \tab yes\cr
  }
@@ -41,16 +38,16 @@ library(phenology)
 # Read a file with data
 data(Gratiot)
 # Generate a formatted list nammed data_Gratiot 
-data_Gratiot<-add_phenology(Gratiot, name="Complete", 
+data_Gratiot <- add_phenology(Gratiot, name="Complete", 
 		reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
-parg<-par_init(data_Gratiot, fixed.parameters=NULL)
+parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 # Run the optimisation
-result_Gratiot<-fit_phenology(data=data_Gratiot, 
+result_Gratiot <- fit_phenology(data=data_Gratiot, 
 		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
 data(result_Gratiot)
 # Plot the phenology and get some stats
-output<-plot(result_Gratiot)
+output <- plot(result_Gratiot)
 }
 }
 \references{
@@ -64,6 +61,14 @@ Girondot M. and Rizzo A. 2015. Bayesian framework to integrate
 
 Girondot, M. 2010. Editorial: The zero counts. Marine 
             Turtle Newsletter, 129, 5-6.
+
+Girondot, M., 2017. Optimizing sampling design to infer marine turtles 
+            seasonal nest number for low-and high-density nesting beach using convolution 
+            of negative binomial distribution. Ecological Indicators 81, 83–89.
+
+Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C., Girondot, M., 2005. 
+            Maximum likelihood estimates of tag loss in leatherback sea turtles. Journal 
+            of Wildlife Management 69, 540-548.\cr
 }
 \seealso{
 Girondot, M., Rivalan, P., Wongsopawiro, R., Briane, J.-P., Hulin, V.,
@@ -86,3 +91,4 @@ Marc Girondot \email{marc.girondot@u-psud.fr}
 \keyword{Ecology}
 \keyword{Phenology}
 \keyword{Seasonality}
+\keyword{tagloss}

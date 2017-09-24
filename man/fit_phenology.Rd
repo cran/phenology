@@ -89,6 +89,23 @@ result_Gratiot_CF <- fit_phenology(data=data_Gratiot,
 		add.cofactors="Level")
 compare_AIC(WithoutCF=result_Gratiot, WithCF=result_Gratiot_CF)
 plot(result_Gratiot_CF)
+
+# Example with two series fitted with different peaks but same Length of season
+
+Gratiot2 <- Gratiot
+Gratiot2[, 2] <- floor(Gratiot2[, 2]*runif(n=nrow(Gratiot2)))
+data_Gratiot <- add_phenology(Gratiot, name="Complete",
+                              reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
+data_Gratiot <- add_phenology(Gratiot2, name="Complete2",
+                              reference=as.Date("2001-01-01"), 
+                              format="\%d/\%m/\%Y", previous=data_Gratiot)
+pfixed=c(Min=0)
+p <- par_init(data_Gratiot, fixed.parameters = pfixed)
+p <- c(p, Peak_Complete=175, Peak_Complete2=175)
+p <- p[-4]
+p <- c(p, Length=90)
+p <- p[-(3:4)]
+result_Gratiot <- fit_phenology(data=data_Gratiot, fitted.parameters=p, fixed.parameters=pfixed)
 }
 }
 \author{

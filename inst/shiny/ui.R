@@ -22,6 +22,79 @@ margin-left: -33px; /* half of the spinner's width */
 z-index: -2;
 }
 "
+`%AND%` <- function(x, y) {
+  if (!is.null(x) && !is.na(x))
+    if (!is.null(y) && !is.na(y))
+      return(y)
+  return(NULL)
+}
+
+needOptgroup <- function (choices) 
+{
+  any(vapply(choices, is.list, logical(1)))
+}
+
+
+choicesWithNames <- function (choices) 
+{
+  listify <- function(obj) {
+    makeNamed <- function(x) {
+      if (is.null(names(x))) 
+        names(x) <- character(length(x))
+      x
+    }
+    res <- lapply(obj, function(val) {
+      if (is.list(val)) 
+        listify(val)
+      else if (length(val) == 1 && is.null(names(val))) 
+        as.character(val)
+      else makeNamed(as.list(val))
+    })
+    makeNamed(res)
+  }
+  choices <- listify(choices)
+  if (length(choices) == 0) 
+    return(choices)
+  choices <- mapply(choices, names(choices), FUN = function(choice, 
+                                                            name) {
+    if (!is.list(choice)) 
+      return(choice)
+    if (name == "") 
+      stop("All sub-lists in \"choices\" must be named.")
+    choicesWithNames(choice)
+  }, SIMPLIFY = FALSE)
+  missing <- names(choices) == ""
+  names(choices)[missing] <- as.character(choices)[missing]
+  choices
+}
+controlLabel <- function (controlName, label) 
+{
+  label %AND% tags$label(class = "control-label", `for` = controlName, 
+                         label)
+}
+
+validateSelected <- function (selected, choices, inputId) 
+{
+  selected <- as.character(selected)
+  if (needOptgroup(choices)) 
+    return(selected)
+  if (is.list(choices)) 
+    choices <- unlist(choices)
+  nms <- names(choices)
+  if (identical(nms, unname(choices))) 
+    return(selected)
+  i <- (selected %in% nms) & !(selected %in% choices)
+  if (any(i)) {
+    warnFun <- if (all(i)) {
+      selected <- unname(choices[selected])
+      warning
+    }
+    else stop
+    warnFun("'selected' must be the values instead of names of 'choices' ", 
+            "for the input '", inputId, "'")
+  }
+  selected
+}
 
 radioButtons_withHTML <- function (inputId, label, choices, selected = NULL, inline = FALSE, 
                                    width = NULL) 
@@ -43,11 +116,11 @@ radioButtons_withHTML <- function (inputId, label, choices, selected = NULL, inl
     }, SIMPLIFY = FALSE, USE.NAMES = FALSE)
     div(class = "shiny-options-group", options)
   }
-  choices <- shiny:::choicesWithNames(choices)
+  choices <- choicesWithNames(choices)
   selected <- if (is.null(selected)) 
     choices[[1]]
   else {
-    shiny:::validateSelected(selected, choices, inputId)
+    validateSelected(selected, choices, inputId)
   }
   if (length(selected) > 1) 
     stop("The 'selected' argument must be of length 1")
@@ -58,7 +131,7 @@ radioButtons_withHTML <- function (inputId, label, choices, selected = NULL, inl
     divClass <- paste(divClass, "shiny-input-container-inline")
   tags$div(id = inputId, style = if (!is.null(width)) 
     paste0("width: ", validateCssUnit(width), ";"), class = divClass, 
-    shiny:::controlLabel(inputId, label), options)
+    controlLabel(inputId, label), options)
 }
 
 

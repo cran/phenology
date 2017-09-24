@@ -1,8 +1,24 @@
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
-            CHANGES IN VERSION 5.4  (2017-03-10)
+            CHANGES IN VERSION 6.0  (2017-09-24)
+
+* New set of functions for Tagloss - 6.0
+* Correct a bug in add_phenology() when a list is used to enter new data - 6.0
+* Confidence interval for Peak_Series, Length_Series are shown - 6.0
+* Minor change in Tagloss - 6.0
+* New option "cumul" to plot tagloss result - 6.0
+* Simplification to specify partial models in tagloss - 6.0
+* If N20 == 0, does not produce an error - 6.0
+* Random distribution of individuals in groups send in cores for parallel computing - 6.0
+
+            CHANGES IN VERSION 5.5  (2017-05-14)
+
+* Use of SEfromHessian - 5.5
+
+            CHANGES IN VERSION 5.4.1  (2017-04-07)
 
 * New version for CRAN - 5.4
+* phenology() is compatible with shiny 1.0.1 - 5.4.1
 
             CHANGES IN VERSION 5.3.15  (2017-03-03)
 

@@ -59,6 +59,23 @@
 #' 		add.cofactors="Level")
 #' compare_AIC(WithoutCF=result_Gratiot, WithCF=result_Gratiot_CF)
 #' plot(result_Gratiot_CF)
+#' 
+#' # Example with two series fitted with different peaks but same Length of season
+#' 
+#' Gratiot2 <- Gratiot
+#' Gratiot2[, 2] <- floor(Gratiot2[, 2]*runif(n=nrow(Gratiot2)))
+#' data_Gratiot <- add_phenology(Gratiot, name="Complete",
+#'                               reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+#' data_Gratiot <- add_phenology(Gratiot2, name="Complete2",
+#'                               reference=as.Date("2001-01-01"), 
+#'                               format="%d/%m/%Y", previous=data_Gratiot)
+#' pfixed=c(Min=0)
+#' p <- par_init(data_Gratiot, fixed.parameters = pfixed)
+#' p <- c(p, Peak_Complete=175, Peak_Complete2=175)
+#' p <- p[-4]
+#' p <- c(p, Length=90)
+#' p <- p[-(3:4)]
+#' result_Gratiot <- fit_phenology(data=data_Gratiot, fitted.parameters=p, fixed.parameters=pfixed)
 #' }
 #' @export
 
@@ -192,35 +209,24 @@ if (length(zero_counts)!=length(data)) {
 	    warning("Error in the fit; probably one or more parameters are not estimable.")
 	    warning("Standard errors of parameters cannot be estimated.")
 	  }
-	  res_se<-rep(NA, length(resfit))
+	  res_se <- rep(NA, length(resfit))
+	  names(res_se) <- names(resfit)
 	} else {
   
 	rownames(mathessian) <- colnames(mathessian) <- names(resfit)
 	resul$hessian <- mathessian
 	
-	inversemathessian <- try(solve(mathessian), silent=TRUE)
-	if (substr(inversemathessian[1], 1, 5)=="Error") {
-		if (!silent) {
-		  warning("Error in the fit; probably one or more parameters are not estimable.")
-		  warning("Standard errors of parameters cannot be estimated.")
-		}
-		res_se<-rep(NA, length(resfit))
+	res_se <- SEfromHessian(mathessian)
 	
-	} else {
-		res_se_diag <- diag(inversemathessian)
-		
-		res_se <- rep(NA, length(resfit))
-		res_se[res_se_diag>=0]<-sqrt(res_se_diag[res_se_diag>=0])
-
-	}
 	}
 	} else {
 		if (!silent) warning("Standard errors are not estimated.")
-		res_se<-rep(NA, length(resfit))
+		res_se <- rep(NA, length(resfit))
+		names(res_se) <- names(resfit)
 	}
 
 		
-	names(res_se) <- names(resfit)
+
 	
 	resul$se <- res_se
 	
@@ -258,9 +264,12 @@ intdtout <- c(reference=ref)
 # save(list = ls(all.names = TRUE), file = "total.RData", envir = environment())
 
 par <- getFromNamespace(".format_par", ns="phenology")(c(resfit, fixed.parameters), names(resul$data[kl]))
+par <- par[1:(length(par)-9)]
 sepfixed <- fixed.parameters[strtrim(names(fixed.parameters), 3)=="sd#"]
-if (!is.null(sepfixed)) names(sepfixed) <- substring(names(sepfixed), 4)
+if (!is.null(sepfixed) & (!identical(unname(sepfixed), numeric(0)))) names(sepfixed) <- substring(names(sepfixed), 4)
 se <- c(res_se, sepfixed)
+se <- getFromNamespace(".format_par", ns="phenology")(se, names(resul$data[kl]))
+se <- se[1:(length(se)-9)]
 
 d1 <- ref+par["Peak"]
 if (!silent) cat(paste("Peak: ", d1, "\n", sep=""))

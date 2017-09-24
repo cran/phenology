@@ -31,6 +31,6 @@ Gratiot, N., Gratiot, J., de Thoisy, B. & Kelle, L. 2006.
             Conservation, 9, 95-102.
 }
 \author{
-KWATA ONG -
+KWATA ONG
 }
 \keyword{datasets}

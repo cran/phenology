@@ -18,7 +18,7 @@ par_init(data = stop("A dataset must be provided"), fixed.parameters = NULL,
 The initial set of parameters
 }
 \description{
-This function is used to generate a first set of parameters
+This function is used to generate an initial set of parameters for fitting 
 that is expected to be not to far from the final.\cr
 The parameters can be:\cr
 Min, MinE, MinB, PMin, PMinB, PMinE\cr
@@ -29,7 +29,8 @@ Alpha, Beta, tau, Phi, Delta\cr
 Alpha1, Beta1, tau1, Phi1, Delta1\cr
 Alpha2, Beta2, tau2, Phi2, Delta2\cr
 Alpha3, Beta3, tau3, Phi3, Delta3\cr
-The parameters Max, Min, MinE, MinB, and Peak can be followed with _ and the name of the rookery.
+And the name of level if a cofactor is used.\cr
+The parameters Max, Min, MinE, MinB, Length, LengthB, LengthE and Peak can be followed with _ and the name of the rookery.
 }
 \details{
 par_init calculates initial set of parameters.
