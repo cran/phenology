@@ -1,8 +1,8 @@
 Package: phenology
 Type: Package
 Title: Tools to Manage a Parametric Function that Describes Phenology
-Version: 6.0
-Date: 2017-09-24
+Version: 6.0.3
+Date: 2017-11-25
 Author: Marc Girondot
 Maintainer: Marc Girondot <marc.girondot@u-psud.fr>
 Depends: numDeriv, parallel, optimx, lmf, HelpersMG (>= 2.0), R (>=
@@ -17,6 +17,6 @@ URL:
 Encoding: UTF-8
 NeedsCompilation: no
 RoxygenNote: 6.0.1
-Packaged: 2017-09-24 20:30:18 UTC; marcgirondot
+Packaged: 2017-11-25 02:54:19 UTC; marcgirondot
 Repository: CRAN
-Date/Publication: 2017-09-24 20:40:12 UTC
+Date/Publication: 2017-11-25 08:06:54 UTC

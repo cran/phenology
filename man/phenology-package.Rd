@@ -23,8 +23,8 @@ Fit a parametric function that describes phenology
 \tabular{ll}{
  Package: \tab phenology\cr
  Type: \tab Package\cr
- Version: \tab 6.0 build 397\cr
- Date: \tab 2017-09-24\cr
+ Version: \tab 6.0.3    build 403\cr
+ Date: \tab 2017-11-25\cr
  License: \tab GPL (>= 2)\cr
  LazyLoad: \tab yes\cr
  }
@@ -44,7 +44,7 @@ data_Gratiot <- add_phenology(Gratiot, name="Complete",
 parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 # Run the optimisation
 result_Gratiot <- fit_phenology(data=data_Gratiot, 
-		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
+		fitted.parameters=parg, fixed.parameters=NULL)
 data(result_Gratiot)
 # Plot the phenology and get some stats
 output <- plot(result_Gratiot)

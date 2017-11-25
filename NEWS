@@ -1,6 +1,6 @@
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
-            CHANGES IN VERSION 6.0  (2017-09-24)
+            CHANGES IN VERSION 6.0-6.0.3  (2017-10-17)
 
 * New set of functions for Tagloss - 6.0
 * Correct a bug in add_phenology() when a list is used to enter new data - 6.0
@@ -10,6 +10,9 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 * Simplification to specify partial models in tagloss - 6.0
 * If N20 == 0, does not produce an error - 6.0
 * Random distribution of individuals in groups send in cores for parallel computing - 6.0
+* Minor change in Tagloss_L - 6.0.1
+* New function loglik for Tagloss - 6.0.2
+* Correct examples - 6.0.3
 
             CHANGES IN VERSION 5.5  (2017-05-14)
 

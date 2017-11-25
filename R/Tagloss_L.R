@@ -231,6 +231,14 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
   # groups=NULL
   # cores=1
   
+  # days.maximum=NULL; fixed.parameters=NULL; model_before=NULL; model_after=NULL; names.par=NULL; groups=NULL; cores=4; progressbar=FALSE
+  # par <- structure(c(45.1329605991567, 450.853116508527, -0.00575380257262254, 4.50622019412649, 26.1727077014068, 7.98271155711244), .Names = c("D1_2", "D2D1_2", "D3D2_2", "A_2", "B_2", "C_2"))
+  # pfixed <- NULL
+  # load(file=file.path("/Users/marcgirondot/Dropbox/Stephanie Kalberer", "dataOut", "m1_1.Rdata"))
+  # data_f_21_fast <- m1_1$data
+  # par <- m1_1$par
+  # individuals <- data_f_21_fast
+  
   if (!is.null(names.par)) names(par) <- names.par
   
   if (cores > 1) progressbar=FALSE
@@ -326,12 +334,18 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
     if (nrind <= groups) {
       group <- as.list(1:nrind)
     } else {
+    # Ajouté le 24-09-2017. 6.0 pour les cas où les N20 sont tous groupés sur un coeur
+    # Maintenant je les randomise avant de les envoyer
       nindsample <- sample(1:nrind, nrind)
       group <- list()
-    for (core in 0:(groups-2)) group <- c(group, 
-                                           list(nindsample[(core*floor(nrind/groups)+1):((core+1)*floor(nrind/groups))]))
+      nbpargroup <- floor(nrind/groups)
+    for (core in 0:(groups-2)) {
+      group <- c(group, 
+                 list(nindsample[(core*nbpargroup+1):((core+1)*nbpargroup)]))
+    }
+    # Corrigé le 29-09-2017. 6.0.1
     group <- c(group, 
-               list(nindsample[(1+tail(tail(group, n=1)[[1]], n=1)):nrind]))
+               list(nindsample[((groups-1)*nbpargroup+1):nrind]))
     }
     
     if(.Platform$OS.type == "unix") {

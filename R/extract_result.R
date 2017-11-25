@@ -18,7 +18,7 @@
 #' parg<-par_init(data_Gratiot, fixed.parameters=NULL)
 #' # Run the optimisation
 #' # result_Gratiot<-fit_phenology(data=data_Gratiot, fitted.parameters=parg, 
-#' 		fixed.parameters=NULL, trace=1)
+#' 		fixed.parameters=NULL)
 #' data(result_Gratiot)
 #' # Extract the fitted parameters
 #' parg1<-extract_result(result_Gratiot)

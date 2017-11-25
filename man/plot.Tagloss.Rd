@@ -115,7 +115,8 @@ Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
   \code{\link{Tagloss_L}}, \code{\link{Tagloss_daymax}},
   \code{\link{Tagloss_fit}}, \code{\link{Tagloss_format}},
   \code{\link{Tagloss_model}},
-  \code{\link{Tagloss_simulate}}
+  \code{\link{Tagloss_simulate}},
+  \code{\link{logLik.Tagloss}}
 }
 \author{
 Marc Girondot

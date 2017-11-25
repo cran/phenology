@@ -39,7 +39,7 @@ parg<-par_init(data_Gratiot, fixed.parameters=pfixed)
 # Fit is done
 \dontrun{
 result_Gratiot_Flat<-fit_phenology(data=data_Gratiot, 
-		fitted.parameters=parg, fixed.parameters=pfixed, trace=1)
+		fitted.parameters=parg, fixed.parameters=pfixed)
 }
 data(result_Gratiot_Flat)
 parg<-extract_result(result_Gratiot_Flat)
@@ -51,7 +51,7 @@ pfixed=c(Flat=0, Tau=1)
 # Run the optimisation
 \dontrun{
 result_Gratiot1<-fit_phenology(data=data_Gratiot, 
-		fitted.parameters=parg, fixed.parameters=pfixed, trace=1)
+		fitted.parameters=parg, fixed.parameters=pfixed)
 # Plot the phenology
 output1<-plot(result_Gratiot1, moon=TRUE)
 #' }
@@ -68,7 +68,7 @@ parg<-c(parg2, Alpha=0.5, Beta=0.8, Delta=3, Phi=10)
 # Run the optimisation
 \dontrun{
 result_Gratiot2<-fit_phenology(data=data_Gratiot, 
-		fitted.parameters=parg, fixed.parameters=pfixed, trace=1)
+		fitted.parameters=parg, fixed.parameters=pfixed)
 # Plot the phenology
 output2<-plot(result_Gratiot2, moon=TRUE)
 }

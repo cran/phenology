@@ -28,7 +28,8 @@
 #' library("phenology")
 #' # Read a file with data
 #' \dontrun{
-#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
+#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", 
+#' header=FALSE)
 #' }
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
@@ -39,7 +40,7 @@
 #' # Run the optimisation
 #' \dontrun{
 #' result_Gratiot<-fit_phenology(data=data_Gratiot, 
-#' 		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
+#' 		fitted.parameters=parg, fixed.parameters=NULL)
 #' }
 #' data(result_Gratiot)
 #' # Extract the fitted parameters

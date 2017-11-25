@@ -39,7 +39,8 @@ par_init calculates initial set of parameters.
 \dontrun{
 library(phenology)
 # Read a file with data
-Gratiot <- read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
+Gratiot <- read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", 
+header=FALSE)
 data(Gratiot)
 # Generate a formatted list nammed data_Gratiot 
 data_Gratiot <- add_phenology(Gratiot, name="Complete", 
@@ -48,7 +49,7 @@ data_Gratiot <- add_phenology(Gratiot, name="Complete",
 parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 # Run the optimisation
 result_Gratiot <- fit_phenology(data=data_Gratiot, 
-		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
+		fitted.parameters=parg, fixed.parameters=NULL)
 data(result_Gratiot)
 # Plot the phenology and get some stats
 output<-plot(result_Gratiot)

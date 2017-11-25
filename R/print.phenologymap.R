@@ -19,7 +19,7 @@
 #' # Run the optimisation
 #' \dontrun{
 #' result_Gratiot<-fit_phenology(data=data_Gratiot, 
-#' 		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
+#' 		fitted.parameters=parg, fixed.parameters=NULL)
 #' }
 #' data(result_Gratiot)
 #' # Extract the fitted parameters

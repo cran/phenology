@@ -33,7 +33,7 @@
 #' parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 #' # Run the optimisation
 #' result_Gratiot <- fit_phenology(data=data_Gratiot, 
-#' 		fitted.parameters=parg, fixed.parameters=NULL, trace=1)
+#' 		fitted.parameters=parg, fixed.parameters=NULL)
 #' # Generate set of priors for Bayesian analysis
 #' pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept = TRUE)
 #' result_Gratiot_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000, 
