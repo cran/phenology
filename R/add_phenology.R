@@ -16,10 +16,10 @@
 #' format='\%d/\%m/\%y')\cr\cr
 #' To add a dataset to a previous one, the syntaxe is :\cr
 #' data <- add_phenology(previous=previousdata, add=newdata, name='Site', \cr
-#' reference=as.Date('2001-12-31'), adjust_ref=TRUE, format="\%Y-\%m-\%d") \cr\cr
+#' reference=as.Date('2001-01-01'), format="\%Y-\%m-\%d") \cr\cr
 #' To add several timeseries at the same time with '\%d/\%m/\%y' or '\%d/\%m/\%Y' date format:\cr
 #' data<-add_phenology(add=list(newdata1, newdata2), name=c('Site1', 'Site2'),\cr 
-#' reference=as.Date('2001-12-31'), format=c('\%d/\%m/\%y', '\%d/\%m/\%Y'))\cr\cr
+#' reference=as.Date('2001-01-01'), format=c('\%d/\%m/\%y', '\%d/\%m/\%Y'))\cr\cr
 #' The dataset to be added must include 2 or 3 columns.\cr
 #' The first one is the date in the format specified by 
 #' the parameter format=. If the number of nests is known  
@@ -67,7 +67,8 @@
 
 
 add_phenology <-
-function(add=file.choose(), name=NULL, reference=NULL, month_ref= NULL, sep.dates="-", 
+function(add=file.choose(), name=NULL, reference=NULL, 
+         month_ref= NULL, sep.dates="-", 
          header=NULL, format=NULL, previous=NULL, silent=FALSE) {
 
 
@@ -120,7 +121,15 @@ if (class(add)=="list") {
 
 # rp <- phenology:::.read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
 
-rp <- getFromNamespace(".read_phenology", ns="phenology")(add, header, reference, month_ref, format, nm, sep.dates, silent)
+rp <- getFromNamespace(".read_phenology", 
+                       ns="phenology")(add, 
+                                       header, 
+                                       reference, 
+                                       month_ref, 
+                                       format, 
+                                       nm, 
+                                       sep.dates, 
+                                       silent)
 
 if (any(grepl(sep.dates, rp$format))) {
   stop("The date separator is used also within a date. It is not possible.")
@@ -282,7 +291,7 @@ for (kk in 1:nbdatasets) {
 	}
 	problem <- FALSE
 	for(i in 1:length(previous)) {
-		problem<-(problem) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]>366)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]>366)) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]<0)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]<0))
+		problem <- (problem) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]>366)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]>366)) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]<0)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]<0))
 
 	}
 #	print(problem)

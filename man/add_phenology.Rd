@@ -36,10 +36,10 @@ data <- add_phenology(add=newdata, name="Site", reference=as.Date('2001-12-31'),
 format='\%d/\%m/\%y')\cr\cr
 To add a dataset to a previous one, the syntaxe is :\cr
 data <- add_phenology(previous=previousdata, add=newdata, name='Site', \cr
-reference=as.Date('2001-12-31'), adjust_ref=TRUE, format="\%Y-\%m-\%d") \cr\cr
+reference=as.Date('2001-01-01'), format="\%Y-\%m-\%d") \cr\cr
 To add several timeseries at the same time with '\%d/\%m/\%y' or '\%d/\%m/\%Y' date format:\cr
 data<-add_phenology(add=list(newdata1, newdata2), name=c('Site1', 'Site2'),\cr 
-reference=as.Date('2001-12-31'), format=c('\%d/\%m/\%y', '\%d/\%m/\%Y'))\cr\cr
+reference=as.Date('2001-01-01'), format=c('\%d/\%m/\%y', '\%d/\%m/\%Y'))\cr\cr
 The dataset to be added must include 2 or 3 columns.\cr
 The first one is the date in the format specified by 
 the parameter format=. If the number of nests is known  

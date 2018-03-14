@@ -21,16 +21,21 @@ The initial set of parameters
 This function is used to generate an initial set of parameters for fitting 
 that is expected to be not to far from the final.\cr
 The parameters can be:\cr
-Min, MinE, MinB, PMin, PMinB, PMinE\cr
-Max\cr
-Begin, Peak, Flat, End\cr
-theta\cr
-Alpha, Beta, tau, Phi, Delta\cr
-Alpha1, Beta1, tau1, Phi1, Delta1\cr
-Alpha2, Beta2, tau2, Phi2, Delta2\cr
-Alpha3, Beta3, tau3, Phi3, Delta3\cr
+\itemize{
+  \item \code{Min}, \code{MinE}, \code{MinB}, \code{PMin}, \code{PMinB}, \code{PMinE};
+  \item \code{Max};
+  \item \code{Begin}, \code{Peak}, \code{Flat}, \code{End};
+  \item \code{Length}, \code{LengthB}, \code{LengthE};
+  \item \code{Theta};
+  \item \code{Alpha}, \code{Beta}, \code{Tau}, \code{Phi}, \code{Delta};
+  \item \code{Alpha1}, \code{Beta1}, \code{Tau1}, \code{Phi1}, \code{Delta1};
+  \item \code{Alpha2}, \code{Beta2}, \code{Tau2}, \code{Phi2}, \code{Delta2};
+  \item \code{Alpha3}, \code{Beta3}, \code{Tau3}, \code{Phi3}, \code{Delta3};
+}
 And the name of level if a cofactor is used.\cr
-The parameters Max, Min, MinE, MinB, Length, LengthB, LengthE and Peak can be followed with _ and the name of the rookery.
+The parameters \code{Max}, \code{Min}, \code{MinE}, \code{MinB}, \code{Length}, 
+\code{LengthB}, \code{LengthE}, and \code{Peak} can be followed with _ and the 
+name of the rookery.
 }
 \details{
 par_init calculates initial set of parameters.

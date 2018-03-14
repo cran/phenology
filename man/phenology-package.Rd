@@ -10,9 +10,6 @@ Note that only the most significant changes are reported in the NEWS.\cr
 To do:\cr
 * There are problems with SE for fitRMU().\cr
 * Auto-scaling for optim during fitRMU search.\cr
-* I must adapt TCF (total clutch frequency) fit from OCF-ECF (observed clutch frequency-estimated cluth frequency) table based on:\cr
- Briane, J.-P., Rivalan, P., Girondot, M., 2007. The inverse problem applied to the Observed Clutch Frequency of Leatherbacks from Yalimapo beach, French Guiana. Chelonian Conservation and Biology 6, 63-69.\cr
-Until now it is an Excel spreadsheet.\cr
 The lastest version of this package can always been installed using:\cr
 install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/HelpersMG.tar.gz", repos=NULL, type="source")\cr
 install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", repos=NULL, type="source")
@@ -23,8 +20,8 @@ Fit a parametric function that describes phenology
 \tabular{ll}{
  Package: \tab phenology\cr
  Type: \tab Package\cr
- Version: \tab 6.0.3    build 403\cr
- Date: \tab 2017-11-25\cr
+ Version: \tab 7.0 build 576\cr
+ Date: \tab 2018-03-14\cr
  License: \tab GPL (>= 2)\cr
  LazyLoad: \tab yes\cr
  }
@@ -68,7 +65,7 @@ Girondot, M., 2017. Optimizing sampling design to infer marine turtles
 
 Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C., Girondot, M., 2005. 
             Maximum likelihood estimates of tag loss in leatherback sea turtles. Journal 
-            of Wildlife Management 69, 540-548.\cr
+            of Wildlife Management 69, 540-548.
 }
 \seealso{
 Girondot, M., Rivalan, P., Wongsopawiro, R., Briane, J.-P., Hulin, V.,
@@ -84,11 +81,24 @@ Weber, S.B., Weber, N., Ellick, J., Avery, A., Frauenstein, R.,
          Godley, B.J., Sim, J., Williams, N., Broderick, A.C., 2014. Recovery 
          of the South Atlantic’s largest green turtle nesting population. 
          Biodiversity and Conservation 23, 3005-3018.
+
+Briane J-P, Rivalan P, Girondot M (2007) The inverse problem applied 
+            to the Observed Clutch Frequency of Leatherbacks from Yalimapo beach, 
+            French Guiana. Chelonian Conservation and Biology 6:63-69
+
+Fossette S, Kelle L, Girondot M, Goverse E, Hilterman ML, Verhage B, 
+         Thoisy B, de, Georges J-Y (2008) The world's largest leatherback 
+         rookeries: A review of conservation-oriented research in French 
+         Guiana/Suriname and Gabon. Journal of Experimental Marine Biology 
+         and Ecology 356:69-82
 }
 \author{
 Marc Girondot \email{marc.girondot@u-psud.fr}
 }
+\keyword{Clutch}
+\keyword{ECF}
 \keyword{Ecology}
+\keyword{OCF}
 \keyword{Phenology}
 \keyword{Seasonality}
 \keyword{tagloss}
