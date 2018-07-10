@@ -4,7 +4,7 @@
 #' @return Nothing
 #' @param x A CMR file summarized using TableECFOCF()
 #' @param ... Graphic parameters
-#' @param result What should be plotted: ECFOCF, ECF, OCF.
+#' @param result What should be plotted: ECFOCF or data, ECF, OCF.
 #' @param period The period that will be plotted.
 #' @param cex.points The maximum magnification to be used for points relative to the current setting of cex.
 #' @param pch Character to be used for points.
@@ -17,6 +17,7 @@
 #' @param pch.0 Character used for 0 counts.
 #' @param cex.0 The magnification to be used for character for 0 counts.
 #' @param col.0 Color of characters for 0 counts.
+#' @param show.scale If TRUE, show the scale as a legend
 #' @description This function plots a CMR file summarized using TableECFOCF().\cr
 #' @family Model of Clutch Frequency
 #' @examples
@@ -71,20 +72,37 @@ plot.TableECFOCF <- function(x, ..., result="ecfocf",
                              show.0=FALSE, 
                              pch.0=4, 
                              cex.0=0.5, 
-                             col.0="blue") {
+                             col.0="blue", 
+                             show.scale = TRUE) {
+  
+  # result="ecfocf";
+  # period=1;
+  # cex.points=4; 
+  # pch=19;
+  # col="black";
+  # cex.axis=0.8; 
+  # cex.labels=0.5; 
+  # col.labels="red"; 
+  # show.labels=FALSE; 
+  # show.0=FALSE; 
+  # pch.0=4; 
+  # cex.0=0.5;
+  # col.0="blue"; 
+  # show.scale = TRUE
+  
   p3p <- list(...)
   result <- tolower(result)
   
   x <- x[, , period]
   
-  if (result=="ecfocf") {
+  if ((result=="ecfocf") | (result == "data")) {
     do.call(plot, modifyList(list(x=1, y=1, type="n", xlim=c(0, ncol(x)-1), 
                                   ylim=c(0, nrow(x)-1), 
                                   xlab="Observed Clutch Frequency", 
                                   ylab="Estimated Clutch Frequency", xaxt="n", yaxt="n"), p3p))
     axis(side=1, at=0:(ncol(x)-1), cex.axis=cex.axis)
     do.call(axis, modifyList(list(side=2, at=0:(nrow(x)-1), cex.axis=cex.axis), p3p)[c("side", "at", "cex.axis", "las", "labels")])
-    sc <- max(x, na.rm=1)
+    sc <- max(x, na.rm= TRUE)
     
     for (c in 1:ncol(x)) {
       for (r in 1:nrow(x)) {
@@ -108,9 +126,20 @@ plot.TableECFOCF <- function(x, ..., result="ecfocf",
                   modifyList(list(x=r-1, y=c-1, cex=cex.labels, col=col.labels, labels=as.character(x[r, c])), 
                              p3p)[c("x", "y", "cex", "col", "labels")])
         }
-        
       }
     }
+    if (show.scale) {
+      legend(x = "bottomright", 
+             pch=c(ifelse(show.0, pch.0, NA), pch, pch, pch), 
+             col=c(col.0, col, col, col), 
+             pt.cex=c(cex.0, (seq(from=0, to=sc, length.out = 4)[2:4])/sc*cex.points), 
+             legend=c(0, floor(seq(from=0, to=sc, length.out = 4)[2:4])), 
+             title="Scale"
+      )
+      
+      
+    }
+    
   } else {
     if (result == "ocf") {
       ecfocf <- x
@@ -152,5 +181,7 @@ plot.TableECFOCF <- function(x, ..., result="ecfocf",
     
     
   }
+  
+  
 }
 

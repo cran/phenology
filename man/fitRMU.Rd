@@ -4,15 +4,18 @@
 \alias{fitRMU}
 \title{Adjust incomplete timeseries with various constraints.}
 \usage{
-fitRMU(RMU.data = stop("data parameter must be provided"), RMU.names = NULL,
-  model.trend = "Constant", model.rookeries = "Constant",
-  model.SD = "Zero", parameters = NULL, fixed.parameters = NULL,
-  SE = NULL, method = "BFGS", replicate.CI = 1000,
-  colname.year = "Year", control = list(trace = 1, REPORT = 100, maxit =
-  500), optim = "optim", maxL = 1e+09)
+fitRMU(RMU.data = stop("data parameter must be provided"),
+  years.byrow = TRUE, RMU.names = NULL, model.trend = "Constant",
+  model.rookeries = "Constant", model.SD = "Global-constant",
+  parameters = NULL, fixed.parameters = NULL, SE = NULL,
+  method = c("Nelder-Mead", "BFGS"), control = list(trace = 1, REPORT = 100,
+  maxit = 1500), itnmax = c(1500, 1500), hessian = TRUE,
+  replicate.CI = 1000, colname.year = "Year", maxL = 1e+09)
 }
 \arguments{
 \item{RMU.data}{A data.frame with a column Year (the name is defined in colname.year) and two columns per rookery defined in RMU.names}
+
+\item{years.byrow}{If TRUE, the RMU.data data.frame is organized with years in rows}
 
 \item{RMU.names}{A dataframe with two columns indicating name of columns for mean and standard error for roockerys}
 
@@ -20,7 +23,7 @@ fitRMU(RMU.data = stop("data parameter must be provided"), RMU.names = NULL,
 
 \item{model.rookeries}{Description temporal change in rookeries proportion. It be Constant, First-order or Second-order}
 
-\item{model.SD}{Can be Zero or Constant. See description.}
+\item{model.SD}{Can be Zero, Global-constant, Global-proportional or Rookery-constant. See description.}
 
 \item{parameters}{Parameters to fit}
 
@@ -28,15 +31,17 @@ fitRMU(RMU.data = stop("data parameter must be provided"), RMU.names = NULL,
 
 \item{SE}{Parameters SE for example from fitRMU_MHmcmc()}
 
-\item{method}{Method of optimization, default is BFGS}
+\item{method}{Methods to be used by optimx()}
+
+\item{control}{List of controls for optimx()}
+
+\item{itnmax}{A vector with maximum iterations for each method.}
+
+\item{hessian}{If TRUE, the hessian matrix is calculated and then the standard error of parameters.}
 
 \item{replicate.CI}{Number of replicates to estimate CI of proportion for each rookery}
 
 \item{colname.year}{Name of the column to be used as time index}
-
-\item{control}{List for control parameters of optim}
-
-\item{optim}{Function to be called for optimization, default is optim but it could be optimx}
 
 \item{maxL}{If an error is produced during the estimation of likelihood, replace -Ln L by this value}
 }
@@ -58,12 +63,12 @@ López-Mendilaharsu, M., Marcovaldi, M.A., Mortimer, J.A., Musick, J.A., Nel, R.
 Seminoff, J.A., Troëng, S., Witherington, B., Mast, R.B., 2010. Regional 
 management units for marine turtles: a novel framework for prioritizing 
 conservation and research across multiple scales. PLoS One 5, e15465.\cr
-Standard deviation for each value is supposed to be additive based on both the 
-observed SE (in the RMU.data object) and a constant value dependent on the rookery
-if model.SD is equal to Constant. This value is fixed to zero for model.SD="Zero".\cr
-The support for optimx is still experimental. It has been fully tested only with
-BFGS and Nelder-Mead method. Several methods can be used in a single run for optimx. In this
-case the best likelihood is used.
+Variance for each value is additive based on both the observed SE (in the RMU.data 
+object) and a constant value dependent on the rookery when model.SD is equal to 
+"beach-constant". The value is a global constant when model.SD is "global-constant". 
+The value is proportional to the observed number of nests when model.SD is 
+"global-proportional" with aSD_*observed+SD_ with aSD_ and SD_ being fitted 
+values. This value is fixed to zero when model.SD is "Zero".
 }
 \details{
 fitRMU is used to estimate missing information when several linked values are observed along a timeseries

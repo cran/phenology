@@ -12,7 +12,7 @@
 \item{...}{Not used}
 }
 \value{
-None\cr
+None
 }
 \description{
 The function print.phenology displays from a result.

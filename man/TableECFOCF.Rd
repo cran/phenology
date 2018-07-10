@@ -34,8 +34,9 @@ Return a matrix with counts for all OCF and ECF combinations.
 This function formats a CMR dataset to a file that fitCF can use.\cr
 If date0 is not null, a 3D TableECFOCF is generated.\cr
 3D table (ECF, OCF, period) has two attributes:\cr
-- table with 4 elements:\cr
+- table with 5 elements:\cr
 begin, end are the first and last elements with counts\cr
+final is the last period with information\cr
 min and max are the first and last period where a nest could have been laid based on MaxNests value\cr
 - characteristics with 5 elements:\cr
 MinimumDaysBetween2Nest, MeanDaysBetween2Nest MaxNests, date0, length_season\cr

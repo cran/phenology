@@ -31,6 +31,7 @@
 #' @param control List of controls for optimx()
 #' @param hessian Logical to estimate SE of parameters
 #' @param parallel If TRUE, will use parallel computing for ECFOCF_f()
+#' @param verbose If TRUE, print the parameters at each step
 #' @description This function fits a model of clutch frequency.\cr
 #' This model is an enhanced version of the one published by Briane et al. (2007).\cr
 #' Parameters are \code{mu} and \code{sd} being the parameters of a  
@@ -76,17 +77,31 @@
 #' data(MarineTurtles_2002)
 #' ECFOCF_2002 <- TableECFOCF(MarineTurtles_2002)
 #' 
-#' o_mu1p1 <- fitCF(x = c(mu = 2.1653229641404539, 
+#' # Paraetric model for clutch frequency
+#' o_mu1p1_CFp <- fitCF(x = c(mu = 2.1653229641404539, 
 #'                  sd = 1.1465246643327098, 
 #'                  p = 0.25785366120357966), 
 #'                  fixed.parameters=NULL, 
 #'                  data=ECFOCF_2002, hessian = TRUE)
-#'
-#' lnLCF(x = c(mu = 2.1653258860140556, 
-#'             sd = 1.1465243828331857, 
-#'             p = 0.25785578374593487), 
-#'       fixed.parameters=NULL, 
-#'       data=ECFOCF_2002)
+#'  
+#' # Non parametric model for clutch frequency
+#' o_mu1p1_CFnp <- fitCF(x = c(mu.1 = 18.246619595610383, 
+#'                        mu.2 = 4.2702163522832892, 
+#'                        mu.3 = 2.6289986859556458, 
+#'                        mu.4 = 3.2496360919228611, 
+#'                        mu.5 = 2.1602522716550943, 
+#'                        mu.6 = 0.68617023351032846, 
+#'                        mu.7 = 4.2623607001877026, 
+#'                        mu.8 = 1.1805600042630455, 
+#'                        mu.9 = 2.2786176350939731, 
+#'                        mu.10 = 0.47676265496204945, 
+#'                        mu.11 = 5.8988238539197062e-08, 
+#'                        mu.12 = 1.4003187851424953e-07, 
+#'                        mu.13 = 2.4128444894899776e-07, 
+#'                        mu.14 = 2.4223748020049825e-07, 
+#'                        p = 0.32094401970037578), 
+#'                  fixed.parameters=c(mu.15 = 1E-10), 
+#'                  data=ECFOCF_2002, hessian = TRUE)
 #'                  
 #' o_mu2p1 <- fitCF(x = c(mu1 = 1.2190766766978423, 
 #'                      sd1 = 0.80646454821956925, 
@@ -104,7 +119,6 @@
 #'                      OTN = 0.31898004668901009),
 #'                  data=ECFOCF_2002, hessian = TRUE)
 #'                  
-#' 
 #' o_mu2p2 <- fitCF(x = c(mu1 = 0.043692606004492131, 
 #'                    sd1 = 1.9446036983033428, 
 #'                    mu2 = 7.3007868915644751, 
@@ -114,8 +128,7 @@
 #'                    OTN = 2.2604431232973501), 
 #'                   data=ECFOCF_2002, hessian = TRUE)
 #'
-#' 
-#' compare_AIC(mu1p1=o_mu1p1, 
+#' compare_AIC(mu1p1=o_mu1p1_CFp, 
 #'             mu2p1=o_mu2p1, 
 #'             mu1p2=o_mu1p2, 
 #'             mu2p2=o_mu2p2)
@@ -171,90 +184,84 @@
 #'             
 #'  # 3D model for (ECF, OCF, period)           
 #'             
-#' ECFOCF_2002 <- TableECFOCF(MarineTurtles_2002, date0=as.Date("2002-01-01"))
-#' 
-#' fp <- rep(0, dim(ECFOCF_2002)[3])
-#' names(fp) <- paste0("p1.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
-#' par <- c(mu = 2.6404831115214353, 
-#'         sd = 0.69362774786433479, 
-#'         mu_season = 12.6404831115214353, 
-#'         sd_season = 1.69362774786433479)
-#' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
-#'                  attributes(ECFOCF_2002)$table["end"]])
-#'  
-#' fp <- rep(-Inf, dim(ECFOCF_2002)[3])
-#' names(fp) <- paste0("p1.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
-#' fixed.parameters <- fp[-c(attributes(ECFOCF_2002)$table["begin"]:
-#'                           attributes(ECFOCF_2002)$table["end"])]
-#' 
-#' lnLCF(x=par, data=ECFOCF_2002, fixed.parameters=fixed.parameters)
-#' 
-#' ECFOCF_2002 <- TableECFOCF(MarineTurtles_2002, date0=as.Date("2002-01-01"))
-#' fp <- rep(0, dim(ECFOCF_2002)[3])
-#' names(fp) <- paste0("p1.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
-#' par <- c(mu = 2.6404831115214353, 
-#'         sd = 0.69362774786433479, 
-#'         mu_season = 12.6404831115214353, 
-#'         sd_season = 1.69362774786433479)
-#' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
-#'                  attributes(ECFOCF_2002)$table["end"]])
-#' names(fp) <- paste0("p2.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
-#' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
-#'                  attributes(ECFOCF_2002)$table["end"]])
-#' fixed.parameters <- c(p1=-Inf, p2=-Inf)
-#' 
-#'  lnLCF(x=par, data=ECFOCF_2002, fixed.parameters=fixed.parameters)
-#' 
-#' ECFOCF_2002 <- TableECFOCF(MarineTurtles_2002, date0=as.Date("2002-01-01"))
-#' fp <- rep(0, dim(ECFOCF_2002)[3])
-#' names(fp) <- paste0("p.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
-#' par <- c(mu = 2.6404831115214353, 
-#'         sd = 0.69362774786433479, 
-#'         mu_season = 12.6404831115214353, 
-#'         sd_season = 1.69362774786433479, 
-#'         a1=10, 
-#'         a2=0)
-#' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
-#'                  attributes(ECFOCF_2002)$table["end"]])
-#' names(fp) <- paste0("p2.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
-#' fixed.parameters <- c(p=-Inf)
-#' 
-#'  lnLCF(x=par, data=ECFOCF_2002, fixed.parameters=fixed.parameters)
-#'  
-#' ECFOCF_2002 <- TableECFOCF(MarineTurtles_2002, date0=as.Date("2002-01-01"))
-#' par <- c(mu = 2.6404831115214353, 
-#'         sd = 0.69362774786433479, 
-#'         mu_season = 12.6404831115214353, 
-#'         sd_season = 1.69362774786433479, 
-#'         a1=10, 
-#'         a2=0)
-#' fixed.parameters <- c(p=-Inf)
-#' 
-#'  lnLCF(x=par, data=ECFOCF_2002, fixed.parameters=fixed.parameters)
-#'  
-#'  o_mu1season1a2 <- fitCF(x=par, fixed.parameters=fixed.parameters, 
-#'                          data=ECFOCF_2002)
-#'  
 #' ECFOCF_2002 <- TableECFOCF(MarineTurtles_2002, 
-#'                            date0=as.Date("2002-01-01"), 
-#'                            MeanDaysBetween2Nest = 9.8, 
-#'                            MaxNests=15
-#'                            )
+#'                            date0=as.Date("2002-01-01"))
+#' 
+#' fp <- rep(0, dim(ECFOCF_2002)[3])
+#' names(fp) <- paste0("p.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
+#' par <- c(mu = 2.6404831115214353, 
+#'         sd = 0.69362774786433479, 
+#'         mu_season = 12.6404831115214353, 
+#'         sd_season = 1.69362774786433479)
+#' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
+#'                  attributes(ECFOCF_2002)$table["end"]])
+#' # The value of p (logit -capture probability) out of the period 
+#' # of monitoring is set to +Inf (capture probability=1)
+#' # to indicate that no turtle is nesting in the period out of 
+#' # monitoring time
+#' # p is set to -Inf (capture probability=0) to indicate that no
+#' # monitoring has been done but some turtles could have been present.
+#' fixed.parameters <- c(p=+Inf)
+#' # The fitted values are:
+#' par <- c(mu = 2.4911638591178051, 
+#'          sd = 0.96855483039640977, 
+#'          mu_season = 13.836059118657793, 
+#'          sd_season = 0.17440085345943984, 
+#'          p.10 = 1.3348233607728222, 
+#'          p.11 = 1.1960387774393837, 
+#'          p.12 = 0.63025680979544774, 
+#'          p.13 = 0.38648155002707452, 
+#'          p.14 = 0.31547864054366048, 
+#'          p.15 = 0.19720001827017075, 
+#'          p.16 = 0.083199496372073328, 
+#'          p.17 = 0.32969130595897905, 
+#'          p.18 = 0.36582777525265819, 
+#'          p.19 = 0.30301248314170637, 
+#'          p.20 = 0.69993987591518514, 
+#'          p.21 = 0.13642423871641118, 
+#'          p.22 = -1.3949268190534629)
+#' 
+#' o_mu1p1season1 <- fitCF(x=par, data=ECFOCF_2002, 
+#'                         fixed.parameters=fixed.parameters)
+#'
+#' # Same model but with two different models of capture probabilities
+#'                         
+#' fp <- rep(0, dim(ECFOCF_2002)[3])
+#' names(fp) <- paste0("p1.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
+#' par <- c(mu = 2.6404831115214353, 
+#'         sd = 0.69362774786433479, 
+#'         mu_season = 12.6404831115214353, 
+#'         sd_season = 1.69362774786433479)
+#' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
+#'                  attributes(ECFOCF_2002)$table["end"]])
+#' names(fp) <- paste0("p2.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
+#' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
+#'                  attributes(ECFOCF_2002)$table["end"]])
+#' fixed.parameters <- c(p1=+Inf, p2=+Inf)
+#' 
+#' o_mu1p2season1 <- fitCF(x=par, data=ECFOCF_2002, 
+#'                         fixed.parameters=fixed.parameters)
+#' 
+#' # Here the two different capture probabilities are different 
+#' # by a constant:
+#' # p1=invlogit(-p)     [Note that invlogit(-a1) = 1]
+#' # p2=invlogit(-p)*invlogit(-a2)
+#' 
+#' fp <- rep(0, dim(ECFOCF_2002)[3])
+#' names(fp) <- paste0("p.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
 #' par <- c(mu = 2.6404831115214353, 
 #'         sd = 0.69362774786433479, 
 #'         mu_season = 12.6404831115214353, 
 #'         sd_season = 1.69362774786433479, 
 #'         a2=0)
-#' fp <- rep(0, dim(ECFOCF_2002)[3])
-#' names(fp) <- paste0("p.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
 #' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
 #'                  attributes(ECFOCF_2002)$table["end"]])
-#' fixed.parameters <- c(a1=Inf, p=-Inf)
+#' fixed.parameters <- c(a1=+Inf, p=+Inf)
 #' 
-#'  lnLCF(x=par, data=ECFOCF_2002, fixed.parameters=fixed.parameters)
+#' o_mu1p1aseason1 <- fitCF(x=par, data=ECFOCF_2002, 
+#'                         fixed.parameters=fixed.parameters)
+#'                         data=ECFOCF_2002)
 #'  
-#'  o_mu1season1a2p <- fitCF(x=par, fixed.parameters=fixed.parameters, 
-#'                           data=ECFOCF_2002)
 #' }
 #' @export
 
@@ -268,7 +275,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
                   method = c("Nelder-Mead","BFGS"), 
                   control=list(trace=1, REPORT=100, maxit=500),
                   itnmax=c(500, 100), 
-                  hessian=TRUE, parallel=TRUE) {
+                  hessian=TRUE, parallel=TRUE, verbose=FALSE) {
   
   
 #  x=c(mu=4, sd=100, p=-1);
@@ -289,7 +296,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
                             method=method, 
                             itnmax=itnmax, 
                             control=modifyList(control, list(dowarn=FALSE, follow.on=TRUE, kkt=FALSE)), 
-                            hessian=FALSE, parallel=parallel)), silent=TRUE)
+                            hessian=FALSE, parallel=parallel, verbose=verbose)), silent=TRUE)
     
     minL <- nrow(o)
     nm <- names(x)
@@ -303,8 +310,9 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
     x[substr(names(x), 1, 2)=="mu"] <- abs(x[substr(names(x), 1, 2)=="mu"])
     x[substr(names(x), 1, 2)=="sd"] <- abs(x[substr(names(x), 1, 2)=="sd"])
     x[substr(names(x), 1, 3)=="OTN"] <- abs(x[substr(names(x), 1, 3)=="OTN"])
-    x[substr(names(x), 1, 9)=="mu_season"] <- abs(x[substr(names(x), 1, 9)=="mu_season"])
-    x[substr(names(x), 1, 9)=="sd_season"] <- abs(x[substr(names(x), 1, 9)=="sd_season"])
+    # C'est déjà inclut dans le mu et le sd
+    # x[substr(names(x), 1, 9)=="mu_season"] <- abs(x[substr(names(x), 1, 9)=="mu_season"])
+    # x[substr(names(x), 1, 9)=="sd_season"] <- abs(x[substr(names(x), 1, 9)=="sd_season"])
     
     if (conv == 0) break
     # par <- x
@@ -379,8 +387,9 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
   if (length(a)>1) a <- a[order(as.numeric(gsub("a([0-9]+)", "\\1", names(a))))]
   
   mu <- totx[(substr(names(totx), 1, 2)=="mu") & (substr(names(totx), 1, 9)!="mu_season")]
-  if (length(mu)>1) mu <- mu[order(as.numeric(gsub("mu([0-9]+)", "\\1", names(mu))))]
+  if (length(mu)>1) mu <- mu[order(as.numeric(gsub("mu([0-9\\.]+)", "\\1", names(mu))))]
   sd <- totx[(substr(names(totx), 1, 2)=="sd") & (substr(names(totx), 1, 9)!="sd_season")]
+  if (identical(sd, structure(numeric(0), .Names = character(0)))) sd <- c(sd=NA)
   if (length(sd)>1) sd <- sd[order(as.numeric(gsub("sd([0-9]+)", "\\1", names(sd))))]
   mu_season <- totx[substr(names(totx), 1, 9)=="mu_season"]
   if (length(mu_season)>1) mu_season <- mu_season[order(as.numeric(gsub("mu_season([0-9]+)", "\\1", names(mu_season))))]
@@ -407,8 +416,38 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
   result$prob <- p
   result$a <- a
   
-  mu <- abs(c(mu, rep(mu[length(mu)], mln-length(mu))))
-  names(mu) <- paste0("mu", 1:mln)
+  # mu <- abs(c(mu, rep(mu[length(mu)], mln-length(mu))))
+  # names(mu) <- paste0("mu", 1:mln)
+  
+  if (mln > 1) {
+    if (any(names(mu)=="mu")) {
+      mu_ref <- mu[names(mu)=="mu"]
+      mu_ec <- NULL
+      for (i in 1:mln) {
+        if (all(!grepl(paste0("mu", i), names(mu)))) {
+          mu_ec <- c(mu_ec, structure(unname(mu_ref), .Names=paste0("mu", i)))
+        } else {
+          mu_ec <- c(mu_ec, mu[grepl(paste0("mu", i), names(mu))])
+        }
+      }
+      mu <- mu_ec
+    }
+    if (any(grepl("mu\\.+", names(mu)))) {
+      mu_ref <- mu[grepl("mu\\.+", names(mu))]
+      
+      mu_ec <- NULL
+      for (i in 1:mln) {
+        if (all(!grepl(paste0("mu", i), names(mu)))) {
+          mu_ec <- c(mu_ec, structure(unname(mu_ref), .Names=gsub("mu(\\.[0-9]+)", paste0("mu", i, "\\1"), names(mu_ref))))
+        } else {
+          mu_ec <- c(mu_ec, mu[grepl(paste0("mu", i), names(mu))])
+        }
+      }
+      mu <- mu_ec
+    }
+  } else {
+    names(mu) <- gsub("mu[0-9]*(\\.*[0-9]*)", "mu1\\1", names(mu))
+  }
   
   result$mu <- mu
   
@@ -460,7 +499,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
     names(pvrai)[substr(names(pvrai), 1, 2) =="p."] <- paste0("p", i, ".", substr(names(pvrai[substr(names(pvrai), 1, 2) =="p."]), 3, 20))
     names(pvrai)[names(pvrai) =="p"] <- paste0("p", i)
     
-    OCFECF_int <- ECFOCF_f(mu=mu[paste0("mu", i)],
+    OCFECF_int <- ECFOCF_f(mu=mu[grepl(paste0("mu", i), names(mu))],
                            sd=sd[paste0("sd", i)], 
                            p=pvrai, 
                            MaxNests=MaxNests, 
@@ -478,8 +517,17 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
     
     OCFECF_0_categories <- c(OCFECF_0_categories, list(OCFECF_int))
     
-    CF_int <- dlnorm(1:MaxNests, meanlog=log(abs(mu[paste0("mu", i)])), 
-                     sdlog=abs(sd[paste0("sd", i)]))
+    if (!is.na(sd[paste0("sd", i)])) {
+      # Ancienne formule
+      CF_int <- dlnorm(1:MaxNests, meanlog=log(abs(mu[paste0("mu", i)])), 
+                  sdlog=abs(sd[paste0("sd", i)]))
+    } else {
+      # Nouvelle formule
+      # Je dois sortir les mu classés par ordre croissant
+      CF_int <- abs(mu[order(as.numeric(gsub("mu[0-9]*\\.", "", names(mu))))])
+      if (length(CF_int) < MaxNests) CF_int <- c(CF_int, rep(1E-10, MaxNests - length(CF_int)))
+    }
+    
     CF_int <- structure(c(CF_int / sum(CF_int)), .Names=paste0("CF", as.character(1:MaxNests)))
     CF_categories <- c(CF_categories, 
                  list(CF_int))

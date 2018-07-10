@@ -41,12 +41,16 @@
 
 # Calcul table ECF OCF ####
 
-ECFOCF_f <- function(mu, sd, p, MaxNests=15, 
+ECFOCF_f <- function(mu, sd = NA, p, MaxNests=15, 
                      mu_season=NA, sd_season=NA, 
                      MeanDaysBetween2Nests=9.8, 
                      length_season=floor(365/MeanDaysBetween2Nests)+1, 
                      parallel=TRUE) {
-  
+  # mu <- NULL; sd <- NULL; p <- NULL; MaxNests <- 15 
+  # mu_season  <- NA; sd_season <- NA 
+  # MeanDaysBetween2Nests <- 9.8
+  # length_season  <- floor(365/MeanDaysBetween2Nests)+1
+  # parallel <- TRUE
   
   if (is.na(mu_season) | is.na(sd_season)) {
     x <- 1:MaxNests
@@ -58,9 +62,19 @@ ECFOCF_f <- function(mu, sd, p, MaxNests=15,
     OCFECF <- array(data = 0, dim=c(MaxNests+1, MaxNests+1, 1), 
                     dimnames = list(paste0("OCF", 0:(MaxNests)), paste0("ECF", 0:(MaxNests)), 
                                     "time1"))
- 
-  y <- dlnorm(x, meanlog=log(abs(mu)), sdlog=abs(sd))
-  y <- y / sum(y)
+    
+    if (!is.na(sd[1])) {
+      # Ancienne formule
+      y <- dlnorm(x, meanlog=log(abs(mu)), sdlog=abs(sd))
+      y <- y / sum(y)
+    } else {
+      # Nouvelle formule
+      # Je dois sortir les mu classés par ordre croissant
+      y <- abs(mu[order(as.numeric(gsub("mu[0-9]*\\.", "", names(mu))))])
+      if (length(y) < MaxNests) y <- c(y, rep(1E-10, MaxNests - length(y)))
+      y <- y / sum(y)
+    }
+  
   for (x_ec in x) {
     # Dans x_ec, j'ai le CF
     # Dans OCF_ec, j'ai de 0 à CF, la probabilité d'observer rang+1 pontes
@@ -128,8 +142,18 @@ ECFOCF_f <- function(mu, sd, p, MaxNests=15,
       tlist <- list(seq(from=1, to=length_season, by=1))
     }
     
-    y <- dlnorm(x, meanlog=log(abs(mu)), sdlog=abs(sd))
-    y <- y / sum(y)
+    
+    if (!is.na(sd[1])) {
+      # Ancienne formule
+      y <- dlnorm(x, meanlog=log(abs(mu)), sdlog=abs(sd))
+      y <- y / sum(y)
+    } else {
+      # Nouvelle formule
+      # Je dois sortir les mu classés par ordre croissant
+      y <- abs(mu[order(as.numeric(gsub("mu[0-9]*\\.", "", names(mu))))])
+      if (length(y) < MaxNests) y <- c(y, rep(1E-10, MaxNests - length(y)))
+      y <- y / sum(y)
+    }
     
     # y[1] correspond à la valeur x=1 donc O car x-1
     

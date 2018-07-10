@@ -6,6 +6,7 @@
 #' @param data CMR database formated using TableECFOCF().
 #' @param fixed.parameters Parameters that are fixed.
 #' @param parallel If TRUE, parallel computing in ECFOCF_f is used.
+#' @param verbose if TRUE, show the parameters.
 #' @description Calculate the -log likelihood of data within a model.\cr
 #' @family Model of Clutch Frequency
 #' @examples
@@ -39,10 +40,15 @@
 
 # Log likelihood ECF OCF ####
 
-lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE) {
+lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) {
   
   x <- c(x, fixed.parameters)
   
+  if (verbose) d(x)
+  
+  # dans ml j'ai le nombre max de catégories
+  # La partie entière c'est la catégorie
+  # Donc je peux créer un mu1.1
   ml <- floor(as.numeric(gsub("[a-zA-z]+", "", names(x))))
   if ((length(ml) == 1) | all(is.na(ml)) | (max(c(0, ml), na.rm=TRUE)==0)) {
     mln <- 1
@@ -53,10 +59,42 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE) {
   MaxNests <- max(dim(data)[c(1, 2)])-1
   
   mu <- x[(substr(names(x), 1, 2)=="mu") & (substr(names(x), 1, 3) != "mu_")]
-  if (length(mu)>1) mu <- mu[order(as.numeric(gsub("mu([0-9]+)", "\\1", names(mu))))]
-  mu <- structure(c(mu, rep(mu[length(mu)], mln-length(mu))), .Names=paste0("mu", 1:mln))
+  # if (length(mu)>1) mu <- mu[order(as.numeric(gsub("mu([0-9\\.]+)", "\\1", names(mu))))]
+  # Ca ne va pas avec .
+  # j'ai un mu. ou un mu
+  # mu_ref <- NULL
+  if (mln > 1) {
+    if (any(names(mu)=="mu")) {
+      mu_ref <- mu[names(mu)=="mu"]
+      mu_ec <- NULL
+      for (i in 1:mln) {
+        if (all(!grepl(paste0("mu", i), names(mu)))) {
+          mu_ec <- c(mu_ec, structure(unname(mu_ref), .Names=paste0("mu", i)))
+        } else {
+          mu_ec <- c(mu_ec, mu[grepl(paste0("mu", i), names(mu))])
+        }
+      }
+      mu <- mu_ec
+    }
+    if (any(grepl("mu\\.+", names(mu)))) {
+      mu_ref <- mu[grepl("mu\\.+", names(mu))]
+      
+      mu_ec <- NULL
+      for (i in 1:mln) {
+        if (all(!grepl(paste0("mu", i), names(mu)))) {
+          mu_ec <- c(mu_ec, structure(unname(mu_ref), .Names=gsub("mu(\\.[0-9]+)", paste0("mu", i, "\\1"), names(mu_ref))))
+        } else {
+          mu_ec <- c(mu_ec, mu[grepl(paste0("mu", i), names(mu))])
+        }
+      }
+      mu <- mu_ec
+    }
+  } else {
+    names(mu) <- gsub("mu[0-9]*(\\.*[0-9]*)", "mu1\\1", names(mu))
+  }
   
   sd <- x[(substr(names(x), 1, 2)=="sd") & (substr(names(x), 1, 3) != "sd_")]
+  if (identical(sd, structure(numeric(0), .Names = character(0)))) sd <- c(sd=NA)
   if (length(sd)>1) sd <- sd[order(as.numeric(gsub("sd([0-9]+)", "\\1", names(sd))))]
   sd <- structure(c(sd, rep(sd[length(sd)], mln-length(sd))), .Names=paste0("sd", 1:mln))
   
@@ -86,8 +124,6 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE) {
   a_int <- structure(rep(Inf, mln), .Names=paste0("a", 1:mln))
   a_int[names(a)] <- a
   a <- 1/(1 + exp(-a_int))
-  
-  
   
   if (mln>1) {
     OTN <- abs(x[substr(names(x), 1, 3)=="OTN"])
@@ -129,7 +165,7 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE) {
 
     nm <- paste0("p", as.character(j))
     
-    OCFECF <- OCFECF+ ECFOCF_f(mu=mu[paste0("mu", j)], 
+    OCFECF <- OCFECF+ ECFOCF_f(mu=mu[grepl(paste0("mu", j), names(mu))], 
                                sd=sd[paste0("sd", j)], 
                                p=p_period[substr(names(p_period), 1, nchar(nm))==nm],
                                mu_season = mu_season[paste0("mu_season", j)], 

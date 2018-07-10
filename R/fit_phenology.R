@@ -90,7 +90,20 @@ function(data=file.choose(), fitted.parameters=NULL, fixed.parameters=NULL,
          cofactors=NULL, add.cofactors=NULL, zero=1E-9, 
          control=list(trace=1, REPORT=100, maxit=500)) {
 
-# data=NULL; fitted.parameters=NULL; fixed.parameters=NA; method_incertitude="convolution"; infinite=200; zero_counts=TRUE; cofactors=NULL; add.cofactors=NULL; hessian=TRUE; silent=FALSE; growlnotify=TRUE; zero=1E-9; control=list(trace=1, REPORT=100, maxit=500)
+# data=NULL
+# fitted.parameters=NULL
+# fixed.parameters=NA
+# method_incertitude="convolution"
+# infinite=200
+# zero_counts=TRUE
+# cofactors=NULL
+# add.cofactors=NULL
+# hessian=TRUE
+# silent=FALSE
+# growlnotify=TRUE
+# zero=1E-9
+# control=list(trace=1, REPORT=100, maxit=500)
+
 # data=data_Gratiot; fitted.parameters=result_Gratiot$par; fixed.parameters=result_Gratiot$fixed.parameters; trace=1
 
 #  if (is.null(fixed.parameters)) {fixed.parameters<-NA}
@@ -109,7 +122,7 @@ Lnegbin <- getFromNamespace(".Lnegbin", ns="phenology")
   
 if (method_incertitude!="convolution" & method_incertitude!="combinatory" 
 	& method_incertitude!=1 & method_incertitude!=2) {
-  stop("method_incertitude must be 'convolution' or 'combinatory'")
+  stop("The parameter method_incertitude must be 'convolution' or 'combinatory'")
 }
 
 
@@ -119,7 +132,7 @@ if (class(data)=="character") {
 }
 
 if (class(data)!="phenologydata") {
-  message("Data should have been formated first using the function add_phenology(). I do it now.")
+  message("Data should have been formated first using the function add_phenology(). I format it now.")
   data <- add_phenology(data)
 }
 
@@ -128,7 +141,7 @@ if (is.null(fitted.parameters)) {
 	fitted.parameters <- par_init(data, fixed.parameters=fixed.parameters)
 }
 
-if (length(zero_counts)==1) {zero_counts<-rep(zero_counts, length(data))}
+if (length(zero_counts)==1) {zero_counts <- rep(zero_counts, length(data))}
 if (length(zero_counts)!=length(data)) {
 	stop("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) and with the same number of logical values (TRUE or FALSE) than the number of series analyzed.")
 }
@@ -169,10 +182,13 @@ if (length(zero_counts)!=length(data)) {
 	resfit <- x
 	resfit[substr(names(resfit), 1, 4)=="Peak"] <- abs(resfit[substr(names(resfit), 1, 4)=="Peak"])
 	resfit["Theta"] <- abs(resfit["Theta"])
+	resfit["PMin"] <- abs(resfit["PMin"])
+# 28/3/2018. J'avais oublié ceux là
 	resfit["PMinE"] <- abs(resfit["PMinE"])
 	resfit["PMinB"] <- abs(resfit["PMinB"])
 	resfit["Flat"] <- abs(resfit["Flat"])
 	resfit[substr(names(resfit), 1, 6)=="Length"] <- abs(resfit[substr(names(resfit), 1, 6)=="Length"])
+# Ca fait en même temps MinE et MinB
 	resfit[substr(names(resfit), 1, 3)=="Min"]<-abs(resfit[substr(names(resfit), 1, 3)=="Min"])
 	resfit[substr(names(resfit), 1, 3)=="Max"]<-abs(resfit[substr(names(resfit), 1, 3)=="Max"])
 	resfit <- resfit[!is.na(resfit)]

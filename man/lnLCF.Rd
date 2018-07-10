@@ -4,7 +4,7 @@
 \alias{lnLCF}
 \title{Calculate the -log likelihood of data within a model.}
 \usage{
-lnLCF(x, data, fixed.parameters = NULL, parallel = TRUE)
+lnLCF(x, data, fixed.parameters = NULL, parallel = TRUE, verbose = FALSE)
 }
 \arguments{
 \item{x}{A named vector of parameters (mu, sd, mu_season, sd_season, a, p and OTN).}
@@ -14,6 +14,8 @@ lnLCF(x, data, fixed.parameters = NULL, parallel = TRUE)
 \item{fixed.parameters}{Parameters that are fixed.}
 
 \item{parallel}{If TRUE, parallel computing in ECFOCF_f is used.}
+
+\item{verbose}{if TRUE, show the parameters.}
 }
 \value{
 Return the -log likelihood of data within a model.\cr

@@ -49,7 +49,7 @@ par_init <-
 function(data=stop("A dataset must be provided"), 
          fixed.parameters=NULL, add.cofactors=NULL) {
 
-
+  fixed.parameters.ini <- fixed.parameters
 if (is.null(fixed.parameters)) {fixed.parameters <- NA}
 
 if (class(data)!="phenologydata") {
@@ -145,14 +145,14 @@ if (is.na(fixed.parameters["Theta"])) {
 }
 
 
-par2 <- BE_to_LBLE(c(par, fixed.parameters))
-par <- par2[!(names(par2) %in% names(fixed.parameters))]
+par2 <- BE_to_LBLE(c(par, fixed.parameters.ini))
+par <- par2[!(names(par2) %in% names(fixed.parameters.ini))]
 
 # 19/3/2016
 cof <- rep(0, length(add.cofactors))
 names(cof) <- add.cofactors
 
-cof <- cof[!(names(cof) %in% names(fixed.parameters))]
+cof <- cof[!(names(cof) %in% names(fixed.parameters.ini))]
 
 return(c(par, cof))
 }

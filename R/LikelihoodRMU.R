@@ -1,52 +1,77 @@
-.LikelihoodRMU <- function(x, fixed, model.trend, RMU.data, colname.year=NULL, RMU.names=NULL, index=NULL) {
-  
-  x<-c(x, fixed)
-  
+.LikelihoodRMU <- function (x, fixed, model.trend, model.SD, RMU.data, colname.year = NULL, 
+                            RMU.names = NULL, index = NULL) 
+{
+  x <- c(x, fixed)
   if (is.null(index)) {
     nm <- colnames(RMU.data)
-    index.year <- which(nm==colname.year)
+    index.year <- which(nm == colname.year)
     index.mean <- match(RMU.names$mean, nm)
-    index.se <- match(RMU.names$se, nm)
-    d <- RMU.data[,index.mean]
+    if (!is.null(RMU.names$se)) {
+      index.se <- match(RMU.names$se, nm)
+    }        else {
+      index.se <- NULL
+    }
+    d <- RMU.data[, index.mean]
     nabeach <- colnames(d)
     nbeach <- length(nabeach)
     nyear <- dim(RMU.data)[1]
-    nayear <- RMU.data[,index.year]
-    maxL <- 1E9
-
-    index <- list(year=index.year, mean=index.mean, se=index.se, colnames=nabeach, 
-                  nyear=nyear, nbeach=nbeach)
-  } else {
+    nayear <- RMU.data[, index.year]
+    maxL <- 1e+09
+    index <- list(year = index.year, mean = index.mean, se = index.se, 
+                  colnames = nabeach, nyear = nyear, nbeach = nbeach)
+  }    else {
     nabeach <- index$colnames
     nbeach <- length(nabeach)
     nyear <- dim(RMU.data)[1]
     maxL <- index$maxL
   }
-  
-  SD <- x[substr(names(x), 1, 3)=="SD_"]
-  if (length(SD)==0) {
+  SD <- x[(substr(names(x), 1, 3) == "SD_")]
+  aSD <- x[(substr(names(x), 1, 4) == "aSD_")]
+  if (length(SD) == 0) {
     SD <- rep(0, nbeach)
     names(SD) <- nabeach
-  } else {
-    if (length(SD)==1) {
+    aSD <- rep(0, nbeach)
+    names(aSD) <- nabeach
+  }    else {
+    if (length(SD) == 1) {
       SD <- rep(abs(SD), nbeach)
       names(SD) <- nabeach
-    } else {
+      if (length(aSD) == 1) {
+        aSD <- rep(abs(aSD), nbeach)
+        names(aSD) <- nabeach
+      }            else {
+        aSD <- rep(0, nbeach)
+        names(aSD) <- nabeach
+      }
+    }        else {
       SD <- abs(SD)
     }
   }
-  
-  dtaL_obs <- RMU.data[,index$mean]
-  dtaL_SD <- RMU.data[,index$se]+matrix(rep(SD, nyear), nrow=nyear, byrow=TRUE)
-
-  #___________________________________________________________
-  # Je crée le vecteur avec les proportions de chaque site
-  #___________________________________________________________
-  
-  La0 <- x[paste0("a0_", nabeach[paste0("a0_", nabeach) %in% names(x)])]
-  La1 <- x[paste0("a1_", nabeach[paste0("a1_", nabeach) %in% names(x)])]
-  La2 <- x[paste0("a2_", nabeach[paste0("a2_", nabeach) %in% names(x)])]
-  
+  dtaL_obs <- RMU.data[, index$mean]
+  if (!is.null(index$se)) {
+    if (model.SD != "global-proportional") {
+      dtaL_SD <- sqrt(RMU.data[, index$se]^2 + matrix(rep(SD, 
+                                                          nyear), nrow = nyear, byrow = TRUE)^2)
+    }        else {
+      dtaL_SD <- sqrt(RMU.data[, index$se]^2 + (dtaL_obs * 
+                                                  matrix(rep(aSD, nyear), nrow = nyear, byrow = TRUE) + 
+                                                  matrix(rep(SD, nyear), nrow = nyear, byrow = TRUE))^2)
+    }
+  }    else {
+    if (model.SD != "global-proportional") {
+      dtaL_SD <- matrix(rep(SD, nyear), nrow = nyear, byrow = TRUE)
+    }        else {
+      dtaL_SD <- (dtaL_obs * matrix(rep(aSD, nyear), nrow = nyear, 
+                                    byrow = TRUE) + matrix(rep(SD, nyear), nrow = nyear, 
+                                                           byrow = TRUE))
+    }
+  }
+  La0 <- x[paste0("a0_", nabeach[paste0("a0_", nabeach) %in% 
+                                   names(x)])]
+  La1 <- x[paste0("a1_", nabeach[paste0("a1_", nabeach) %in% 
+                                   names(x)])]
+  La2 <- x[paste0("a2_", nabeach[paste0("a2_", nabeach) %in% 
+                                   names(x)])]
   if (any(is.na(La2))) {
     La2 <- La0
     La2[] <- 0
@@ -57,50 +82,45 @@
     La1[] <- 0
     names(La1) <- gsub("^a0_", "a1_", names(La0))
   }
-  
-  map <- matrix(rep(NA, nyear*(nbeach-1)), ncol=nbeach-1)
-  for (i in 1:(nbeach-1)) {
-    map[,i] <- 1/(1+exp(La2[i]*(1:nyear)^2+La1[i]*(1:nyear)+La0[i]))
+  map <- matrix(rep(NA, nyear * (nbeach - 1)), ncol = nbeach - 
+                  1)
+  for (i in 1:(nbeach - 1)) {
+    map[, i] <- 1/(1 + exp(La2[i] * (1:nyear)^2 + La1[i] * 
+                             (1:nyear) + La0[i]))
   }
-  mapp <- matrix(rep(NA, nyear*nbeach), ncol=nbeach, 
-                 dimnames=list(NULL, beach=nabeach))
+  mapp <- matrix(rep(NA, nyear * nbeach), ncol = nbeach, dimnames = list(NULL, 
+                                                                         beach = nabeach))
   for (j in 1:nyear) {
-    mapp[j,] <- getFromNamespace(".p.multinomial", ns="phenology")(map[j,])
+    mapp[j, ] <- getFromNamespace(".p.multinomial", ns = "phenology")(map[j, 
+                                                                          ])
   }
-  
-  if (model.trend=="year-specific") {
-    Tot <- abs(x[paste0("T_", RMU.data[,index$year])])
-    dtaL_theo <- matrix(rep(Tot, nbeach) , ncol=nbeach, byrow = FALSE, 
-                        dimnames=list(NULL, beach=nabeach))
+  if (model.trend == "year-specific") {
+    Tot <- abs(x[paste0("T_", RMU.data[, index$year])])
+    dtaL_theo <- matrix(rep(Tot, nbeach), ncol = nbeach, 
+                        byrow = FALSE, dimnames = list(NULL, beach = nabeach))
   }
-  if (model.trend=="constant") {
+  if (model.trend == "constant") {
     Tot <- abs(x["T_"])
-    dtaL_theo <- matrix(rep(Tot,nbeach*nyear) , ncol=nbeach, byrow = FALSE, 
-                        dimnames=list(NULL, beach=nabeach))
+    dtaL_theo <- matrix(rep(Tot, nbeach * nyear), ncol = nbeach, 
+                        byrow = FALSE, dimnames = list(NULL, beach = nabeach))
   }
-  if (model.trend=="exponential") {
-    Tot <- abs(x["T_"])*exp(x["r"]*(1:nyear))
-    dtaL_theo <- matrix(rep(Tot,nbeach) , ncol=nbeach, byrow = FALSE, 
-                        dimnames=list(NULL, beach=nabeach))
+  if (model.trend == "exponential") {
+    Tot <- abs(x["T_"]) * exp(x["r"] * (1:nyear))
+    dtaL_theo <- matrix(rep(Tot, nbeach), ncol = nbeach, 
+                        byrow = FALSE, dimnames = list(NULL, beach = nabeach))
   }
-
-  # dtaL_theo <- dtaL_theo[, names(pp)]
   dtaL_obs <- dtaL_obs[, nabeach]
-  dtaL_theo <- dtaL_theo*mapp
+  dtaL_theo <- dtaL_theo * mapp
   valide <- !is.na(dtaL_obs)
-  
-#  if ((any(is.na(dtaL_theo))) | (min(colMeans(dtaL_theo, na.rm=TRUE), na.rm=TRUE)<1)) {
+  for (i in 1:nrow(dtaL_SD)) dtaL_SD[i, (dtaL_SD[i, ] == 0) & 
+                                       (!is.na(dtaL_SD[i, ]))] <- 1e-10
   if ((any(is.na(dtaL_theo)))) {
-      L <- maxL
-  } else {
-  
-  L <- sum(-dnorm(x=dtaL_obs[valide], 
-                mean=dtaL_theo[valide], 
-                sd=dtaL_SD[valide], log=TRUE))
-}
-  #	if (!is.finite(L)) {print(x)}
+    L <- maxL
+  }    else {
+    L <- sum(-dnorm(x = dtaL_obs[valide], mean = dtaL_theo[valide], 
+                    sd = dtaL_SD[valide], log = TRUE))
+  }
   return(L)
-  
 }
 
 # je donne les N probabilités et j'ai les N-1 probabilités conditionelles 

@@ -1,8 +1,23 @@
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
-            CHANGES IN VERSION 7.0 (2018-03-14)
+            CHANGES IN VERSION 7.1 (2018-07-10)
+
+* New set of functions for Internesting Periods for marine turtles - 7.1
+* Minor change in .Lnegbin to prevent rare case when probabilities are too small - 7.1
+* fitRMU() accept null SD for a beach - 7.1
+* Takes into account Cauchy-Schwartz inequality to estimate SD in fitRMU - 7.1
+* It is possible to not indicate SE of nesting season counts in fitRMU - 7.1
+* A proportional model for SD is possible for fitRMU - 7.1
+* Solve a rare warning in plot.phenology - 7.1
+
+            CHANGES IN VERSION 7.0.4 (2018-04-25)
 
 * New set of functions for Clutch Frequency for marine turtles - 7.0
+* Minor change in par_init() - 7.0.1
+* Force PMinE et PMinB to be positive - 7.0.1
+* New non-parameteric model for CF - 7.0.2
+* New parameter show.scale for plot.ECFOCF() - 7.0.3
+* New attribute final in TableOCFECF - 7.0.4
 
             CHANGES IN VERSION 6.0-6.0.3  (2017-10-17)
 

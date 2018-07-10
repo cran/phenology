@@ -13,8 +13,9 @@
 #' @description This function formats a CMR dataset to a file that fitCF can use.\cr
 #' If date0 is not null, a 3D TableECFOCF is generated.\cr
 #' 3D table (ECF, OCF, period) has two attributes:\cr
-#' - table with 4 elements:\cr
+#' - table with 5 elements:\cr
 #' begin, end are the first and last elements with counts\cr
+#' final is the last period with information\cr
 #' min and max are the first and last period where a nest could have been laid based on MaxNests value\cr
 #' - characteristics with 5 elements:\cr
 #' MinimumDaysBetween2Nest, MeanDaysBetween2Nest MaxNests, date0, length_season\cr
@@ -102,11 +103,21 @@ TableECFOCF <- function(data=stop("A dataframe with a column 'ID' and a column '
  class(OCFECF) <- "TableECFOCF"
  
  if (end==1) {
-   attributes(OCFECF) <- c(attributes(OCFECF), table=list(c(begin=1, end=1, min=1, max=1)))
+   attributes(OCFECF) <- c(attributes(OCFECF), table=list(c(begin=1, end=1, final=1, min=1, max=1)))
  } else {
  # part of the table for which data are present
+   
+   pdata <- NULL
+   for (period in 1:(dim(OCFECF)[3])) {
+     tocfecf <- OCFECF[, , period]
+     pp <- (1:dim(tocfecf)[2])[colSums(tocfecf) !=0]
+     if (length(pp) != 0) pdata <- c(pdata, max(pp)-1 + period -1)
+   }
+
  # range <- which(sapply(1:(dim(OCFECF)[3]), function(dim3) {sum(OCFECF[, , dim3])!=0}))
- attributes(OCFECF) <- c(attributes(OCFECF), table=list(c(begin=begin, end=end, min=begin-MaxNests, max=end+MaxNests)))
+ attributes(OCFECF) <- c(attributes(OCFECF), table=list(c(begin=begin, end=end, 
+                                                          final=max(pdata),
+                                                          min=begin-MaxNests, max=end+MaxNests)))
  }
  
  attributes(OCFECF) <- c(attributes(OCFECF), characteristics=list(c(MinimumDaysBetween2Nest=MinimumDaysBetween2Nest, 

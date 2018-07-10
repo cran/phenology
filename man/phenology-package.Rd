@@ -7,9 +7,6 @@
 \description{
 Functions used to fit and test the phenology of species based on counts.\cr
 Note that only the most significant changes are reported in the NEWS.\cr
-To do:\cr
-* There are problems with SE for fitRMU().\cr
-* Auto-scaling for optim during fitRMU search.\cr
 The lastest version of this package can always been installed using:\cr
 install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/HelpersMG.tar.gz", repos=NULL, type="source")\cr
 install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", repos=NULL, type="source")
@@ -20,8 +17,8 @@ Fit a parametric function that describes phenology
 \tabular{ll}{
  Package: \tab phenology\cr
  Type: \tab Package\cr
- Version: \tab 7.0 build 576\cr
- Date: \tab 2018-03-14\cr
+ Version: \tab 7.1 build 690\cr
+ Date: \tab 2018-07-10\cr
  License: \tab GPL (>= 2)\cr
  LazyLoad: \tab yes\cr
  }

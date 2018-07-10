@@ -1,11 +1,11 @@
 Package: phenology
 Type: Package
 Title: Tools to Manage a Parametric Function that Describes Phenology
-Version: 7.0
-Date: 2018-03-14
+Version: 7.1
+Date: 2018-07-10
 Author: Marc Girondot
 Maintainer: Marc Girondot <marc.girondot@u-psud.fr>
-Depends: numDeriv, parallel, optimx, lmf, HelpersMG (>= 2.0), R (>=
+Depends: numDeriv, parallel, optimx, lmf, HelpersMG (>= 3.2), R (>=
         3.4)
 Suggests: shiny, fields, progress, car
 Description: Functions used to fit and test the phenology of species based on counts.
@@ -17,6 +17,6 @@ URL:
 Encoding: UTF-8
 NeedsCompilation: no
 RoxygenNote: 6.0.1
-Packaged: 2018-03-14 10:23:29 UTC; marcgirondot
+Packaged: 2018-07-10 13:11:02 UTC; marcgirondot
 Repository: CRAN
-Date/Publication: 2018-03-14 10:34:40 UTC
+Date/Publication: 2018-07-10 16:40:14 UTC

@@ -7,14 +7,15 @@
 \method{plot}{TableECFOCF}(x, ..., result = "ecfocf", period = 1,
   cex.points = 4, pch = 19, col = "black", cex.axis = 0.8,
   cex.labels = 0.5, col.labels = "red", show.labels = FALSE,
-  show.0 = FALSE, pch.0 = 4, cex.0 = 0.5, col.0 = "blue")
+  show.0 = FALSE, pch.0 = 4, cex.0 = 0.5, col.0 = "blue",
+  show.scale = TRUE)
 }
 \arguments{
 \item{x}{A CMR file summarized using TableECFOCF()}
 
 \item{...}{Graphic parameters}
 
-\item{result}{What should be plotted: ECFOCF, ECF, OCF.}
+\item{result}{What should be plotted: ECFOCF or data, ECF, OCF.}
 
 \item{period}{The period that will be plotted.}
 
@@ -39,6 +40,8 @@
 \item{cex.0}{The magnification to be used for character for 0 counts.}
 
 \item{col.0}{Color of characters for 0 counts.}
+
+\item{show.scale}{If TRUE, show the scale as a legend}
 }
 \value{
 Nothing

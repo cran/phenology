@@ -87,7 +87,8 @@ plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1) {
                                   show.0=FALSE, 
                                   pch.0=4, 
                                   cex.0=0.5, 
-                                  col.0="blue"), p3p))
+                                  col.0="blue", 
+                                  show.scale = TRUE), p3p))
   }
 
   if (result=="ecfocf0") {
@@ -104,7 +105,8 @@ plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1) {
                                     show.0=FALSE, 
                                     pch.0=4, 
                                     cex.0=0.5, 
-                                    col.0="blue"), p3p))
+                                    col.0="blue", 
+                                    show.scale = TRUE), p3p))
     } else {
       do.call(getFromNamespace("plot.TableECFOCF", ns="phenology"), 
               modifyList(list(x=x$ECFOCF_0_categories[[as.numeric(category)]], 
@@ -119,7 +121,8 @@ plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1) {
                                     show.0=FALSE, 
                                     pch.0=4, 
                                     cex.0=0.5, 
-                                    col.0="blue"), p3p))
+                                    col.0="blue", 
+                              show.scale = TRUE), p3p))
     }
   }
   
@@ -138,7 +141,8 @@ plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1) {
                                     show.0=FALSE, 
                                     pch.0=4, 
                                     cex.0=0.5, 
-                                    col.0="blue"), p3p))
+                                    col.0="blue", 
+                              show.scale = TRUE), p3p))
     } else {
       do.call(getFromNamespace("plot.TableECFOCF", ns="phenology"), 
               modifyList(list(x=x$ECFOCF_categories[[as.numeric(category)]],
@@ -153,7 +157,8 @@ plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1) {
                                     show.0=FALSE, 
                                     pch.0=4, 
                                     cex.0=0.5, 
-                                    col.0="blue"), p3p))
+                                    col.0="blue", 
+                              show.scale = TRUE), p3p))
     }
   }
   

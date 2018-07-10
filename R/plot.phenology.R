@@ -76,7 +76,7 @@ plot.phenology <-
            col.observations = "black", 
            col.grouped.observations = "green") {
     
-    # x=NULL; series="all"; moon=FALSE; replicate.CI=1000; progressbar=TRUE; growlnotify=TRUE; show.plot=TRUE; resultmcmc = NULL; chain = 1; replicate.CI.mcmc = "all"; plot.objects = c("observations", "ML", "ML.SD", "ML.quantiles", "MCMC.quantiles"); col.ML="black"; col.SD="red"; col.MCMC.quantiles="purple"; col.ML.quantiles="black"; col.observations = "black"; col.grouped.observations = "green"
+    # x=NULL; series="all"; moon=FALSE; level=0.95; replicate.CI=1000; progressbar=TRUE; growlnotify=TRUE; show.plot=TRUE; resultmcmc = NULL; chain = 1; replicate.CI.mcmc = "all"; plot.objects = c("observations", "ML", "ML.SD", "ML.quantiles", "MCMC.quantiles"); col.ML="black"; col.SD="red"; col.MCMC.quantiles="purple"; col.ML.quantiles="black"; col.observations = "black"; col.grouped.observations = "green"
     # x <- result_Gratiot
     # p3p <- ifelse(class(try(list(...), silent=TRUE))=="try-error", list(), list(...))
     p3p <- list(...)
@@ -100,7 +100,11 @@ plot.phenology <-
       vmaxx <- c(reference, reference+nday-1)
       
       vmaxy <- c(0, 0.1)
-      vmaxy[2] <- max(data[[nmser]]$nombre[(is.na(data[[nmser]]$ordinal2)) & (!is.na(data[[nmser]]$nombre))])
+          if (any((is.na(data[[nmser]]$ordinal2)))) {
+      vmaxy[2] <- max(data[[nmser]]$nombre[(is.na(data[[nmser]]$ordinal2)) & 
+                                             (!is.na(data[[nmser]]$nombre))])
+    }
+
       vmaxy[2] <- max(vmaxy[2], out$details_ML[[nmser]]["97.5%", ], out$details_Mean[[nmser]]["SD.High",])
 
         x <- seq(from=reference, to=reference+nday-1, by="1 day")
