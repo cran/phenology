@@ -4,7 +4,8 @@
 \alias{lnLCF}
 \title{Calculate the -log likelihood of data within a model.}
 \usage{
-lnLCF(x, data, fixed.parameters = NULL, parallel = TRUE, verbose = FALSE)
+lnLCF(x, data, fixed.parameters = NULL, parallel = TRUE,
+  verbose = FALSE)
 }
 \arguments{
 \item{x}{A named vector of parameters (mu, sd, mu_season, sd_season, a, p and OTN).}
@@ -63,3 +64,4 @@ Other Model of Clutch Frequency: \code{\link{ECFOCF_f}},
 \author{
 Marc Girondot
 }
+\concept{Model of Clutch Frequency}

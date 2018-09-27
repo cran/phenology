@@ -6,10 +6,11 @@
 \usage{
 
   Tagloss_fit(data = stop("A database formated using Tagloss_format() must be used"),
-  fitted.parameters = NULL, fixed.parameters = NULL, model_before = NULL,
-  model_after = NULL, control = list(trace = 1, maxit = 10000),
-  method = "Nelder-Mead", lower = -Inf, upper = Inf, hessian = FALSE,
-  cores = detectCores(all.tests = FALSE, logical = TRUE), groups = NULL)
+  fitted.parameters = NULL, fixed.parameters = NULL,
+  model_before = NULL, model_after = NULL, control = list(trace = 1,
+  maxit = 10000), method = "Nelder-Mead", lower = -Inf, upper = Inf,
+  hessian = FALSE, cores = detectCores(all.tests = FALSE, logical =
+  TRUE), groups = NULL)
 }
 \arguments{
 \item{data}{An object formated using Tagloss_format}
@@ -91,3 +92,4 @@ Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
 \author{
 Marc Girondot
 }
+\concept{Model of Tag-loss}

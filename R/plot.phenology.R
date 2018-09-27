@@ -103,7 +103,7 @@ plot.phenology <-
           if (any((is.na(data[[nmser]]$ordinal2)))) {
       vmaxy[2] <- max(data[[nmser]]$nombre[(is.na(data[[nmser]]$ordinal2)) & 
                                              (!is.na(data[[nmser]]$nombre))])
-    }
+      }
 
       vmaxy[2] <- max(vmaxy[2], out$details_ML[[nmser]]["97.5%", ], out$details_Mean[[nmser]]["SD.High",])
 
@@ -134,6 +134,7 @@ plot.phenology <-
                  pch=16, col=col.observations, cex=0.5)
 
           for(i in 1:dim(data[[nmser]])[1]) {
+        
             if (!is.na(data[[nmser]]$ordinal2[i])) {
               x0<-data[[nmser]]$Date[i]
               x1<-data[[nmser]]$Date2[i]

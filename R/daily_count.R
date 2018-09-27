@@ -1,15 +1,16 @@
-#' daily_count estimates nest number based on set of parameters.
-#' @title Estimate expected counts based on set of parameters.
-#' @author Marc Girondot
-#' @param d Ordinal date
-#' @param xpar Set of fixed+fitted parameters
-#' @param print If TRUE, the result is displayed
-#' @param help If TRUE, an help is displayed
-#' @return The number of each day in d
-#' @description Function estimates counts based on set of parameters.
-
 
 .daily_count <- function(d, xpar, print=FALSE, zero=1E-9) {
+  
+  # daily_count estimates nest number based on set of parameters.
+  # @title Estimate expected counts based on set of parameters.
+  # @author Marc Girondot
+  # @param d Ordinal date
+  # @param xpar Set of fixed+fitted parameters
+  # @param print If TRUE, the result is displayed
+  # @param help If TRUE, an help is displayed
+  # @return The number of each day in d
+  # @description Function estimates counts based on set of parameters.
+  
   
   nn <- ifelse(d<xpar["Begin"], xpar["MinB"],
              ifelse(d<xpar["PmoinsF"], ((1+cos(pi*(xpar["PmoinsF"]-d)/xpar["PmoinsFB"]))/2)*xpar["MaxMinB"]+xpar["MinB"],

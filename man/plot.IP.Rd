@@ -154,3 +154,4 @@ Other Model of Internesting Period: \code{\link{IPFit}},
 \author{
 Marc Girondot
 }
+\concept{Model of Internesting Period}

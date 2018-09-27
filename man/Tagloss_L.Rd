@@ -4,10 +4,10 @@
 \alias{Tagloss_L}
 \title{Return the -log likelihood of a set of individuals under a model of tagloss.}
 \usage{
-Tagloss_L(individuals, par, days.maximum = NULL, fixed.parameters = NULL,
-  model_before = NULL, model_after = NULL, names.par = NULL,
-  groups = NULL, cores = detectCores(all.tests = FALSE, logical = TRUE),
-  progressbar = FALSE)
+Tagloss_L(individuals, par, days.maximum = NULL,
+  fixed.parameters = NULL, model_before = NULL, model_after = NULL,
+  names.par = NULL, groups = NULL, cores = detectCores(all.tests =
+  FALSE, logical = TRUE), progressbar = FALSE)
 }
 \arguments{
 \item{individuals}{Set of indivuals}
@@ -248,3 +248,4 @@ Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
 \author{
 Marc Girondot
 }
+\concept{Model of Tag-loss}

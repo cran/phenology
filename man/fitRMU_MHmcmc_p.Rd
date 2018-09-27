@@ -4,7 +4,8 @@
 \alias{fitRMU_MHmcmc_p}
 \title{Generates set of parameters to be used with fitRMU_MHmcmc()}
 \usage{
-fitRMU_MHmcmc_p(result = stop("An output from fitRMU() must be provided"),
+
+  fitRMU_MHmcmc_p(result = stop("An output from fitRMU() must be provided"),
   accept = FALSE)
 }
 \arguments{
@@ -58,3 +59,4 @@ Other Fill gaps in RMU: \code{\link{fitRMU_MHmcmc}},
 \author{
 Marc Girondot
 }
+\concept{Fill gaps in RMU}

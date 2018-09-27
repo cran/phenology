@@ -139,6 +139,7 @@ radioButtons_withHTML <- function (inputId, label, choices, selected = NULL, inl
 shinyUI(fluidPage(
   
   wellPanel(
+    
     p(radioButtons_withHTML('language', label=NULL, choices = list('<img src="gb.png">'="gb"
                                                                             , '<img src="pt.png">'="pt"
                                                                             , '<img src="fr.png">'="fr"
@@ -152,6 +153,10 @@ shinyUI(fluidPage(
   # Application title
   
   , wellPanel(
+    wellPanel(
+      HTML("<small><i><font color='#006699'>The Virtual Data initiative, run by LABEX P2IO and supported by Université Paris-Sud, is thanked for providing computing resources on its cloud infrastructure.</font></i></small>")
+    ), 
+    
     uiOutput("Titre_UI")
     , p(img(src="logo.png", height=60, width=626), align="center")
     , uiOutput("Objet_UI")

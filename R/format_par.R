@@ -1,10 +1,10 @@
-#' .format_par calculates simplified set of parameters.
-#' @title The function ".format_par" is for internal use use only.
-#' @author Marc Girondot
-#' @return Return a modified set of parameters
-#' @param xpar Set of parameters
-#' @param serie Name of the series to be analyzed
-#' @description Calculate a simplified set of parameters.
+# .format_par calculates simplified set of parameters.
+# @title The function ".format_par" is for internal use use only.
+# @author Marc Girondot
+# @return Return a modified set of parameters
+# @param xpar Set of parameters
+# @param serie Name of the series to be analyzed
+# @description Calculate a simplified set of parameters.
 
 
 

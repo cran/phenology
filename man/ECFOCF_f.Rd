@@ -4,9 +4,10 @@
 \alias{ECFOCF_f}
 \title{Calculate a table of probabilities of ECF and OCF.}
 \usage{
-ECFOCF_f(mu, sd = NA, p, MaxNests = 15, mu_season = NA, sd_season = NA,
-  MeanDaysBetween2Nests = 9.8,
-  length_season = floor(365/MeanDaysBetween2Nests) + 1, parallel = TRUE)
+ECFOCF_f(mu, sd = NA, p, MaxNests = 15, mu_season = NA,
+  sd_season = NA, MeanDaysBetween2Nests = 9.8,
+  length_season = floor(365/MeanDaysBetween2Nests) + 1,
+  parallel = TRUE)
 }
 \arguments{
 \item{mu}{The average of lognormal for clutch frequency.}
@@ -70,3 +71,4 @@ Other Model of Clutch Frequency: \code{\link{TableECFOCF}},
 \author{
 Marc Girondot
 }
+\concept{Model of Clutch Frequency}

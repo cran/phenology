@@ -5,13 +5,14 @@
 \title{Fit a model of Internesting Period for marine turtles.}
 \usage{
 IPFit(x = NULL, fixed.parameters = NULL,
-  data = stop("Formated data must be provided"), method = c("Nelder-Mead",
-  "BFGS"), control = list(trace = 1, REPORT = 100, maxit = 500),
-  itnmax = c(500, 100), hessian = TRUE, verbose = TRUE, parallel = TRUE,
-  model = c("MH", "ML"), parametersMH, n.iter = 10000, n.chains = 1,
-  n.adapt = 100, thin = 30, trace = TRUE, adaptive = TRUE,
-  adaptive.lag = 500, adaptive.fun = function(x) {     ifelse(x > 0.234,
-  1.3, 0.7) }, intermediate = NULL, filename = "intermediate.Rdata")
+  data = stop("Formated data must be provided"),
+  method = c("Nelder-Mead", "BFGS"), control = list(trace = 1, REPORT =
+  100, maxit = 500), itnmax = c(500, 100), hessian = TRUE,
+  verbose = TRUE, parallel = TRUE, model = c("MH", "ML"),
+  parametersMH, n.iter = 10000, n.chains = 1, n.adapt = 100,
+  thin = 30, trace = TRUE, adaptive = TRUE, adaptive.lag = 500,
+  adaptive.fun = function(x) {     ifelse(x > 0.234, 1.3, 0.7) },
+  intermediate = NULL, filename = "intermediate.Rdata")
 }
 \arguments{
 \item{x}{Initial parameters to be fitted}
@@ -330,3 +331,4 @@ Other Model of Internesting Period: \code{\link{IPModel}},
 \author{
 Marc Girondot
 }
+\concept{Model of Internesting Period}

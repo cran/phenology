@@ -5,9 +5,9 @@
 \title{Estimate the likelihood of timeseries based on a set of parameters.}
 \usage{
 likelihood_phenology(data = NULL, fitted.parameters = NULL,
-  fixed.parameters = NULL, zero_counts = NULL, method_incertitude = NULL,
-  result = NULL, cofactors = NULL, add.cofactors = NULL, infinite = 200,
-  zero = 1e-09)
+  fixed.parameters = NULL, zero_counts = NULL,
+  method_incertitude = NULL, result = NULL, cofactors = NULL,
+  add.cofactors = NULL, infinite = 200, zero = 1e-09)
 }
 \arguments{
 \item{data}{Dataset generated with add_format}

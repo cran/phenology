@@ -5,10 +5,11 @@
 \title{Generate a likelihood map varying Phi and Delta.}
 \usage{
 map_phenology(data = NULL, fitted.parameters = NULL,
-  fixed.parameters = NA, Phi = seq(from = 0.2, to = 20, length.out = 100),
-  Delta = NULL, infinite = 50, method_incertitude = "convolution",
-  zero_counts = TRUE, progressbar = TRUE, cofactors = NULL,
-  add.cofactors = NULL, zero = 1e-09)
+  fixed.parameters = NA, Phi = seq(from = 0.2, to = 20, length.out =
+  100), Delta = NULL, infinite = 50,
+  method_incertitude = "convolution", zero_counts = TRUE,
+  progressbar = TRUE, cofactors = NULL, add.cofactors = NULL,
+  zero = 1e-09)
 }
 \arguments{
 \item{data}{dataset generated with add_format}

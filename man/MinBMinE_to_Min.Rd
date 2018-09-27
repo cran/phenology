@@ -4,7 +4,8 @@
 \alias{MinBMinE_to_Min}
 \title{Transform a set of parameters from MinB and MinE to Min}
 \usage{
-MinBMinE_to_Min(parameters = stop("A set of parameters must be indicated"))
+
+  MinBMinE_to_Min(parameters = stop("A set of parameters must be indicated"))
 }
 \arguments{
 \item{parameters}{Set of current parameters}

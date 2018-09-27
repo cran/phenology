@@ -4,8 +4,8 @@
 \alias{par_init}
 \title{Calculate initial set of parameters.}
 \usage{
-par_init(data = stop("A dataset must be provided"), fixed.parameters = NULL,
-  add.cofactors = NULL)
+par_init(data = stop("A dataset must be provided"),
+  fixed.parameters = NULL, add.cofactors = NULL)
 }
 \arguments{
 \item{data}{Dataset generated with add_phenology()}

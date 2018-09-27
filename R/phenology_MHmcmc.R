@@ -91,7 +91,9 @@ pt <- list(data=result$data, fixed=result$fixed.parameters,
         infinite=result$infinite, out=TRUE, 
         cofactors=result$cofactors,
         add.cofactors=result$add.cofactors,
-        zero=result$zero)
+        zero=result$zero, 
+        store.intermediate=FALSE, 
+        file.intermediate="")
 
 print(parametersMCMC)
 

@@ -96,3 +96,4 @@ Other Model of Clutch Frequency: \code{\link{ECFOCF_f}},
 \author{
 Marc Girondot
 }
+\concept{Model of Clutch Frequency}

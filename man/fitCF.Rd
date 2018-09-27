@@ -6,9 +6,9 @@
 \usage{
 fitCF(x = c(mu = 4, sd = 100, p = 0), fixed.parameters = NULL,
   data = stop("Data formated with TableECFOCF() must be provided"),
-  method = c("Nelder-Mead", "BFGS"), control = list(trace = 1, REPORT = 100,
-  maxit = 500), itnmax = c(500, 100), hessian = TRUE, parallel = TRUE,
-  verbose = FALSE)
+  method = c("Nelder-Mead", "BFGS"), control = list(trace = 1, REPORT =
+  100, maxit = 500), itnmax = c(500, 100), hessian = TRUE,
+  parallel = TRUE, verbose = FALSE)
 }
 \arguments{
 \item{x}{Initial parameters to be fitted}
@@ -300,3 +300,4 @@ Other Model of Clutch Frequency: \code{\link{ECFOCF_f}},
 \author{
 Marc Girondot
 }
+\concept{Model of Clutch Frequency}

@@ -162,7 +162,9 @@ for(i in 1:LPhi) {
 		             pt=list(data=data, fixed=fixed.parameters, incertitude=method_incertitude, 
 		                     zerocounts=zero_counts, out=TRUE, infinite=infinite, 
 		                     cofactors=cofactors, 
-		                     add.cofactors=add.cofactors, zero=zero), 
+		                     add.cofactors=add.cofactors, zero=zero, 
+		                     store.intermediate=FALSE, 
+		                     file.intermediate=""), 
 		             method="BFGS",control=list(trace=0, REPORT=1, maxit=500), hessian=FALSE)
 		if (resul$convergence==0) break
 		par <- resul$par

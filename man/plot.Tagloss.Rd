@@ -6,10 +6,11 @@
 \usage{
 \method{plot}{Tagloss}(x, t = NULL, fitted.parameters = NULL,
   fixed.parameters = NULL, scale = 1, model_before = NULL,
-  model_after = NULL, model = c("1", "2", "R1", "R2", "L1", "L2", "cumul",
-  "cumul1"), col = grey.colors(4), text.col = rev(grey.colors(4)),
-  add = FALSE, hessian = NULL, replicates = 1000, probs = c(0.025,
-  0.975), progressbar = FALSE, decoration = FALSE, ...)
+  model_after = NULL, model = c("1", "2", "R1", "R2", "L1", "L2",
+  "cumul", "cumul1"), col = grey.colors(4),
+  text.col = rev(grey.colors(4)), add = FALSE, hessian = NULL,
+  replicates = 1000, probs = c(0.025, 0.975), progressbar = FALSE,
+  decoration = FALSE, ...)
 }
 \arguments{
 \item{x}{Object obteined from Tagloss_fit()}
@@ -121,3 +122,4 @@ Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
 \author{
 Marc Girondot
 }
+\concept{Model of Tag-loss}

@@ -4,7 +4,8 @@
 \alias{plot.ECFOCF}
 \title{Plot a result of clutch frequency fit.}
 \usage{
-\method{plot}{ECFOCF}(x, ..., result = "CF", category = NA, period = 1)
+\method{plot}{ECFOCF}(x, ..., result = "CF", category = NA,
+  period = 1)
 }
 \arguments{
 \item{x}{A result for fitCF().}
@@ -90,3 +91,4 @@ Other Model of Clutch Frequency: \code{\link{ECFOCF_f}},
 \author{
 Marc Girondot
 }
+\concept{Model of Clutch Frequency}

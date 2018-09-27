@@ -9,7 +9,8 @@
   n.iter = 10000,
   parametersMCMC = stop("A model generated with fitRMU_MHmcmc_p() must be provided"),
   n.chains = 4, n.adapt = 0, thin = 1, trace = FALSE,
-  intermediate = NULL, filename = "intermediate.Rdata", previous = NULL)
+  intermediate = NULL, filename = "intermediate.Rdata",
+  previous = NULL)
 }
 \arguments{
 \item{result}{An object obtained after a SearchR fit}
@@ -86,3 +87,4 @@ Other Fill gaps in RMU: \code{\link{fitRMU_MHmcmc_p}},
 \author{
 Marc Girondot
 }
+\concept{Fill gaps in RMU}

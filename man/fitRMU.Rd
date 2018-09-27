@@ -8,8 +8,8 @@ fitRMU(RMU.data = stop("data parameter must be provided"),
   years.byrow = TRUE, RMU.names = NULL, model.trend = "Constant",
   model.rookeries = "Constant", model.SD = "Global-constant",
   parameters = NULL, fixed.parameters = NULL, SE = NULL,
-  method = c("Nelder-Mead", "BFGS"), control = list(trace = 1, REPORT = 100,
-  maxit = 1500), itnmax = c(1500, 1500), hessian = TRUE,
+  method = c("Nelder-Mead", "BFGS"), control = list(trace = 1, REPORT =
+  100, maxit = 1500), itnmax = c(1500, 1500), hessian = TRUE,
   replicate.CI = 1000, colname.year = "Year", maxL = 1e+09)
 }
 \arguments{
@@ -170,3 +170,5 @@ Other Fill gaps in RMU: \code{\link{fitRMU_MHmcmc_p}},
 \author{
 Marc Girondot
 }
+\concept{Fill gaps in RMU}
+\concept{Fill the gaps for RMU}

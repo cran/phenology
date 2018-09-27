@@ -39,3 +39,4 @@ Other Model of Tag-loss: \code{\link{Tagloss_L}},
 \author{
 Marc Girondot
 }
+\concept{Model of Tag-loss}

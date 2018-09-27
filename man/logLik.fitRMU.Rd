@@ -58,3 +58,4 @@ Other Fill gaps in RMU: \code{\link{fitRMU_MHmcmc_p}},
 \author{
 Marc Girondot
 }
+\concept{Fill gaps in RMU}

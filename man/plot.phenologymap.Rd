@@ -4,8 +4,8 @@
 \alias{plot.phenologymap}
 \title{Plot a likelihood map with Delta and Phi varying.}
 \usage{
-\method{plot}{phenologymap}(x, ..., col = heat.colors(128), xlab = "Phi",
-  ylab = "Delta")
+\method{plot}{phenologymap}(x, ..., col = heat.colors(128),
+  xlab = "Phi", ylab = "Delta")
 }
 \arguments{
 \item{x}{A map generated with map_phenology.}

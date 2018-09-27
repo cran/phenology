@@ -171,6 +171,67 @@ summary.phenology <- function(object,
 	    }
 	    
 	    pfixed <- object$fixed.parameters
+	    sepfixed <- pfixed[strtrim(names(pfixed), 3)=="sd#"]
+	    pfixed <- pfixed[strtrim(names(pfixed), 3) != "sd#"]
+	    if (!is.null(sepfixed)) names(sepfixed) <- substring(names(sepfixed), 4)
+	    
+	    # J'ai un sd sur des paramètres fixés
+	    # if (!is.null(sepfixed) & (!identical(unname(sepfixed), numeric(0)))) {
+	      
+	      pfixed.df <- data.frame()
+	      pfixed.df.mcmc <- data.frame()
+	      
+	      replicate.CI.mcmc.x <- NULL
+	      if (!is.null(resultmcmc)) {
+	        if (replicate.CI.mcmc == "all") {
+	          replicate.CI.mcmc.x <- nrow(resultmcmc$resultMCMC[[chain]])
+	        } else {
+	          replicate.CI.mcmc.x <- replicate.CI.mcmc
+	        }
+	      }
+	      
+	      if (!is.null(pfixed)) {
+	        for (i in seq_along(pfixed)) {
+	          dfadd <- data.frame()
+	          dfadd.mcmc <- data.frame()
+	          
+	          if (!is.na(sepfixed[names(pfixed[i])])) {
+	            if (!is.null(replicate.CI)) {
+	              dfadd <- data.frame(rnorm(n=replicate.CI, mean=unname(pfixed[i]), sd=sepfixed[names(pfixed[i])]))
+	              colnames(dfadd) <- names(pfixed[i])
+	            }
+	            if (!is.null(replicate.CI.mcmc.x)) {
+	              dfadd.mcmc <- data.frame(rnorm(n=replicate.CI.mcmc.x, mean=unname(pfixed[i]), sd=sepfixed[names(pfixed[i])]))
+	              colnames(dfadd.mcmc) <- names(pfixed[i])
+	            }
+	          } else {
+	            if (!is.null(replicate.CI)) {
+	              dfadd <- data.frame(rep(unname(pfixed[i]), replicate.CI))
+	              colnames(dfadd) <- names(pfixed[i])
+	            }
+	            if (!is.null(replicate.CI.mcmc.x)) {
+	              dfadd.mcmc <- data.frame(rep(unname(pfixed[i]), replicate.CI.mcmc.x))
+	              colnames(dfadd.mcmc) <- names(pfixed[i])
+	            }
+	          }
+	          if (ncol(pfixed.df.mcmc) ==0 ) {
+	            pfixed.df.mcmc <- dfadd.mcmc
+	          } else {
+	            pfixed.df.mcmc <- cbind(pfixed.df.mcmc, dfadd.mcmc)
+	          }
+	          if (ncol(pfixed.df) ==0 ) {
+	            pfixed.df <- dfadd
+	          } else {
+	            pfixed.df <- cbind(pfixed.df, dfadd)
+	          }
+	          
+	        }
+	      }
+	      
+	      pfixed.df <- as.matrix(pfixed.df)
+	      pfixed.df.mcmc <- as.matrix(pfixed.df.mcmc)
+	    
+	    
 	    lnday <- 1:nday
 	    opord <- observedPontes[, "ordinal"]
 	    opnumb <- observedPontes[, "observed"]
@@ -183,14 +244,24 @@ summary.phenology <- function(object,
           mcmctobeused <- sample(x=mcmctobeused, 
 	                             size=replicate.CI.mcmc, 
 	                             replace = repl)
+        } else {
+          replicate.CI.mcmc <- nrow(resultmcmc$resultMCMC[[chain]])
         }
         
 	      
-	    dailydata <- sapply(X = mcmctobeused, FUN=function(xxx) {
-	      px <- c(resultmcmc$resultMCMC[[chain]][xxx, ], pfixed)
-	      xparec <- formatpar(px, nmser)
-	      dailycount(lnday, xparec, print=FALSE)
-	    })
+        if (ncol(pfixed.df.mcmc) != 0) {
+          dailydata <- sapply(X = 1:replicate.CI.mcmc, FUN=function(xxx) {
+            px <- c(resultmcmc$resultMCMC[[chain]][mcmctobeused[xxx], ], pfixed.df.mcmc[xxx, ])
+            xparec <- formatpar(px, nmser)
+            dailycount(lnday, xparec, print=FALSE)
+          })
+        } else {
+          dailydata <- sapply(X = 1:replicate.CI.mcmc, FUN=function(xxx) {
+            px <- c(resultmcmc$resultMCMC[[chain]][mcmctobeused[xxx], ])
+            xparec <- formatpar(px, nmser)
+            dailycount(lnday, xparec, print=FALSE)
+          })
+        }
 	    
 	    synthesisPontes <- apply(X = dailydata, MARGIN = 2, FUN=sum)
 	    
@@ -246,9 +317,17 @@ summary.phenology <- function(object,
 	      par2 <- rmnorm(n = replicate.CI, mean = parg, vcov)
 	      colnames(par2) <- names(parg)
 	      
-	      dailydata <- apply(par2, MARGIN = 1, FUN=function(xxx) {
-	        dailycount(lnday, formatpar(c(xxx, pfixed), nmser), print=FALSE)
-	      })
+	      
+	      if (ncol(pfixed.df) != 0) {
+	        dailydata <- sapply(1:replicate.CI, FUN=function(xxx) {
+	          dailycount(lnday, formatpar(c(par2[xxx, ], pfixed.df[xxx, ]), nmser), print=FALSE)
+	        })
+	      } else {
+	        dailydata <- sapply(1:replicate.CI, FUN=function(xxx) {
+	          dailycount(lnday, formatpar(c(par2[xxx, ]), nmser), print=FALSE)
+	        })
+	        
+	      }
 	      
 	      k <- apply(X = dailydata, MARGIN=1, 
 	                      FUN = function(x) {quantile(x, probs=probs)})

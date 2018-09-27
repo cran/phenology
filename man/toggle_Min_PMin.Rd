@@ -4,7 +4,8 @@
 \alias{toggle_Min_PMin}
 \title{Transform a set of parameters from Min, MinB or MinE to PMin, PminB or PminE, or reverse}
 \usage{
-toggle_Min_PMin(parameters = stop("A set of parameters must be indicated"))
+
+  toggle_Min_PMin(parameters = stop("A set of parameters must be indicated"))
 }
 \arguments{
 \item{parameters}{Set of current parameters}

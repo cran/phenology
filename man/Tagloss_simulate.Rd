@@ -68,3 +68,4 @@ Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
 \author{
 Marc Girondot
 }
+\concept{Model of Tag-loss}
