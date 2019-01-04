@@ -4,10 +4,12 @@
 \alias{Tagloss_daymax}
 \title{Return the maximum number of days an individual has been observed in a dataset.}
 \usage{
-Tagloss_daymax(individuals)
+Tagloss_daymax(individuals, what = "max")
 }
 \arguments{
 \item{individuals}{Set of indivuals}
+
+\item{what}{By default is max, but can be min, mean or all}
 }
 \value{
 Return the maximum number of days an individual has been observed in a dataset.
@@ -28,11 +30,13 @@ daymax(data_f_21)
 }
 \seealso{
 Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
-  \code{\link{Tagloss_L}}, \code{\link{Tagloss_fit}},
-  \code{\link{Tagloss_format}},
+  \code{\link{Tagloss_L}}, \code{\link{Tagloss_cumul}},
+  \code{\link{Tagloss_fit}}, \code{\link{Tagloss_format}},
   \code{\link{Tagloss_model}},
   \code{\link{Tagloss_simulate}},
-  \code{\link{logLik.Tagloss}}, \code{\link{plot.Tagloss}}
+  \code{\link{logLik.Tagloss}},
+  \code{\link{plot.TaglossData}},
+  \code{\link{plot.Tagloss}}
 }
 \author{
 Marc Girondot

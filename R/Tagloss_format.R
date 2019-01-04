@@ -154,5 +154,6 @@ Tagloss_format <- function(data, model="21", progressbar=TRUE) {
      }
     }
   }
+  class(out) <- c("TaglossData", "data.frame")
   return(out)
 }

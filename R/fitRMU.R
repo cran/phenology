@@ -211,6 +211,7 @@ fitRMU<-function (RMU.data = stop("data parameter must be provided"),
   SD[is.na(SD)] <- 1
   SD[SD == 0] <- 1
   p <- colMeans(d, na.rm = TRUE)
+  p[p==0] <- 1E-5
   p <- p/sum(p)
   p <- inv.p.multinomial(p)
   p <- log((1/p) - 1)

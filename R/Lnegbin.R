@@ -20,6 +20,10 @@
       mcutil <- detectCores()
     }
     
+    # 12/10/2018. J'ai eu une erreur Error in if (mcutil != 1) { : valeur manquante là où TRUE / FALSE est requis
+    if (is.null(mcutil)) mcutil <- 1
+    if (is.na(mcutil)) mcutil <- 1
+    
     if (!is.null(pt$namespar)) {
       names(x) <- pt$namespar
     }

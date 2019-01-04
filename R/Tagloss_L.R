@@ -239,6 +239,8 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
   # par <- m1_1$par
   # individuals <- data_f_21_fast
   
+  class(individuals) <- "data.frame"
+  
   if (!is.null(names.par)) names(par) <- names.par
   
   if (cores > 1) progressbar=FALSE
@@ -268,19 +270,18 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
   
   if (!is.null(model_before)) eval(parse(text=model_before), envir= environment())
   
-  if (any(grepl("_R2", names(par)))) pR2 <- Tagloss_model(t, par[grepl("_R2", names(par))]) else pR2 <- NA
-  if (any(grepl("_R1", names(par)))) pR1 <- Tagloss_model(t, par[grepl("_R1", names(par))]) else pR1 <- NA
-  if (any(grepl("_L2", names(par)))) pL2 <- Tagloss_model(t, par[grepl("_L2", names(par))]) else pL2 <- NA
-  if (any(grepl("_L1", names(par)))) pL1 <- Tagloss_model(t, par[grepl("_L1", names(par))]) else pL1 <- NA
+  if (any(grepl("_R2", names(par)))) pR2 <- Tagloss_model(1:days.maximum, par, model_before = model_before, model_after = model_after, model="R2") else pR2 <- NA
+  if (any(grepl("_R1", names(par)))) pR1 <- Tagloss_model(1:days.maximum, par, model_before = model_before, model_after = model_after, model="R1") else pR1 <- NA
+  if (any(grepl("_L2", names(par)))) pL2 <- Tagloss_model(1:days.maximum, par, model_before = model_before, model_after = model_after, model="L2") else pL2 <- NA
+  if (any(grepl("_L1", names(par)))) pL1 <- Tagloss_model(1:days.maximum, par, model_before = model_before, model_after = model_after, model="L1") else pL1 <- NA
   
-  if (any(grepl("_2", names(par)))) p2 <- Tagloss_model(t, par[grepl("_2", names(par))]) else p2 <- NA
-  if (any(grepl("_1", names(par)))) p1 <- Tagloss_model(t, par[grepl("_1", names(par))]) else p1 <- NA
+  if (any(grepl("_2", names(par)))) p2 <- Tagloss_model(1:days.maximum, par, model_before = model_before, model_after = model_after, model="2") else p2 <- NA
+  if (any(grepl("_1", names(par)))) p1 <- Tagloss_model(1:days.maximum, par, model_before = model_before, model_after = model_after, model="1") else p1 <- NA
   
-  # par exemple
-  # model="p2=p1"
-  # model="pL1=pL2;pR1=pR2"
-  # model="pL1=c(pL1, C=pL1['B'])"
+  if (!any(grepl("_", names(par)))) p1 <- p2 <- Tagloss_model(1:days.maximum, par, model_before = model_before, model_after = model_after, model=NULL)
+  
   if (!is.null(model_after)) eval(parse(text=model_after), envir= environment())
+  
   
   if (is.na(p1[1]) & !is.na(p2[1])) p1 <- p2
   if (is.na(p2[1]) & !is.na(p1[1])) p2 <- p1

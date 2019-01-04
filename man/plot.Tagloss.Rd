@@ -7,9 +7,11 @@
 \method{plot}{Tagloss}(x, t = NULL, fitted.parameters = NULL,
   fixed.parameters = NULL, scale = 1, model_before = NULL,
   model_after = NULL, model = c("1", "2", "R1", "R2", "L1", "L2",
-  "cumul", "cumul1"), col = grey.colors(4),
-  text.col = rev(grey.colors(4)), add = FALSE, hessian = NULL,
-  replicates = 1000, probs = c(0.025, 0.975), progressbar = FALSE,
+  "cumul", "cumul1", "N2", "N1", "N0", "NLR", "N0R", "NL0", "N00"),
+  col = rev(grey.colors(4, start = 0.9, end = 0.3)),
+  text.col = grey.colors(4, start = 0.9, end = 0.3),
+  label.col = "black", add = FALSE, hessian = NULL,
+  replicates = NULL, probs = c(0.025, 0.975), progressbar = FALSE,
   decoration = FALSE, ...)
 }
 \arguments{
@@ -33,6 +35,8 @@
 
 \item{text.col}{The text color for cumul model}
 
+\item{label.col}{The text color used for labels when decoration is true}
+
 \item{add}{Should the data be added to a previous plot?}
 
 \item{hessian}{Should confidence interval be shown}
@@ -52,8 +56,7 @@ A dataframe with values used for plotting.
 }
 \description{
 Plot the daily rate of tag loss.\cr
-To use this function without a result of Tagloss_fit(), see the hack in examples.\cr
-It does not work still with cumul and LR model.
+To use this function without a result of Tagloss_fit(), see the hack in examples.
 }
 \details{
 plot.tagloss plots the daily rate of tag loss.
@@ -67,13 +70,13 @@ t <- 1:1000
 par <- c(D1_1=200, D2D1_1=100, D3D2_1=200, 
          A_1=-logit(0.02), B_1=-logit(0.05), C_1=-logit(0.07))
 phenology:::plot.Tagloss(x=list(), t=t, fitted.parameters=par, model="1")
-phenology:::plot.Tagloss(x=NULL, t=t, fitted.parameters=par, model="1", 
+phenology:::plot.Tagloss(x=list(), t=t, fitted.parameters=par, model="1", 
                          scale=1000, decoration = TRUE)
 
 par <- c(D1_2=200, D2D1_2=100, D3D2_2=200, 
          A_2=-logit(0.05), B_2=-logit(0.03), C_2=-logit(0.03))
 phenology:::plot.Tagloss(x=list(), t=t, fitted.parameters=par, ylim=c(0, 1), 
-                         scale = 10, model="2")
+                         scale = 10, model="2", decoration = TRUE)
 
 par <- c(D1_L2=200, D2D1_L2=100, D3D2_L2=200, 
          A_L2=-logit(0.05), B_L2=-logit(0.07), C_L2=-logit(0.07))
@@ -93,31 +96,39 @@ par <- c(D1_1=200, D2D1_1=100, D3D2_1=200,
          A_1=-logit(5E-4), B_1=-logit(4E-4), C_1=-logit(5E-4), 
          D1_2=200, D2D1_2=100, D3D2_2=200, 
          A_2=-logit(6E-4), B_2=-logit(5E-4), C_2=-logit(6E-4))
-phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, model="Cumul", 
+phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, 
+                         model="Cumul", 
                          decoration = TRUE)
-phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, model="Cumul", 
+phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, 
+                         model="Cumul", 
                          decoration = TRUE, col=c("red", "green", "blue"))
                          
 # To plot the history of individuals
-par <- c(D1_R1=200, D2D1_R1=100, D3D2_R1=200, 
+par <- c(D1_R1=200, D2D1_R1=300, D3D2_R1=200, 
          A_R1=-logit(5E-4), B_R1=-logit(4E-4), C_R1=-logit(5E-4), 
-         D1_R2=200, D2D1_R2=100, D3D2_R2=200, 
+         D1_R2=200, D2D1_R2=200, D3D2_R2=200, 
          A_R2=-logit(6E-4), B_R2=-logit(5E-4), C_R2=-logit(6E-4), 
-         D1_L1=200, D2D1_L1=100, D3D2_L1=200, 
+         D1_L1=200, D2D1_L1=400, D3D2_L1=200, 
          A_L1=-logit(5E-4), B_L1=-logit(4E-4), C_L1=-logit(5E-4), 
          D1_L2=200, D2D1_L2=100, D3D2_L2=200, 
          A_L2=-logit(6E-4), B_L2=-logit(5E-4), C_L2=-logit(6E-4))
 phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, model="Cumul", 
                          decoration = TRUE)
+phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, model="R1", 
+                         decoration = TRUE)                         
+phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, model="R2", 
+                         decoration = TRUE)                         
 }
 }
 \seealso{
 Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
-  \code{\link{Tagloss_L}}, \code{\link{Tagloss_daymax}},
-  \code{\link{Tagloss_fit}}, \code{\link{Tagloss_format}},
+  \code{\link{Tagloss_L}}, \code{\link{Tagloss_cumul}},
+  \code{\link{Tagloss_daymax}}, \code{\link{Tagloss_fit}},
+  \code{\link{Tagloss_format}},
   \code{\link{Tagloss_model}},
   \code{\link{Tagloss_simulate}},
-  \code{\link{logLik.Tagloss}}
+  \code{\link{logLik.Tagloss}},
+  \code{\link{plot.TaglossData}}
 }
 \author{
 Marc Girondot

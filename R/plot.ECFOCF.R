@@ -290,6 +290,9 @@ plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1) {
     
     do.call(plot_errbar, perr)
     
+    if (is.null(p3p$xaxt)) p3p$xaxt <- "r"
+    
+    if (p3p$xaxt != "n") {
     segments(x0=1:sum(cl), 
              y0=-0.1, y1=-0.15, xpd=TRUE)
     cex <- p3p[["cex.axis"]]
@@ -301,6 +304,7 @@ plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1) {
          cex=cex, 
          labels = rownames(x$SE_df)[cl], 
          xpd=TRUE), p3p[c("srt", "labels")]))
+    }
     }
   }
 }

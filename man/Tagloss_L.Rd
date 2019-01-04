@@ -239,11 +239,14 @@ plot(o, t=1:3000, model="2", scale=1000, ylim=c(0, 3),
 }
 \seealso{
 Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
+  \code{\link{Tagloss_cumul}},
   \code{\link{Tagloss_daymax}}, \code{\link{Tagloss_fit}},
   \code{\link{Tagloss_format}},
   \code{\link{Tagloss_model}},
   \code{\link{Tagloss_simulate}},
-  \code{\link{logLik.Tagloss}}, \code{\link{plot.Tagloss}}
+  \code{\link{logLik.Tagloss}},
+  \code{\link{plot.TaglossData}},
+  \code{\link{plot.Tagloss}}
 }
 \author{
 Marc Girondot

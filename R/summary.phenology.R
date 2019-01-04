@@ -101,6 +101,8 @@ summary.phenology <- function(object,
 	                    "with_obs_Low_MCMC"=rna, 
 	                    "with_obs_Median_MCMC"=rna, 
 	                    "with_obs_High_MCMC"=rna, 
+	                    "NbObservations"=rna, 
+	                    "NbMonitoredDays"=rna,
 	                    stringsAsFactors = FALSE)
 	rownames(retdf) <- series
 	  klist_mcmc <- list()
@@ -138,11 +140,16 @@ summary.phenology <- function(object,
 	    dc_mean <- dailycount(1:nday, parg)
 	    retdf[nmser, "without_obs_Mean"] <- sum(dc_mean)
 	    
+	    retdf[nmser, "NbObservations"] <- sum(observedPontes$observed)
+	    retdf[nmser, "NbMonitoredDays"] <- nrow(observedPontes)
 	    
 	    if (print) {
 	      cat("Total estimate not taking into account the observations: ")
 	      cat(paste0("Mean=", retdf[nmser, "without_obs_Mean"], "\n"))
 	    }
+	    
+	    # 3/11/2018 Pourquoi Theta seulement dans fixed.parameters ?
+	    # Non, c'est bon, il cherche sur les 2
 	    
 	    SDMin <- NULL
 	    SDMax <- NULL
@@ -171,8 +178,8 @@ summary.phenology <- function(object,
 	    }
 	    
 	    pfixed <- object$fixed.parameters
-	    sepfixed <- pfixed[strtrim(names(pfixed), 3)=="sd#"]
-	    pfixed <- pfixed[strtrim(names(pfixed), 3) != "sd#"]
+	    sepfixed <- pfixed[strtrim(names(pfixed), 3)=="se#"]
+	    pfixed <- pfixed[strtrim(names(pfixed), 3) != "se#"]
 	    if (!is.null(sepfixed)) names(sepfixed) <- substring(names(sepfixed), 4)
 	    
 	    # J'ai un sd sur des paramètres fixés

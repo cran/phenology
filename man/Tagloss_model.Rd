@@ -4,40 +4,94 @@
 \alias{Tagloss_model}
 \title{Return the daily rate of tag loss.}
 \usage{
-Tagloss_model(t, par)
+Tagloss_model(t, par = NULL, hessian = NULL, model_before = NULL,
+  model_after = NULL, model = NULL, replicates = NULL, x = NULL)
 }
 \arguments{
 \item{t}{Time for which values of model must be estimated}
 
-\item{par}{Parameter}
+\item{par}{Parameters}
+
+\item{hessian}{hessian matrix of parameters}
+
+\item{model_before}{Function to be used before estimation of daily tagloss rate}
+
+\item{model_after}{Function to be used after estimation of daily tagloss rate}
+
+\item{model}{The model of parameter to be used, can be 1, 2, L1, L2, R1 or R2}
+
+\item{replicates}{Number of replicates to estimate se of output}
+
+\item{x}{A Tagloss fitted model}
 }
 \value{
-Return the daily rate of tag loss.
+Return the daily rate of tag loss if hessian is null or a data.frame with distribution of daily rate of tag loss if hessian is not null.
 }
 \description{
 This function compute a model of daily tag loss rate for days t 
 based on a set of parameters, par.\cr
+If hessian is not null, it will estimate standard error of the output using numerical delta method is replicates 
+is null or using resampling if replicates is not null.\cr
+Parameters are described in \code{\link{Tagloss_fit}}.
 }
 \details{
 Tagloss_model returns the daily rate of tag loss.
 }
 \examples{
-library(phenology)
 \dontrun{
+library(phenology)
+
 # Example
 t <- 1:1000
 par <- c(D1=200, D2D1=100, D3D2=200, 
          A=-logit(0.02), B=-logit(0.05), C=-logit(0.07))
 y <- Tagloss_model(t, par)
 plot(x=t, y, type="l")
+par <- c(D1_1=200, D2D1_1=100, D3D2_1=200, 
+         A_1=-logit(0.02), B_1=-logit(0.05), C_1=-logit(0.07))
+y <- Tagloss_model(t, par, model="1")
+phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, model="1")
+
+# Fig1A in Rivalan et al. 2005 (note an error for a0; a0 must be negative)
+par <- c(a0=-1E5, a1=-2000, a2=0, a3=2*max(t), a4=0.1)
+y <- Tagloss_model(t, par)
+plot(x=t, y, type="l")
+
+# Fig1B in Rivalan et al. 2005
+par <- c(a0=-0.5, a1=-2000, a2=-0.001, a3=0, a4=0.1)
+y <- Tagloss_model(t, par)
+plot(x=t, y, type="l")
+
+# Fig1C in Rivalan et al. 2005
+par <- c(a0=-1, a1=-6, a2=0, a3=0, a4=0)
+y <- Tagloss_model(t, par)
+plot(x=t, y, type="l")
+
+# Fig1D in Rivalan et al. 2005
+par <- c(a0=-1, a1=-6, a2=0, a3=0, a4=0.1)
+y <- Tagloss_model(t, par)
+plot(x=t, y, type="l")
+
+# Fig1E in Rivalan et al. 2005
+par <- c(a0=-0.1, a1=-10, a2=-0.2, a3=60, a4=0.1)
+y <- Tagloss_model(t, par)
+plot(x=t, y, type="l")
+
+# Fig1F in Rivalan et al. 2005
+par <- c(a0=-0.1, a1=-10, a2=0.2, a3=60, a4=0.1)
+y <- Tagloss_model(t, par)
+plot(x=t, y, type="l")
 }
 }
 \seealso{
 Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
-  \code{\link{Tagloss_L}}, \code{\link{Tagloss_daymax}},
-  \code{\link{Tagloss_fit}}, \code{\link{Tagloss_format}},
+  \code{\link{Tagloss_L}}, \code{\link{Tagloss_cumul}},
+  \code{\link{Tagloss_daymax}}, \code{\link{Tagloss_fit}},
+  \code{\link{Tagloss_format}},
   \code{\link{Tagloss_simulate}},
-  \code{\link{logLik.Tagloss}}, \code{\link{plot.Tagloss}}
+  \code{\link{logLik.Tagloss}},
+  \code{\link{plot.TaglossData}},
+  \code{\link{plot.Tagloss}}
 }
 \author{
 Marc Girondot

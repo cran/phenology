@@ -49,7 +49,7 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
   # dans ml j'ai le nombre max de catégories
   # La partie entière c'est la catégorie
   # Donc je peux créer un mu1.1
-  ml <- floor(as.numeric(gsub("[a-zA-z]+", "", names(x))))
+  ml <- suppressWarnings(floor(as.numeric(gsub("[a-zA-z]+", "", names(x)))))
   if ((length(ml) == 1) | all(is.na(ml)) | (max(c(0, ml), na.rm=TRUE)==0)) {
     mln <- 1
   } else {
@@ -137,6 +137,7 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
   }
   
   p <- x[substr(names(x), 1, 1)=="p"]
+  # p <- 1/(1 + exp(-p))
   
   OCFECF <- data
   OCFECF[] <- 0

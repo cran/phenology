@@ -2,7 +2,7 @@
 % Please edit documentation in R/Tagloss_LengthObs.R
 \name{Tagloss_LengthObs}
 \alias{Tagloss_LengthObs}
-\title{Return a list with the number of days different kinds of individuals are seen.}
+\title{Return a list with the number of days for different kinds of individuals are seen.}
 \usage{
 Tagloss_LengthObs(data, progressbar = TRUE)
 }
@@ -12,13 +12,13 @@ Tagloss_LengthObs(data, progressbar = TRUE)
 \item{progressbar}{Is shown a progressbar?}
 }
 \value{
-Return a list with the number of days different kinds of individuals are seen.
+Return a list with the number of days for different kinds of individuals are seen.
 }
 \description{
 Usefull to summarize data
 }
 \details{
-Tagloss_LengthObs returns a list with the number of days different kinds of individuals are seen.
+Tagloss_LengthObs returns a list with the number of days for different kinds of individuals are seen.
 }
 \examples{
 \dontrun{
@@ -30,11 +30,14 @@ Tagloss_LengthObs(data_f_21)
 }
 \seealso{
 Other Model of Tag-loss: \code{\link{Tagloss_L}},
+  \code{\link{Tagloss_cumul}},
   \code{\link{Tagloss_daymax}}, \code{\link{Tagloss_fit}},
   \code{\link{Tagloss_format}},
   \code{\link{Tagloss_model}},
   \code{\link{Tagloss_simulate}},
-  \code{\link{logLik.Tagloss}}, \code{\link{plot.Tagloss}}
+  \code{\link{logLik.Tagloss}},
+  \code{\link{plot.TaglossData}},
+  \code{\link{plot.Tagloss}}
 }
 \author{
 Marc Girondot

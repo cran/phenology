@@ -43,21 +43,57 @@ Return a list object with the model describing tag loss.
 \description{
 This function fits a model of tag loss using a CMR database.\cr
 The names of parameters can be:\cr
-Left tag lost when 2 are present: D1_L2, D2D1_L2, D3D2_L2, A_L2, B_L2, C_L2, delta_L2\cr
-Right tag lost when 2 are present: D1_R2, D2D1_R2, D3D2_R2, A_R2, B_R2, C_R2, delta_R2\cr
-Left tag lost when 1 is present: D1_L1, D2D1_L1, D3D2_L1, A_L1, B_L1, C_L1, delta_L1\cr
-Right tag lost when 1 is present: D1_R1, D2D1_R1, D3D2_R1, A_R1, B_R1, C_R1, delta_R1\cr
-One tag lost when 2 are present: D1_2, D2D1_2, D3D2_2, A_2, B_2, C_2, delta_2\cr
-One tag lost when 1 is present: D1_1, D2D1_1, D3D2_1, A_1, B_1, C_1, delta_1\cr
-A, B and C are -logit(pA), -logit(pB) and -logit(pC) of the 
-corresponding daily probabilities (p) of tag loss.\cr
-delta is used as: p = p * invlogit(-delta)\cr
-The use of delta parameter is complicated.\cr
-Tag loss rate is pA at day 1\cr
-Tag loss rate changes gradually from pA to pB that is reached at day D1\cr
-Tag loss rate is pB from day D1 to day D2=D1+D2D1\cr
-Tag loss rate changes gradually from pB to pC that is reached at day D2+D3D2\cr
-If only one parameter is fitted, method must be "Brent" and upper and lower 
+Model Girondot and Pfaller (in preparation):\cr
+\describe{
+  \item{Left tag lost when 2 are present}{\code{D1_L2}, \code{D2D1_L2}, \code{D3D2_L2}, \code{A_L2}, \code{B_L2}, \code{C_L2}, \code{delta_L2}}
+  \item{Right tag lost when 2 are present}{\code{D1_R2}, \code{D2D1_R2}, \code{D3D2_R2}, \code{A_R2}, \code{B_R2}, \code{C_R2}, \code{delta_R2}}
+  \item{Left tag lost when 1 is present}{\code{D1_L1}, \code{D2D1_L1}, \code{D3D2_L1}, \code{A_L1}, \code{B_L1}, \code{C_L1}, \code{delta_L1}}
+  \item{Right tag lost when 1 is present}{\code{D1_R1}, \code{D2D1_R1}, \code{D3D2_R1}, \code{A_R1}, \code{B_R1}, \code{C_R1}, \code{delta_R1}}
+  \item{One tag lost when 2 are present}{\code{D1_2}, \code{D2D1_2}, \code{D3D2_2}, \code{A_2}, \code{B_2}, \code{C_2}, \code{delta_2}}
+  \item{One tag lost when 1 is present}{\code{D1_1}, \code{D2D1_1}, \code{D3D2_1}, \code{A_1}, \code{B_1}, \code{C_1}, \code{delta_1}}
+}
+\code{pA}, \code{pB} and \code{pC} are the daily probabilities of tag loss with 
+\code{pA=-logit(A)}, \code{pB=-logit(B)} and \code{pC=-logit(C)} .\cr
+\code{delta} is used as: \code{p = p + delta}. Nothe that \code{delta} can be negative\cr
+Tag loss rate is \code{pA} at day 1\cr
+Tag loss rate changes gradually from \code{pA} to \code{pB} that is reached at day \code{D1}\cr
+Tag loss rate is \code{pB} from day \code{D1} to day \code{D2=D1+D2D1}\cr
+Tag loss rate changes gradually from \code{pB} to \code{pC} that is reached at day \code{D3=D2+D3D2}\cr
+
+When parameters from Rivalan et al. (2005) are used:\cr
+\describe{
+\item{One tag lost when 2 are present}{\code{a0_2}, \code{a1_2}, \code{a2_2}, \code{a3_2}, \code{a4_2}, \code{delta_2}}
+\item{One tag lost when 1 is present}{\code{a0_1}, \code{a1_1}, \code{a2_1}, \code{a3_1}, \code{a4_1}, \code{delta_1}}
+}
+
+When parameters from Casale et al. (2017) are used:\cr
+Model I\cr
+\describe{
+\item{One tag lost when 2 are present}{\code{CasaleModelIc_2}}
+\item{One tag lost when 1 is present}{\code{CasaleModelIc_1}}
+}
+Model II\cr
+\describe{
+\item{One tag lost when 2 are present}{\code{CasaleModelIIa0_2}, \code{CasaleModelIIa1_2}, \code{CasaleModelIIa4_2}}
+\item{One tag lost when 1 is present}{\code{CasaleModelIIa0_1}, \code{CasaleModelIIa1_1}, \code{CasaleModelIIa4_1}}
+}
+Model III\cr
+\describe{
+\item{One tag lost when 2 are present}{\code{CasaleModelIIIa0_2}, \code{CasaleModelIIIa1_2}, \code{CasaleModelIIIa4_2}}
+\item{One tag lost when 1 is present}{\code{CasaleModelIIIa0_1}, \code{CasaleModelIIIa1_1}, \code{CasaleModelIIIa4_1}}
+}
+Model IV\cr
+\describe{
+\item{One tag lost when 2 are present}{\code{CasaleModelIVa0_2}, \code{CasaleModelIVa1_2}, \code{CasaleModelIVa2_2}, \code{CasaleModelIVa3_2}, \code{CasaleModelIVa4_2}}
+\item{One tag lost when 1 is present}{\code{CasaleModelIVa0_1}, \code{CasaleModelIVa1_1}, \code{CasaleModelIVa2_1}, \code{CasaleModelIVa3_1}, \code{CasaleModelIVa4_1}}
+}
+Model V\cr
+\describe{
+\item{One tag lost when 2 are present}{\code{CasaleModelVa0_2}, \code{CasaleModelVa1_2}, \code{CasaleModelVa2_2}, \code{CasaleModelVa3_2}, \code{CasaleModelVa4_2}}
+\item{One tag lost when 1 is present}{\code{CasaleModelVa0_1}, \code{CasaleModelVa1_1}, \code{CasaleModelVa2_1}, \code{CasaleModelVa3_1}, \code{CasaleModelVa4_1}}
+}
+
+If only one parameter is fitted, method must be "Brent" and \code{upper} and \code{lower} 
 parameters must be set up with finite values.
 }
 \details{
@@ -68,6 +104,29 @@ Tagloss_fit fits a model of tag loss using a CMR database.
 library(phenology)
 # Example
 data_f_21 <- Tagloss_format(outLR, model="21")
+
+# model fitted by Rivalan et al. 2005
+par <- c(a0_2=-5.43E-2, a1_2=-103.52, a4_2=5.62E-4, 
+         delta_1=3.2E-4)
+pfixed <- c(a2_2=0, a3_2=0, a2_1=0, a3_1=0)
+model_before <- "par['a0_1']=par['a0_2'];par['a1_1']=par['a1_2'];par['a4_1']=par['a4_2']"
+o <- Tagloss_fit(data=data_f_21, fitted.parameters=par, fixed.parameters=pfixed, 
+                 model_before=model_before)
+plot(o, t=1:1000, model="cumul")
+plot(o, t=1:1000, model="1")
+plot(o, t=1:1000, model="2", add=TRUE, col="red")
+
+# Same data fitted with new model
+par <- c(D1_1 = 100.15324837975547, A_1 = 5.9576927964120188, 
+         B_1 = 8.769924225871069, B_2 = 8.2353860179664125)
+pfixed <- c(D2D1_1 = 2568, D3D2_1 = 2568, D2D1_2 = 2568, D3D2_2 = 2568)
+o_4p_p1p2 <- Tagloss_fit(data=data_f, fitted.parameters = par, 
+                         fixed.parameters = pfixed, 
+                         model_before = "par['C_1']=par['B_1'];
+                         par['A_2']=par['A_1'];
+                         par['C_2']=par['B_2'];
+                         par['D1_2']=par['D1_1']", hessian=TRUE)
+                         
 # Without the N20 the computing is much faster
 data_f_21_fast <- subset(data_f_21, subset=(is.na(data_f_21$N20)))
 par <- structure(c(48.8292784204825, 1039.02842229274, -89.3162940697861, 
@@ -81,13 +140,21 @@ plot(o, model="2", col="blue", add=TRUE)
 legend("topright", legend=c("2->1", "1->0"), lty=1, col=c("blue", "red"))
 }
 }
+\references{
+Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C., Girondot, M., 2005. Maximum likelihood estimates of tag loss in leatherback sea turtles. Journal of Wildlife Management 69, 540-548.
+
+Casale, P., Freggi, D., Salvemini, P., 2017. Tag loss is a minor limiting factor in sea turtle tagging programs relying on distant tag returns: the case of Mediterranean loggerhead sea turtles. European Journal of Wildlife Research 63.
+}
 \seealso{
 Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
-  \code{\link{Tagloss_L}}, \code{\link{Tagloss_daymax}},
+  \code{\link{Tagloss_L}}, \code{\link{Tagloss_cumul}},
+  \code{\link{Tagloss_daymax}},
   \code{\link{Tagloss_format}},
   \code{\link{Tagloss_model}},
   \code{\link{Tagloss_simulate}},
-  \code{\link{logLik.Tagloss}}, \code{\link{plot.Tagloss}}
+  \code{\link{logLik.Tagloss}},
+  \code{\link{plot.TaglossData}},
+  \code{\link{plot.Tagloss}}
 }
 \author{
 Marc Girondot

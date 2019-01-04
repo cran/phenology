@@ -37,10 +37,13 @@ data_f_21 <- Tagloss_format(outLR, model="21")
 }
 \seealso{
 Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
-  \code{\link{Tagloss_L}}, \code{\link{Tagloss_daymax}},
-  \code{\link{Tagloss_fit}}, \code{\link{Tagloss_model}},
+  \code{\link{Tagloss_L}}, \code{\link{Tagloss_cumul}},
+  \code{\link{Tagloss_daymax}}, \code{\link{Tagloss_fit}},
+  \code{\link{Tagloss_model}},
   \code{\link{Tagloss_simulate}},
-  \code{\link{logLik.Tagloss}}, \code{\link{plot.Tagloss}}
+  \code{\link{logLik.Tagloss}},
+  \code{\link{plot.TaglossData}},
+  \code{\link{plot.Tagloss}}
 }
 \author{
 Marc Girondot

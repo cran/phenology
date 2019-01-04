@@ -98,7 +98,13 @@ ECFOCF_f <- function(mu, sd = NA, p, MaxNests=15,
     nm <- names(p)[1]
     if (grepl("\\.", names(p)[1])) nm <- gsub("(p[0-9])+\\.[0-9]+$", "\\1", names(p)[1])
     nm <- gsub("p([0-9])+$", "\\1", nm)
-    nm <- ifelse(nm=="p", 1, as.numeric(nm))
+    if (nm=="p") {
+      nm <- 1
+      p <- c(p1=unname(p))
+    } else {
+      nm <- as.numeric(nm)
+    }
+    
     
     # je crée une chaîne avec toute les prob nommées
     commonprob <- ifelse(is.na(p[paste0("p", as.character(nm))]), 0, p[paste0("p", as.character(nm))])
@@ -136,8 +142,12 @@ ECFOCF_f <- function(mu, sd = NA, p, MaxNests=15,
     
     tlist <- list()
     if (cores > 1) {
-      for (i in 1:(cores-1)) tlist <- c(tlist, list(seq(from=1, to=floor(length_season/cores), by=1)+((i-1)*floor(length_season/cores))))
-      tlist <- c(tlist, list(seq(from=rev(tlist[[cores-1]])[1]+1, to=length_season, by=1)))
+      if (cores<length_season) {
+        for (i in 1:(cores-1)) tlist <- c(tlist, list(seq(from=1, to=floor(length_season/cores), by=1)+((i-1)*(floor(length_season/cores)))))
+        tlist <- c(tlist, list(seq(from=rev(tlist[[cores-1]])[1]+1, to=length_season, by=1)))
+      } else {
+        for (i in 1:length_season) tlist <- c(tlist, list(i))
+      }
     } else {
       tlist <- list(seq(from=1, to=length_season, by=1))
     }

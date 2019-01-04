@@ -13,14 +13,39 @@
   
   
   nn <- ifelse(d<xpar["Begin"], xpar["MinB"],
-             ifelse(d<xpar["PmoinsF"], ((1+cos(pi*(xpar["PmoinsF"]-d)/xpar["PmoinsFB"]))/2)*xpar["MaxMinB"]+xpar["MinB"],
-                    ifelse(d<xpar["PplusF"], xpar["Max"],
-                           ifelse(d<xpar["End"], ((1+cos(pi*(d-(xpar["PplusF"]))/xpar["EPplusF"]))/2)*xpar["MaxMinE"]+xpar["MinE"],
-                                  xpar["MinE"]
-                           )
-                    )
-             )
+               ifelse(d<xpar["PmoinsF"], ((1+cos(pi*(xpar["PmoinsF"]-d)/xpar["PmoinsFB"]))/2)*xpar["MaxMinB"]+xpar["MinB"],
+                      ifelse(d<xpar["PplusF"], xpar["Max"],
+                             ifelse(d<xpar["End"], ((1+cos(pi*(d-(xpar["PplusF"]))/xpar["EPplusF"]))/2)*xpar["MaxMinE"]+xpar["MinE"],
+                                    xpar["MinE"]
+                             )
+                      )
+               )
   )
+  
+  nn.1 <- ifelse(d<xpar["Begin.1"], xpar["MinB.1"],
+               ifelse(d<xpar["PmoinsF.1"], ((1+cos(pi*(xpar["PmoinsF.1"]-d)/xpar["PmoinsFB.1"]))/2)*xpar["MaxMinB.1"]+xpar["MinB.1"],
+                      ifelse(d<xpar["PplusF.1"], xpar["Max.1"],
+                             ifelse(d<xpar["End.1"], ((1+cos(pi*(d-(xpar["PplusF.1"]))/xpar["EPplusF.1"]))/2)*xpar["MaxMinE.1"]+xpar["MinE.1"],
+                                    xpar["MinE.1"]
+                             )
+                      )
+               )
+  )
+  
+  nn.2 <- ifelse(d<xpar["Begin.2"], xpar["MinB.2"],
+               ifelse(d<xpar["PmoinsF.2"], ((1+cos(pi*(xpar["PmoinsF.2"]-d)/xpar["PmoinsFB.2"]))/2)*xpar["MaxMinB.2"]+xpar["MinB.2"],
+                      ifelse(d<xpar["PplusF.2"], xpar["Max.2"],
+                             ifelse(d<xpar["End.2"], ((1+cos(pi*(d-(xpar["PplusF.2"]))/xpar["EPplusF.2"]))/2)*xpar["MaxMinE.2"]+xpar["MinE.2"],
+                                    xpar["MinE.2"]
+                             )
+                      )
+               )
+  )
+  
+  nn <- ifelse(is.na(nn), 0, nn)
+  nn.1 <- ifelse(is.na(nn.1), 0, nn.1)
+  nn.2 <- ifelse(is.na(nn.2), 0, nn.2)
+  nn <- nn + nn.1 + nn.2
   
   if (any(is.na(nn))) {
     print("Global: Error, the parameters at the time of error are:")
@@ -70,14 +95,15 @@
   nn[is.na(nn)] <- zero
   
   nn <- ifelse((nn <= zero) & (d<xpar["Begin"]), xpar["MinB"],
-             ifelse((nn <= zero) & (d>xpar["Begin"]), xpar["MinE"],
-                    ifelse(nn <= zero,(xpar["MinB"]+xpar["MinE"])/2,
-                           nn
-                    )
-             )
+               ifelse((nn <= zero) & (d>xpar["Begin"]), xpar["MinE"],
+                      ifelse(nn <= zero,(xpar["MinB"]+xpar["MinE"])/2,
+                             nn
+                      )
+               )
   )
   
   nn[nn <= zero] <- zero
+  nn[is.na(nn)] <- zero
   nn <- unname(nn)
   
   # je suis en en mode interactif, j'affiche le résultat

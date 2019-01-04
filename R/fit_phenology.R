@@ -11,7 +11,7 @@
 #'                           'convolution' [default] uses the exact likelihood of the sum of negative binomial distribution.
 #' @param zero_counts example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 #'                    been recorded for each of these timeseries. Defaut is TRUE for all.
-#' @param infinite Number of iterations for dSnbinom() used for method_incertitude='sum'
+#' @param infinite Number of iterations for dSnbinom() used for method_incertitude='convolution'
 #' @param hessian If FALSE does not estimate se of parameters
 #' @param parallel If FALSE, no parallel computing is done to evaluate likelihood
 #' @param cofactors data.frame with a column Date and a column for each cofactor
@@ -20,6 +20,7 @@
 #' @param growlnotify If FALSE, does not send growl notification (only in MacOSX)
 #' @param zero If the theoretical nest number is under this value, this value wll be used
 #' @param control List for control parameters for optim
+#' @param method Method used by optim. Several can be setup.
 #' @param store.intermediate TRUE or FALSE to save the intermediates
 #' @param file.intermediate Name of the file where to save the intermediates as a list
 #' @description Function of the package phenology to fit parameters to timeseries.\cr
@@ -83,6 +84,28 @@
 #' p <- p[-(3:4)]
 #' result_Gratiot <- fit_phenology(data=data_Gratiot, fitted.parameters=p, 
 #' fixed.parameters=pfixed)
+#' # An example with bimodality
+#' g <- Gratiot
+#' g[30:60, 2] <- sample(10:20, 31, replace = TRUE)
+#' data_g <- add_phenology(g, name="Complete", reference=as.Date("2001-01-01"), 
+#'                         format="%d/%m/%Y")
+#' parg <- c('Max.1_Complete' = 5.6344636692341856, 
+#'           'MinB.1_Complete' = 0.15488810581002324, 
+#'           'MinE.1_Complete' = 0.2, 
+#'           'LengthB.1' = 22.366647176407636, 
+#'           'Peak.1' = 47.902473939250036, 
+#'           'LengthE.1' = 17.828495918533015, 
+#'           'Max.2_Complete' = 33.053364083447434, 
+#'           'MinE.2_Complete' = 0.42438173496989717, 
+#'           'LengthB.2' = 96.651564706802702, 
+#'           'Peak.2' = 175.3451874571835, 
+#'           'LengthE.2' = 62.481968743789835, 
+#'           'Theta' = 3.6423908093342572)
+#' pfixed <- c('MinB.2_Complete' = 0, 
+#'           'Flat.1' = 0, 
+#'           'Flat.2' = 0)
+#' result_g <- fit_phenology(data=data_g, fitted.parameters=p0, fixed.parameters=pfixed)
+#' plot(result_g)
 #' }
 #' @export
 
@@ -96,7 +119,8 @@ function(data=file.choose(), fitted.parameters=NULL, fixed.parameters=NULL,
          hessian=TRUE, silent=FALSE, growlnotify=TRUE, 
          cofactors=NULL, add.cofactors=NULL, zero=1E-9, 
          lower=0, upper=Inf, 
-         control=list(trace=1, REPORT=1, maxit=1000)) {
+         control=list(trace=1, REPORT=1, maxit=1000), 
+         method = c("Nelder-Mead", "L-BFGS-B")) {
 
 # data=NULL
 # lower = 0
@@ -114,6 +138,9 @@ function(data=file.choose(), fitted.parameters=NULL, fixed.parameters=NULL,
 # growlnotify=TRUE
 # zero=1E-9
 # control=list(trace=1, REPORT=1, maxit=1000)
+# method = c("Nelder-Mead", "L-BFGS-B")
+# store.intermediate=FALSE
+# file.intermediate="Intermediate.rda"
 
 # data_Gratiot <- add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 # data=data_Gratiot; fitted.parameters=result_Gratiot$par; fixed.parameters=result_Gratiot$fixed.parameters; trace=1
@@ -123,7 +150,8 @@ function(data=file.choose(), fitted.parameters=NULL, fixed.parameters=NULL,
   # if (!requireNamespace("optimx", quietly = TRUE)) {
   #   stop("optimx package is absent; Please install it first")
   # }
-  method <- c("Nelder-Mead", "L-BFGS-B")
+  # method <- c("Nelder-Mead", "L-BFGS-B")
+  # if (length(fitted.parameters) == 1) method <- "Brent"
   
   # library("optimx")
   
@@ -172,17 +200,8 @@ if (length(zero_counts)!=length(data)) {
   }
 
 	repeat {
-		# resul <- try(optimx::optimx(par=fitted.parameters, fn=Lnegbin, 
-		#              pt=list(data=data, fixed=fixed.parameters, 
-		#                      incertitude=method_incertitude, zerocounts=zero_counts, 
-		#                      infinite=infinite, out=TRUE, cofactors=cofactors, 
-		#                      add.cofactors=add.cofactors, zero=zero, parallel=parallel, 
-		#                      namespar=names(fitted.parameters)),
-		#              lower = lower, 
-		#              upper = upper, 
-		#              method=method, 
-		#              control=modifyList(control, list(dowarn=FALSE, follow.on=TRUE, kkt=FALSE)), 
-		#              hessian=FALSE), silent=TRUE)
+	  
+	  for (m in seq_along(method)) {
 		
 		resul <- optim(par=fitted.parameters, fn=Lnegbin, 
 		               pt=list(data=data, fixed=fixed.parameters, 
@@ -192,11 +211,16 @@ if (length(zero_counts)!=length(data)) {
 		                       namespar=names(fitted.parameters), 
 		                       store.intermediate=store.intermediate, 
 		                       file.intermediate=file.intermediate),
-		               method = method[1], 
+		               lower = lower, 
+		               upper = upper, 
+		               method = method[m], 
 		               control=control, 
 		               hessian=FALSE)
 		
 		resfit <- resul$par
+		if (is.null(names(resfit))) {
+		  names(resfit) <- names(fitted.parameters)
+		}
 		
 		if (any(grepl("^Peak", names(resfit)))) resfit[substr(names(resfit), 1, 4)=="Peak"] <- abs(resfit[substr(names(resfit), 1, 4)=="Peak"])
 		if (any(grepl("^Theta", names(resfit)))) resfit["Theta"] <- abs(resfit["Theta"])
@@ -210,60 +234,24 @@ if (length(zero_counts)!=length(data)) {
 		if (any(grepl("^Min", names(resfit)))) resfit[substr(names(resfit), 1, 3)=="Min"]<-abs(resfit[substr(names(resfit), 1, 3)=="Min"])
 		if (any(grepl("^PMax", names(resfit)))) resfit[substr(names(resfit), 1, 3)=="Max"]<-abs(resfit[substr(names(resfit), 1, 3)=="Max"])
 		
-		resul <- optim(par=resfit, fn=Lnegbin, 
-		               pt=list(data=data, fixed=fixed.parameters, 
-		                       incertitude=method_incertitude, zerocounts=zero_counts, 
-		                       infinite=infinite, out=TRUE, cofactors=cofactors, 
-		                       add.cofactors=add.cofactors, zero=zero, parallel=parallel, 
-		                       namespar=names(fitted.parameters), 
-		                       store.intermediate=store.intermediate, 
-		                       file.intermediate=file.intermediate),
-		               lower = lower, 
-		               upper = upper, 
-		               method = method[2], 
-		               control=control, 
-		               hessian=FALSE)
+		resul$par <- resfit
+		fitted.parameters <- resfit
+	  }
 		
-		
-		
-		# minL <- nrow(resul)
-		# nm <- names(fitted.parameters)
-		# colnames(resul)[1:length(nm)] <- nm
-		# # nm <- gsub("-", ".", nm)
-		# # 
-		# x <- unlist(resul[minL, nm])
-		# conv <- resul[minL, "convcode"]
-		# value <- resul[minL, "value"]
-		
-		x <- resul$par
 		conv <- resul$convergence
 		value <- resul$value
 		
 		if (conv == 0) break
-		fitted.parameters <- x
 		if (!silent) message("Convergence is not acheived. Optimization continues !")
 	}
 	
-  # value <- Lnegbin(x, pt)
-  
-	resfit <- x
-	if (any(grepl("^Peak", names(resfit)))) resfit[substr(names(resfit), 1, 4)=="Peak"] <- abs(resfit[substr(names(resfit), 1, 4)=="Peak"])
-	if (any(grepl("^Theta", names(resfit)))) resfit["Theta"] <- abs(resfit["Theta"])
-	if (any(grepl("^PMin", names(resfit)))) resfit["PMin"] <- abs(resfit["PMin"])
-	# 28/3/2018. J'avais oublié ceux là
-	if (any(grepl("^PMinE", names(resfit)))) resfit["PMinE"] <- abs(resfit["PMinE"])
-	if (any(grepl("^PMinB", names(resfit)))) resfit["PMinB"] <- abs(resfit["PMinB"])
-	if (any(grepl("^Flat", names(resfit)))) resfit["Flat"] <- abs(resfit["Flat"])
-	if (any(grepl("^Length", names(resfit)))) resfit[substr(names(resfit), 1, 6)=="Length"] <- abs(resfit[substr(names(resfit), 1, 6)=="Length"])
-	# Ca fait en même temps MinE et MinB
-	if (any(grepl("^Min", names(resfit)))) resfit[substr(names(resfit), 1, 3)=="Min"]<-abs(resfit[substr(names(resfit), 1, 3)=="Min"])
-	if (any(grepl("^PMax", names(resfit)))) resfit[substr(names(resfit), 1, 3)=="Max"]<-abs(resfit[substr(names(resfit), 1, 3)=="Max"])
-	if (!silent) message("Fit done!")
-	
-	if (!silent) if (is.finite(value)) {
-	  cat(paste("-Ln L=", format(value, digits=max(3, trunc(log10(abs(value)))+4)), "\n", sep=""))
-	  } else {
-	  cat("-Ln L= -Inf\n")
+	if (!silent) {
+	  message("Fit done!")
+	  if (is.finite(value)) {
+	    cat(paste("-Ln L=", format(value, digits=max(3, trunc(log10(abs(value)))+4)), "\n", sep=""))
+	   } else {
+	    cat("-Ln L= -Inf\n")
+	   }
 	}
 	
 	result_list <- resul
@@ -354,7 +342,7 @@ intdtout <- c(reference=ref)
 
 par <- getFromNamespace(".format_par", ns="phenology")(c(resfit, fixed.parameters), names(resul$data[kl]))
 par <- par[1:(length(par)-9)]
-sepfixed <- fixed.parameters[strtrim(names(fixed.parameters), 3)=="sd#"]
+sepfixed <- fixed.parameters[strtrim(names(fixed.parameters), 3)=="se#"]
 if (!is.null(sepfixed) & (!identical(unname(sepfixed), numeric(0)))) names(sepfixed) <- substring(names(sepfixed), 4)
 se <- c(res_se, sepfixed)
 se <- getFromNamespace(".format_par", ns="phenology")(se, names(resul$data[kl]))
