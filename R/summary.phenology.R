@@ -13,11 +13,11 @@
 #' @param print Should information be shown
 #' @param ... Not used
 #' @description The function summary.phenology shows result and estimates confidence interval.
+#' @family Phenology model
 #' @examples
 #' \dontrun{
 #' library(phenology)
 #' # Read a file with data
-#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
@@ -31,7 +31,7 @@
 #' # Display information from the result
 #' summary(result_Gratiot)
 #' # Using mcmc
-#' summary(result_Gratiot, resultmcmc=result_Gratiot_mcmc)
+#' summary(object=result_Gratiot, resultmcmc=result_Gratiot_mcmc)
 #' }
 #' @method summary phenology
 #' @export
@@ -47,7 +47,9 @@ summary.phenology <- function(object,
                               level= 0.95,
                               print = TRUE, 
                               ...) {
-
+  
+  
+  # resultmcmc = NULL;chain = 1;series = "all";replicate.CI.mcmc = "all";replicate.CI = 10000;level= 0.95;print = TRUE
   # object=result_Gratiot; resultmcmc=NULL; level=0.95;chain=1; series="all"; replicate.CI.mcmc = "all"; replicate.CI = 10000; print=TRUE
   # # object=result_Gratiot; resultmcmc=result_Gratiot_mcmc
   
@@ -55,28 +57,28 @@ summary.phenology <- function(object,
   dailycount <- getFromNamespace(".daily_count", ns="phenology")
   
   
-	if (print) {
-  cat(paste("Number of timeseries: ", length(object$data), "\n", sep=""))
-	for (i in 1:length(object$data)) {
-		cat(paste(names(object$data[i]), "\n", sep=""))
-	}
-	cat(paste("Date uncertainty management: ", object$method_incertitude, "\n", sep=""))
-	cat(paste("Managment of zero counts: ", object$zero_counts, "\n", sep=""))
-	cat("Fitted parameters:\n")
-	for (i in 1:length(object$par)) {
-		cat(paste(names(object$par[i]), "=", object$par[i], " SE ", object$se[i], "\n", sep=""))
-	}
-	if (length(object$fixed.parameters)>0) {
-	cat("Fixed parameters:\n")
-	for (i in 1:length(object$fixed.parameters)) {
-		cat(paste(names(object$fixed.parameters[i]), "=", object$fixed.parameters[i], "\n", sep=""))
-	}
-	}
-	cat(paste("Ln L: ", object$value, "\n", sep=""))
-	cat(paste("Parameter number: ", length(object$par), "\n", sep=""))
-	cat(paste("AIC: ", 2*object$value+2*length(object$par), "\n", sep=""))
-	}
-	
+  if (print) {
+    cat(paste("Number of timeseries: ", length(object$data), "\n", sep=""))
+    for (i in 1:length(object$data)) {
+      cat(paste(names(object$data[i]), "\n", sep=""))
+    }
+    cat(paste("Date uncertainty management: ", object$method_incertitude, "\n", sep=""))
+    cat(paste("Managment of zero counts: ", object$zero_counts, "\n", sep=""))
+    cat("Fitted parameters:\n")
+    for (i in 1:length(object$par)) {
+      cat(paste(names(object$par[i]), "=", object$par[i], " SE ", object$se[i], "\n", sep=""))
+    }
+    if (length(object$fixed.parameters)>0) {
+      cat("Fixed parameters:\n")
+      for (i in 1:length(object$fixed.parameters)) {
+        cat(paste(names(object$fixed.parameters[i]), "=", object$fixed.parameters[i], "\n", sep=""))
+      }
+    }
+    cat(paste("Ln L: ", object$value, "\n", sep=""))
+    cat(paste("Parameter number: ", length(object$par), "\n", sep=""))
+    cat(paste("AIC: ", 2*object$value+2*length(object$par), "\n", sep=""))
+  }
+  
   # chain <- 1
   # Name of the series for which we want an estimate
   if (is.numeric(series)) series <- names(object$data)[series]
@@ -86,301 +88,338 @@ summary.phenology <- function(object,
   
   probs <- c((1-level)/2, 0.5, 1-(1-level)/2)
   
-	retdf <- data.frame(series=series, 
-	                    "without_obs_Mean"=rna,
-	                    "with_obs_Mean"=rna,
-	                    "without_obs_Low_ML"=rna, 
-	                    "without_obs_Median_ML"=rna, 
-	                    "without_obs_High_ML"=rna, 
-	                    "with_obs_Low_ML"=rna, 
-	                    "with_obs_Median_ML"=rna, 
-	                    "with_obs_High_ML"=rna, 
-	                    "without_obs_Low_MCMC"=rna, 
-	                    "without_obs_Median_MCMC"=rna, 
-	                    "without_obs_High_MCMC"=rna, 
-	                    "with_obs_Low_MCMC"=rna, 
-	                    "with_obs_Median_MCMC"=rna, 
-	                    "with_obs_High_MCMC"=rna, 
-	                    "NbObservations"=rna, 
-	                    "NbMonitoredDays"=rna,
-	                    stringsAsFactors = FALSE)
-	rownames(retdf) <- series
-	  klist_mcmc <- list()
-	  klist_ML <- list()
-	  klist_Mean <- list()
-	  
-	  # nmser <- series[1]
-	  for (nmser in series) {
-	    
-	    if (print) {
-	      tx <- paste0("Timeseries: ", nmser)
-	      cat(paste0(rep("-", nchar(tx)), collapse=""), "\n")
-	      cat(tx, "\n")
-	      cat(paste0(rep("-", nchar(tx)), collapse=""), "\n")
-	    }
-
-	    dref <- object$Dates[[nmser]]["reference"]
-	    nday <- ifelse(as.POSIXlt(dref+365)$mday==as.POSIXlt(dref)$mday, 365, 366)
-	    
-	    # Observed counts
-	    observedPontes <- data.frame(ordinal=object$data[[nmser]][, "ordinal"], 
-	                                 observed=object$data[[nmser]][, "nombre"])
-	    # je mets des 0 à toutes les dates supplémentaires de la série
-	    if (any(!is.na(object$data[[nmser]][, "ordinal2"]))) {
-	      for (i in which(!is.na(object$data[[nmser]][, "ordinal2"]))) {
-	        rnge <- (object$data[[nmser]][i, "ordinal"]+1):(object$data[[nmser]][i, "ordinal2"])
-	        observedPontes <- rbind(observedPontes, 
-	                                data.frame(ordinal= rnge, 
-	                                           observed=rep(0, length(rnge))))
-	      }
-	    }
-	    
-	    
-	    parg <- formatpar(c(object$par, object$fixed.parameters), nmser)
-	    dc_mean <- dailycount(1:nday, parg)
-	    retdf[nmser, "without_obs_Mean"] <- sum(dc_mean)
-	    
-	    retdf[nmser, "NbObservations"] <- sum(observedPontes$observed)
-	    retdf[nmser, "NbMonitoredDays"] <- nrow(observedPontes)
-	    
-	    if (print) {
-	      cat("Total estimate not taking into account the observations: ")
-	      cat(paste0("Mean=", retdf[nmser, "without_obs_Mean"], "\n"))
-	    }
-	    
-	    # 3/11/2018 Pourquoi Theta seulement dans fixed.parameters ?
-	    # Non, c'est bon, il cherche sur les 2
-	    
-	    SDMin <- NULL
-	    SDMax <- NULL
-	    for (mu in dc_mean) {
-	      qnb <- qnbinom(p = c(probs[1], probs[3]), 
-	                     size=c(object$par, object$fixed.parameters)["Theta"], 
-	                     mu=mu)
-	      SDMin <- c(SDMin, qnb[1])
-	      SDMax <- c(SDMax, qnb[2])
-	    }
-	    
-	    dc_mean <- matrix(data = c(1:nday, dc_mean, SDMin, SDMax), nrow=4, byrow = TRUE)
-	    rownames(dc_mean) <- c("Ordinal", "Mean", "SD.Low", "SD.High")
-	    
-	    k <- list(dc_mean)
-	    names(k) <- nmser
-	    
-	    klist_Mean <- c(klist_Mean, k)
-	    
-	    dc_mean["Mean", observedPontes[, "ordinal"]] <- observedPontes[, "observed"]
-	    retdf[nmser, "with_obs_Mean"] <- sum(dc_mean["Mean", ])
-	    
-	    if (print) {
-	      cat("Total estimate taking into account the observations: ")
-	      cat(paste0("Mean=", retdf[nmser, "with_obs_Mean"], "\n"))
-	    }
-	    
-	    pfixed <- object$fixed.parameters
-	    sepfixed <- pfixed[strtrim(names(pfixed), 3)=="se#"]
-	    pfixed <- pfixed[strtrim(names(pfixed), 3) != "se#"]
-	    if (!is.null(sepfixed)) names(sepfixed) <- substring(names(sepfixed), 4)
-	    
-	    # J'ai un sd sur des paramètres fixés
-	    # if (!is.null(sepfixed) & (!identical(unname(sepfixed), numeric(0)))) {
-	      
-	      pfixed.df <- data.frame()
-	      pfixed.df.mcmc <- data.frame()
-	      
-	      replicate.CI.mcmc.x <- NULL
-	      if (!is.null(resultmcmc)) {
-	        if (replicate.CI.mcmc == "all") {
-	          replicate.CI.mcmc.x <- nrow(resultmcmc$resultMCMC[[chain]])
-	        } else {
-	          replicate.CI.mcmc.x <- replicate.CI.mcmc
-	        }
-	      }
-	      
-	      if (!is.null(pfixed)) {
-	        for (i in seq_along(pfixed)) {
-	          dfadd <- data.frame()
-	          dfadd.mcmc <- data.frame()
-	          
-	          if (!is.na(sepfixed[names(pfixed[i])])) {
-	            if (!is.null(replicate.CI)) {
-	              dfadd <- data.frame(rnorm(n=replicate.CI, mean=unname(pfixed[i]), sd=sepfixed[names(pfixed[i])]))
-	              colnames(dfadd) <- names(pfixed[i])
-	            }
-	            if (!is.null(replicate.CI.mcmc.x)) {
-	              dfadd.mcmc <- data.frame(rnorm(n=replicate.CI.mcmc.x, mean=unname(pfixed[i]), sd=sepfixed[names(pfixed[i])]))
-	              colnames(dfadd.mcmc) <- names(pfixed[i])
-	            }
-	          } else {
-	            if (!is.null(replicate.CI)) {
-	              dfadd <- data.frame(rep(unname(pfixed[i]), replicate.CI))
-	              colnames(dfadd) <- names(pfixed[i])
-	            }
-	            if (!is.null(replicate.CI.mcmc.x)) {
-	              dfadd.mcmc <- data.frame(rep(unname(pfixed[i]), replicate.CI.mcmc.x))
-	              colnames(dfadd.mcmc) <- names(pfixed[i])
-	            }
-	          }
-	          if (ncol(pfixed.df.mcmc) ==0 ) {
-	            pfixed.df.mcmc <- dfadd.mcmc
-	          } else {
-	            pfixed.df.mcmc <- cbind(pfixed.df.mcmc, dfadd.mcmc)
-	          }
-	          if (ncol(pfixed.df) ==0 ) {
-	            pfixed.df <- dfadd
-	          } else {
-	            pfixed.df <- cbind(pfixed.df, dfadd)
-	          }
-	          
-	        }
-	      }
-	      
-	      pfixed.df <- as.matrix(pfixed.df)
-	      pfixed.df.mcmc <- as.matrix(pfixed.df.mcmc)
-	    
-	    
-	    lnday <- 1:nday
-	    opord <- observedPontes[, "ordinal"]
-	    opnumb <- observedPontes[, "observed"]
-	    
-      if (!is.null(resultmcmc)) {
-        lmcmc <- nrow(resultmcmc$resultMCMC[[chain]])
-        mcmctobeused <- 1:lmcmc
-        if (replicate.CI.mcmc != "all") {
-          repl <- ifelse(nrow(resultmcmc$resultMCMC[[chain]]) <= replicate.CI.mcmc, TRUE, FALSE)
-          mcmctobeused <- sample(x=mcmctobeused, 
-	                             size=replicate.CI.mcmc, 
-	                             replace = repl)
+  retdf <- data.frame(series=series, 
+                      "without_obs_Mean"=rna,
+                      "with_obs_Mean"=rna,
+                      
+                      "without_obs_Low_ML"=rna, 
+                      "without_obs_Median_ML"=rna, 
+                      "without_obs_High_ML"=rna, 
+                      "without_obs_Mean_ML"=rna, 
+                      "without_obs_Var_ML"=rna, 
+                      
+                      "with_obs_Low_ML"=rna, 
+                      "with_obs_Median_ML"=rna, 
+                      "with_obs_High_ML"=rna, 
+                      "with_obs_Mean_ML"=rna, 
+                      "with_obs_Var_ML"=rna, 
+                      
+                      "without_obs_Low_MCMC"=rna, 
+                      "without_obs_Median_MCMC"=rna, 
+                      "without_obs_High_MCMC"=rna, 
+                      "without_obs_Mean_MCMC"=rna, 
+                      "without_obs_Var_MCMC"=rna,
+                      
+                      "with_obs_Low_MCMC"=rna, 
+                      "with_obs_Median_MCMC"=rna, 
+                      "with_obs_High_MCMC"=rna, 
+                      "with_obs_Mean_MCMC"=rna, 
+                      "with_obs_Var_MCMC"=rna, 
+                      
+                      "NbObservations"=rna, 
+                      "NbMonitoredDays"=rna,
+                      stringsAsFactors = FALSE)
+  rownames(retdf) <- series
+  klist_mcmc <- list()
+  klist_ML <- list()
+  klist_Mean <- list()
+  
+  # nmser <- series[1]
+  for (nmser in series) {
+    
+    if (print) {
+      tx <- paste0("Timeseries: ", nmser)
+      cat(paste0(rep("-", nchar(tx)), collapse=""), "\n")
+      cat(tx, "\n")
+      cat(paste0(rep("-", nchar(tx)), collapse=""), "\n")
+    }
+    
+    dref <- object$Dates[[nmser]]["reference"]
+    # dref <- attributes(object$data[[nmser]])[["reference"]]
+    nday <- ifelse(as.POSIXlt(dref+365)$mday==as.POSIXlt(dref)$mday, 365, 366)
+    
+    # Observed counts
+    observedPontes <- data.frame(ordinal=object$data[[nmser]][, "ordinal"], 
+                                 observed=object$data[[nmser]][, "nombre"])
+    # je mets des 0 à toutes les dates supplémentaires de la série
+    if (any(!is.na(object$data[[nmser]][, "ordinal2"]))) {
+      for (i in which(!is.na(object$data[[nmser]][, "ordinal2"]))) {
+        rnge <- (object$data[[nmser]][i, "ordinal"]+1):(object$data[[nmser]][i, "ordinal2"])
+        observedPontes <- rbind(observedPontes, 
+                                data.frame(ordinal= rnge, 
+                                           observed=rep(0, length(rnge))))
+      }
+    }
+    
+    
+    parg <- formatpar(c(object$par, object$fixed.parameters), nmser)
+    
+    cof <- NULL
+    if ((!is.null(object$add.cofactors)) & (!is.null(object$cofactors))) {
+      
+      j <- 0:(nday-1)  
+      # à analyser
+      cof <- object$cofactors[object$cofactors$Date %in% (dref+j), ]
+      cof <- cof[, -1, drop=FALSE]
+      cof <- as.data.frame(cbind(Date=j, cof))
+    }
+    
+    
+    dc_mean <- dailycount(d=0:(nday-1), xpar=parg, 
+                          cofactors=cof, 
+                          add.cofactors=object$add.cofactors, 
+                          print=FALSE, zero=1E-9)
+    retdf[nmser, "without_obs_Mean"] <- sum(dc_mean)
+    
+    retdf[nmser, "NbObservations"] <- sum(observedPontes$observed)
+    retdf[nmser, "NbMonitoredDays"] <- nrow(observedPontes)
+    
+    if (print) {
+      cat("Total estimate not taking into account the observations: ")
+      cat(paste0("Mean=", retdf[nmser, "without_obs_Mean"], "\n"))
+    }
+    
+    # 3/11/2018 Pourquoi Theta seulement dans fixed.parameters ?
+    # Non, c'est bon, il cherche sur les 2
+    
+    SDMin <- NULL
+    SDMax <- NULL
+    for (mu in dc_mean) {
+      qnb <- qnbinom(p = c(probs[1], probs[3]), 
+                     size=c(object$par, object$fixed.parameters)["Theta"], 
+                     mu=mu)
+      SDMin <- c(SDMin, qnb[1])
+      SDMax <- c(SDMax, qnb[2])
+    }
+    
+    dc_mean <- data.frame(Date=dref+(0:(nday-1)), Ordinal = 0:(nday-1), Mean=NA, SD.Low=SDMin, SD.High=SDMax, Observed=NA, Modelled=dc_mean)
+    dc_mean[match(observedPontes[, "ordinal"], dc_mean[, "Ordinal"]), "Observed"] <- observedPontes[, "observed"]
+    dc_mean[, "Mean"] <- ifelse(is.na(dc_mean[, "Observed"]), dc_mean[, "Modelled"], dc_mean[, "Observed"])
+    
+    if (!is.null(cof)) {
+      dc_mean <- cbind(dc_mean, cof[, -1, drop=FALSE])
+    }
+    
+    rownames(dc_mean) <- dc_mean[, "Ordinal"]
+    k <- list(dc_mean)
+    names(k) <- nmser
+    
+    klist_Mean <- c(klist_Mean, k)
+    
+    # 22/9/2019: Je mets + 1 sinon peut faire 0 et provoque une erreur
+    retdf[nmser, "with_obs_Mean"] <- sum(dc_mean[, "Mean"])
+    
+    if (print) {
+      cat("Total estimate taking into account the observations: ")
+      cat(paste0("Mean=", retdf[nmser, "with_obs_Mean"], "\n"))
+    }
+    
+    pfixed <- object$fixed.parameters
+    sepfixed <- pfixed[strtrim(names(pfixed), 3)=="se#"]
+    pfixed <- pfixed[strtrim(names(pfixed), 3) != "se#"]
+    if (!is.null(sepfixed)) names(sepfixed) <- substring(names(sepfixed), 4)
+    
+    # J'ai un sd sur des paramètres fixés
+    # if (!is.null(sepfixed) & (!identical(unname(sepfixed), numeric(0)))) {
+    
+    pfixed.df <- data.frame()
+    pfixed.df.mcmc <- data.frame()
+    
+    replicate.CI.mcmc.x <- NULL
+    if (!is.null(resultmcmc)) {
+      if (replicate.CI.mcmc == "all") {
+        replicate.CI.mcmc.x <- nrow(resultmcmc$resultMCMC[[chain]])
+      } else {
+        replicate.CI.mcmc.x <- replicate.CI.mcmc
+      }
+    }
+    
+    if (!is.null(pfixed)) {
+      for (i in seq_along(pfixed)) {
+        dfadd <- data.frame()
+        dfadd.mcmc <- data.frame()
+        
+        if (!is.na(sepfixed[names(pfixed[i])])) {
+          if (!is.null(replicate.CI)) {
+            dfadd <- data.frame(rnorm(n=replicate.CI, mean=unname(pfixed[i]), sd=sepfixed[names(pfixed[i])]))
+            colnames(dfadd) <- names(pfixed[i])
+          }
+          if (!is.null(replicate.CI.mcmc.x)) {
+            dfadd.mcmc <- data.frame(rnorm(n=replicate.CI.mcmc.x, mean=unname(pfixed[i]), sd=sepfixed[names(pfixed[i])]))
+            colnames(dfadd.mcmc) <- names(pfixed[i])
+          }
         } else {
-          replicate.CI.mcmc <- nrow(resultmcmc$resultMCMC[[chain]])
+          if (!is.null(replicate.CI)) {
+            dfadd <- data.frame(rep(unname(pfixed[i]), replicate.CI))
+            colnames(dfadd) <- names(pfixed[i])
+          }
+          if (!is.null(replicate.CI.mcmc.x)) {
+            dfadd.mcmc <- data.frame(rep(unname(pfixed[i]), replicate.CI.mcmc.x))
+            colnames(dfadd.mcmc) <- names(pfixed[i])
+          }
+        }
+        if (ncol(pfixed.df.mcmc) ==0 ) {
+          pfixed.df.mcmc <- dfadd.mcmc
+        } else {
+          pfixed.df.mcmc <- cbind(pfixed.df.mcmc, dfadd.mcmc)
+        }
+        if (ncol(pfixed.df) ==0 ) {
+          pfixed.df <- dfadd
+        } else {
+          pfixed.df <- cbind(pfixed.df, dfadd)
         }
         
-	      
-        if (ncol(pfixed.df.mcmc) != 0) {
-          dailydata <- sapply(X = 1:replicate.CI.mcmc, FUN=function(xxx) {
-            px <- c(resultmcmc$resultMCMC[[chain]][mcmctobeused[xxx], ], pfixed.df.mcmc[xxx, ])
-            xparec <- formatpar(px, nmser)
-            dailycount(lnday, xparec, print=FALSE)
-          })
-        } else {
-          dailydata <- sapply(X = 1:replicate.CI.mcmc, FUN=function(xxx) {
-            px <- c(resultmcmc$resultMCMC[[chain]][mcmctobeused[xxx], ])
-            xparec <- formatpar(px, nmser)
-            dailycount(lnday, xparec, print=FALSE)
-          })
-        }
-	    
-	    synthesisPontes <- apply(X = dailydata, MARGIN = 2, FUN=sum)
-	    
-	    synthesisPontes_withObs <- apply(X = dailydata, MARGIN = 2, FUN=function(xxx) {
-	      xxx[opord] <- opnumb
-	      sum(xxx)
-	    })
-	    
-	    k <- apply(X = dailydata, MARGIN=1, 
-	                    FUN = function(x) {quantile(x, probs=probs)})
-	    k <- list(rbind(Ordinal=lnday, k))
-
-	    names(k) <- nmser
-
-	    klist_mcmc <- c(klist_mcmc, k)
-	    
-	    k <- unname(quantile(synthesisPontes, probs=probs))
-	    retdf[nmser, c("without_obs_Low_MCMC", "without_obs_Median_MCMC", "without_obs_High_MCMC")] <- k
-	    
-	    if (print) {
-	      cat("Total estimate not taking into account the observations MCMC-based:\n")
-	      cat(paste0("Low=", k[1], "   Median=", k[2], "   High=", k[3], "\n"))
-	    }
-	    
-	    k <- unname(quantile(synthesisPontes_withObs, probs=probs))
-	  retdf[nmser, c("with_obs_Low_MCMC", "with_obs_Median_MCMC", "with_obs_High_MCMC")] <- k
-	  
-	  if (print) {
-	    cat("Total estimate taking into account the observations MCMC-based:\n")
-	    cat(paste0("Low=", k[1], "   Median=", k[2], "   High=", k[3], "\n"))
-	  }
-	  
+      }
+    }
+    
+    pfixed.df <- as.matrix(pfixed.df)
+    pfixed.df.mcmc <- as.matrix(pfixed.df.mcmc)
+    
+    
+    lnday <- 0:(nday-1)
+    # 22/9/2019: Décalage d'un jour
+    opord <- observedPontes[, "ordinal"]+1
+    opnumb <- observedPontes[, "observed"]
+    
+    if (!is.null(resultmcmc)) {
+      lmcmc <- nrow(resultmcmc$resultMCMC[[chain]])
+      mcmctobeused <- 1:lmcmc
+      if (replicate.CI.mcmc != "all") {
+        repl <- ifelse(nrow(resultmcmc$resultMCMC[[chain]]) <= replicate.CI.mcmc, TRUE, FALSE)
+        mcmctobeused <- sample(x=mcmctobeused, 
+                               size=replicate.CI.mcmc, 
+                               replace = repl)
+      } else {
+        replicate.CI.mcmc <- nrow(resultmcmc$resultMCMC[[chain]])
+      }
+      
+      
+      if (ncol(pfixed.df.mcmc) != 0) {
+        dailydata <- sapply(X = 1:replicate.CI.mcmc, FUN=function(xxx) {
+          px <- c(resultmcmc$resultMCMC[[chain]][mcmctobeused[xxx], ], pfixed.df.mcmc[xxx, ])
+          xparec <- formatpar(px, nmser)
+          dailycount(lnday, xparec, print=FALSE, cofactors=cof, 
+                     add.cofactors=object$add.cofactors)
+        })
+      } else {
+        dailydata <- sapply(X = 1:replicate.CI.mcmc, FUN=function(xxx) {
+          px <- c(resultmcmc$resultMCMC[[chain]][mcmctobeused[xxx], ])
+          xparec <- formatpar(px, nmser)
+          dailycount(lnday, xparec, print=FALSE, cofactors=cof, 
+                     add.cofactors=object$add.cofactors)
+        })
+      }
+      
+      synthesisPontes <- apply(X = dailydata, MARGIN = 2, FUN=sum)
+      
+      synthesisPontes_withObs <- apply(X = dailydata, MARGIN = 2, FUN=function(xxx) {
+        xxx[opord] <- opnumb
+        sum(xxx)
+      })
+      
+      k <-as.data.frame(t(apply(X = dailydata, MARGIN=1, 
+                 FUN = function(x) {quantile(x, probs=probs)})))
+      k <- list(cbind(Ordinal=lnday, k))
+      
+      names(k) <- nmser
+      
+      klist_mcmc <- c(klist_mcmc, k)
+      
+      k <- unname(quantile(synthesisPontes, probs=probs))
+      retdf[nmser, c("without_obs_Low_MCMC", "without_obs_Median_MCMC", "without_obs_High_MCMC")] <- k
+      retdf[nmser, c("without_obs_Mean_MCMC", "without_obs_Var_MCMC")] <- c(mean(synthesisPontes), var(synthesisPontes))
+      
+      if (print) {
+        cat("Total estimate not taking into account the observations MCMC-based:\n")
+        cat(paste0("Low=", k[1], "   Median=", k[2], "   High=", k[3], "\n"))
+      }
+      
+      k <- unname(quantile(synthesisPontes_withObs, probs=probs))
+      retdf[nmser, c("with_obs_Low_MCMC", "with_obs_Median_MCMC", "with_obs_High_MCMC")] <- k
+      retdf[nmser, c("with_obs_Mean_MCMC", "with_obs_Var_MCMC")] <- c(mean(synthesisPontes_withObs), var(synthesisPontes_withObs))
+      
+      if (print) {
+        cat("Total estimate taking into account the observations MCMC-based:\n")
+        cat(paste0("Low=", k[1], "   Median=", k[2], "   High=", k[3], "\n"))
+      }
+      
     } else {
+      k <- list(NA)
+      names(k) <- nmser
+      klist_mcmc <- c(klist_mcmc, k)
+    }
+    # fin du mcmc analysis
+    
+
+    # Maintenant en prenant en compte la matrice hessienne
+    
+    if (!is.null(object$hessian)) {
+      if (all(names(object$par) %in% colnames(object$hessian))) {
+        
+        par2 <- RandomFromHessianOrMCMC(
+          Hessian = object$hessian,
+          fitted.parameters = object$par,
+          fixed.parameters = object$fixed.parameters,
+          probs = c(0.025, 0.5, 0.975),
+          replicates = replicate.CI, silent=TRUE)
+        par2 <- par2$random
+        
+        dailydata <- sapply(1:replicate.CI, FUN=function(xxx) {
+          dailycount(lnday, formatpar(c(par2[xxx, ]), nmser), print=FALSE, cofactors=cof, 
+                     add.cofactors=object$add.cofactors)
+        })
+        
+        k <- as.data.frame(t(apply(X = dailydata, MARGIN=1, 
+                   FUN = function(x) {quantile(x, probs=probs)})))
+        k <- list(cbind(Ordinal=lnday, k))
+        
+        names(k) <- nmser
+        
+        klist_ML <- c(klist_ML, k)
+        
+        synthesisPontes <- apply(X = dailydata, MARGIN = 2, FUN=sum)
+        
+        synthesisPontes_withObs <- apply(X = dailydata, MARGIN = 2, FUN=function(xxx) {
+          xxx[opord] <- opnumb
+          sum(xxx)
+        })
+        
+        k <- unname(quantile(synthesisPontes, probs=probs))
+        retdf[nmser, c("without_obs_Low_ML", "without_obs_Median_ML", "without_obs_High_ML")] <- k
+        retdf[nmser, c("without_obs_Mean_ML", "without_obs_Var_ML")] <- c(mean(synthesisPontes), var(synthesisPontes))
+        
+        if (print) {
+          cat("Total estimate not taking into account the observations ML-based:\n")
+          cat(paste0("Low=", k[1], "   Median=", k[2], "   High=", k[3], "\n"))
+        }
+        
+        k <- unname(quantile(synthesisPontes_withObs, probs=probs))
+        retdf[nmser, c("with_obs_Low_ML", "with_obs_Median_ML", "with_obs_High_ML")] <- k
+        retdf[nmser, c("with_obs_Mean_ML", "with_obs_Var_ML")] <- c(mean(synthesisPontes_withObs), var(synthesisPontes_withObs))
+        
+        if (print) {
+          cat("Total estimate taking into account the observations ML-based:\n")
+          cat(paste0("Low=", k[1], "   Median=", k[2], "   High=", k[3], "\n"))
+        }
+      } else {
         k <- list(NA)
         names(k) <- nmser
-        klist_mcmc <- c(klist_mcmc, k)
+        klist_ML <- c(klist_ML, k)
+      }
+    } else {
+      k <- list(NA)
+      names(k) <- nmser
+      klist_ML <- c(klist_ML, k)
     }
-	    # fin du mcmc analysis
-	    
-	    
-	    
-	    
-	    
-	    
-	    # Maintenant en prenant en compte la matrice hessienne
-	    
-	    if (!is.null(object$hessian)) {
-	      
-	      vcov <- solve(object$hessian)
-	      # dg <- diag(vcov)
-	      parg <- object$par
-	      
-	      par2 <- rmnorm(n = replicate.CI, mean = parg, vcov)
-	      colnames(par2) <- names(parg)
-	      
-	      
-	      if (ncol(pfixed.df) != 0) {
-	        dailydata <- sapply(1:replicate.CI, FUN=function(xxx) {
-	          dailycount(lnday, formatpar(c(par2[xxx, ], pfixed.df[xxx, ]), nmser), print=FALSE)
-	        })
-	      } else {
-	        dailydata <- sapply(1:replicate.CI, FUN=function(xxx) {
-	          dailycount(lnday, formatpar(c(par2[xxx, ]), nmser), print=FALSE)
-	        })
-	        
-	      }
-	      
-	      k <- apply(X = dailydata, MARGIN=1, 
-	                      FUN = function(x) {quantile(x, probs=probs)})
-	      k <- list(rbind(Ordinal=lnday, k))
-
-	      names(k) <- nmser
-	      
-	      klist_ML <- c(klist_ML, k)
-	      
-	      synthesisPontes <- apply(X = dailydata, MARGIN = 2, FUN=sum)
-	      
-	      synthesisPontes_withObs <- apply(X = dailydata, MARGIN = 2, FUN=function(xxx) {
-	        xxx[opord] <- opnumb
-	        sum(xxx)
-	      })
-	      
-	      k <- unname(quantile(synthesisPontes, probs=probs))
-	      retdf[nmser, c("without_obs_Low_ML", "without_obs_Median_ML", "without_obs_High_ML")] <- k
-	      
-	      if (print) {
-	        cat("Total estimate not taking into account the observations ML-based:\n")
-	        cat(paste0("Low=", k[1], "   Median=", k[2], "   High=", k[3], "\n"))
-	      }
-	      
-	      k <- unname(quantile(synthesisPontes_withObs, probs=probs))
-	      retdf[nmser, c("with_obs_Low_ML", "with_obs_Median_ML", "with_obs_High_ML")] <- k
-	      
-	      if (print) {
-	        cat("Total estimate taking into account the observations ML-based:\n")
-	        cat(paste0("Low=", k[1], "   Median=", k[2], "   High=", k[3], "\n"))
-	      }
-	      
-	    } else {
-	      k <- list(NA)
-	      names(k) <- nmser
-	      klist_ML <- c(klist_ML, k)
-	    }
-	    
-	    
-	    
-
-# fin de la boucle des séries
-	  }
-	  
-	  rout <- list(synthesis=retdf, details_mcmc=klist_mcmc, 
-	               details_ML=klist_ML, details_Mean=klist_Mean)
-	  class(rout) <- "phenologyout"
+    
+    
+    
+    
+    # fin de la boucle des séries
+  }
+  
+  rout <- list(synthesis=retdf, details_mcmc=klist_mcmc, 
+               details_ML=klist_ML, details_Mean=klist_Mean)
+  class(rout) <- "phenologyout"
   return(invisible(rout))
 }

@@ -4,15 +4,27 @@
 \alias{plot.Tagloss}
 \title{Plot the daily rate of tag loss.}
 \usage{
-\method{plot}{Tagloss}(x, t = NULL, fitted.parameters = NULL,
-  fixed.parameters = NULL, scale = 1, model_before = NULL,
-  model_after = NULL, model = c("1", "2", "R1", "R2", "L1", "L2",
-  "cumul", "cumul1", "N2", "N1", "N0", "NLR", "N0R", "NL0", "N00"),
+\method{plot}{Tagloss}(
+  x,
+  t = NULL,
+  fitted.parameters = NULL,
+  fixed.parameters = NULL,
+  scale = 1,
+  model_before = NULL,
+  model_after = NULL,
+  model = c("1", "2", "R1", "R2", "L1", "L2", "cumul", "cumul1", "N2", "N1", "N0",
+    "NLR", "N0R", "NL0", "N00"),
   col = rev(grey.colors(4, start = 0.9, end = 0.3)),
   text.col = grey.colors(4, start = 0.9, end = 0.3),
-  label.col = "black", add = FALSE, hessian = NULL,
-  replicates = NULL, probs = c(0.025, 0.975), progressbar = FALSE,
-  decoration = FALSE, ...)
+  label.col = "black",
+  add = FALSE,
+  hessian = NULL,
+  replicates = NULL,
+  probs = c(0.025, 0.975),
+  progressbar = FALSE,
+  decoration = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{Object obteined from Tagloss_fit()}
@@ -39,7 +51,7 @@
 
 \item{add}{Should the data be added to a previous plot?}
 
-\item{hessian}{Should confidence interval be shown}
+\item{hessian}{Hessian matrix of parameters}
 
 \item{replicates}{Number of replicates for confidence interval}
 
@@ -52,7 +64,7 @@
 \item{...}{Parameters transmitted to plot}
 }
 \value{
-A dataframe with values used for plotting.
+An invisible dataframe with values used for plotting.
 }
 \description{
 Plot the daily rate of tag loss.\cr
@@ -121,14 +133,19 @@ phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, model="R2",
 }
 }
 \seealso{
-Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
-  \code{\link{Tagloss_L}}, \code{\link{Tagloss_cumul}},
-  \code{\link{Tagloss_daymax}}, \code{\link{Tagloss_fit}},
-  \code{\link{Tagloss_format}},
-  \code{\link{Tagloss_model}},
-  \code{\link{Tagloss_simulate}},
-  \code{\link{logLik.Tagloss}},
-  \code{\link{plot.TaglossData}}
+Other Model of Tag-loss: 
+\code{\link{Tagloss_LengthObs}()},
+\code{\link{Tagloss_L}()},
+\code{\link{Tagloss_cumul}()},
+\code{\link{Tagloss_daymax}()},
+\code{\link{Tagloss_fit}()},
+\code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc}()},
+\code{\link{Tagloss_model}()},
+\code{\link{Tagloss_simulate}()},
+\code{\link{logLik.Tagloss}()},
+\code{\link{o_4p_p1p2}},
+\code{\link{plot.TaglossData}()}
 }
 \author{
 Marc Girondot

@@ -4,12 +4,16 @@
 \alias{phenology_MHmcmc_p}
 \title{Generates set of parameters to be used with phenology_MHmcmc()}
 \usage{
-
-  phenology_MHmcmc_p(result = stop("An output from fit_phenology() must be provided"),
-  accept = FALSE)
+phenology_MHmcmc_p(
+  result = stop("An output from fit_phenology() must be provided"),
+  default.density = "dunif",
+  accept = FALSE
+)
 }
 \arguments{
 \item{result}{An object obtained after a fit_phenology() fit}
+
+\item{default.density}{The default density, "dnorm" or "dunif'}
 
 \item{accept}{If TRUE, does not wait for use interaction}
 }
@@ -17,7 +21,7 @@
 A matrix with the parameters
 }
 \description{
-Interactive script used to generate set of parameters to be used with phenology_MHmcmc().\cr
+Interactive script used to generate set of parameters to be used with phenology_MHmcmc().
 }
 \details{
 phenology_MHmcmc_p generates set of parameters to be used with MHmcmc()
@@ -55,6 +59,47 @@ summary(mcmc)$statistics[,"Time-series SE"]
 plot(result_Gratiot_mcmc, parameters=3, las=1, xlim=c(-10, 300))
 }
 }
+\seealso{
+Other Phenology model: 
+\code{\link{AutoFitPhenology}()},
+\code{\link{BE_to_LBLE}()},
+\code{\link{Gratiot}},
+\code{\link{LBLE_to_BE}()},
+\code{\link{LBLE_to_L}()},
+\code{\link{L_to_LBLE}()},
+\code{\link{MarineTurtles_2002}},
+\code{\link{MinBMinE_to_Min}()},
+\code{\link{adapt_parameters}()},
+\code{\link{add_SE}()},
+\code{\link{add_phenology}()},
+\code{\link{extract_result}()},
+\code{\link{fit_phenology}()},
+\code{\link{likelihood_phenology}()},
+\code{\link{logLik.phenology}()},
+\code{\link{map_Gratiot}},
+\code{\link{map_phenology}()},
+\code{\link{par_init}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology}()},
+\code{\link{plot.phenologymap}()},
+\code{\link{plot.phenology}()},
+\code{\link{plot_delta}()},
+\code{\link{plot_phi}()},
+\code{\link{print.phenologymap}()},
+\code{\link{print.phenologyout}()},
+\code{\link{print.phenology}()},
+\code{\link{remove_site}()},
+\code{\link{result_Gratiot1}},
+\code{\link{result_Gratiot2}},
+\code{\link{result_Gratiot_Flat}},
+\code{\link{result_Gratiot_mcmc}},
+\code{\link{result_Gratiot}},
+\code{\link{summary.phenologymap}()},
+\code{\link{summary.phenologyout}()},
+\code{\link{summary.phenology}()}
+}
 \author{
 Marc Girondot
 }
+\concept{Phenology model}

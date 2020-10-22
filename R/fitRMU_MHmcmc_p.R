@@ -3,6 +3,7 @@
 #' @author Marc Girondot
 #' @return A matrix with the parameters
 #' @param result An object obtained after a fitRMU() fit
+#' @param density Preset of density; can be dnorm or dunif
 #' @param accept If TRUE, does not wait for use interaction
 #' @family Fill gaps in RMU
 #' @description Interactive script used to generate set of parameters to be used with phenology_MHmcmc().\cr
@@ -37,142 +38,203 @@
 #' @export
 
 fitRMU_MHmcmc_p <- function(result=stop("An output from fitRMU() must be provided"), 
-	accept=FALSE) {
-
-if (class(result)!="fitRMU") {
-  stop("An output from fitRMU() must be provided")
-}
-
-
-# rownames(parametersMCMC)<-names(par)
-
-parametersMCMC <- data.frame(Density=character(), Prior1=numeric(), Prior2=numeric(), 
-SDProp=numeric(), Min=numeric(), Max=numeric(), Init=numeric(), stringsAsFactors = FALSE)
-
-for (indice.par in seq_along(result$par)) {
-  par <- result$par[indice.par]
-  SE <- result$SE[indice.par]
-  if (is.na(SE)) SE <- par/10
-  nm <- names(par)
-  if (nm=="r") parametersMCMC_ec <- data.frame(Density="dnorm", Prior1=unname(par), Prior2=unname(SE), 
-                                            SDProp=2, Min=min(-1, unname(par)-1), 
-                                            Max=max(1, unname(par)+1), Init=unname(par), 
-                                            row.names = nm, stringsAsFactors = FALSE)
-  if (substr(nm, 1, 2)=="T_") parametersMCMC_ec <- data.frame(Density="dnorm", 
-                                              Prior1=unname(par), Prior2=unname(SE), 
-                                               SDProp=2, Min=0.01, Max=max(10000, unname(par)+1000), Init=unname(par), 
-                                      row.names = nm, stringsAsFactors = FALSE)
+                            density="dunif", accept=FALSE) {
   
-  if (substr(nm, 1, 3)=="SD_") parametersMCMC_ec <- data.frame(Density="dnorm", 
-                                                              Prior1=unname(par), Prior2=unname(SE), 
-                                                              SDProp=2, Min=0.01, Max=max(200, unname(par)+100), Init=unname(par), 
-                                                              row.names = nm, stringsAsFactors = FALSE)
-  if (substr(nm, 1, 1)=="a" & substr(nm, 3, 3)=="_") parametersMCMC_ec <- data.frame(Density="dnorm", 
-                                                              Prior1=unname(par), Prior2=unname(SE), 
-                                                              SDProp=2, Min=min(-10, unname(par)-2), 
-                                                              Max=max(10, unname(par)+2), Init=unname(par), 
-                                                              row.names = nm, stringsAsFactors = FALSE)
-  parametersMCMC <- rbind(parametersMCMC, parametersMCMC_ec)
-}
-
-parametersMCMC[, "Prior2"] <- abs(parametersMCMC[, "Prior2"])
-
-parameters <- parametersMCMC
-
-if (accept) {
-	return(parameters)
-} else {
-
-	repeat {
-
-cat("Proposition:\n")
-print(parameters)
-cat("Name of the parameter to change or Enter to quit:\n")
-f<-scan(nmax=1, quiet=TRUE, what=character())
-
-if (length(f)==0) f <- "q"
-
-if (f=="q") {
-	return(parameters)
-	
-} else {
-
-	variable <- which(f==names(par))
-	if (length(variable)==0) {
-	cat("The parameter does not exist:\n")
-	} else {
-	print(variable)
-	cat(paste("Change for the parameter ",names(par)[variable],":\n",sep=""))
-
-	cat(paste("Distribution of the prior (Enter for default ",parameters[variable, "Density"], "):", sep=""))
-	density<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(density)!=0) { parameters[variable, "Density"] <- density } else { density <- parameters[variable, "Density"] }
-	
-	if (density == "dunif") {
-	
-	cat(paste("Distribution of the prior, Minimum (Enter for default ",parameters[variable, "Prior1"], "):", sep=""))
-	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Prior1"] <- f
-	cat(paste("Distribution of the prior, Maximum (Enter for default ",parameters[variable, "Prior2"], "):", sep=""))
-	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Prior2"] <- f
-	
-	} else {
-	
-	if (density == "dnorm") {
-	
-	cat(paste("Distribution of the prior, Mean (Enter for default ",parameters[variable, "Prior1"], "):", sep=""))
-	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Prior1"] <- f
-	cat(paste("Distribution of the prior, Standard deviation (Enter for default ",parameters[variable, "Prior2"], "):", sep=""))
-	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Prior2"] <- f
-	
-	} else {
-
-	cat(paste("Distribution of the prior, value 1 (Enter for default ",parameters[variable, "Prior1"], "):", sep=""))
-	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Prior1"] <- f
-	cat(paste("Distribution of the prior, value 2 (Enter for default ",parameters[variable, "Prior2"], "):", sep=""))
-	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Prior2"] <- f
-
-	}
-	}
-	
-	
-	cat(paste("SD of new proposition (Enter for default ",parameters[variable, "SDProp"], "):", sep=""))
-	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "SDProp"] <- f
-	cat(paste("Minimum for the parameter (default ",parameters[variable, "Min"], "):", sep=""))
-	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Min"] <- f
-	cat(paste("Maximum for the parameter (Enter for default ",parameters[variable, "Max"], "):", sep=""))
-	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Max"] <- f
-	cat(paste("Initial value (Enter for default ",parameters[variable, "Init"], "):", sep=""))
-	f<-scan(nmax=1, quiet=TRUE, what=character())
-	if (length(f)!=0) parameters[variable, "Init"] <- f
-	}
-
-}
-
-}
-
-}
-
-for (i in 1:nrow(parameters)) {
-  if (parameters[i, "Density"]=="dunif") {
-    mn <- max(as.numeric(parameters[i, "Prior1"]), as.numeric(parameters[i, "Min"]))    
-  } else {
-    mn <- as.numeric(parameters[i, "Min"])
-    mx <- as.numeric(parameters[i, "Max"])
-  }  
-  if (findInterval(as.numeric(parameters[i, "Init"]), c(mn, mx)) != 1) {
-    parameters[i, "Init"] <- as.character(mn+(mx-mn)/2)
-    warning(paste("Initial value for parameter ", rownames(parameters)[i], " was out of range; It is corrected. Check it.")) 
+  if (class(result)!="fitRMU") {
+    stop("An output from fitRMU() must be provided")
   }
-}
-
-
+  
+  
+  # rownames(parametersMCMC)<-names(par)
+  if (length(density) != length(result$par)) {
+    density <- rep(density, length(result$par))[seq_along(result$par)]
+  }
+  
+  parametersMCMC <- data.frame(Density=character(), Prior1=numeric(), Prior2=numeric(), 
+                               SDProp=numeric(), Min=numeric(), Max=numeric(), Init=numeric(), stringsAsFactors = FALSE)
+  
+  for (indice.par in seq_along(result$par)) {
+    par <- result$par[indice.par]
+    SE <- result$SE[indice.par]
+    if (is.na(SE)) SE <- par/10
+    nm <- names(par)
+    if (nm=="r") {
+      if (density[indice.par] == "dnorm") {
+        parametersMCMC_ec <- data.frame(Density="dnorm", Prior1=unname(par), Prior2=abs(unname(SE)), 
+                                        SDProp=2, Min=min(-1, unname(par)-1), 
+                                        Max=max(1, unname(par)+1), Init=unname(par), 
+                                        row.names = nm, stringsAsFactors = FALSE)
+      } else {
+        parametersMCMC_ec <- data.frame(Density="dunif", Prior1=-2, Prior2=+2, 
+                                        SDProp=2, Min=min(-2, unname(par)-2), 
+                                        Max=max(2, unname(par)+2), Init=unname(par), 
+                                        row.names = nm, stringsAsFactors = FALSE)
+      }
+    }
+    if (substr(nm, 1, 2)=="T_") {
+      if (density[indice.par] == "dnorm") {
+        parametersMCMC_ec <- data.frame(Density="dnorm", 
+                                        Prior1=unname(par), Prior2=abs(unname(SE)), 
+                                        SDProp=2, 
+                                        Min=0, 
+                                        Max=unname(par)*2, 
+                                        Init=unname(par), 
+                                        row.names = nm, stringsAsFactors = FALSE)
+      } else {
+        parametersMCMC_ec <- data.frame(Density="dunif", 
+                                        Prior1=0, Prior2=unname(par)*2, 
+                                        SDProp=2, 
+                                        Min=unname(par)/2, 
+                                        Max=unname(par)*2, 
+                                        Init=unname(par), 
+                                        row.names = nm, stringsAsFactors = FALSE)
+      }
+    }
+    
+    if (substr(nm, 1, 3)=="SD_") {
+      if (density[indice.par] == "dnorm") {
+        parametersMCMC_ec <- data.frame(Density="dnorm", Prior1=unname(par), Prior2=abs(unname(SE)), 
+                                        SDProp=2, Min=0.01, Max=max(20, unname(par)+20), Init=unname(par), 
+                                        row.names = nm, stringsAsFactors = FALSE)
+      } else {
+        parametersMCMC_ec <- data.frame(Density="dunif", Prior1=1E-5, Prior2=unname(par)+20, 
+                                        SDProp=2, Min=1E-5, Max=max(20, unname(par)+20), 
+                                        Init=unname(par), 
+                                        row.names = nm, stringsAsFactors = FALSE)
+        
+      }
+    }
+    if (substr(nm, 1, 4)=="aSD_") {
+      if (density[indice.par] == "dnorm") {
+        parametersMCMC_ec <- data.frame(Density="dnorm", 
+                                        Prior1=unname(par), Prior2=abs(unname(SE)), 
+                                        SDProp=2, Min=1E-5, Max=max(20, unname(par)+20), 
+                                        Init=unname(par), 
+                                        row.names = nm, stringsAsFactors = FALSE)
+      } else {
+        parametersMCMC_ec <- data.frame(Density="dunif", 
+                                        Prior1=1E-5, Prior2=max(20, unname(par)+20), 
+                                        SDProp=2, Min=1E-5, Max=max(20, unname(par)+20), 
+                                        Init=unname(par), 
+                                        row.names = nm, stringsAsFactors = FALSE)
+      }
+    }
+    if (substr(nm, 1, 1)=="a" & substr(nm, 3, 3)=="_") {
+      if (density[indice.par] == "dnorm") {
+        parametersMCMC_ec <- data.frame(Density="dnorm", 
+                                        Prior1=unname(par), Prior2=abs(unname(SE)), 
+                                        SDProp=2, Min=0, 
+                                        Max=max(20, unname(par)*2), Init=unname(par), 
+                                        row.names = nm, stringsAsFactors = FALSE)
+      } else {
+        parametersMCMC_ec <- data.frame(Density="dunif", 
+                                        Prior1=unname(par)/2, 
+                                        Prior2=unname(par)*2, 
+                                        SDProp=2, Min=unname(par)/2, 
+                                        Max=unname(par)*2, Init=unname(par), 
+                                        row.names = nm, stringsAsFactors = FALSE)
+        
+      }
+    }
+    parametersMCMC <- rbind(parametersMCMC, parametersMCMC_ec)
+  }
+  
+  parameters <- parametersMCMC
+  
+  if (accept) {
+    return(parameters)
+  } else {
+    
+    repeat {
+      
+      cat("Proposition:\n")
+      print(parameters)
+      cat("Name of the parameter to change or Enter to quit:\n")
+      f<-scan(nmax=1, quiet=TRUE, what=character())
+      
+      if (length(f)==0) f <- "q"
+      
+      if (f=="q") {
+        return(parameters)
+        
+      } else {
+        
+        variable <- which(f==names(par))
+        if (length(variable)==0) {
+          cat("The parameter does not exist:\n")
+        } else {
+          print(variable)
+          cat(paste("Change for the parameter ",names(par)[variable],":\n",sep=""))
+          
+          cat(paste("Distribution of the prior (Enter for default ",parameters[variable, "Density"], "):", sep=""))
+          density<-scan(nmax=1, quiet=TRUE, what=character())
+          if (length(density)!=0) { parameters[variable, "Density"] <- density } else { density <- parameters[variable, "Density"] }
+          
+          if (density == "dunif") {
+            
+            cat(paste("Distribution of the prior, Minimum (Enter for default ",parameters[variable, "Prior1"], "):", sep=""))
+            f<-scan(nmax=1, quiet=TRUE, what=character())
+            if (length(f)!=0) parameters[variable, "Prior1"] <- f
+            cat(paste("Distribution of the prior, Maximum (Enter for default ",parameters[variable, "Prior2"], "):", sep=""))
+            f<-scan(nmax=1, quiet=TRUE, what=character())
+            if (length(f)!=0) parameters[variable, "Prior2"] <- f
+            
+          } else {
+            
+            if (density == "dnorm") {
+              
+              cat(paste("Distribution of the prior, Mean (Enter for default ",parameters[variable, "Prior1"], "):", sep=""))
+              f<-scan(nmax=1, quiet=TRUE, what=character())
+              if (length(f)!=0) parameters[variable, "Prior1"] <- f
+              cat(paste("Distribution of the prior, Standard deviation (Enter for default ",parameters[variable, "Prior2"], "):", sep=""))
+              f<-scan(nmax=1, quiet=TRUE, what=character())
+              if (length(f)!=0) parameters[variable, "Prior2"] <- f
+              
+            } else {
+              
+              cat(paste("Distribution of the prior, value 1 (Enter for default ",parameters[variable, "Prior1"], "):", sep=""))
+              f<-scan(nmax=1, quiet=TRUE, what=character())
+              if (length(f)!=0) parameters[variable, "Prior1"] <- f
+              cat(paste("Distribution of the prior, value 2 (Enter for default ",parameters[variable, "Prior2"], "):", sep=""))
+              f<-scan(nmax=1, quiet=TRUE, what=character())
+              if (length(f)!=0) parameters[variable, "Prior2"] <- f
+              
+            }
+          }
+          
+          
+          cat(paste("SD of new proposition (Enter for default ",parameters[variable, "SDProp"], "):", sep=""))
+          f<-scan(nmax=1, quiet=TRUE, what=character())
+          if (length(f)!=0) parameters[variable, "SDProp"] <- f
+          cat(paste("Minimum for the parameter (default ",parameters[variable, "Min"], "):", sep=""))
+          f<-scan(nmax=1, quiet=TRUE, what=character())
+          if (length(f)!=0) parameters[variable, "Min"] <- f
+          cat(paste("Maximum for the parameter (Enter for default ",parameters[variable, "Max"], "):", sep=""))
+          f<-scan(nmax=1, quiet=TRUE, what=character())
+          if (length(f)!=0) parameters[variable, "Max"] <- f
+          cat(paste("Initial value (Enter for default ",parameters[variable, "Init"], "):", sep=""))
+          f<-scan(nmax=1, quiet=TRUE, what=character())
+          if (length(f)!=0) parameters[variable, "Init"] <- f
+        }
+        
+      }
+      
+    }
+    
+  }
+  
+  for (i in 1:nrow(parameters)) {
+    if (parameters[i, "Density"]=="dunif") {
+      mn <- max(as.numeric(parameters[i, "Prior1"]), as.numeric(parameters[i, "Min"]))    
+    } else {
+      mn <- as.numeric(parameters[i, "Min"])
+      mx <- as.numeric(parameters[i, "Max"])
+    }  
+    if (findInterval(as.numeric(parameters[i, "Init"]), c(mn, mx)) != 1) {
+      parameters[i, "Init"] <- as.character(mn+(mx-mn)/2)
+      warning(paste("Initial value for parameter ", rownames(parameters)[i], " was out of range; It is corrected. Check it.")) 
+    }
+  }
+  
+  
 }

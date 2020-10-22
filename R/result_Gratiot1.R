@@ -12,6 +12,7 @@
 #'             Conservation, 9, 95-102.
 #' @keywords datasets
 #' @usage result_Gratiot1
+#' @family Phenology model
 #' @examples
 #' library(phenology)
 #' # Read a file with result

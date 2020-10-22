@@ -4,11 +4,17 @@
 \alias{fitCF}
 \title{Fit a model of Clutch Frequency for marine turtles.}
 \usage{
-fitCF(x = c(mu = 4, sd = 100, p = 0), fixed.parameters = NULL,
+fitCF(
+  x = c(mu = 4, sd = 100, p = 0),
+  fixed.parameters = NULL,
   data = stop("Data formated with TableECFOCF() must be provided"),
-  method = c("Nelder-Mead", "BFGS"), control = list(trace = 1, REPORT =
-  100, maxit = 500), itnmax = c(500, 100), hessian = TRUE,
-  parallel = TRUE, verbose = FALSE)
+  method = c("Nelder-Mead", "BFGS"),
+  control = list(trace = 1, REPORT = 100, maxit = 500),
+  itnmax = c(500, 100),
+  hessian = TRUE,
+  parallel = TRUE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{x}{Initial parameters to be fitted}
@@ -292,10 +298,13 @@ Fossette S, Kelle L, Girondot M, Goverse E, Hilterman ML, Verhage B,
          Guiana/Suriname and Gabon. Journal of Experimental Marine Biology 
          and Ecology 356:69-82
 
-Other Model of Clutch Frequency: \code{\link{ECFOCF_f}},
-  \code{\link{TableECFOCF}}, \code{\link{lnLCF}},
-  \code{\link{logLik.ECFOCF}}, \code{\link{plot.ECFOCF}},
-  \code{\link{plot.TableECFOCF}}
+Other Model of Clutch Frequency: 
+\code{\link{ECFOCF_f}()},
+\code{\link{TableECFOCF}()},
+\code{\link{lnLCF}()},
+\code{\link{logLik.ECFOCF}()},
+\code{\link{plot.ECFOCF}()},
+\code{\link{plot.TableECFOCF}()}
 }
 \author{
 Marc Girondot

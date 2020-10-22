@@ -11,6 +11,7 @@
 #'             Conservation, 9, 95-102.
 #' @keywords datasets
 #' @usage result_Gratiot
+#' @family Phenology model
 #' @examples
 #' \dontrun{
 #' library(phenology)

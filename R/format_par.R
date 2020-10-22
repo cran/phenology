@@ -12,13 +12,14 @@
   
   #  xpar <- c(Min=12, Peak_Alpha=15, Peak_Beta=-16, Theta=16, Begin=15);serie="Alpha"
   
-  xpar <- na.omit(xpar)
+  # xpar <- na.omit(xpar)
+  
   
   #  xpar_courant <<- xpar
   #  save.image("courant.RData")
   
   nxparec <- strsplit(names(xpar), "_")
-  ec <- sapply(nxparec, function(x) ifelse(length(x)>1, x[[2]]==serie, TRUE))
+  ec <- sapply(nxparec, function(x) ifelse(length(x)>1, grepl(x[[2]], serie), TRUE))
   
   xparec <- xpar[ec]
   names(xparec) <- sapply(nxparec[ec], function(x) x[[1]])
@@ -173,6 +174,7 @@
   xparec["MaxMinB.2"]<-xparec["Max.2"]-xparec["MinB.2"]
   xparec["MaxMinE.2"]<-xparec["Max.2"]-xparec["MinE.2"]
   
+
   
   return(xparec)
   

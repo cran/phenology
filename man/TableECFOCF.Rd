@@ -4,11 +4,16 @@
 \alias{TableECFOCF}
 \title{Format a CMR dataset into a file that fitCF can use.}
 \usage{
-
-  TableECFOCF(data = stop("A dataframe with a column 'ID' and a column 'Date'"),
-  columnID = "ID", columnDate = "Date", MinimumDaysBetween2Nest = 7,
-  MeanDaysBetween2Nest = 9.8, MaxNests = 15, date0 = NULL,
-  length_season = floor(365/MeanDaysBetween2Nest) + 1)
+TableECFOCF(
+  data = stop("A dataframe with a column 'ID' and a column 'Date'"),
+  columnID = "ID",
+  columnDate = "Date",
+  MinimumDaysBetween2Nest = 7,
+  MeanDaysBetween2Nest = 9.8,
+  MaxNests = 15,
+  date0 = NULL,
+  length_season = floor(365/MeanDaysBetween2Nest) + 1
+)
 }
 \arguments{
 \item{data}{CMR file.}
@@ -57,10 +62,13 @@ plot(ECFOCF_2002, period=11)
 }
 }
 \seealso{
-Other Model of Clutch Frequency: \code{\link{ECFOCF_f}},
-  \code{\link{fitCF}}, \code{\link{lnLCF}},
-  \code{\link{logLik.ECFOCF}}, \code{\link{plot.ECFOCF}},
-  \code{\link{plot.TableECFOCF}}
+Other Model of Clutch Frequency: 
+\code{\link{ECFOCF_f}()},
+\code{\link{fitCF}()},
+\code{\link{lnLCF}()},
+\code{\link{logLik.ECFOCF}()},
+\code{\link{plot.ECFOCF}()},
+\code{\link{plot.TableECFOCF}()}
 }
 \author{
 Marc Girondot

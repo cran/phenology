@@ -4,13 +4,20 @@
 \alias{Tagloss_fit}
 \title{fit a model of tag loss using a CMR database.}
 \usage{
-
-  Tagloss_fit(data = stop("A database formated using Tagloss_format() must be used"),
-  fitted.parameters = NULL, fixed.parameters = NULL,
-  model_before = NULL, model_after = NULL, control = list(trace = 1,
-  maxit = 10000), method = "Nelder-Mead", lower = -Inf, upper = Inf,
-  hessian = FALSE, cores = detectCores(all.tests = FALSE, logical =
-  TRUE), groups = NULL)
+Tagloss_fit(
+  data = stop("A database formated using Tagloss_format() must be used"),
+  fitted.parameters = NULL,
+  fixed.parameters = NULL,
+  model_before = NULL,
+  model_after = NULL,
+  control = list(trace = 1, maxit = 10000),
+  method = "Nelder-Mead",
+  lower = -Inf,
+  upper = Inf,
+  hessian = FALSE,
+  cores = detectCores(all.tests = FALSE, logical = TRUE),
+  groups = NULL
+)
 }
 \arguments{
 \item{data}{An object formated using Tagloss_format}
@@ -43,7 +50,7 @@ Return a list object with the model describing tag loss.
 \description{
 This function fits a model of tag loss using a CMR database.\cr
 The names of parameters can be:\cr
-Model Girondot and Pfaller (in preparation):\cr
+Model Pfaller et al. (Submitted):\cr
 \describe{
   \item{Left tag lost when 2 are present}{\code{D1_L2}, \code{D2D1_L2}, \code{D3D2_L2}, \code{A_L2}, \code{B_L2}, \code{C_L2}, \code{delta_L2}}
   \item{Right tag lost when 2 are present}{\code{D1_R2}, \code{D2D1_R2}, \code{D3D2_R2}, \code{A_R2}, \code{B_R2}, \code{C_R2}, \code{delta_R2}}
@@ -95,6 +102,9 @@ Model V\cr
 
 If only one parameter is fitted, method must be "Brent" and \code{upper} and \code{lower} 
 parameters must be set up with finite values.
+
+model_before can be ""par['a0_1']=par['a0_2'];par['a1_1']=par['a1_2']".
+model_after can be "p1=p2"
 }
 \details{
 Tagloss_fit fits a model of tag loss using a CMR database.
@@ -120,7 +130,7 @@ plot(o, t=1:1000, model="2", add=TRUE, col="red")
 par <- c(D1_1 = 100.15324837975547, A_1 = 5.9576927964120188, 
          B_1 = 8.769924225871069, B_2 = 8.2353860179664125)
 pfixed <- c(D2D1_1 = 2568, D3D2_1 = 2568, D2D1_2 = 2568, D3D2_2 = 2568)
-o_4p_p1p2 <- Tagloss_fit(data=data_f, fitted.parameters = par, 
+o_4p_p1p2 <- Tagloss_fit(data=data_f_21, fitted.parameters = par, 
                          fixed.parameters = pfixed, 
                          model_before = "par['C_1']=par['B_1'];
                          par['A_2']=par['A_1'];
@@ -144,17 +154,23 @@ legend("topright", legend=c("2->1", "1->0"), lty=1, col=c("blue", "red"))
 Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C., Girondot, M., 2005. Maximum likelihood estimates of tag loss in leatherback sea turtles. Journal of Wildlife Management 69, 540-548.
 
 Casale, P., Freggi, D., Salvemini, P., 2017. Tag loss is a minor limiting factor in sea turtle tagging programs relying on distant tag returns: the case of Mediterranean loggerhead sea turtles. European Journal of Wildlife Research 63.
+
+Pfaller, J.B., Williams, K.L., Frick, M.G., Shamblin, B.M., Nairn, C.J., Girondot, M., Submitted. Genetic determination of tag loss dynamics in nesting loggerhead turtles: A new chapter in “the tag loss problem”.
 }
 \seealso{
-Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
-  \code{\link{Tagloss_L}}, \code{\link{Tagloss_cumul}},
-  \code{\link{Tagloss_daymax}},
-  \code{\link{Tagloss_format}},
-  \code{\link{Tagloss_model}},
-  \code{\link{Tagloss_simulate}},
-  \code{\link{logLik.Tagloss}},
-  \code{\link{plot.TaglossData}},
-  \code{\link{plot.Tagloss}}
+Other Model of Tag-loss: 
+\code{\link{Tagloss_LengthObs}()},
+\code{\link{Tagloss_L}()},
+\code{\link{Tagloss_cumul}()},
+\code{\link{Tagloss_daymax}()},
+\code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc}()},
+\code{\link{Tagloss_model}()},
+\code{\link{Tagloss_simulate}()},
+\code{\link{logLik.Tagloss}()},
+\code{\link{o_4p_p1p2}},
+\code{\link{plot.TaglossData}()},
+\code{\link{plot.Tagloss}()}
 }
 \author{
 Marc Girondot

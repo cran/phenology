@@ -4,9 +4,22 @@
 \alias{add_phenology}
 \title{Create a new dataset or add a timeserie to a previous dataset.}
 \usage{
-add_phenology(add = file.choose(), name = NULL, reference = NULL,
-  month_ref = NULL, sep.dates = "-", header = NULL, format = NULL,
-  previous = NULL, silent = FALSE)
+add_phenology(
+  add = NULL,
+  name = "Site",
+  reference = NULL,
+  month_ref = NULL,
+  sep.dates = "-",
+  colname.Date = 1,
+  colname.Number = 2,
+  colname.Rookery = 3,
+  format = "\%d/\%m/\%Y",
+  previous = NULL,
+  include0 = FALSE,
+  datepeakfor0 = NULL,
+  expandRange0Observation = TRUE,
+  silent = FALSE
+)
 }
 \arguments{
 \item{add}{The data to be added. It can be a set of several entities that uses the same reference and date format}
@@ -19,11 +32,21 @@ add_phenology(add = file.choose(), name = NULL, reference = NULL,
 
 \item{sep.dates}{Separator used to separate dates when incertitude is included}
 
-\item{header}{If the data is read from a file, can be used to force header or not}
+\item{colname.Date}{Name or number of column with dates}
 
-\item{format}{The format of the date in the file. Several format can be set and the last one that give compatible result is used}
+\item{colname.Number}{Name or number of column with numbers}
+
+\item{colname.Rookery}{Name or number of column with rookery names}
+
+\item{format}{The format of the dates}
 
 \item{previous}{Previous data formated with add_phenology or NULL [default] if no previous data exist}
+
+\item{include0}{Does timeseries with only 0 should be included?}
+
+\item{datepeakfor0}{If series with no observation are included, where add a 1 value in ordinal date (see description)}
+
+\item{expandRange0Observation}{If TRUE, the range of date with 0 observations are expanded into individual dates}
 
 \item{silent}{Does information about added timeseries is shown}
 }
@@ -37,47 +60,55 @@ format='\%d/\%m/\%y')\cr\cr
 To add a dataset to a previous one, the syntaxe is :\cr
 data <- add_phenology(previous=previousdata, add=newdata, name='Site', \cr
 reference=as.Date('2001-01-01'), format="\%Y-\%m-\%d") \cr\cr
-To add several timeseries at the same time with '\%d/\%m/\%y' or '\%d/\%m/\%Y' date format:\cr
-data<-add_phenology(add=list(newdata1, newdata2), name=c('Site1', 'Site2'),\cr 
-reference=as.Date('2001-01-01'), format=c('\%d/\%m/\%y', '\%d/\%m/\%Y'))\cr\cr
 The dataset to be added must include 2 or 3 columns.\cr
-The first one is the date in the format specified by 
-the parameter format=. If the number of nests is known  
-for an exact data, then only one date must be indicated.\cr  
+The colname.Date included the dates in the format specified by 
+the parameter format. If the number of nests is known  
+for an exact date, then only one date must be indicated.\cr  
 If the number of nests is known for a range of date, the 
-first and last dates must be separated but a - (dash).\cr
-For example: 1/2/2000-10/2/2000\cr\cr
-The second column is the number of nests observed for 
+first and last dates must be separated but a sep.dates character.\cr
+For example: 1/2/2000-10/2/2000\cr
+Note that date in the colname.Date column can be already formated and in this case 
+the parameter format is ignored.\cr\cr
+The colname.Number includes the number of nests observed for 
 this date or this range of dates.\cr
-The third column is optional and is the name of the rookery.\cr\cr
+The colname.Rookery is optional and includes the name of the rookeries.\cr\cr
 If only two columns are indicated, the name can be indicated as  
-a parameter of the function with name=. If no name is indicated,  
+a parameter of the function with the parameter name. If no name is indicated,  
 the default name Site will be used, but take care, only one 
 rookery of this name can be used.\cr\cr
 Several rookeries can be included in the same file but in this case 
-the rookery name is obligatory at the third column.\cr\cr
-The simplest use of this function is just: \cr
-phen <- add_phenology()\cr\cr
+the rookery name is obligatory at the colname.Rookery column.\cr\cr
+#' The model cannot be fitted if a timeseries has no observation because the trivial 
+solution is of course with max=0. The solution is to include a fake false observation at the closest 
+position of the peak, and then the estimated number of nests/tracks will be the estimated number - 1.\cr
+If include0 is TRUE, then the series with no observation are included and one observation is added 
+at the monitored date the closest of datepeakfor0.\cr
+The normal way to manage such a situation is as followed:\cr
+1- Format data with include0 being FALSE\cr
+2- Fit parameters using fdf <- fit_phenology()\cr
+3- Format data with include0 being TRUE and datepeakfor0=fdf$par["Peak"]\cr
+4- Fix previsouly fitted parameters using pfixed <- fdf$par\cr
+5- Generate new set of parameters with par_init(data, fixed.parameters=pfixed)\cr
+6- Run again fit_phenology()\cr\cr
 Some problems that can occur:\cr
-If a name is defined as a third column of a data.frame and a name is defined also with name=, the third column has priority.\cr
-Two different timeseries MUST have different name and character _ is forbiden in timeseries names.
+If a name is defined as a third column of a data.frame and a name is 
+defined also with name parameter, the third column has priority.\cr
+Two different timeseries MUST have different name and characters _ and 
+space are forbiden in timeseries names. They are automatically changed if they are present.
 }
 \details{
 add_phenology creates a new dataset.
 }
 \examples{
 \dontrun{
-# Get the lastest version at:
-# install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", 
-     repos=NULL, type="source")
 library(phenology)
 # Read a file with data
-Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 data(Gratiot)
 # Generate a formatted list nammed data_Gratiot 
 refdate <- as.Date("2001-01-01")
 data_Gratiot <- add_phenology(Gratiot, name="Complete", 
 	reference=refdate, format="\%d/\%m/\%Y")
+	
 # Generate initial points for the optimisation
 parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 # Run the optimisation
@@ -86,8 +117,69 @@ result_Gratiot <- fit_phenology(data=data_Gratiot, fitted.parameters=parg,
 data(result_Gratiot)
 # Plot the phenology and get some stats
 output <- plot(result_Gratiot)
+
+#############################################
+# Example of use of include0 and datepeakfor0
+#############################################
+# Let create a times series with only 0
+data0 <- data.frame(Date=c("11/3/2015", "12/3/2015", "13/3/2015-18/3/2015", "25/3/2015"), 
+                    Number=c(0, 0, 0, 0), 
+                    Beach=rep("Site", 4), stringsAsFactors=FALSE)
+# Here I don't include beach with no observation: error message
+try1 <- add_phenology(data0, format="\%d/\%m/\%Y", month_ref=1, include0=FALSE)
+# Here I include timeseries with no observation
+try1 <- add_phenology(data0, format="\%d/\%m/\%Y", month_ref=1, include0=TRUE, datepeakfor0=100)
+try1 <- add_phenology(data0, format="\%d/\%m/\%Y", month_ref=1, include0=TRUE, datepeakfor0=73)
+try1 <- add_phenology(data0, format="\%d/\%m/\%Y", month_ref=1, include0=TRUE, datepeakfor0=70)
+# It can be done in two steps
+try1 <- add_phenology(data0, format="\%d/\%m/\%Y", month_ref=1, include0=TRUE)
+try2 <- add_phenology(previous=try1, include0=TRUE, datepeakfor0=100)
+# Here I include the series without observation
+try1 <- add_phenology(add=data0, format="\%d/\%m/\%Y", month_ref=1, 
+                      include0=TRUE, expandRange0Observation=TRUE)
 }
+}
+\seealso{
+Other Phenology model: 
+\code{\link{AutoFitPhenology}()},
+\code{\link{BE_to_LBLE}()},
+\code{\link{Gratiot}},
+\code{\link{LBLE_to_BE}()},
+\code{\link{LBLE_to_L}()},
+\code{\link{L_to_LBLE}()},
+\code{\link{MarineTurtles_2002}},
+\code{\link{MinBMinE_to_Min}()},
+\code{\link{adapt_parameters}()},
+\code{\link{add_SE}()},
+\code{\link{extract_result}()},
+\code{\link{fit_phenology}()},
+\code{\link{likelihood_phenology}()},
+\code{\link{logLik.phenology}()},
+\code{\link{map_Gratiot}},
+\code{\link{map_phenology}()},
+\code{\link{par_init}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc_p}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology}()},
+\code{\link{plot.phenologymap}()},
+\code{\link{plot.phenology}()},
+\code{\link{plot_delta}()},
+\code{\link{plot_phi}()},
+\code{\link{print.phenologymap}()},
+\code{\link{print.phenologyout}()},
+\code{\link{print.phenology}()},
+\code{\link{remove_site}()},
+\code{\link{result_Gratiot1}},
+\code{\link{result_Gratiot2}},
+\code{\link{result_Gratiot_Flat}},
+\code{\link{result_Gratiot_mcmc}},
+\code{\link{result_Gratiot}},
+\code{\link{summary.phenologymap}()},
+\code{\link{summary.phenologyout}()},
+\code{\link{summary.phenology}()}
 }
 \author{
 Marc Girondot
 }
+\concept{Phenology model}

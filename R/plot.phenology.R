@@ -15,24 +15,36 @@
 #' @param plot.objects What to plot?
 #' @param col.ML Color of the ML mean curve
 #' @param col.SD Color of the SD curve (distribution of observations)
+#' @param col.SD.polygon Color of the polygon of the SD curve. If FALSE not shown.
 #' @param col.MCMC.quantiles Color of the quantiles curve based on mcmc
+#' @param col.MCMC.quantiles.polygon Color of the credibility interval polygon based on MCMC. If FALSE not shown.
 #' @param col.ML.quantiles Color of the SE curve based on ML
+#' @param col.ML.quantiles.polygon Color of the confidence interval polygon based on ML. If FALSE not shown.
 #' @param col.observations Color of the points
 #' @param col.grouped.observations Color of the lines indicating grouped observations
 #' @description The function plot.phenology plots the phenology graph from a result object.\cr
 #' If cofactors have been added, the plot does not show their effects.\cr
-#' plot.objects can be "observations", "ML" for maximum likelihood, "ML.SD" for dispersion of observations, "ML.quantiles" or "MCMC.quantiles" if a mcmc object is given
+#' plot.objects can be "observations", "ML" for maximum likelihood, "ML.SD" for dispersion of 
+#' observations, "ML.quantiles" or "MCMC.quantiles" if a mcmc object is given
+#' @family Phenology model
 #' @examples
 #' \dontrun{
 #' library(phenology)
 #' # Read a file with data
-#' Gratiot <- read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' data_Gratiot <- add_phenology(Gratiot, name = "Complete", 
 #' 		reference = as.Date("2001-01-01"), format="%d/%m/%Y")
 #' # Generate initial points for the optimisation
 #' parg <- par_init(data_Gratiot, fixed.parameters=NULL)
+#' parg <- c('Max_Complete' = 33.076044848500167, 25, 
+#'   'MinB_Complete' = 0.21758630798131923, 
+#'   'MinE_Complete' = 0.42493953463205936, 
+#'   'LengthB' = 96.158007568020523, 
+#'   'Peak' = 174.62435300274245, 
+#'   'LengthE' = 62.084876419654634, 
+#'   'Flat' = 0, 
+#'   'Theta' = 3.5864650991821954)
 #' # Run the optimisation
 #' result_Gratiot <- fit_phenology(data=data_Gratiot, 
 #' 		fitted.parameters=parg, fixed.parameters=NULL)
@@ -71,12 +83,16 @@ plot.phenology <-
            plot.objects = c("observations", "ML", "ML.SD", "ML.quantiles", "MCMC.quantiles"), 
            col.ML="black", 
            col.SD="red", 
+           col.SD.polygon=rgb(red = 1, green = 0, blue = 0, alpha = 0.2), 
            col.MCMC.quantiles="purple",
+           col.MCMC.quantiles.polygon=rgb(red = 160/255, green = 32/255, blue = 240/255, alpha = 0.2), 
            col.ML.quantiles="black",
+           col.ML.quantiles.polygon=rgb(red = 0, green = 0, blue = 0, alpha = 0.2), 
            col.observations = "black", 
            col.grouped.observations = "green") {
     
-    # x=NULL; series="all"; moon=FALSE; level=0.95; replicate.CI=1000; progressbar=TRUE; growlnotify=TRUE; show.plot=TRUE; resultmcmc = NULL; chain = 1; replicate.CI.mcmc = "all"; plot.objects = c("observations", "ML", "ML.SD", "ML.quantiles", "MCMC.quantiles"); col.ML="black"; col.SD="red"; col.MCMC.quantiles="purple"; col.ML.quantiles="black"; col.observations = "black"; col.grouped.observations = "green"
+    # x=NULL; series="all"; moon=FALSE; level=0.95; replicate.CI=1000; progressbar=TRUE; growlnotify=TRUE; show.plot=TRUE; resultmcmc = NULL; chain = 1; replicate.CI.mcmc = "all"; plot.objects = c("observations", "ML", "ML.SD", "ML.quantiles", "MCMC.quantiles"); col.ML="black"; col.SD="red"; col.MCMC.quantiles="purple"; col.ML.quantiles="black"; col.observations = "black"; col.grouped.observations = "green"; col.SD.polygon=rgb(red = 1, green = 0, blue = 0, alpha = 0.2); col.MCMC.quantiles.polygon=rgb(red = 160/255, green = 32/255, blue = 240/255, alpha = 0.2); col.ML.quantiles.polygon=rgb(red = 0, green = 0, blue = 0, alpha = 0.2) 
+    
     # x <- result_Gratiot
     # p3p <- ifelse(class(try(list(...), silent=TRUE))=="try-error", list(), list(...))
     p3p <- list(...)
@@ -89,35 +105,66 @@ plot.phenology <-
                    series=series, replicate.CI=replicate.CI, 
                    replicate.CI.mcmc=replicate.CI.mcmc, 
                    level=level, chain=chain, print=FALSE)
-
+    
     
     # kseries <- 1
     for(nmser in rownames(out$synthesis)) {
       
-      reference <- data[[nmser]]$Date[1]-data[[nmser]]$ordinal[1]+1
+      reference <- attributes(data[[nmser]])$reference
+      if (is.null(reference)) {
+        reference <- data[[nmser]][1, "Date"]
+        referen_end <- data[[nmser]][nrow(data[[nmser]]), "Date"]
+        premiermois <- as.POSIXlt(reference)$mon+1
+        derniermois <- as.POSIXlt(referen_end)$mon+1
+        refencours <- as.character(reference)
+        substr(refencours, 9, 10) <- "01"
+        
+        # 1 8 <- 1
+        # 8 1 <- 7
+        # 1 1 <- 1
+        # 8 9 <- 7
+        
+        if (premiermois < 7) {
+          substr(refencours, 6, 7) <- "01"
+          reference <- as.Date(refencours)
+        } else {
+          substr(refencours, 6, 7) <- "07"
+          reference <- as.Date(refencours)
+        }
+      }
       nday <- ifelse(as.POSIXlt(reference+365)$mday==as.POSIXlt(reference)$mday, 365, 366)
       
-      vmaxx <- c(reference, reference+nday-1)
+      vmaxx <- c(reference, reference+nday)
       
       vmaxy <- c(0, 0.1)
-          if (any((is.na(data[[nmser]]$ordinal2)))) {
-      vmaxy[2] <- max(data[[nmser]]$nombre[(is.na(data[[nmser]]$ordinal2)) & 
-                                             (!is.na(data[[nmser]]$nombre))])
-      }
-
-      vmaxy[2] <- max(vmaxy[2], out$details_ML[[nmser]]["97.5%", ], out$details_Mean[[nmser]]["SD.High",])
-
-        x <- seq(from=reference, to=reference+nday-1, by="1 day")
+      # if (any((is.na(data[[nmser]]$ordinal2)))) {
+      #   vmaxy[2] <- max(data[[nmser]]$nombre[(is.na(data[[nmser]]$ordinal2)) & 
+      #                                          (!is.na(data[[nmser]]$nombre))])
+      # }
       
-
-        # je prépare une base
-        par(new=FALSE)
-        pnp <- modifyList(list(xlab="Months", ylab="Counts", main=nmser, 
-                               pch=16, cex=0.5, xlim=vmaxx, ylim=vmaxy, type="n", bty="n"), p3p)
-        do.call("plot", modifyList(pnp, list(x=x, y=rep(0, length(x)))))
+      vmaxy[2] <- max(vmaxy[2], data[[nmser]]$nombre/ifelse(is.na(data[[nmser]]$ordinal2), 1, 
+                                                            data[[nmser]]$ordinal2-data[[nmser]]$ordinal+1), na.rm = TRUE)
+      # Si j'ai ordinal2, je dois prend n/(ordinal2-ordinal+1)
+      
+      
+      vmaxy[2] <- max(vmaxy[2], out$details_Mean[[nmser]][, "SD.High"], na.rm = TRUE)
+      if (all(!is.na(out$details_ML[[nmser]])))
+        vmaxy[2] <- max(vmaxy[2], out$details_ML[[nmser]][, 3])
+      
+      if (vmaxy[2] ==0) vmaxy[2] <- 0.01
+      
+      x <- seq(from=reference, to=reference+nday-1, by="1 day")
+      
+      
+      # je prépare une base
+      par(new=FALSE)
+      pnp <- modifyList(list(xlab="Months", ylab="Counts", main=nmser, 
+                             pch=16, cex=0.5, xlim=vmaxx, ylim=vmaxy, type="n", bty="n"), p3p)
+      do.call("plot", modifyList(pnp, list(x=x, y=rep(0, length(x)))))
       
       if (moon) {
-        moony<-vmaxy[2]*1.06
+        par(xpd=TRUE)
+        moony <- ScalePreviousPlot()$ylim["begin"] + (ScalePreviousPlot()$ylim["end"] - ScalePreviousPlot()$ylim["begin"]) * 1.06
         mp<-moon.info(x, phase=TRUE)
         mpT1<-ifelse((mp!="FM") | (is.na(mp)), FALSE, TRUE)
         mpT2<-ifelse((mp!="NM") | (is.na(mp)), FALSE, TRUE)
@@ -126,57 +173,78 @@ plot.phenology <-
         xfullmoon <- ifelse(x[mpT2]>=ScalePreviousPlot()$xlim["begin"] & x[mpT2]<=ScalePreviousPlot()$xlim["end"], TRUE, FALSE)
         points(x[mpT1][xnewmoon], rep(moony, length(x[mpT1]))[xnewmoon], cex=1, bg="black", col="black", pch=21, xpd=TRUE)
         points(x[mpT2][xfullmoon], rep(moony, length(x[mpT2]))[xfullmoon], cex=1, bg="white", col="black", pch=21, xpd=TRUE)
+        par(xpd=FALSE)
+      }
+      
+      
+      
+      if (any(plot.objects == "ML")) {
+        lines(x=x, 
+              y=out$details_Mean[[nmser]][, "Modelled"], col=col.ML)
+      }
+      dx <- as.numeric(c(x, rev(x)))
+      
+      if (any(plot.objects == "ML.SD")) {
+        if (!isFALSE(col.SD.polygon)) {
+          dy <- as.numeric(c(out$details_Mean[[nmser]][, "SD.Low"], 
+                             rev(out$details_Mean[[nmser]][, "SD.High"])))
+          polygon(x=dx, y=dy, col=col.SD.polygon, border=NA)
+        }
+        lines(x=x, 
+              y=out$details_Mean[[nmser]][, "SD.Low"], lty=2, col=col.SD)
+        lines(x=x, 
+              y=out$details_Mean[[nmser]][, "SD.High"], lty=2, col=col.SD)
+      } 
+      if (any(plot.objects == "ML.quantiles") & !identical(NA, out$details_ML[[nmser]])) {
+        if (!isFALSE(col.ML.quantiles.polygon)) {
+          dy <- as.numeric(c(out$details_ML[[nmser]][, 2], rev(out$details_ML[[nmser]][, 4])))
+          polygon(x=dx, y=dy, col=col.ML.quantiles.polygon, border=NA)
+        }
+        lines(x=x, 
+              y=out$details_ML[[nmser]][, 2], lty=2, col=col.ML.quantiles)
+        lines(x=x, 
+              y=out$details_ML[[nmser]][, 4], lty=2, col=col.ML.quantiles)
+        lines(x=x, 
+              y=out$details_ML[[nmser]][, 3], lty=1, col=col.ML.quantiles)
+        
+      }
+      if (any(plot.objects == "MCMC.quantiles") & !identical(NA, out$details_mcmc[[nmser]])) {
+        if (!isFALSE(col.MCMC.quantiles.polygon)) {
+          dy <- as.numeric(c(out$details_mcmc[[nmser]][, 2], 
+                             rev(out$details_mcmc[[nmser]][, 4])))
+          polygon(x=dx, y=dy, col=col.MCMC.quantiles.polygon, border=NA)
+        }
+        
+        lines(x=x, 
+              y=out$details_mcmc[[nmser]][, 2], lty=2, col=col.MCMC.quantiles)
+        lines(x=x, 
+              y=out$details_mcmc[[nmser]][, 3], lty=1, col=col.MCMC.quantiles)
+        lines(x=x, 
+              y=out$details_mcmc[[nmser]][, 4], lty=2, col=col.MCMC.quantiles)
       }
       
       if (!is.null(data) & any(plot.objects == "observations")) {
-          points(x = data[[nmser]]$Date[is.na(data[[nmser]]$Date2)], 
-                 y=data[[nmser]]$nombre[is.na(data[[nmser]]$Date2)], 
-                 pch=16, col=col.observations, cex=0.5)
-
-          for(i in 1:dim(data[[nmser]])[1]) {
+        points(x = data[[nmser]]$Date[is.na(data[[nmser]]$Date2)], 
+               y=data[[nmser]]$nombre[is.na(data[[nmser]]$Date2)], 
+               pch=16, col=col.observations, cex=0.5)
         
-            if (!is.na(data[[nmser]]$ordinal2[i])) {
-              x0<-data[[nmser]]$Date[i]
-              x1<-data[[nmser]]$Date2[i]
-              lgt01<-as.numeric(data[[nmser]]$Date2[i]-data[[nmser]]$Date[i]+1)
-              y0<-data[[nmser]]$nombre[i]/lgt01
-              y1<-y0
-              segments(x0, y0, x1=x1, y1=y1, col=col.grouped.observations, lwd=2)
-            }
+        for(i in 1:dim(data[[nmser]])[1]) {
+          
+          if (!is.na(data[[nmser]]$ordinal2[i])) {
+            x0<-data[[nmser]]$Date[i]
+            x1<-data[[nmser]]$Date2[i]
+            lgt01<-as.numeric(data[[nmser]]$Date2[i]-data[[nmser]]$Date[i]+1)
+            y0<-data[[nmser]]$nombre[i]/lgt01
+            y1<-y0
+            segments(x0, y0, x1=x1, y1=y1, col=col.grouped.observations, lwd=2)
           }
-      }
-      
-
-        if (any(plot.objects == "ML")) {
-          lines(x=x, 
-                y=out$details_Mean[[nmser]]["Mean", ], col=col.ML)
-        }
-       if (any(plot.objects == "ML.SD")) {
-          lines(x=x, 
-                y=out$details_Mean[[nmser]]["SD.Low", ], lty=2, col=col.SD)
-          lines(x=x, 
-                y=out$details_Mean[[nmser]]["SD.High", ], lty=2, col=col.SD)
-        } 
-        if (any(plot.objects == "ML.quantiles") & !identical(NA, out$details_ML[[nmser]])) {
-          lines(x=x, 
-                y=out$details_ML[[nmser]]["2.5%", ], lty=2, col=col.ML.quantiles)
-          lines(x=x, 
-                y=out$details_ML[[nmser]]["50%", ], lty=1, col=col.ML.quantiles)
-          lines(x=x, 
-                y=out$details_ML[[nmser]]["97.5%", ], lty=2, col=col.ML.quantiles)
-        }
-        if (any(plot.objects == "MCMC.quantiles") & !identical(NA, out$details_mcmc[[nmser]])) {
-          lines(x=x, 
-                y=out$details_mcmc[[nmser]]["2.5%", ], lty=2, col=col.MCMC.quantiles)
-          lines(x=x, 
-                y=out$details_mcmc[[nmser]]["50%", ], lty=1, col=col.MCMC.quantiles)
-          lines(x=x, 
-                y=out$details_mcmc[[nmser]]["97.5%", ], lty=2, col=col.MCMC.quantiles)
         }
       }
-
+    }
     
-
+    
+    
+    
     class(out) <- "phenologyout"
     
     return(invisible(out))

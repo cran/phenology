@@ -6,11 +6,11 @@
 #' @param progressbar If FALSE, do not show the progress bar
 #' @param ... Parameters for fit_phenology()
 #' @description This function is used to test several combinations of fit at a time.
+#' @family Phenology model
 #' @examples
 #' \dontrun{
 #' library(phenology)
 #' # Read a file with data
-#' Gratiot <- read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' data_Gratiot <- add_phenology(Gratiot, name="Complete", 

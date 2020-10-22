@@ -4,8 +4,7 @@
 \alias{plot.ECFOCF}
 \title{Plot a result of clutch frequency fit.}
 \usage{
-\method{plot}{ECFOCF}(x, ..., result = "CF", category = NA,
-  period = 1)
+\method{plot}{ECFOCF}(x, ..., result = "CF", category = NA, period = 1)
 }
 \arguments{
 \item{x}{A result for fitCF().}
@@ -83,10 +82,13 @@ plot(o_mu1p2_NB, result="Prob", category=c(2, 1), bty="n", las=1)
 }
 }
 \seealso{
-Other Model of Clutch Frequency: \code{\link{ECFOCF_f}},
-  \code{\link{TableECFOCF}}, \code{\link{fitCF}},
-  \code{\link{lnLCF}}, \code{\link{logLik.ECFOCF}},
-  \code{\link{plot.TableECFOCF}}
+Other Model of Clutch Frequency: 
+\code{\link{ECFOCF_f}()},
+\code{\link{TableECFOCF}()},
+\code{\link{fitCF}()},
+\code{\link{lnLCF}()},
+\code{\link{logLik.ECFOCF}()},
+\code{\link{plot.TableECFOCF}()}
 }
 \author{
 Marc Girondot

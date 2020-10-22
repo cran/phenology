@@ -24,7 +24,6 @@ summary.phenologyout prints the information from a result object.
 \dontrun{
 library(phenology)
 # Read a file with data
-Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 data(Gratiot)
 # Generate a formatted list nammed data_Gratiot 
 data_Gratiot <- add_phenology(Gratiot, name="Complete", 
@@ -41,6 +40,47 @@ output <- plot(result_Gratiot)
 summary(output)
 }
 }
+\seealso{
+Other Phenology model: 
+\code{\link{AutoFitPhenology}()},
+\code{\link{BE_to_LBLE}()},
+\code{\link{Gratiot}},
+\code{\link{LBLE_to_BE}()},
+\code{\link{LBLE_to_L}()},
+\code{\link{L_to_LBLE}()},
+\code{\link{MarineTurtles_2002}},
+\code{\link{MinBMinE_to_Min}()},
+\code{\link{adapt_parameters}()},
+\code{\link{add_SE}()},
+\code{\link{add_phenology}()},
+\code{\link{extract_result}()},
+\code{\link{fit_phenology}()},
+\code{\link{likelihood_phenology}()},
+\code{\link{logLik.phenology}()},
+\code{\link{map_Gratiot}},
+\code{\link{map_phenology}()},
+\code{\link{par_init}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc_p}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology}()},
+\code{\link{plot.phenologymap}()},
+\code{\link{plot.phenology}()},
+\code{\link{plot_delta}()},
+\code{\link{plot_phi}()},
+\code{\link{print.phenologymap}()},
+\code{\link{print.phenologyout}()},
+\code{\link{print.phenology}()},
+\code{\link{remove_site}()},
+\code{\link{result_Gratiot1}},
+\code{\link{result_Gratiot2}},
+\code{\link{result_Gratiot_Flat}},
+\code{\link{result_Gratiot_mcmc}},
+\code{\link{result_Gratiot}},
+\code{\link{summary.phenologymap}()},
+\code{\link{summary.phenology}()}
+}
 \author{
 Marc Girondot
 }
+\concept{Phenology model}

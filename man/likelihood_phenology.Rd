@@ -4,10 +4,19 @@
 \alias{likelihood_phenology}
 \title{Estimate the likelihood of timeseries based on a set of parameters.}
 \usage{
-likelihood_phenology(data = NULL, fitted.parameters = NULL,
-  fixed.parameters = NULL, zero_counts = NULL,
-  method_incertitude = NULL, result = NULL, cofactors = NULL,
-  add.cofactors = NULL, infinite = 200, zero = 1e-09)
+likelihood_phenology(
+  data = NULL,
+  fitted.parameters = NULL,
+  fixed.parameters = NULL,
+  zero_counts = NULL,
+  parallel = TRUE,
+  result = NULL,
+  cofactors = NULL,
+  add.cofactors = NULL,
+  tol = 1e-06,
+  zero = 1e-09,
+  out = TRUE
+)
 }
 \arguments{
 \item{data}{Dataset generated with add_format}
@@ -19,9 +28,7 @@ likelihood_phenology(data = NULL, fitted.parameters = NULL,
 \item{zero_counts}{example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 been recorder for each of these timeseries. Defaut is TRUE for all.}
 
-\item{method_incertitude}{2 [default] is the correct one from a statistical point of view; \cr
-0 is an aproximate method more rapid; \cr
-1 is an alternative more rapid but biased.}
+\item{parallel}{If TRUE, parallel computing is used.}
 
 \item{result}{An object obtained after fit_phenology()}
 
@@ -29,9 +36,11 @@ been recorder for each of these timeseries. Defaut is TRUE for all.}
 
 \item{add.cofactors}{Names of the column of parameter cofactors to use as a cofactor}
 
-\item{infinite}{Number of iterations for dSnbinom() used for method_incertitude='sum'}
+\item{tol}{Tolerance of recurrence for dSnbinom() used for convolution of negative binomial distribution}
 
 \item{zero}{If the theoretical nest number is under this value, this value wll be used}
+
+\item{out}{If TRUE, return the global likelihood; if FALSE, the likelihood for each series}
 }
 \value{
 The likelihood of the data with the parameters
@@ -45,7 +54,6 @@ likelihood_phenology estimate likelihood for a set of parameters.
 \examples{
 \dontrun{
 # Read a file with data
-Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 data(Gratiot)
 # Generate a formated list nammed data_Gratiot 
 data_Gratiot<-add_phenology(Gratiot, name="Complete", 
@@ -58,6 +66,47 @@ likelihood_phenology(data=data_Gratiot, fitted.parameters=parg, fixed.parameters
 likelihood_phenology(result=result_Gratiot)
 }
 }
+\seealso{
+Other Phenology model: 
+\code{\link{AutoFitPhenology}()},
+\code{\link{BE_to_LBLE}()},
+\code{\link{Gratiot}},
+\code{\link{LBLE_to_BE}()},
+\code{\link{LBLE_to_L}()},
+\code{\link{L_to_LBLE}()},
+\code{\link{MarineTurtles_2002}},
+\code{\link{MinBMinE_to_Min}()},
+\code{\link{adapt_parameters}()},
+\code{\link{add_SE}()},
+\code{\link{add_phenology}()},
+\code{\link{extract_result}()},
+\code{\link{fit_phenology}()},
+\code{\link{logLik.phenology}()},
+\code{\link{map_Gratiot}},
+\code{\link{map_phenology}()},
+\code{\link{par_init}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc_p}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology}()},
+\code{\link{plot.phenologymap}()},
+\code{\link{plot.phenology}()},
+\code{\link{plot_delta}()},
+\code{\link{plot_phi}()},
+\code{\link{print.phenologymap}()},
+\code{\link{print.phenologyout}()},
+\code{\link{print.phenology}()},
+\code{\link{remove_site}()},
+\code{\link{result_Gratiot1}},
+\code{\link{result_Gratiot2}},
+\code{\link{result_Gratiot_Flat}},
+\code{\link{result_Gratiot_mcmc}},
+\code{\link{result_Gratiot}},
+\code{\link{summary.phenologymap}()},
+\code{\link{summary.phenologyout}()},
+\code{\link{summary.phenology}()}
+}
 \author{
 Marc Girondot
 }
+\concept{Phenology model}

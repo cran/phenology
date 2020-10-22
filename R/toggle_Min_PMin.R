@@ -8,7 +8,6 @@
 #' that uses PMin, PminB or PminE, or reverse.
 #' @examples 
 #' # Read a file with data
-#' # Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot
 #' refdate <- as.Date("2001-01-01")

@@ -16,7 +16,7 @@
 #' @param hessian Does the hessian matrix should be estimated
 #' @description This function fits a model of tag loss using a CMR database.\cr
 #' The names of parameters can be:\cr
-#' Model Girondot and Pfaller (in preparation):\cr
+#' Model Pfaller et al. (Submitted):\cr
 #' \describe{
 #'   \item{Left tag lost when 2 are present}{\code{D1_L2}, \code{D2D1_L2}, \code{D3D2_L2}, \code{A_L2}, \code{B_L2}, \code{C_L2}, \code{delta_L2}}
 #'   \item{Right tag lost when 2 are present}{\code{D1_R2}, \code{D2D1_R2}, \code{D3D2_R2}, \code{A_R2}, \code{B_R2}, \code{C_R2}, \code{delta_R2}}
@@ -68,9 +68,13 @@
 #' 
 #' If only one parameter is fitted, method must be "Brent" and \code{upper} and \code{lower} 
 #' parameters must be set up with finite values.
+#' 
+#' model_before can be ""par['a0_1']=par['a0_2'];par['a1_1']=par['a1_2']".
+#' model_after can be "p1=p2"
 #' @family Model of Tag-loss
 #' @references Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C., Girondot, M., 2005. Maximum likelihood estimates of tag loss in leatherback sea turtles. Journal of Wildlife Management 69, 540-548.
 #' @references Casale, P., Freggi, D., Salvemini, P., 2017. Tag loss is a minor limiting factor in sea turtle tagging programs relying on distant tag returns: the case of Mediterranean loggerhead sea turtles. European Journal of Wildlife Research 63.
+#' @references Pfaller, J.B., Williams, K.L., Frick, M.G., Shamblin, B.M., Nairn, C.J., Girondot, M., Submitted. Genetic determination of tag loss dynamics in nesting loggerhead turtles: A new chapter in “the tag loss problem”.
 #' @examples
 #' \dontrun{
 #' library(phenology)
@@ -92,7 +96,7 @@
 #' par <- c(D1_1 = 100.15324837975547, A_1 = 5.9576927964120188, 
 #'          B_1 = 8.769924225871069, B_2 = 8.2353860179664125)
 #' pfixed <- c(D2D1_1 = 2568, D3D2_1 = 2568, D2D1_2 = 2568, D3D2_2 = 2568)
-#' o_4p_p1p2 <- Tagloss_fit(data=data_f, fitted.parameters = par, 
+#' o_4p_p1p2 <- Tagloss_fit(data=data_f_21, fitted.parameters = par, 
 #'                          fixed.parameters = pfixed, 
 #'                          model_before = "par['C_1']=par['B_1'];
 #'                          par['A_2']=par['A_1'];

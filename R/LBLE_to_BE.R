@@ -7,9 +7,9 @@
 #' @description This function is used to transform a set of parameters 
 #' that uses LengthB, Peak and LengthE to a set of parameters 
 #' that uses Begin, Peak and End.
+#' @family Phenology model
 #' @examples 
 #' # Read a file with data
-#' # Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot
 #' refdate <- as.Date("2001-01-01")

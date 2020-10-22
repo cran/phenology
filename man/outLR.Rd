@@ -4,7 +4,9 @@
 \name{outLR}
 \alias{outLR}
 \title{Database of leatherback CMR in French Guiana}
-\format{A dataframe with database of leatherback CMR in French Guiana}
+\format{
+A dataframe with database of leatherback CMR in French Guiana
+}
 \usage{
 outLR
 }

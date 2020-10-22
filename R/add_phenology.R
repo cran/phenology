@@ -8,8 +8,13 @@
 #' @param reference as.Date('2001-12-31') The date used as 1st date
 #' @param sep.dates Separator used to separate dates when incertitude is included
 #' @param month_ref If no reference date is given, use this month as a reference
-#' @param header If the data is read from a file, can be used to force header or not
-#' @param format The format of the date in the file. Several format can be set and the last one that give compatible result is used
+#' @param format The format of the dates
+#' @param colname.Date Name or number of column with dates
+#' @param colname.Number Name or number of column with numbers
+#' @param colname.Rookery Name or number of column with rookery names
+#' @param include0 Does timeseries with only 0 should be included?
+#' @param datepeakfor0 If series with no observation are included, where add a 1 value in ordinal date (see description)
+#' @param expandRange0Observation If TRUE, the range of date with 0 observations are expanded into individual dates
 #' @param silent Does information about added timeseries is shown
 #' @description To create a new dataset, the syntaxe is :\cr
 #' data <- add_phenology(add=newdata, name="Site", reference=as.Date('2001-12-31'), 
@@ -17,43 +22,52 @@
 #' To add a dataset to a previous one, the syntaxe is :\cr
 #' data <- add_phenology(previous=previousdata, add=newdata, name='Site', \cr
 #' reference=as.Date('2001-01-01'), format="\%Y-\%m-\%d") \cr\cr
-#' To add several timeseries at the same time with '\%d/\%m/\%y' or '\%d/\%m/\%Y' date format:\cr
-#' data<-add_phenology(add=list(newdata1, newdata2), name=c('Site1', 'Site2'),\cr 
-#' reference=as.Date('2001-01-01'), format=c('\%d/\%m/\%y', '\%d/\%m/\%Y'))\cr\cr
 #' The dataset to be added must include 2 or 3 columns.\cr
-#' The first one is the date in the format specified by 
-#' the parameter format=. If the number of nests is known  
-#' for an exact data, then only one date must be indicated.\cr  
+#' The colname.Date included the dates in the format specified by 
+#' the parameter format. If the number of nests is known  
+#' for an exact date, then only one date must be indicated.\cr  
 #' If the number of nests is known for a range of date, the 
-#' first and last dates must be separated but a - (dash).\cr
-#' For example: 1/2/2000-10/2/2000\cr\cr
-#' The second column is the number of nests observed for 
+#' first and last dates must be separated but a sep.dates character.\cr
+#' For example: 1/2/2000-10/2/2000\cr
+#' Note that date in the colname.Date column can be already formated and in this case 
+#' the parameter format is ignored.\cr\cr
+#' The colname.Number includes the number of nests observed for 
 #' this date or this range of dates.\cr
-#' The third column is optional and is the name of the rookery.\cr\cr
+#' The colname.Rookery is optional and includes the name of the rookeries.\cr\cr
 #' If only two columns are indicated, the name can be indicated as  
-#' a parameter of the function with name=. If no name is indicated,  
+#' a parameter of the function with the parameter name. If no name is indicated,  
 #' the default name Site will be used, but take care, only one 
 #' rookery of this name can be used.\cr\cr
 #' Several rookeries can be included in the same file but in this case 
-#' the rookery name is obligatory at the third column.\cr\cr
-#' The simplest use of this function is just: \cr
-#' phen <- add_phenology()\cr\cr
+#' the rookery name is obligatory at the colname.Rookery column.\cr\cr
+#' #' The model cannot be fitted if a timeseries has no observation because the trivial 
+#' solution is of course with max=0. The solution is to include a fake false observation at the closest 
+#' position of the peak, and then the estimated number of nests/tracks will be the estimated number - 1.\cr
+#' If include0 is TRUE, then the series with no observation are included and one observation is added 
+#' at the monitored date the closest of datepeakfor0.\cr
+#' The normal way to manage such a situation is as followed:\cr
+#' 1- Format data with include0 being FALSE\cr
+#' 2- Fit parameters using fdf <- fit_phenology()\cr
+#' 3- Format data with include0 being TRUE and datepeakfor0=fdf$par["Peak"]\cr
+#' 4- Fix previsouly fitted parameters using pfixed <- fdf$par\cr
+#' 5- Generate new set of parameters with par_init(data, fixed.parameters=pfixed)\cr
+#' 6- Run again fit_phenology()\cr\cr
 #' Some problems that can occur:\cr
-#' If a name is defined as a third column of a data.frame and a name is defined also with name=, the third column has priority.\cr
-#' Two different timeseries MUST have different name and character _ is forbiden in timeseries names.
+#' If a name is defined as a third column of a data.frame and a name is 
+#' defined also with name parameter, the third column has priority.\cr
+#' Two different timeseries MUST have different name and characters _ and 
+#' space are forbiden in timeseries names. They are automatically changed if they are present.
+#' @family Phenology model
 #' @examples
 #' \dontrun{
-#' # Get the lastest version at:
-#' # install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", 
-#'      repos=NULL, type="source")
 #' library(phenology)
 #' # Read a file with data
-#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' refdate <- as.Date("2001-01-01")
 #' data_Gratiot <- add_phenology(Gratiot, name="Complete", 
 #' 	reference=refdate, format="%d/%m/%Y")
+#' 	
 #' # Generate initial points for the optimisation
 #' parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 #' # Run the optimisation
@@ -62,265 +76,286 @@
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output <- plot(result_Gratiot)
+#' 
+#' #############################################
+#' # Example of use of include0 and datepeakfor0
+#' #############################################
+#' # Let create a times series with only 0
+#' data0 <- data.frame(Date=c("11/3/2015", "12/3/2015", "13/3/2015-18/3/2015", "25/3/2015"), 
+#'                     Number=c(0, 0, 0, 0), 
+#'                     Beach=rep("Site", 4), stringsAsFactors=FALSE)
+#' # Here I don't include beach with no observation: error message
+#' try1 <- add_phenology(data0, format="%d/%m/%Y", month_ref=1, include0=FALSE)
+#' # Here I include timeseries with no observation
+#' try1 <- add_phenology(data0, format="%d/%m/%Y", month_ref=1, include0=TRUE, datepeakfor0=100)
+#' try1 <- add_phenology(data0, format="%d/%m/%Y", month_ref=1, include0=TRUE, datepeakfor0=73)
+#' try1 <- add_phenology(data0, format="%d/%m/%Y", month_ref=1, include0=TRUE, datepeakfor0=70)
+#' # It can be done in two steps
+#' try1 <- add_phenology(data0, format="%d/%m/%Y", month_ref=1, include0=TRUE)
+#' try2 <- add_phenology(previous=try1, include0=TRUE, datepeakfor0=100)
+#' # Here I include the series without observation
+#' try1 <- add_phenology(add=data0, format="%d/%m/%Y", month_ref=1, 
+#'                       include0=TRUE, expandRange0Observation=TRUE)
 #' }
 #' @export
 
 
 add_phenology <-
-function(add=file.choose(), name=NULL, reference=NULL, 
-         month_ref= NULL, sep.dates="-", 
-         header=NULL, format=NULL, previous=NULL, silent=FALSE) {
-
-
-# name=NULL; reference=NULL; month_ref= NULL; header=NULL; sep.dates="-"; format=NULL; previous=NULL; silent=FALSE
-# add=file.choose()
-  
-if (class(previous)!="phenologydata" && !is.null(previous)) {
-  stop("The previous dataset must be already formated using add_phenology()!")
-}
-  
-  if (!is.null(format)) {
-    if (any(grepl(sep.dates, format))) {
-    stop("Separator between day, month and year cannot be the same as the separator between two dates")
+  function(add=NULL, name="Site", reference=NULL, 
+           month_ref= NULL, sep.dates="-", 
+           colname.Date=1, colname.Number=2, colname.Rookery=3, 
+           format="%d/%m/%Y", previous=NULL, include0=FALSE, datepeakfor0=NULL, 
+           expandRange0Observation=TRUE, 
+           silent=FALSE) {
+    
+    
+    # name=NULL; reference=NULL; month_ref= NULL; sep.dates="-"; format="%d/%m/%Y"; previous=NULL; colname.Date=1; colname.Number=2; colname.Rookery=3; silent=FALSE; include0=FALSE; datepeakfor0=NULL; expandRange0Observation=TRUE
+    
+    if (class(previous) != "phenologydata" && !is.null(previous)) {
+      stop("The previous dataset must be already formated using add_phenology()!")
     }
+    
+    if (!is.null(add)) {
+      
+      if (!is.null(format)) {
+        if (any(grepl(sep.dates, format))) {
+          stop("Separator between day, month and year cannot be the same as the separator between two dates")
+        }
+      }
+      
+      if (class(try(add[, colname.Date], silent = TRUE)) == "try-error") {
+        stop("The columns with dates does not exist")
+      }
+      
+      if (class(try(add[, colname.Number], silent = TRUE)) == "try-error") {
+        stop("The columns with numbers does not exist")
+      }
+      
+      if (class(try(add[, colname.Rookery], silent = TRUE)) == "try-error") {
+        if (!silent) message("The columns with rookery name does not exist; I create one")
+        add <- cbind(add, Site=rep(name, nrow(add)))
+      }
+      
+      if (is.null(reference) & is.null(month_ref)) {
+        stop("reference or month_ref must be supplied")
+      }
+      
+      if (is.factor(add[,colname.Date])) add[,colname.Date] <- as.character(add[,colname.Date])
+      if (is.factor(add[,colname.Rookery])) add[,colname.Rookery] <- as.character(add[,colname.Rookery])
+      
+      d <- add[,colname.Date]
+      if (is.character(d)) {
+        d2 <- strsplit(d, split=sep.dates)
+        dp1 <- as.Date(unlist(lapply(d2, FUN = function(x) x[1])), format=format)
+        dp2 <- as.Date(unlist(lapply(d2, FUN = function(x) x[2])), format=format)
+      } else {
+        dp1 <- d
+        dp2 <- rep(NA, length(d))
+      }
+      add <- cbind(add, D18989898=dp1, D28989898=dp2)
+      
+      if (any(is.na(dp1))) {
+        stop(paste("Date format for column colname.Date is not correct; check line(s)", which(is.na(dp1))))
+      }
+      
+      if (is.character(reference)) reference <- as.Date(reference, format=format)
+      
+      intermediaire <- list()
+      
+      for (site in unique(add[, colname.Rookery])) {
+        if (!silent) message(paste0("Site: ", site))
+        dfadd <- add[add[, colname.Rookery] == site, ]
+        dfadd <- dfadd[order(dfadd[, "D18989898"]), ]
+        
+        if (is.null(reference)) {
+          # si month_ref > premier mois de la série, c'est l'année n-1
+          # sinon c'est l'année n
+          premieredate <- dfadd[1, "D18989898"]
+          premiermois <- as.POSIXlt(premieredate)$mon+1
+          
+          if (premiermois < month_ref) {
+            premieredate <- premieredate - ifelse(as.POSIXlt(premieredate-365)$mday==as.POSIXlt(premieredate)$mday, 365, 366)
+            refencours <- as.character(premieredate)
+            substr(refencours, 9, 10) <- "01"
+            m <- paste0("0", as.character(month_ref))
+            substr(refencours, 6, 7) <- substr(m, nchar(m)-2, nchar(m))
+            refencours <- as.Date(refencours)
+          } else {
+            refencours <- as.character(premieredate)
+            substr(refencours, 9, 10) <- "01"
+            m <- paste0("0", as.character(month_ref))
+            substr(refencours, 6, 7) <- substr(m, nchar(m)-2, nchar(m))
+            refencours <- as.Date(refencours)
+          }
+        } else {
+          refencours <- reference
+        }
+        
+        if (!silent) message(paste("Reference date:", as.character(refencours)))
+        
+        df <- data.frame(Date=dfadd$D18989898, 
+                         Date2=dfadd$D28989898, 
+                         nombre=dfadd[, colname.Number], 
+                         ordinal=as.numeric(dfadd$D18989898-refencours), 
+                         ordinal2=as.numeric(dfadd$D28989898-refencours), 
+                         Modeled=rep(NA, nrow(dfadd)), 
+                         LnL=rep(NA, nrow(dfadd)), 
+                         stringsAsFactors = FALSE)
+        if ((expandRange0Observation) & (any(!is.na(df[, "Date2"])))) {
+          dfec <- df[-(1:nrow(df)), ]
+          
+          for (idf in 1:nrow(df)) {
+            if ((!is.na(df[idf, "Date2"])) & (df[idf, "nombre"] == 0)) {
+              dt <- seq(from=df[idf, "Date"], to=df[idf, "Date2"], by="1 day")
+              dfe0 <- data.frame(Date=dt, 
+                                 Date2=rep(as.Date(NA), length(dt)), 
+                                 nombre=rep(0, length(dt)), 
+                                 ordinal=as.numeric(dt-refencours), 
+                                 ordinal2=rep(NA, length(dt)), 
+                                 Modeled=rep(NA, length(dt)), 
+                                 LnL=rep(NA, length(dt)), 
+                                 stringsAsFactors = FALSE)
+              dfec <- rbind(dfec, dfe0)
+            } else {
+              dfec <- rbind(dfec, df[idf, ])
+            }
+          }
+          df <- dfec
+        }
+        
+        
+        attributes(df) <- modifyList(attributes(df), list(reference=refencours))
+        
+        lg <- ifelse(as.POSIXlt(refencours+365)$mday == as.POSIXlt(refencours)$mday, 365, 366)
+        
+        # test cohérence
+        if (max(c(df$ordinal, df$ordinal2)+1, na.rm = TRUE) > lg) {
+          stop("More than one year for this series")
+        }
+        
+        test <- logical(lg)
+        for (i in 1:nrow(df)) {
+          if (is.na(df[i, "ordinal2"])) {
+            if (test[df[i, "ordinal"]+1]) {
+              stop(paste("Error; some dates are duplicated. Look at", as.character(df[i, "Date"])))
+            } else {
+              test[df[i, "ordinal"]+1] <- TRUE
+            }
+          } else {
+            if (any(test[(df[i, "ordinal"]:df[i, "ordinal2"])+1])) {
+              stop(paste("Error; some dates are duplicated. Look at", as.character(df[i, "Date"])))
+            } else {
+              test[(df[i, "ordinal"]:df[i, "ordinal2"])+1] <- TRUE
+            }
+          }
+        }
+        df <- list(df)
+        names(df) <- site
+        intermediaire <- c(intermediaire, df)
+        
+      }
+      
+      previous <- c(previous, intermediaire)
+      class(previous) <- "phenologydata"
+      
+    }
+    
+    if (length(previous) == 0) {
+      warning("No timeseries is included.")
+    } else {
+      
+      
+      if (any(grepl("_", names(previous)))) {
+        if (!silent) print("The character _ is forbiden in names of timesseries. It has been changed to '.'.")
+        names(previous) <- gsub("_", ".", names(previous))
+      }
+      
+      if (any(grepl("-", names(previous)))) {
+        if (!silent) print("The character - in timeseries must be used to separate beach name and year.")
+        # names(previous) <- gsub("-", ".", names(previous))
+      }
+      
+      if (any(grepl(" ", names(previous)))) {
+        if (!silent) print("The character ' ' is forbiden in names of timesseries. It has been changed to '.'.")
+        names(previous) <- gsub(" ", ".", names(previous))
+      }
+      
+      if (any(duplicated(names(previous)))) {
+        stop("The names of timesseries must be unique.")
+      }
+      
+      intermediaire <- list()
+      for (site in names(previous)) {
+        
+        df <- previous[[site]]
+        if (sum(df$nombre, na.rm = TRUE) == 0) {
+          if (!silent) message(paste0("Site: ", site))
+          
+          if (include0) {
+            if (is.null(datepeakfor0)) {
+              if (!silent) message("This series contains no observation; datepeakfor0 is not defined.")
+              attributes(df) <- modifyList(attributes(df), list(fakeobservation=NULL))
+              
+            } else {
+              # datepeakfor0
+              pos <- NULL
+              dispos_min <- +Inf
+              pos_min <- NULL
+              
+              for (i in 1:nrow(df)) {
+                if (!is.na(df[i, "ordinal2"])) {
+                  if ((datepeakfor0 >= df[i, "ordinal"]) & (datepeakfor0 <= df[i, "ordinal2"])) {
+                    pos <- i
+                  } else {
+                    if (abs(datepeakfor0 - df[i, "ordinal"]) < dispos_min) {
+                      dispos_min <- abs(datepeakfor0 - df[i, "ordinal"])
+                      pos_min <- i
+                    }
+                    if (abs(datepeakfor0 - df[i, "ordinal2"]) < dispos_min) {
+                      dispos_min <- abs(datepeakfor0 - df[i, "ordinal2"])
+                      pos_min <- i
+                    }
+                    
+                  }
+                } else {
+                  if (df[i, "ordinal"] == datepeakfor0) {
+                    pos <- i
+                  } else {
+                    if (abs(datepeakfor0 - df[i, "ordinal"]) < dispos_min) {
+                      dispos_min <- abs(datepeakfor0 - df[i, "ordinal"])
+                      pos_min <- i
+                    }
+                  }
+                }
+                if (!is.null(pos)) break
+              }
+              
+              if (is.null(pos)) pos <- pos_min
+              df[pos, "nombre"] <- 1
+              if (!silent) message("This series contains no observation; one fake observation was created")
+              attributes(df) <- modifyList(attributes(df), list(fakeobservation=i))
+            }
+            
+            df <- list(df)
+            names(df) <- site
+            intermediaire <- c(intermediaire, df)
+            
+            
+          } else {
+            if (!silent) message("This series contains no observation; it is not included")
+          }
+        } else {
+          df <- list(df)
+          names(df) <- site
+          intermediaire <- c(intermediaire, df)
+          
+        }
+        
+      }
+      
+      previous <- intermediaire
+      class(previous) <- "phenologydata"
+    }
+    
+    return(previous)
   }
-  
-
-if(class(add)=="try-error") {
-	stop("No file has been chosen!")
-}	
-
-nm <- name
-
-if (class(add)=="character") {
-# j'ai utilisé le file.choose
-	nm <- ifelse(is.null(name), add, name)
-	add <- lapply(add,readLines, warn=FALSE)
-  addec <- add[[1]]
-	add[[1]] <- addec[addec!=""]
-}
-	
-## if (is.null(add) || !exists(as.character(substitute(add)))) {
-if (is.null(add)) {
-	stop("Data to be added does not exist!")
-}
-
-if (class(add)=="list") {
-  names(add) <- basename(names(add))
-  add_df <- data.frame(Date=as.character(), Number=as.numeric(), Beach=as.character())
-  for (i in seq_along(add)) {
-    if (!silent) print(i)
-    intermediate <- na.omit(add[[i]])
-    if (ncol(intermediate)==2) intermediate <- cbind(intermediate, Beach=names(add)[i])
-    colnames(intermediate) <- c("Date", "Number", "Beach")
-    add_df <- rbind(add_df, intermediate)
-  }
-  add <- add_df
-}
-
-
-# rp <- phenology:::.read_phenology(add, header, reference, month_ref, format, nm, sep.dates)
-
-rp <- getFromNamespace(".read_phenology", 
-                       ns="phenology")(add, 
-                                       header, 
-                                       reference, 
-                                       month_ref, 
-                                       format, 
-                                       nm, 
-                                       sep.dates, 
-                                       silent)
-
-if (any(grepl(sep.dates, rp$format))) {
-  stop("The date separator is used also within a date. It is not possible.")
-}
-
-add <- rp$DATA
-reference <- rp$reference
-format <- rp$format
-
-
-if (dim(add)[2]==3) {
-  if (all(add[1,3]==add[,3])) name <- add[1,3]
-}
-# je ne comprends rien 14/3/2014
-# là je crée une liste
-	nbdatasets <- 1
-	addlist <- list(add)
-if (is.null(name)) {
-	if (is.null(nm)) {
-    if (length(deparse(substitute(add)))==1) {
-		names(addlist) <- deparse(substitute(add))
-	    } else {
-	  names(addlist) <- paste("Rookery", runif(1, 1, 10000))
-	  }
-	} else {
-		names(addlist) <- basename(nm)
-	}
-} else {
-		names(addlist) <- name
-}
-
-
-
-# print(paste("2: ", name))
-
-
-for (kk in 1:nbdatasets) {
-
-	add <- addlist[[kk]]
-	name <- names(addlist)[kk]
-
-# print(paste("3: ", name))
-
-# fichier pnd
-# si 5 colonnes, j'en retire les 2 dernières
-	if (dim(add)[2]==5) {
-		add<-add[,-c(3:5)]
-	}
-#Si j'ai 3 colonnes et rien sur la 3ème, je n'en garde que deux
-	if (dim(add)[2]==3) {
-		if (all(is.na(add[,3]))) {
-			add<-add[,-3]
-		}
-	}
-
-  # 23122002
-  fin  <- FALSE
-	if (dim(add)[2]==2) {fin <- TRUE} else {
-    if (length(levels(factor(add[,3])))==1) fin <- TRUE
-	}
-  
-  
-	if (fin) {
-
-
-# J'ai deux colonnes et le nom des séries dans name
-	if (!silent) message(name)
-# Je n'ai pas de nom de site. Il n'y a donc qu'une seule série
-		colnames(add)=c("Date", "Nombre")	
-		add$Date<-as.character(add$Date)
-		add[, 2]<-as.character(add[, 2])
-
-# je retire toutes les lignes pour lesquelles je n'ai pas d'observation de ponte - 19012012
-		add<-add[(add[,1]!="") & (!is.na(add[,1])) & (gsub("[0-9 ]", "", add[,2])=="") & (!is.na(add[,2])) & (add[,2]!=""),1:2]
-		
-		if (dim(add)[1]==0) {
-		  if (!silent) warning(paste("The timeseries", name, "is empty; check it"))
-			return(invisible())
-		} 
-
-		
-		# Je le mets en numérique: 21/3/2012
-		add[, 2]<-as.numeric(add[, 2])
-		
-		addT<-data.frame(Date=rep(as.Date("1900-01-01"), dim(add)[1]), Date2=rep(as.Date("1900-01-01"), dim(add)[1]), nombre=rep(NA, dim(add)[1]), ordinal=rep(NA, dim(add)[1]), ordinal2=rep(NA, dim(add)[1]), Modeled=rep(NA, dim(add)[1]), LnL=rep(NA, dim(add)[1]))
-		
-
-		if (is.null(reference)) {		
-			stop("No refence date can be calculated")
-		}
-		
-		
-    if (!silent) message(paste("Reference: ", reference))
-		
-		# dans i la ligne en cours
-		for(i in 1:nrow(add)) {
-		
-			essai<-unlist(strsplit(add$Date[i], sep.dates))
-			
-			dtcorrect <- NULL
-			for (fd in 1:length(format)) {
-				dtencours <- as.Date(essai[1], format[fd])
-				ref <- as.numeric(dtencours-reference+1)
-				if (ref>=0 & ref<=366) {
-					dtcorrect <- dtencours
-				}
-			}
-			
-			addT$Date[i] <- dtcorrect
-			if (is.na(addT$Date[i])) {
-				warning(paste("Error date ", essai[1], sep=""))
-			} else {
-				addT$ordinal[i]<-as.numeric(addT$Date[i]-reference+1)
-				if (length(essai)==2) {
-					dtcorrect <- NULL
-					for (fd in 1:length(format)) {
-						dtencours <- as.Date(essai[2], format[fd])
-						ref <- as.numeric(dtencours-reference+1)
-						if (ref>=0 & ref<=366) {
-							dtcorrect <- dtencours
-						}
-					}
-							
-					addT$Date2[i]<-dtcorrect
-					addT$ordinal2[i]<-as.numeric(addT$Date2[i]-reference+1)
-				} else {
-					addT$Date2[i]<-NA
-					addT$ordinal2[i]<-NA
-				}
-			}
-		}
-		addT$nombre<-add$Nombre
-		nb<-length(previous)
-		previous$kyYI876Uu<-addT
-		names(previous)[nb+1]<-name
-
-		
-
-	} else {
-# J'ai plus d'un nom de site. Il y a donc plusieurs séries - 21012012
-		colnames(add)=c("Date", "Nombre", "Site")	
-		add$Date<-as.character(add$Date)
-
-# Je le mets en numérique: 21/3/2012
-		add[, 2]<-as.numeric(add[, 2])
-		
-# Maintenant j'ai tous les sites remplis
-# mais je dois avoir la liste des sites
-		fac <- factor(add$Site)
-# je génère un nouveau data.frame avec facteur par facteur
-		dtaorigin=previous
-		for(i in 1:length(levels(fac))) {
-			siteencours<-levels(fac)[i]
-			addencours<-add[add[,3]==siteencours, 1:2]
-			dtaorigin<-add_phenology(previous=dtaorigin, add=addencours, name=siteencours, reference=reference, month_ref= month_ref, format=format)
-		}
-		previous<-dtaorigin
-
-	}
-	problem <- FALSE
-	for(i in 1:length(previous)) {
-		problem <- (problem) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]>366)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]>366)) || (any(previous[[i]]$ordinal[!is.na(previous[[i]]$ordinal)]<0)) || (any(previous[[i]]$ordinal2[!is.na(previous[[i]]$ordinal2)]<0))
-
-	}
-#	print(problem)
-	if (problem & (!silent)) {
-		stop(paste("Problem in at least one date; check them. Take care about format used.\n", 
-                  "Within a file, all dates must conform to the same format.\n",
-                  "Data should not be longer than one year for a site at the same time."))
-	}	
-	
-
-}
-
-class(previous) <- "phenologydata"
-
-
-if (any(grepl("_", names(previous)))) {
-  if (!silent) print("The character _ is forbiden in names of timesseries. It has been changed to -.")
-  names(previous) <- gsub("_", "-", names(previous))
-}
-
-if (any(grepl(" ", names(previous)))) {
-  if (!silent) print("The character ' ' is forbiden in names of timesseries. It has been changed to '.'.")
-  names(previous) <- gsub(" ", ".", names(previous))
-}
-
-if (any(duplicated(names(previous)))) {
-  stop("The names of timesseries must be unique.")
-}
-
-
-return(previous)
-}

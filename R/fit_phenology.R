@@ -7,11 +7,9 @@
 #' @param fitted.parameters Set of parameters to be fitted
 #' @param lower Lower bound for each parameter
 #' @param upper Upper bound for each parameter
-#' @param method_incertitude 'combinatory' estimates likelihood of all combinations for nest numbers;\cr
-#'                           'convolution' [default] uses the exact likelihood of the sum of negative binomial distribution.
 #' @param zero_counts example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 #'                    been recorded for each of these timeseries. Defaut is TRUE for all.
-#' @param infinite Number of iterations for dSnbinom() used for method_incertitude='convolution'
+#' @param tol Tolerance of recurrence for dSnbinom() used for convolution of negative binomial distribution
 #' @param hessian If FALSE does not estimate se of parameters
 #' @param parallel If FALSE, no parallel computing is done to evaluate likelihood
 #' @param cofactors data.frame with a column Date and a column for each cofactor
@@ -24,20 +22,26 @@
 #' @param store.intermediate TRUE or FALSE to save the intermediates
 #' @param file.intermediate Name of the file where to save the intermediates as a list
 #' @description Function of the package phenology to fit parameters to timeseries.\cr
-#' To fit data, the syntaxe is :\cr
-#' Result <- fit_phenology(data=dataset, fitted.parameters=par, fixed.parameters=pfixed, trace=1, method_incertitude=2, zero_counts=TRUE, hessian=TRUE)\cr
+#' To fit data, the syntax is :\cr
+#' Result <- fit_phenology(data=dataset, fitted.parameters=par, fixed.parameters=pfixed, trace=1, zero_counts=TRUE, hessian=TRUE)\cr
 #' or if no parameter is fixed :\cr
 #' Result <- fit_phenology(data=dataset, fitted.parameters=par)\cr
 #' Add trace=1 [default] to have information on the fit progression or trace=0 to hide information on the fit progression.\cr
 #' zero_counts = c(TRUE, TRUE, FALSE) indicates whether the zeros have been recorded for each of these timeseries. Defaut is TRUE for all.\cr
-#' hessian = FALSE does not estimate se of parameters.\cr
-#' If the parameter Theta is fixed to +Inf, a Poissonian model of daily nest distribution is implemented.
+#' hessian = FALSE does not estimate Hessian matrix and SE of parameters.\cr
+#' If the parameter Theta is fixed to +Inf, a Poissonian model of daily nest distribution is implemented.\cr
+#' Special section about cofactors:\cr
+#' cofactors must be a data.frame with a column Date and a column for each cofactor\cr
+#' add.cofactors are the names of the column of parameter cofactors to use as a cofactor;\cr
+#' The model is then: parameter[add.cofactors] * cofactor[, add.cofactors]\cr
+#' If the name of the parameter is paste0(add.cofactors, "multi"), then the model is:\cr
+#' parameter[paste0(add.cofactors, "multi")] * cofactor[, add.cofactors] * 
+#'        (number of nests without cofactor)\cr
+#' @family Phenology model
 #' @examples
 #' \dontrun{
 #' library(phenology)
 #' # Read a file with data
-#' Gratiot <- read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", 
-#' header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' data_Gratiot <- add_phenology(Gratiot, name="Complete", 
@@ -50,15 +54,21 @@
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output <- plot(result_Gratiot)
+#' # or
+#' output <- summary(result_Gratiot)
+#' 
 #' # Use fit with co-factor
+#' 
 #' # First extract tide information for that place
 #' td <- tide.info(year=2001, latitude=4.9167, longitude=-52.3333, tz="America/Cayenne")
+#' # I keep only High tide level
 #' td2 <- td[td$Tide=="High Tide", ]
+#' # I get the date
 #' td3 <- cbind(td2, Date=as.Date(td2$Date.Time))
-#' td4 <- td3[(as.POSIXlt(td3$Date.Time)$hou<6) | (as.POSIXlt(td3$Date.Time)$hou>18), ]
-#' with(td4, plot(Date.Time, Level, type="l"))
-#' data_Gratiot$Complete$Date
-#' td5 <- merge(data_Gratiot$Complete, td4, by.x="Date", by.y="Date")
+#' td4 <- td3[(as.POSIXlt(td3$Date.Time)$hou<10) | (as.POSIXlt(td3$Date.Time)$hou>15), ]
+#' td5 <- aggregate(x=td4[, c("Date", "Date.Time", "Level")], 
+#'                  by=list(Date=td4[, "Date"]), FUN=max)[, 2:4]
+#' with(td5, plot(Date.Time, Level, type="l"))
 #' td6 <- td5[, c("Date", "Level")]
 #' parg <- par_init(data_Gratiot, fixed.parameters=NULL, add.cofactors="Level")
 #' result_Gratiot_CF <- fit_phenology(data=data_Gratiot, 
@@ -67,24 +77,33 @@
 #' compare_AIC(WithoutCF=result_Gratiot, WithCF=result_Gratiot_CF)
 #' plot(result_Gratiot_CF)
 #' 
+#' parg <- par_init(data_Gratiot, fixed.parameters=NULL, add.cofactors="Levelmulti")
+#' result_Gratiot_CF2 <- fit_phenology(data=data_Gratiot, 
+#' 		fitted.parameters=parg, fixed.parameters=NULL, cofactors=td6, 
+#' 		add.cofactors="Level")
+#' compare_AIC(WithoutCF=result_Gratiot, WithCF2=result_Gratiot_CF2)
+#' plot(result_Gratiot_CF2)
+#' 
 #' # Example with two series fitted with different peaks but same Length of season
 #' 
 #' Gratiot2 <- Gratiot
 #' Gratiot2[, 2] <- floor(Gratiot2[, 2]*runif(n=nrow(Gratiot2)))
-#' data_Gratiot <- add_phenology(Gratiot, name="Complete",
+#' data_Gratiot <- add_phenology(Gratiot, name="Complete1",
 #'                               reference=as.Date("2001-01-01"), format="%d/%m/%Y")
 #' data_Gratiot <- add_phenology(Gratiot2, name="Complete2",
 #'                               reference=as.Date("2001-01-01"), 
 #'                               format="%d/%m/%Y", previous=data_Gratiot)
 #' pfixed=c(Min=0)
 #' p <- par_init(data_Gratiot, fixed.parameters = pfixed)
-#' p <- c(p, Peak_Complete=175, Peak_Complete2=175)
+#' p <- c(p, Peak_Complete1=175, Peak_Complete2=175)
 #' p <- p[-4]
 #' p <- c(p, Length=90)
 #' p <- p[-(3:4)]
 #' result_Gratiot <- fit_phenology(data=data_Gratiot, fitted.parameters=p, 
 #' fixed.parameters=pfixed)
+#' 
 #' # An example with bimodality
+#' 
 #' g <- Gratiot
 #' g[30:60, 2] <- sample(10:20, 31, replace = TRUE)
 #' data_g <- add_phenology(g, name="Complete", reference=as.Date("2001-01-01"), 
@@ -111,365 +130,385 @@
 
 
 fit_phenology <-
-function(data=file.choose(), fitted.parameters=NULL, fixed.parameters=NULL, 
-         method_incertitude="convolution", infinite=200, 
-         zero_counts=TRUE, store.intermediate=FALSE, 
-         file.intermediate="Intermediate.rda", 
-         parallel=TRUE, 
-         hessian=TRUE, silent=FALSE, growlnotify=TRUE, 
-         cofactors=NULL, add.cofactors=NULL, zero=1E-9, 
-         lower=0, upper=Inf, 
-         control=list(trace=1, REPORT=1, maxit=1000), 
-         method = c("Nelder-Mead", "L-BFGS-B")) {
+  function(data=file.choose(), fitted.parameters=NULL, fixed.parameters=NULL, 
+           tol=1E-6, 
+           zero_counts=TRUE, store.intermediate=FALSE, 
+           file.intermediate="Intermediate.rda", 
+           parallel=TRUE, 
+           hessian=TRUE, silent=FALSE, growlnotify=TRUE, 
+           cofactors=NULL, add.cofactors=NULL, zero=1E-9, 
+           lower=0, upper=Inf, 
+           control=list(trace=1, REPORT=1, maxit=1000), 
+           method = c("Nelder-Mead", "L-BFGS-B")) {
+    
+    # data=NULL
+    # lower = 0
+    # upper = Inf
+    # fitted.parameters=NULL
+    # fixed.parameters=NA
+    # parallel=TRUE
+    # tol=1E-6
+    # zero_counts=TRUE
+    # cofactors=NULL
+    # add.cofactors=NULL
+    # hessian=TRUE
+    # silent=FALSE
+    # growlnotify=TRUE
+    # zero=1E-9
+    # control=list(trace=1, REPORT=1, maxit=1000)
+    # method = c("Nelder-Mead", "L-BFGS-B")
+    # store.intermediate=FALSE
+    # file.intermediate="Intermediate.rda"
+    
+    # data_Gratiot <- add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
+    # data=data_Gratiot; fitted.parameters=result_Gratiot$par; fixed.parameters=result_Gratiot$fixed.parameters; trace=1
+    
+    #  if (is.null(fixed.parameters)) {fixed.parameters<-NA}
+    
+    # if (!requireNamespace("optimx", quietly = TRUE)) {
+    #   stop("optimx package is absent; Please install it first")
+    # }
+    # method <- c("Nelder-Mead", "L-BFGS-B")
+    # if (length(fitted.parameters) == 1) method <- "Brent"
+    
+    # library("optimx")
+    
+    Lnegbin <- getFromNamespace(".Lnegbin", ns="phenology")
+    
 
-# data=NULL
-# lower = 0
-# upper = Inf
-# fitted.parameters=NULL
-# fixed.parameters=NA
-# parallel=TRUE
-# method_incertitude="convolution"
-# infinite=200
-# zero_counts=TRUE
-# cofactors=NULL
-# add.cofactors=NULL
-# hessian=TRUE
-# silent=FALSE
-# growlnotify=TRUE
-# zero=1E-9
-# control=list(trace=1, REPORT=1, maxit=1000)
-# method = c("Nelder-Mead", "L-BFGS-B")
-# store.intermediate=FALSE
-# file.intermediate="Intermediate.rda"
-
-# data_Gratiot <- add_phenology(Gratiot, name="Complete", reference=as.Date("2001-01-01"), format="%d/%m/%Y")
-# data=data_Gratiot; fitted.parameters=result_Gratiot$par; fixed.parameters=result_Gratiot$fixed.parameters; trace=1
-
-#  if (is.null(fixed.parameters)) {fixed.parameters<-NA}
-  
-  # if (!requireNamespace("optimx", quietly = TRUE)) {
-  #   stop("optimx package is absent; Please install it first")
-  # }
-  # method <- c("Nelder-Mead", "L-BFGS-B")
-  # if (length(fitted.parameters) == 1) method <- "Brent"
-  
-  # library("optimx")
-  
-Lnegbin <- getFromNamespace(".Lnegbin", ns="phenology")
-
-  method_incertitude <- tolower(method_incertitude)
-  
-  
-if (method_incertitude!="convolution" & method_incertitude!="combinatory" 
-	& method_incertitude!=1 & method_incertitude!=2) {
-  stop("The parameter method_incertitude must be 'convolution' or 'combinatory'")
-}
-  
-  
-  if (store.intermediate) {
-    store <- list()
-    save(store, file=file.intermediate)
+    if (store.intermediate) {
+      store <- list()
+      save(store, file=file.intermediate)
+    }
+    
+    
+    if (class(data) != "phenologydata") {
+      message("Data should have been formated first using the function add_phenology(). I format it now.")
+      data <- add_phenology(data)
+    }
+    
+    if (is.null(fitted.parameters)) {
+      message("No initial parameters set has been defined. I estimate one set using par_init().")
+      fitted.parameters <- par_init(data, fixed.parameters=fixed.parameters)
+    }
+    
+    if (length(zero_counts)==1) {zero_counts <- rep(zero_counts, length(data))}
+    if (length(zero_counts)!=length(data)) {
+      stop("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) and with the same number of logical values (TRUE or FALSE) than the number of series analyzed.")
+    }
+    
+    if ((!is.null(add.cofactors)) & (!is.null(cofactors))) {
+      cf1 <- cofactors
+      for (ff in add.cofactors)
+        cf1[, ff] <- cofactors[, ff] - mean(cofactors[, ff])
+      cofactors <- cf1
+    }
+    
+    preLNL <- +Inf
+    
+    if (control[["maxit"]] != 0) {
+    
+    repeat {
+      
+      for (m in seq_along(method)) {
+        
+        if ((method[m] == "L-BFGS-B") | (method[m] == "Brent")) {
+          resul <- optim(par=fitted.parameters, fn=Lnegbin, 
+                         pt=list(data=data, fixed=fixed.parameters, 
+                                 zerocounts=zero_counts, 
+                                 tol=tol, out=TRUE, cofactors=cofactors, 
+                                 add.cofactors=add.cofactors, zero=zero, parallel=parallel, 
+                                 namespar=names(fitted.parameters), 
+                                 store.intermediate=store.intermediate, 
+                                 file.intermediate=file.intermediate),
+                         lower = lower, 
+                         upper = upper, 
+                         method = method[m], 
+                         control=control, 
+                         hessian=FALSE)
+        } else {
+          resul <- optim(par=fitted.parameters, fn=Lnegbin, 
+                         pt=list(data=data, fixed=fixed.parameters, 
+                                 zerocounts=zero_counts, 
+                                 tol=tol, out=TRUE, cofactors=cofactors, 
+                                 add.cofactors=add.cofactors, zero=zero, parallel=parallel, 
+                                 namespar=names(fitted.parameters), 
+                                 store.intermediate=store.intermediate, 
+                                 file.intermediate=file.intermediate),
+                         method = method[m], 
+                         control=control, 
+                         hessian=FALSE)
+        }
+        
+        resfit <- resul$par
+        if (is.null(names(resfit))) {
+          names(resfit) <- names(fitted.parameters)
+        }
+        
+        if (any(grepl("^Peak", names(resfit)))) resfit[substr(names(resfit), 1, 4)=="Peak"] <- abs(resfit[substr(names(resfit), 1, 4)=="Peak"])
+        if (any(grepl("^Theta", names(resfit)))) resfit["Theta"] <- abs(resfit["Theta"])
+        if (any(grepl("^PMin", names(resfit)))) resfit["PMin"] <- abs(resfit["PMin"])
+        # 28/3/2018. J'avais oublié ceux là
+        if (any(grepl("^PMinE", names(resfit)))) resfit["PMinE"] <- abs(resfit["PMinE"])
+        if (any(grepl("^PMinB", names(resfit)))) resfit["PMinB"] <- abs(resfit["PMinB"])
+        if (any(grepl("^Flat", names(resfit)))) resfit["Flat"] <- abs(resfit["Flat"])
+        if (any(grepl("^Length", names(resfit)))) resfit[substr(names(resfit), 1, 6)=="Length"] <- abs(resfit[substr(names(resfit), 1, 6)=="Length"])
+        # Ca fait en même temps MinE et MinB
+        if (any(grepl("^Min", names(resfit)))) resfit[substr(names(resfit), 1, 3)=="Min"]<-abs(resfit[substr(names(resfit), 1, 3)=="Min"])
+        if (any(grepl("^PMax", names(resfit)))) resfit[substr(names(resfit), 1, 3)=="Max"]<-abs(resfit[substr(names(resfit), 1, 3)=="Max"])
+        
+        resul$par <- resfit
+        fitted.parameters <- resfit
+      }
+      
+      conv <- resul$convergence
+      value <- resul$value
+      
+      if ((conv == 0) | (abs(preLNL - value)<1e-6)) break
+      if (!silent) message("Convergence is not acheived. Optimization continues !")
+      preLNL <- value
+    }
+    
+    if (conv != 0) message("Convergence is not acheived but change in likelihood is <1e-6. Check the result.")
+    
+    if (!silent) {
+      message("Fit done!")
+      if (is.finite(value)) {
+        cat(paste("-Ln L=", format(value, digits=max(3, trunc(log10(abs(value)))+4)), "\n", sep=""))
+      } else {
+        cat("-Ln L= -Inf\n")
+      }
+    }
+    
+    result_list <- resul
+    
+    # result_list <- list()
+    # result_list$par <- resfit
+    # result_list$value <- value
+    # result_list$convergence <- conv
+    # resul <- result_list
+    
+    } else {
+     # J'avais maxit == 0
+      resul <- list()
+      resul$data <- data
+      resul$par <- fitted.parameters
+      resul$value <- NA
+      resul$convergence <- NA
+      
+      resfit <- fitted.parameters
+    }
+    
+    if (hessian) {
+      
+      if (!requireNamespace("numDeriv", quietly = TRUE)) {
+        stop("numDeriv package is absent; Please install it first")
+      }
+      
+      if (!silent) message("Estimation of the standard error of parameters. Be patient please.")
+      
+      mathessian <- try(getFromNamespace("hessian", ns="numDeriv")(func=Lnegbin, 
+                                                                   x=resfit, 
+                                                                   method="Richardson", 
+                                                                   pt=list(data=data, fixed=fixed.parameters, 
+                                                                           zerocounts=zero_counts, 
+                                                                           tol=tol, out=TRUE, cofactors=cofactors, 
+                                                                           add.cofactors=add.cofactors, zero=zero, parallel=parallel, 
+                                                                           namespar=names(fitted.parameters), 
+                                                                           store.intermediate=store.intermediate, 
+                                                                           file.intermediate=file.intermediate))
+                        , silent=TRUE)
+      if (substr(mathessian[1], 1, 5)=="Error") {
+        if (!silent) {
+          warning("Error in the fit; probably one or more parameters are not estimable.")
+          warning("Standard errors of parameters cannot be estimated.")
+        }
+        res_se <- rep(NA, length(resfit))
+        names(res_se) <- names(resfit)
+      } else {
+        
+        rownames(mathessian) <- colnames(mathessian) <- names(resfit)
+        resul$hessian <- mathessian
+        
+        res_se <- SEfromHessian(mathessian)
+        
+      }
+    } else {
+      if (!silent) warning("Standard errors are not estimated.")
+      res_se <- rep(NA, length(resfit))
+      names(res_se) <- names(resfit)
+    }
+    
+    
+    
+    
+    resul$se <- res_se
+    
+    resul$fixed.parameters <- fixed.parameters
+    
+    resul$method_incertitude <- "convolution"
+    
+    resul$zero_counts <- zero_counts
+    
+    resul$tol <- tol
+    
+    resul$data <- data
+    # Lnegbin(x=resfit, pt=list(data=data, fixed=fixed.parameters, 
+    #                     zerocounts=zero_counts, 
+    #                     tol=tol, out=FALSE, cofactors=cofactors, 
+    #                     add.cofactors=add.cofactors, zero=zero))
+    
+    for(kl in 1:length(res_se)) {
+      if (is.na(res_se[kl])) {
+        if (!silent) cat(paste(names(resfit[kl]), "=", format(resfit[kl], digits=max(3, trunc(log10(abs(resfit[kl])))+4)), "  SE= NaN\n", sep=""))
+      } else {
+        if (!silent) cat(paste(names(resfit[kl]), "=", format(resfit[kl], digits=max(3, trunc(log10(abs(resfit[kl])))+4)), "  SE=", format(res_se[kl], digits=max(3, trunc(log10(abs(res_se[kl])))+4)), "\n", sep=""))
+      }
+    }
+    
+    dtout <- list()
+    
+    for (kl in 1:length(resul$data)) {
+      
+      if (!silent) cat(paste("Series: ", names(resul$data[kl]), "\n", sep=""))
+      
+      # la date de référence est resul$data[[kl]][1, "Date"]-resul$data[[kl]][1, "ordinal"]
+      ref <- resul$data[[kl]][1, "Date"]-resul$data[[kl]][1, "ordinal"]
+      intdtout <- c(reference=ref)
+      # save(list = ls(all.names = TRUE), file = "total.RData", envir = environment())
+      
+      par <- getFromNamespace(".format_par", ns="phenology")(c(resfit, fixed.parameters), names(resul$data[kl]))
+      # C'est quoi ça ? Je retire 26/8/2019
+      # par <- par[1:(length(par)-9)]
+      sepfixed <- fixed.parameters[strtrim(names(fixed.parameters), 3)=="se#"]
+      if (!is.null(sepfixed) & (!identical(unname(sepfixed), numeric(0)))) names(sepfixed) <- substring(names(sepfixed), 4)
+      se <- c(res_se, sepfixed)
+      se <- getFromNamespace(".format_par", ns="phenology")(se, names(resul$data[kl]))
+      # C'est quoi ça ? Je retire 26/8/2019
+      # se <- se[1:(length(se)-9)]
+      
+      d1 <- ref + par["Peak"]
+      if (!silent) cat(paste("Peak: ", d1, "\n", sep=""))
+      intdtout <- c(intdtout, Peak=unname(d1))
+      if (!is.na(se["Peak"])) {
+        d2 <- d1-1.96*se["Peak"]
+        d3 <- d1+1.96*se["Peak"]
+        if (!silent) 	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
+        intdtout <- c(intdtout, PeakCI1=unname(d2), PeakCI2=unname(d3))
+      } else {
+        if (!silent) 	cat(paste("confidence interval not available\n", sep=""))
+        intdtout <- c(intdtout, PeakCI1=NA, PeakCI2=NA)
+      }
+      
+      d1 <- ref+par["Begin"]
+      if (!silent) cat(paste("Begin: ", d1, "\n", sep=""))
+      intdtout <- c(intdtout, Begin=unname(d1))
+      # pour l'intervalle de confiance, il faut modifier soit directement
+      # Begin
+      # Peak Length
+      # Peak LengthB
+      d2 <- NULL
+      d3 <- NULL
+      if (!is.na(se["Begin"])) {
+        d2 <- ref+par["Begin"]-1.96*se["Begin"]
+        d3 <- ref+par["Begin"]+1.96*se["Begin"]
+      } else {
+        sel <- 0
+        l <- NA
+        if (!is.na(se["Length"])) {
+          l <- par["Length"]
+          sel <- se["Length"]
+        } else {
+          if (!is.na(se["LengthB"])) {
+            l <- par["LengthB"]
+            sel <- se["LengthB"]
+          }
+        }
+        if (!is.na(se["Peak"])) {
+          d2 <- ref+par["Peak"]-1.96*se["Peak"]-l-1.96*sel
+          d3 <- ref+par["Peak"]+1.96*se["Peak"]-l+1.96*sel
+        } else {
+          d2 <- ref+par["Peak"]-l-1.96*sel
+          d3 <- ref+par["Peak"]-l+1.96*sel
+        }
+      }
+      if (!is.null(d2) & !is.na(d2)) {
+        if (!silent) 	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
+        intdtout <- c(intdtout, BeginCI1=unname(d2), BeginCI2=unname(d3))
+      } else {
+        if (!silent) 	cat(paste("confidence interval not available\n", sep=""))
+        intdtout <- c(intdtout, BeginCI1=NA, BeginCI2=NA)
+      }
+      
+      
+      d1 <- ref+par["End"]
+      if (!silent) cat(paste("End: ", d1, "\n", sep=""))
+      intdtout <- c(intdtout, End=unname(d1))
+      # pour l'intervalle de confiance, il faut modifier soit directement
+      # End
+      # Peak Length
+      # Peak LengthE
+      d2 <- NULL
+      d3 <- NULL
+      if (!is.na(se["End"])) {
+        d2 <- ref+par["End"]-1.96*se["End"]
+        d3 <- ref+par["End"]+1.96*se["End"]
+      } else {
+        sel <- 0
+        l <- NA
+        if (!is.na(se["Length"])) {
+          l <- par["Length"]
+          sel <- se["Length"]
+        } else {
+          if (!is.na(se["LengthE"])) {
+            l <- par["LengthE"]
+            sel <- se["LengthE"]
+          }
+        }
+        if (!is.na(se["Peak"])) {
+          d2 <- ref+par["Peak"]-2*se["Peak"]+l-1.96*sel
+          d3 <- ref+par["Peak"]+2*se["Peak"]+l+1.96*sel
+        } else {
+          d2 <- ref+par["Peak"]+l-1.96*sel
+          d3 <- ref+par["Peak"]+l+1.96*sel
+        }
+      }
+      if (!is.null(d2) & !is.na(d2)) {
+        if (!silent) 	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
+        intdtout <- c(intdtout, EndCI1=unname(d2), EndCI2=unname(d3))
+      } else {
+        if (!silent) 	cat(paste("confidence interval not available\n", sep=""))
+        intdtout <- c(intdtout, EndCI1=NA, EndCI2=NA)
+      }
+      
+      dtout <- c(dtout, list(intdtout))
+      
+    }
+    
+    names(dtout) <- names(resul$data)
+    
+    resul$Dates <- dtout
+    
+    class(resul) <- "phenology"
+    
+    if (!silent) 
+      if (is.finite(resul$value)) {
+        cat(paste("-Ln L=", format(resul$value, digits=max(3, trunc(log10(abs(resul$value)))+4)), "\n", sep=""))
+        cat(paste("Parameters=", format(length(resul$par), digits=max(3, trunc(log10(length(resul$par)))+4)), "\n", sep=""))
+        cat(paste("AIC=", format(2*resul$value+2*length(resul$par), digits=max(3, trunc(log10(abs(2*resul$value+2*length(resul$par))))+4)), "\n", sep=""))
+      } else {
+        cat("-Ln L=-Inf\n")
+        cat(paste("Parameters=", format(length(resul$par), digits=max(3, trunc(log10(length(resul$par)))+4)), "\n", sep=""))
+        cat("AIC=-Inf\n")
+      }
+    
+    resul$cofactors <- cofactors
+    resul$add.cofactors <- add.cofactors
+    resul$zero <- zero
+    
+    if (!silent & growlnotify) growlnotify('Fit is done!')
+    
+    return(resul)
+    
   }
-
-
-if (class(data)=="character") {
-# j'ai utilisé le file.choose
-	data <- lapply(data,readLines, warn=FALSE)
-}
-
-if (class(data)!="phenologydata") {
-  message("Data should have been formated first using the function add_phenology(). I format it now.")
-  data <- add_phenology(data)
-}
-
-if (is.null(fitted.parameters)) {
-  message("No initial parameters set has been defined. I estimate one set using par_init().")
-	fitted.parameters <- par_init(data, fixed.parameters=fixed.parameters)
-}
-
-if (length(zero_counts)==1) {zero_counts <- rep(zero_counts, length(data))}
-if (length(zero_counts)!=length(data)) {
-	stop("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) and with the same number of logical values (TRUE or FALSE) than the number of series analyzed.")
-}
-
-  if (!is.null(add.cofactors)) {
-   cf1 <- cofactors
-   for (ff in add.cofactors)
-    cf1[, ff] <- cofactors[, ff] - mean(cofactors[, ff])
-   cofactors <- cf1
-  }
-
-	repeat {
-	  
-	  for (m in seq_along(method)) {
-		
-		resul <- optim(par=fitted.parameters, fn=Lnegbin, 
-		               pt=list(data=data, fixed=fixed.parameters, 
-		                       incertitude=method_incertitude, zerocounts=zero_counts, 
-		                       infinite=infinite, out=TRUE, cofactors=cofactors, 
-		                       add.cofactors=add.cofactors, zero=zero, parallel=parallel, 
-		                       namespar=names(fitted.parameters), 
-		                       store.intermediate=store.intermediate, 
-		                       file.intermediate=file.intermediate),
-		               lower = lower, 
-		               upper = upper, 
-		               method = method[m], 
-		               control=control, 
-		               hessian=FALSE)
-		
-		resfit <- resul$par
-		if (is.null(names(resfit))) {
-		  names(resfit) <- names(fitted.parameters)
-		}
-		
-		if (any(grepl("^Peak", names(resfit)))) resfit[substr(names(resfit), 1, 4)=="Peak"] <- abs(resfit[substr(names(resfit), 1, 4)=="Peak"])
-		if (any(grepl("^Theta", names(resfit)))) resfit["Theta"] <- abs(resfit["Theta"])
-		if (any(grepl("^PMin", names(resfit)))) resfit["PMin"] <- abs(resfit["PMin"])
-		# 28/3/2018. J'avais oublié ceux là
-		if (any(grepl("^PMinE", names(resfit)))) resfit["PMinE"] <- abs(resfit["PMinE"])
-		if (any(grepl("^PMinB", names(resfit)))) resfit["PMinB"] <- abs(resfit["PMinB"])
-		if (any(grepl("^Flat", names(resfit)))) resfit["Flat"] <- abs(resfit["Flat"])
-		if (any(grepl("^Length", names(resfit)))) resfit[substr(names(resfit), 1, 6)=="Length"] <- abs(resfit[substr(names(resfit), 1, 6)=="Length"])
-		# Ca fait en même temps MinE et MinB
-		if (any(grepl("^Min", names(resfit)))) resfit[substr(names(resfit), 1, 3)=="Min"]<-abs(resfit[substr(names(resfit), 1, 3)=="Min"])
-		if (any(grepl("^PMax", names(resfit)))) resfit[substr(names(resfit), 1, 3)=="Max"]<-abs(resfit[substr(names(resfit), 1, 3)=="Max"])
-		
-		resul$par <- resfit
-		fitted.parameters <- resfit
-	  }
-		
-		conv <- resul$convergence
-		value <- resul$value
-		
-		if (conv == 0) break
-		if (!silent) message("Convergence is not acheived. Optimization continues !")
-	}
-	
-	if (!silent) {
-	  message("Fit done!")
-	  if (is.finite(value)) {
-	    cat(paste("-Ln L=", format(value, digits=max(3, trunc(log10(abs(value)))+4)), "\n", sep=""))
-	   } else {
-	    cat("-Ln L= -Inf\n")
-	   }
-	}
-	
-	result_list <- resul
-	
-	# result_list <- list()
-	# result_list$par <- resfit
-	# result_list$value <- value
-	# result_list$convergence <- conv
-	# resul <- result_list
-	
-	if (hessian) {
-	  
-	  if (!requireNamespace("numDeriv", quietly = TRUE)) {
-	    stop("numDeriv package is absent; Please install it first")
-	  }
-	  
-	if (!silent) message("Estimation of the standard error of parameters. Be patient please.")
-	
-  mathessian <- try(getFromNamespace("hessian", ns="numDeriv")(func=Lnegbin, 
-                                      x=resfit, 
-                                      method="Richardson", 
-                                      pt=list(data=data, fixed=fixed.parameters, 
-                                              incertitude=method_incertitude, zerocounts=zero_counts, 
-                                              infinite=infinite, out=TRUE, cofactors=cofactors, 
-                                              add.cofactors=add.cofactors, zero=zero, parallel=parallel, 
-                                              namespar=names(fitted.parameters), 
-                                              store.intermediate=store.intermediate, 
-                                              file.intermediate=file.intermediate))
-                    , silent=TRUE)
-	if (substr(mathessian[1], 1, 5)=="Error") {
-	  if (!silent) {
-	    warning("Error in the fit; probably one or more parameters are not estimable.")
-	    warning("Standard errors of parameters cannot be estimated.")
-	  }
-	  res_se <- rep(NA, length(resfit))
-	  names(res_se) <- names(resfit)
-	} else {
-  
-	rownames(mathessian) <- colnames(mathessian) <- names(resfit)
-	resul$hessian <- mathessian
-	
-	res_se <- SEfromHessian(mathessian)
-	
-	}
-	} else {
-		if (!silent) warning("Standard errors are not estimated.")
-		res_se <- rep(NA, length(resfit))
-		names(res_se) <- names(resfit)
-	}
-
-		
-
-	
-	resul$se <- res_se
-	
-	resul$fixed.parameters <- fixed.parameters
-	
-	resul$method_incertitude <- method_incertitude
-	
-	resul$zero_counts <- zero_counts
-	
-	resul$infinite <- infinite
-	
-	resul$data <- data
-	  # Lnegbin(x=resfit, pt=list(data=data, fixed=fixed.parameters, 
-	  #                     incertitude=method_incertitude, zerocounts=zero_counts, 
-	  #                     infinite=infinite, out=FALSE, cofactors=cofactors, 
-	  #                     add.cofactors=add.cofactors, zero=zero))
-	
-for(kl in 1:length(res_se)) {
-	if (is.na(res_se[kl])) {
-		if (!silent) cat(paste(names(resfit[kl]), "=", format(resfit[kl], digits=max(3, trunc(log10(abs(resfit[kl])))+4)), "  SE= NaN\n", sep=""))
-	} else {
-		if (!silent) cat(paste(names(resfit[kl]), "=", format(resfit[kl], digits=max(3, trunc(log10(abs(resfit[kl])))+4)), "  SE=", format(res_se[kl], digits=max(3, trunc(log10(abs(res_se[kl])))+4)), "\n", sep=""))
-	}
-}
-
-dtout <- list()
-
-for (kl in 1:length(resul$data)) {
-
-if (!silent) cat(paste("Series: ", names(resul$data[kl]), "\n", sep=""))
-
-# la date de référence est resul$data[[kl]][1, "Date"]-resul$data[[kl]][1, "ordinal"]+1
-ref <- resul$data[[kl]][1, "Date"]-resul$data[[kl]][1, "ordinal"]+1
-intdtout <- c(reference=ref)
-# save(list = ls(all.names = TRUE), file = "total.RData", envir = environment())
-
-par <- getFromNamespace(".format_par", ns="phenology")(c(resfit, fixed.parameters), names(resul$data[kl]))
-par <- par[1:(length(par)-9)]
-sepfixed <- fixed.parameters[strtrim(names(fixed.parameters), 3)=="se#"]
-if (!is.null(sepfixed) & (!identical(unname(sepfixed), numeric(0)))) names(sepfixed) <- substring(names(sepfixed), 4)
-se <- c(res_se, sepfixed)
-se <- getFromNamespace(".format_par", ns="phenology")(se, names(resul$data[kl]))
-se <- se[1:(length(se)-9)]
-
-d1 <- ref+par["Peak"]
-if (!silent) cat(paste("Peak: ", d1, "\n", sep=""))
-intdtout <- c(intdtout, Peak=as.numeric(d1))
-if (!is.na(se["Peak"])) {
-	d2 <- d1-2*se["Peak"]
-	d3 <- d1+2*se["Peak"]
-if (!silent) 	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
-	intdtout <- c(intdtout, PeakCI1=as.numeric(d2), PeakCI2=as.numeric(d3))
-} else {
-if (!silent) 	cat(paste("confidence interval not available\n", sep=""))
-	intdtout <- c(intdtout, PeakCI1=NA, PeakCI2=NA)
-}
-
-d1 <- ref+par["Begin"]
-if (!silent) cat(paste("Begin: ", d1, "\n", sep=""))
-intdtout <- c(intdtout, Begin=as.numeric(d1))
-# pour l'intervalle de confiance, il faut modifier soit directement
-# Begin
-# Peak Length
-# Peak LengthB
-d2 <- NULL
-d3 <- NULL
-if (!is.na(se["Begin"])) {
-	d2 <- ref+par["Begin"]-2*se["Begin"]
-	d3 <- ref+par["Begin"]+2*se["Begin"]
-} else {
-	sel <- 0
-	l <- NA
-	if (!is.na(se["Length"])) {
-		l <- par["Length"]
-		sel <- se["Length"]
-	} else {
-		if (!is.na(se["LengthB"])) {
-			l <- par["LengthB"]
-			sel <- se["LengthB"]
-		}
-	}
-	if (!is.na(se["Peak"])) {
-		d2 <- ref+par["Peak"]-2*se["Peak"]-l-2*sel
-		d3 <- ref+par["Peak"]+2*se["Peak"]-l+2*sel
-	} else {
-		d2 <- ref+par["Peak"]-l-2*sel
-		d3 <- ref+par["Peak"]-l+2*sel
-	}
-}
-if (!is.null(d2) & !is.na(d2)) {
-if (!silent) 	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
-	intdtout <- c(intdtout, BeginCI1=as.numeric(d2), BeginCI2=as.numeric(d3))
-} else {
-if (!silent) 	cat(paste("confidence interval not available\n", sep=""))
-	intdtout <- c(intdtout, BeginCI1=NA, BeginCI2=NA)
-}
-
-
-d1 <- ref+par["End"]
-if (!silent) cat(paste("End: ", d1, "\n", sep=""))
-intdtout <- c(intdtout, End=as.numeric(d1))
-# pour l'intervalle de confiance, il faut modifier soit directement
-# End
-# Peak Length
-# Peak LengthE
-d2 <- NULL
-d3 <- NULL
-if (!is.na(se["End"])) {
-	d2 <- ref+par["End"]-2*se["End"]
-	d3 <- ref+par["End"]+2*se["End"]
-} else {
-	sel <- 0
-	l <- NA
-	if (!is.na(se["Length"])) {
-		l <- par["Length"]
-		sel <- se["Length"]
-	} else {
-		if (!is.na(se["LengthE"])) {
-			l <- par["LengthE"]
-			sel <- se["LengthE"]
-		}
-	}
-	if (!is.na(se["Peak"])) {
-		d2 <- ref+par["Peak"]-2*se["Peak"]+l-2*sel
-		d3 <- ref+par["Peak"]+2*se["Peak"]+l+2*sel
-	} else {
-		d2 <- ref+par["Peak"]+l-2*sel
-		d3 <- ref+par["Peak"]+l+2*sel
-	}
-}
-if (!is.null(d2) & !is.na(d2)) {
-if (!silent) 	cat(paste("confidence interval:", d2, " to ", d3, "\n", sep=""))
-	intdtout <- c(intdtout, EndCI1=as.numeric(d2), EndCI2=as.numeric(d3))
-} else {
-if (!silent) 	cat(paste("confidence interval not available\n", sep=""))
-	intdtout <- c(intdtout, EndCI1=NA, EndCI2=NA)
-}
-
-dtout <- c(dtout, list(intdtout))
-
-}
-
-names(dtout) <- names(resul$data)
-
-resul$Dates <- dtout
-
-class(resul) <- "phenology"
-
-if (!silent) 
-if (is.finite(resul$value)) {
-cat(paste("-Ln L=", format(resul$value, digits=max(3, trunc(log10(abs(resul$value)))+4)), "\n", sep=""))
-cat(paste("Parameters=", format(length(resul$par), digits=max(3, trunc(log10(length(resul$par)))+4)), "\n", sep=""))
-cat(paste("AIC=", format(2*resul$value+2*length(resul$par), digits=max(3, trunc(log10(abs(2*resul$value+2*length(resul$par))))+4)), "\n", sep=""))
-} else {
-  cat("-Ln L=-Inf\n")
-  cat(paste("Parameters=", format(length(resul$par), digits=max(3, trunc(log10(length(resul$par)))+4)), "\n", sep=""))
-  cat("AIC=-Inf\n")
-}
-
-resul$cofactors <- cofactors
-resul$add.cofactors <- add.cofactors
-resul$zero <- zero
-
-if (!silent & growlnotify) growlnotify('Fit is done!')
-	
-return(resul)
-
-}
 

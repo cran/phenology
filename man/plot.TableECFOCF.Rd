@@ -4,11 +4,25 @@
 \alias{plot.TableECFOCF}
 \title{Plot a TableECFOCF dataset.}
 \usage{
-\method{plot}{TableECFOCF}(x, ..., result = "ecfocf", period = 1,
-  cex.points = 4, pch = 19, col = "black", cex.axis = 0.8,
-  cex.labels = 0.5, col.labels = "red", show.labels = FALSE,
-  show.0 = FALSE, pch.0 = 4, cex.0 = 0.5, col.0 = "blue",
-  show.scale = TRUE)
+\method{plot}{TableECFOCF}(
+  x,
+  ...,
+  result = "ecfocf",
+  period = 1,
+  cex.points = 4,
+  pch = 19,
+  col = "black",
+  cex.axis = 0.8,
+  cex.labels = 0.5,
+  col.labels = "red",
+  show.labels = FALSE,
+  show.0 = FALSE,
+  pch.0 = 4,
+  cex.0 = 0.5,
+  col.0 = "blue",
+  show.scale = TRUE,
+  max.scale = NULL
+)
 }
 \arguments{
 \item{x}{A CMR file summarized using TableECFOCF()}
@@ -42,6 +56,8 @@
 \item{col.0}{Color of characters for 0 counts.}
 
 \item{show.scale}{If TRUE, show the scale as a legend}
+
+\item{max.scale}{Maximum value for scale; if NULL it is maximum of observations.}
 }
 \value{
 Nothing
@@ -88,10 +104,13 @@ plot(ECFOCF_2002, period=13)
 }
 }
 \seealso{
-Other Model of Clutch Frequency: \code{\link{ECFOCF_f}},
-  \code{\link{TableECFOCF}}, \code{\link{fitCF}},
-  \code{\link{lnLCF}}, \code{\link{logLik.ECFOCF}},
-  \code{\link{plot.ECFOCF}}
+Other Model of Clutch Frequency: 
+\code{\link{ECFOCF_f}()},
+\code{\link{TableECFOCF}()},
+\code{\link{fitCF}()},
+\code{\link{lnLCF}()},
+\code{\link{logLik.ECFOCF}()},
+\code{\link{plot.ECFOCF}()}
 }
 \author{
 Marc Girondot

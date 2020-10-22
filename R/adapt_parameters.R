@@ -5,6 +5,7 @@
 #' @param parameters A set of parameters
 #' @param data A dataset of counts
 #' @description The function "adapt_parameters" extracts the set of parameters to be used with a subset of data. All the uncessary parameters are removed. It can be used when a set of beaches are fitted first and after only one of these beaches is fitted again.
+#' @family Phenology model
 #' @examples
 #' library(phenology)
 #' # Read a file with data

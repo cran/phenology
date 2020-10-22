@@ -4,10 +4,15 @@
 \alias{plot.TaglossData}
 \title{Plot data used for tagloss analysis.}
 \usage{
-\method{plot}{TaglossData}(x, ..., categories = c("N22", "N21", "N11",
-  "N10", "N20"), col = grey(seq(from = 0.9, to = 0, length.out =
-  length(categories))), title.legend = "Tag history",
-  categories.legend = categories, show.legend = TRUE)
+\method{plot}{TaglossData}(
+  x,
+  ...,
+  categories = c("N22", "N21", "N11", "N10", "N20"),
+  col = grey(seq(from = 0.9, to = 0, length.out = length(categories))),
+  title.legend = "Tag history",
+  categories.legend = categories,
+  show.legend = TRUE
+)
 }
 \arguments{
 \item{x}{A result for Tagloss_format.}
@@ -43,13 +48,19 @@ plot(data_f_21)
 }
 }
 \seealso{
-Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
-  \code{\link{Tagloss_L}}, \code{\link{Tagloss_cumul}},
-  \code{\link{Tagloss_daymax}}, \code{\link{Tagloss_fit}},
-  \code{\link{Tagloss_format}},
-  \code{\link{Tagloss_model}},
-  \code{\link{Tagloss_simulate}},
-  \code{\link{logLik.Tagloss}}, \code{\link{plot.Tagloss}}
+Other Model of Tag-loss: 
+\code{\link{Tagloss_LengthObs}()},
+\code{\link{Tagloss_L}()},
+\code{\link{Tagloss_cumul}()},
+\code{\link{Tagloss_daymax}()},
+\code{\link{Tagloss_fit}()},
+\code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc}()},
+\code{\link{Tagloss_model}()},
+\code{\link{Tagloss_simulate}()},
+\code{\link{logLik.Tagloss}()},
+\code{\link{o_4p_p1p2}},
+\code{\link{plot.Tagloss}()}
 }
 \author{
 Marc Girondot

@@ -166,6 +166,7 @@ shinyServer(function(input, output, session) {
       
     } else {
       table <- Gratiot
+      table[, 1] <- as.character(table[, 1])
       
       inFile <- list(name = "Cayenne 2001 Leatherbacks")
     }
@@ -194,8 +195,9 @@ shinyServer(function(input, output, session) {
     
     
 #     df2 <- table
-    if (is.na(iMonthRef)) zmonthRef <- NULL else zmonthRef <- iMonthRef
-    if (iFormatDate=="") zFormatDate <- NULL else zFormatDate <- iFormatDate
+      zmonthRef <- 1
+    if (is.numeric(iMonthRef)) zmonthRef <- iMonthRef
+    if (iFormatDate == "") zFormatDate <- "%d/%m/%Y" else zFormatDate <- iFormatDate
     
     output$table <- renderTable({
       table

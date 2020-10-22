@@ -12,12 +12,10 @@
 #'             Conservation, 9, 95-102.
 #' @keywords datasets
 #' @usage Gratiot
+#' @family Phenology model
 #' @examples
 #' library(phenology)
 #' # Read a file with data
-#' \dontrun{
-#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
-#' }
 #' data(Gratiot)
 #' @format data.frame with the morning date in the first column and the nest counts on the second one.
 NULL

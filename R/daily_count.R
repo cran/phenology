@@ -1,15 +1,18 @@
 
-.daily_count <- function(d, xpar, print=FALSE, zero=1E-9) {
+.daily_count <- function(d, xpar, 
+                         cofactors=NULL, add.cofactors=NULL, 
+                         print=FALSE, zero=1E-9) {
   
   # daily_count estimates nest number based on set of parameters.
   # @title Estimate expected counts based on set of parameters.
   # @author Marc Girondot
-  # @param d Ordinal date
+  # @param d Ordinal date (origin = 0)
   # @param xpar Set of fixed+fitted parameters
   # @param print If TRUE, the result is displayed
   # @param help If TRUE, an help is displayed
   # @return The number of each day in d
   # @description Function estimates counts based on set of parameters.
+  
   
   
   nn <- ifelse(d<xpar["Begin"], xpar["MinB"],
@@ -102,6 +105,23 @@
                )
   )
   
+  nn[is.na(nn)] <- zero
+  
+  # Cofacteurs
+  if ((!is.null(cofactors)) & (!is.null(add.cofactors))) {
+    # Donne les paramètres cofacteurs
+    xparcf <- xpar[(names(xpar) %in% add.cofactors) | (names(xpar) %in% paste0(add.cofactors, "multi"))]
+    allxparcf <- rep(0, 2*length(add.cofactors))
+    names(allxparcf) <- c(add.cofactors, paste0(add.cofactors, "multi"))
+    xparcf <- modifyVector(val=xparcf, x=allxparcf)
+    # cofactors$Date est une date
+    # d est un nombre qui commence à 0
+    # J'avais data$Date[i]
+    effet1 <- rowSums(cofactors[cofactors$Date == d, add.cofactors, drop=FALSE] * xparcf[add.cofactors])
+    effet2 <- rowSums(nn * cofactors[cofactors$Date == d, add.cofactors, drop=FALSE] * xparcf[paste0(add.cofactors, "multi")])
+    nn <- nn + effet1 + effet2
+  }
+
   nn[nn <= zero] <- zero
   nn[is.na(nn)] <- zero
   nn <- unname(nn)

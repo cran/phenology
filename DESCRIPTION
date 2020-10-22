@@ -1,22 +1,21 @@
 Package: phenology
 Type: Package
 Title: Tools to Manage a Parametric Function that Describes Phenology
-Version: 7.3
-Date: 2019-01-04
+        and More
+Version: 7.6
+Date: 2020-10-22
 Author: Marc Girondot
-Maintainer: Marc Girondot <marc.girondot@u-psud.fr>
-Depends: numDeriv, parallel, optimx, lmf, HelpersMG (>= 3.2), R (>=
-        3.4)
-Suggests: shiny, fields, progress, car, MultiRNG, nlWaldTest
+Maintainer: Marc Girondot <marc.girondot@universite-paris-saclay.fr>
+Depends: numDeriv, parallel, optimx, lmf, HelpersMG (>= 4.1.3), R (>=
+        3.5)
+Suggests: shiny, fields, progress, car, MultiRNG, nlWaldTest, pbapply
 Description: Functions used to fit and test the phenology of species based on counts.
 License: GPL-2
 LazyData: yes
 LazyLoad: yes
-URL:
-        http://max2.ese.u-psud.fr/epc/conservation/Girondot/Publications/Marine_Turtles_Nesting_Season.html
 Encoding: UTF-8
 NeedsCompilation: no
-RoxygenNote: 6.1.1
-Packaged: 2019-01-04 15:31:33 UTC; marcgirondot
+RoxygenNote: 7.1.1
+Packaged: 2020-10-22 11:30:44 UTC; marcgirondot
 Repository: CRAN
-Date/Publication: 2019-01-04 16:10:07 UTC
+Date/Publication: 2020-10-22 14:20:02 UTC

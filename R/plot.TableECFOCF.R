@@ -18,6 +18,7 @@
 #' @param cex.0 The magnification to be used for character for 0 counts.
 #' @param col.0 Color of characters for 0 counts.
 #' @param show.scale If TRUE, show the scale as a legend
+#' @param max.scale Maximum value for scale; if NULL it is maximum of observations.
 #' @description This function plots a CMR file summarized using TableECFOCF().\cr
 #' @family Model of Clutch Frequency
 #' @examples
@@ -73,7 +74,8 @@ plot.TableECFOCF <- function(x, ..., result="ecfocf",
                              pch.0=4, 
                              cex.0=0.5, 
                              col.0="blue", 
-                             show.scale = TRUE) {
+                             show.scale = TRUE, 
+                             max.scale = NULL) {
   
   # result="ecfocf";
   # period=1;
@@ -102,7 +104,12 @@ plot.TableECFOCF <- function(x, ..., result="ecfocf",
                                   ylab="Estimated Clutch Frequency", xaxt="n", yaxt="n"), p3p))
     axis(side=1, at=0:(ncol(x)-1), cex.axis=cex.axis)
     do.call(axis, modifyList(list(side=2, at=0:(nrow(x)-1), cex.axis=cex.axis), p3p)[c("side", "at", "cex.axis", "las", "labels")])
-    sc <- max(x, na.rm= TRUE)
+    
+    if (is.null(max.scale)) {
+      sc <- max(x, na.rm= TRUE)
+    } else {
+      sc <- max.scale
+    }
     
     for (c in 1:ncol(x)) {
       for (r in 1:nrow(x)) {

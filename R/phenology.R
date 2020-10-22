@@ -4,6 +4,7 @@
 #' @return Nothing
 #' @description Run a shiny application for basic functions of phenology package.
 #' Thanks to Adriana Cortés Gomés and Joana Hancock for their help with translation.
+#' @family Phenology model
 #' @examples
 #' \dontrun{
 #' library(phenology)

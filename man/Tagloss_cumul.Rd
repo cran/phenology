@@ -4,8 +4,16 @@
 \alias{Tagloss_cumul}
 \title{Return the cumulative rate of tag loss.}
 \usage{
-Tagloss_cumul(t, par = NULL, hessian = NULL, model_before = NULL,
-  model_after = NULL, model = NULL, replicates = NULL, x = NULL)
+Tagloss_cumul(
+  t,
+  par = NULL,
+  hessian = NULL,
+  model_before = NULL,
+  model_after = NULL,
+  model = NULL,
+  replicates = NULL,
+  x = NULL
+)
 }
 \arguments{
 \item{t}{Time for which values of model must be estimated}
@@ -148,14 +156,19 @@ Tagloss_cumul(t=(1:6)*365, par=par)
 }
 }
 \seealso{
-Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
-  \code{\link{Tagloss_L}}, \code{\link{Tagloss_daymax}},
-  \code{\link{Tagloss_fit}}, \code{\link{Tagloss_format}},
-  \code{\link{Tagloss_model}},
-  \code{\link{Tagloss_simulate}},
-  \code{\link{logLik.Tagloss}},
-  \code{\link{plot.TaglossData}},
-  \code{\link{plot.Tagloss}}
+Other Model of Tag-loss: 
+\code{\link{Tagloss_LengthObs}()},
+\code{\link{Tagloss_L}()},
+\code{\link{Tagloss_daymax}()},
+\code{\link{Tagloss_fit}()},
+\code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc}()},
+\code{\link{Tagloss_model}()},
+\code{\link{Tagloss_simulate}()},
+\code{\link{logLik.Tagloss}()},
+\code{\link{o_4p_p1p2}},
+\code{\link{plot.TaglossData}()},
+\code{\link{plot.Tagloss}()}
 }
 \author{
 Marc Girondot

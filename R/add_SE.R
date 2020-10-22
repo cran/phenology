@@ -6,6 +6,7 @@
 #' @param parameters Set of current parameters
 #' @param SE Standard error value to be added
 #' @description This function is used to add standard error for a fixed parameter.
+#' @family Phenology model
 #' @examples
 #' library(phenology)
 #' # Generate a set of fixed parameter: Flat and Min

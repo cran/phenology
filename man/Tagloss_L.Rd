@@ -4,10 +4,18 @@
 \alias{Tagloss_L}
 \title{Return the -log likelihood of a set of individuals under a model of tagloss.}
 \usage{
-Tagloss_L(individuals, par, days.maximum = NULL,
-  fixed.parameters = NULL, model_before = NULL, model_after = NULL,
-  names.par = NULL, groups = NULL, cores = detectCores(all.tests =
-  FALSE, logical = TRUE), progressbar = FALSE)
+Tagloss_L(
+  individuals,
+  par,
+  days.maximum = NULL,
+  fixed.parameters = NULL,
+  model_before = NULL,
+  model_after = NULL,
+  names.par = NULL,
+  groups = NULL,
+  cores = detectCores(all.tests = FALSE, logical = TRUE),
+  progressbar = FALSE
+)
 }
 \arguments{
 \item{individuals}{Set of indivuals}
@@ -238,15 +246,19 @@ plot(o, t=1:3000, model="2", scale=1000, ylim=c(0, 3),
 }
 }
 \seealso{
-Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
-  \code{\link{Tagloss_cumul}},
-  \code{\link{Tagloss_daymax}}, \code{\link{Tagloss_fit}},
-  \code{\link{Tagloss_format}},
-  \code{\link{Tagloss_model}},
-  \code{\link{Tagloss_simulate}},
-  \code{\link{logLik.Tagloss}},
-  \code{\link{plot.TaglossData}},
-  \code{\link{plot.Tagloss}}
+Other Model of Tag-loss: 
+\code{\link{Tagloss_LengthObs}()},
+\code{\link{Tagloss_cumul}()},
+\code{\link{Tagloss_daymax}()},
+\code{\link{Tagloss_fit}()},
+\code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc}()},
+\code{\link{Tagloss_model}()},
+\code{\link{Tagloss_simulate}()},
+\code{\link{logLik.Tagloss}()},
+\code{\link{o_4p_p1p2}},
+\code{\link{plot.TaglossData}()},
+\code{\link{plot.Tagloss}()}
 }
 \author{
 Marc Girondot

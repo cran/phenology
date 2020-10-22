@@ -4,12 +4,16 @@
 \alias{fitRMU_MHmcmc_p}
 \title{Generates set of parameters to be used with fitRMU_MHmcmc()}
 \usage{
-
-  fitRMU_MHmcmc_p(result = stop("An output from fitRMU() must be provided"),
-  accept = FALSE)
+fitRMU_MHmcmc_p(
+  result = stop("An output from fitRMU() must be provided"),
+  density = "dunif",
+  accept = FALSE
+)
 }
 \arguments{
 \item{result}{An object obtained after a fitRMU() fit}
+
+\item{density}{Preset of density; can be dnorm or dunif}
 
 \item{accept}{If TRUE, does not wait for use interaction}
 }
@@ -52,9 +56,12 @@ pMCMC <- fitRMU_MHmcmc_p(result=cst, accept=TRUE)
 }
 }
 \seealso{
-Other Fill gaps in RMU: \code{\link{fitRMU_MHmcmc}},
-  \code{\link{fitRMU}}, \code{\link{logLik.fitRMU}},
-  \code{\link{plot.fitRMU}}
+Other Fill gaps in RMU: 
+\code{\link{CI.RMU}()},
+\code{\link{fitRMU_MHmcmc}()},
+\code{\link{fitRMU}()},
+\code{\link{logLik.fitRMU}()},
+\code{\link{plot.fitRMU}()}
 }
 \author{
 Marc Girondot

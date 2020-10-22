@@ -1,7 +1,7 @@
 #' plot.tagloss plots the daily rate of tag loss.
 #' @title Plot the daily rate of tag loss.
 #' @author Marc Girondot
-#' @return A dataframe with values used for plotting.
+#' @return An invisible dataframe with values used for plotting.
 #' @param x Object obteined from Tagloss_fit()
 #' @param t Time for which values of model must be ploted
 #' @param fitted.parameters Set of parameters
@@ -14,7 +14,7 @@
 #' @param label.col The text color used for labels when decoration is true
 #' @param scale Scale value. When Cumul is used, scale is always 1.
 #' @param add Should the data be added to a previous plot?
-#' @param hessian Should confidence interval be shown
+#' @param hessian Hessian matrix of parameters
 #' @param replicates Number of replicates for confidence interval
 #' @param probs Quantiles to show for confidence interval
 #' @param decoration Try to add name of parameters on the graph

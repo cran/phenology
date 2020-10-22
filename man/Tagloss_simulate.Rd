@@ -4,10 +4,17 @@
 \alias{Tagloss_simulate}
 \title{Return a list with the number of days different kinds of individuals are seen.}
 \usage{
-Tagloss_simulate(n = 500, par, pobservation = c(rep(0.05, 70), 0.01),
-  LengthObservation = c(min = 0, max = 9), dailysurvival = 0.999,
-  model = "12", model_before = NULL, model_after = NULL,
-  progressbar = TRUE)
+Tagloss_simulate(
+  n = 500,
+  par,
+  pobservation = c(rep(0.05, 70), 0.01),
+  LengthObservation = c(min = 0, max = 9),
+  dailysurvival = 0.999,
+  model = "12",
+  model_before = NULL,
+  model_after = NULL,
+  progressbar = TRUE
+)
 }
 \arguments{
 \item{n}{Number of individuals to simulate}
@@ -59,14 +66,19 @@ cmr_f <- Tagloss_format(cmr, model="12")
 }
 }
 \seealso{
-Other Model of Tag-loss: \code{\link{Tagloss_LengthObs}},
-  \code{\link{Tagloss_L}}, \code{\link{Tagloss_cumul}},
-  \code{\link{Tagloss_daymax}}, \code{\link{Tagloss_fit}},
-  \code{\link{Tagloss_format}},
-  \code{\link{Tagloss_model}},
-  \code{\link{logLik.Tagloss}},
-  \code{\link{plot.TaglossData}},
-  \code{\link{plot.Tagloss}}
+Other Model of Tag-loss: 
+\code{\link{Tagloss_LengthObs}()},
+\code{\link{Tagloss_L}()},
+\code{\link{Tagloss_cumul}()},
+\code{\link{Tagloss_daymax}()},
+\code{\link{Tagloss_fit}()},
+\code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc}()},
+\code{\link{Tagloss_model}()},
+\code{\link{logLik.Tagloss}()},
+\code{\link{o_4p_p1p2}},
+\code{\link{plot.TaglossData}()},
+\code{\link{plot.Tagloss}()}
 }
 \author{
 Marc Girondot

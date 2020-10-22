@@ -4,8 +4,11 @@
 \alias{par_init}
 \title{Calculate initial set of parameters.}
 \usage{
-par_init(data = stop("A dataset must be provided"),
-  fixed.parameters = NULL, add.cofactors = NULL)
+par_init(
+  data = stop("A dataset must be provided"),
+  fixed.parameters = NULL,
+  add.cofactors = NULL
+)
 }
 \arguments{
 \item{data}{Dataset generated with add_phenology()}
@@ -34,8 +37,10 @@ The parameters can be:\cr
 }
 And the name of level if a cofactor is used.\cr
 The parameters \code{Max}, \code{Min}, \code{MinE}, \code{MinB}, \code{Length}, 
-\code{LengthB}, \code{LengthE}, and \code{Peak} can be followed with _ and the 
-name of the rookery.
+\code{LengthB}, \code{LengthE}, and \code{Peak} can be followed with _ and part of the 
+name of the rookery.\cr
+The model for scale effect of sinusoid is: Alpha + Beta * n(t) ^ Tau where 
+n(t) is the expected number for the day t without the sinusoid effect.
 }
 \details{
 par_init calculates initial set of parameters.
@@ -44,8 +49,6 @@ par_init calculates initial set of parameters.
 \dontrun{
 library(phenology)
 # Read a file with data
-Gratiot <- read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", 
-header=FALSE)
 data(Gratiot)
 # Generate a formatted list nammed data_Gratiot 
 data_Gratiot <- add_phenology(Gratiot, name="Complete", 
@@ -58,8 +61,70 @@ result_Gratiot <- fit_phenology(data=data_Gratiot,
 data(result_Gratiot)
 # Plot the phenology and get some stats
 output<-plot(result_Gratiot)
+
+## When a series has only 0, it should be used in two steps
+## Let see an example
+
+# Let create a times series with only 0
+data0 <- data.frame(Date=c("11/3/2015", "12/3/2015", "13/3/2015-18/3/2015", "25/3/2015"), 
+                    Number=c(0, 0, 0, 0), 
+                    Beach=rep("Site0", 4), stringsAsFactors=FALSE)
+data1 <- data.frame(Date=c("15/3/2015", "16/3/2015", "20/3/2015-22/3/2015", "25/3/2015"), 
+                    Number=c(1, 0, 3, 0), 
+                    Beach=rep("Site1", 4), stringsAsFactors=FALSE)
+data <- rbind(data0, data1)
+
+# Here I include timeseries with no observation
+try1 <- add_phenology(data, format="\%d/\%m/\%Y", month_ref=1, include0=TRUE)
+pfixed <- c(Min=0, Flat=0)
+parg <- par_init(try1, fixed.parameters=pfixed)
+# The Max value for the series without observations should not be fitted. The ML is for Max being 0
+pfixed <- c(pfixed, parg[(substr(names(parg), 1, 4)=="Max_") & (parg == 0)])
+parg <- parg[!(names(parg) \%in\% names(pfixed))]
+
 }
+}
+\seealso{
+Other Phenology model: 
+\code{\link{AutoFitPhenology}()},
+\code{\link{BE_to_LBLE}()},
+\code{\link{Gratiot}},
+\code{\link{LBLE_to_BE}()},
+\code{\link{LBLE_to_L}()},
+\code{\link{L_to_LBLE}()},
+\code{\link{MarineTurtles_2002}},
+\code{\link{MinBMinE_to_Min}()},
+\code{\link{adapt_parameters}()},
+\code{\link{add_SE}()},
+\code{\link{add_phenology}()},
+\code{\link{extract_result}()},
+\code{\link{fit_phenology}()},
+\code{\link{likelihood_phenology}()},
+\code{\link{logLik.phenology}()},
+\code{\link{map_Gratiot}},
+\code{\link{map_phenology}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc_p}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology}()},
+\code{\link{plot.phenologymap}()},
+\code{\link{plot.phenology}()},
+\code{\link{plot_delta}()},
+\code{\link{plot_phi}()},
+\code{\link{print.phenologymap}()},
+\code{\link{print.phenologyout}()},
+\code{\link{print.phenology}()},
+\code{\link{remove_site}()},
+\code{\link{result_Gratiot1}},
+\code{\link{result_Gratiot2}},
+\code{\link{result_Gratiot_Flat}},
+\code{\link{result_Gratiot_mcmc}},
+\code{\link{result_Gratiot}},
+\code{\link{summary.phenologymap}()},
+\code{\link{summary.phenologyout}()},
+\code{\link{summary.phenology}()}
 }
 \author{
 Marc Girondot
 }
+\concept{Phenology model}

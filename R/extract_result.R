@@ -4,12 +4,11 @@
 #' @return Return the set of fitted parameters
 #' @param result A result file
 #' @description The function "extract_result" permits to extract the set of parameters from a result object obtained after fit_phenology.
+#' @family Phenology model
 #' @examples
 #' library(phenology)
 #' \dontrun{
 #' # Read a file with data
-#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", \cr
-#' 		header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' data_Gratiot<-add_phenology(Gratiot, name="Complete", 

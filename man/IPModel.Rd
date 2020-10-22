@@ -4,9 +4,12 @@
 \alias{IPModel}
 \title{Estimates the pattern of internesting intervals for a set of parameters.}
 \usage{
-IPModel(par, parallel = TRUE, limits = list(meanIP = 40, meanECF = 4,
-  minIP = 15, sdAbort = 1, sdIP = 1, sdECF = 1, DeltameanIP = 0.5, maxDays
-  = 365))
+IPModel(
+  par,
+  parallel = TRUE,
+  limits = list(meanIP = 40, meanECF = 4, minIP = 15, sdAbort = 1, sdIP = 1, sdECF = 1,
+    DeltameanIP = 0.5, maxDays = 365)
+)
 }
 \arguments{
 \item{par}{Set of parameters}
@@ -63,9 +66,11 @@ plot(model)
 }
 }
 \seealso{
-Other Model of Internesting Period: \code{\link{IPFit}},
-  \code{\link{IPPredict}}, \code{\link{plot.IP}},
-  \code{\link{summary.IP}}
+Other Model of Internesting Period: 
+\code{\link{IPFit}()},
+\code{\link{IPPredict}()},
+\code{\link{plot.IP}()},
+\code{\link{summary.IP}()}
 }
 \author{
 Marc Girondot

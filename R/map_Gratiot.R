@@ -11,6 +11,7 @@
 #'             Conservation, 9, 95-102.
 #' @keywords datasets
 #' @usage map_Gratiot
+#' @family Phenology model
 #' @examples
 #' library(phenology)
 #' # Read a file with likelihood map

@@ -21,14 +21,15 @@
 #' }
 #' And the name of level if a cofactor is used.\cr
 #' The parameters \code{Max}, \code{Min}, \code{MinE}, \code{MinB}, \code{Length}, 
-#' \code{LengthB}, \code{LengthE}, and \code{Peak} can be followed with _ and the 
-#' name of the rookery.
+#' \code{LengthB}, \code{LengthE}, and \code{Peak} can be followed with _ and part of the 
+#' name of the rookery.\cr
+#' The model for scale effect of sinusoid is: Alpha + Beta * n(t) ^ Tau where 
+#' n(t) is the expected number for the day t without the sinusoid effect.
+#' @family Phenology model
 #' @examples
 #' \dontrun{
 #' library(phenology)
 #' # Read a file with data
-#' Gratiot <- read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", 
-#' header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' data_Gratiot <- add_phenology(Gratiot, name="Complete", 
@@ -41,6 +42,27 @@
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output<-plot(result_Gratiot)
+#' 
+#' ## When a series has only 0, it should be used in two steps
+#' ## Let see an example
+#' 
+#' # Let create a times series with only 0
+#' data0 <- data.frame(Date=c("11/3/2015", "12/3/2015", "13/3/2015-18/3/2015", "25/3/2015"), 
+#'                     Number=c(0, 0, 0, 0), 
+#'                     Beach=rep("Site0", 4), stringsAsFactors=FALSE)
+#' data1 <- data.frame(Date=c("15/3/2015", "16/3/2015", "20/3/2015-22/3/2015", "25/3/2015"), 
+#'                     Number=c(1, 0, 3, 0), 
+#'                     Beach=rep("Site1", 4), stringsAsFactors=FALSE)
+#' data <- rbind(data0, data1)
+#' 
+#' # Here I include timeseries with no observation
+#' try1 <- add_phenology(data, format="%d/%m/%Y", month_ref=1, include0=TRUE)
+#' pfixed <- c(Min=0, Flat=0)
+#' parg <- par_init(try1, fixed.parameters=pfixed)
+#' # The Max value for the series without observations should not be fitted. The ML is for Max being 0
+#' pfixed <- c(pfixed, parg[(substr(names(parg), 1, 4)=="Max_") & (parg == 0)])
+#' parg <- parg[!(names(parg) %in% names(pfixed))]
+#' 
 #' }
 #' @export
 

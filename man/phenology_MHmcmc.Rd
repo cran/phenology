@@ -4,14 +4,22 @@
 \alias{phenology_MHmcmc}
 \title{Run the Metropolis-Hastings algorithm for data}
 \usage{
-
-  phenology_MHmcmc(result = stop("An output from fit_phenology() must be provided"),
+phenology_MHmcmc(
+  result = stop("An output from fit_phenology() must be provided"),
   n.iter = 10000,
   parametersMCMC = stop("A model generated with phenology_MHmcmc_p() must be provided"),
-  n.chains = 4, n.adapt = 0, thin = 1, trace = FALSE,
-  adaptive = FALSE, adaptive.lag = 500, adaptive.fun = function(x) { 
-     ifelse(x > 0.234, 1.3, 0.7) }, intermediate = NULL,
-  filename = "intermediate.Rdata", previous = NULL)
+  n.chains = 1,
+  n.adapt = 0,
+  thin = 1,
+  trace = FALSE,
+  traceML = FALSE,
+  adaptive = FALSE,
+  adaptive.lag = 500,
+  adaptive.fun = function(x) {     ifelse(x > 0.234, 1.3, 0.7) },
+  intermediate = NULL,
+  filename = "intermediate.Rdata",
+  previous = NULL
+)
 }
 \arguments{
 \item{result}{An object obtained after a SearchR fit}
@@ -26,7 +34,9 @@
 
 \item{thin}{Number of iterations between each stored output}
 
-\item{trace}{TRUE or FALSE, shows progress}
+\item{trace}{TRUE or FALSE or period, shows progress}
+
+\item{traceML}{TRUE or FALSE to show ML}
 
 \item{adaptive}{Should an adaptive process for SDProp be used}
 
@@ -50,7 +60,7 @@ I recommend thin=1 because the method to estimate SE uses resampling.\cr
 As initial point is maximum likelihood, n.adapt = 0 is a good solution.\cr
 The parameters intermediate and filename are used to save intermediate results every 'intermediate' iterations (for example 1000). Results are saved in a file of name filename.\cr
 The parameter previous is used to indicate the list that has been save using the parameters intermediate and filename. It permits to continue a mcmc search.\cr
-These options are used to prevent the consequences of computer crash or if the run is very very long and computer processes at time limited.\cr
+These options are used to prevent the consequences of computer crash or if the run is very very long and computer processes at time limited.
 }
 \details{
 phenology_MHmcmc runs the Metropolis-Hastings algorithm for data (Bayesian MCMC)
@@ -88,6 +98,47 @@ summary(mcmc)$statistics[,"Time-series SE"]
 plot(result_Gratiot_mcmc, parameters=3, las=1, xlim=c(-10, 300))
 }
 }
+\seealso{
+Other Phenology model: 
+\code{\link{AutoFitPhenology}()},
+\code{\link{BE_to_LBLE}()},
+\code{\link{Gratiot}},
+\code{\link{LBLE_to_BE}()},
+\code{\link{LBLE_to_L}()},
+\code{\link{L_to_LBLE}()},
+\code{\link{MarineTurtles_2002}},
+\code{\link{MinBMinE_to_Min}()},
+\code{\link{adapt_parameters}()},
+\code{\link{add_SE}()},
+\code{\link{add_phenology}()},
+\code{\link{extract_result}()},
+\code{\link{fit_phenology}()},
+\code{\link{likelihood_phenology}()},
+\code{\link{logLik.phenology}()},
+\code{\link{map_Gratiot}},
+\code{\link{map_phenology}()},
+\code{\link{par_init}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc_p}()},
+\code{\link{phenology}()},
+\code{\link{plot.phenologymap}()},
+\code{\link{plot.phenology}()},
+\code{\link{plot_delta}()},
+\code{\link{plot_phi}()},
+\code{\link{print.phenologymap}()},
+\code{\link{print.phenologyout}()},
+\code{\link{print.phenology}()},
+\code{\link{remove_site}()},
+\code{\link{result_Gratiot1}},
+\code{\link{result_Gratiot2}},
+\code{\link{result_Gratiot_Flat}},
+\code{\link{result_Gratiot_mcmc}},
+\code{\link{result_Gratiot}},
+\code{\link{summary.phenologymap}()},
+\code{\link{summary.phenologyout}()},
+\code{\link{summary.phenology}()}
+}
 \author{
 Marc Girondot
 }
+\concept{Phenology model}

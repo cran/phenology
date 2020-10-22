@@ -46,9 +46,11 @@ IPPredict(par=par, IP=c(10, 80))
 }
 }
 \seealso{
-Other Model of Internesting Period: \code{\link{IPFit}},
-  \code{\link{IPModel}}, \code{\link{plot.IP}},
-  \code{\link{summary.IP}}
+Other Model of Internesting Period: 
+\code{\link{IPFit}()},
+\code{\link{IPModel}()},
+\code{\link{plot.IP}()},
+\code{\link{summary.IP}()}
 }
 \author{
 Marc Girondot

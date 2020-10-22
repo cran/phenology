@@ -9,9 +9,6 @@
 #' @examples
 #' # Read a file with data
 #' library("phenology")
-#' \dontrun{
-#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
-#' }
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' data_Gratiot<-add_phenology(Gratiot, name="Complete", 

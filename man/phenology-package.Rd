@@ -3,7 +3,7 @@
 \docType{package}
 \name{phenology-package}
 \alias{phenology-package}
-\title{Tools to Manage a Parametric Function that Describes Phenology}
+\title{Tools to Manage a Parametric Function that Describes Phenology and More}
 \description{
 Functions used to fit and test the phenology of species based on counts.\cr
 Note that only the most significant changes are reported in the NEWS.\cr
@@ -17,8 +17,8 @@ Fit a parametric function that describes phenology
 \tabular{ll}{
  Package: \tab phenology\cr
  Type: \tab Package\cr
- Version: \tab 7.3 build 860\cr
- Date: \tab 2019-01-04\cr
+ Version: \tab 7.6 build 1168\cr
+ Date: \tab 2020-10-22\cr
  License: \tab GPL (>= 2)\cr
  LazyLoad: \tab yes\cr
  }
@@ -28,7 +28,7 @@ Fit a parametric function that describes phenology
 library(phenology)
 # Get the lastest version at:
 # install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", 
-     repos=NULL, type="source")
+#     repos=NULL, type="source")
 # Read a file with data
 data(Gratiot)
 # Generate a formatted list nammed data_Gratiot 
@@ -74,11 +74,6 @@ Delcroix, E., Bédel, S., Santelli, G., Girondot, M., 2013. Monitoring
          design for quantification of marine turtle nesting with limited human 
          effort: a test case in the Guadeloupe Archipelago. Oryx 48, 95-105.
 
-Weber, S.B., Weber, N., Ellick, J., Avery, A., Frauenstein, R., 
-         Godley, B.J., Sim, J., Williams, N., Broderick, A.C., 2014. Recovery 
-         of the South Atlantic’s largest green turtle nesting population. 
-         Biodiversity and Conservation 23, 3005-3018.
-
 Briane J-P, Rivalan P, Girondot M (2007) The inverse problem applied 
             to the Observed Clutch Frequency of Leatherbacks from Yalimapo beach, 
             French Guiana. Chelonian Conservation and Biology 6:63-69
@@ -90,7 +85,7 @@ Fossette S, Kelle L, Girondot M, Goverse E, Hilterman ML, Verhage B,
          and Ecology 356:69-82
 }
 \author{
-Marc Girondot \email{marc.girondot@u-psud.fr}
+Marc Girondot \email{marc.girondot@universite-paris-saclay.fr}
 }
 \keyword{Clutch}
 \keyword{ECF}

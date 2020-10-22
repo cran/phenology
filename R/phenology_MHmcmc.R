@@ -11,7 +11,8 @@
 #' @param adaptive Should an adaptive process for SDProp be used
 #' @param adaptive.lag  Lag to analyze the SDProp value in an adaptive content
 #' @param adaptive.fun Function used to change the SDProp
-#' @param trace TRUE or FALSE, shows progress
+#' @param trace TRUE or FALSE or period, shows progress
+#' @param traceML TRUE or FALSE to show ML
 #' @param filename If intermediate is not NULL, save intermediate result in this file
 #' @param intermediate Period for saving intermediate result, NULL for no save
 #' @param previous Previous result to be continued. Can be the filename in which intermediate results are saved.
@@ -21,7 +22,8 @@
 #' As initial point is maximum likelihood, n.adapt = 0 is a good solution.\cr
 #' The parameters intermediate and filename are used to save intermediate results every 'intermediate' iterations (for example 1000). Results are saved in a file of name filename.\cr
 #' The parameter previous is used to indicate the list that has been save using the parameters intermediate and filename. It permits to continue a mcmc search.\cr
-#' These options are used to prevent the consequences of computer crash or if the run is very very long and computer processes at time limited.\cr
+#' These options are used to prevent the consequences of computer crash or if the run is very very long and computer processes at time limited.
+#' @family Phenology model
 #' @examples 
 #' \dontrun{
 #' library(phenology)
@@ -60,10 +62,11 @@
 phenology_MHmcmc<-function(result=stop("An output from fit_phenology() must be provided"), 
                            n.iter=10000, 
                            parametersMCMC=stop("A model generated with phenology_MHmcmc_p() must be provided"), 
-                           n.chains = 4, 
+                           n.chains = 1, 
                            n.adapt = 0, 
                            thin=1, 
                            trace=FALSE, 
+                           traceML=FALSE, 
                            adaptive=FALSE, 
                            adaptive.lag=500, 
                            adaptive.fun=function(x) {ifelse(x>0.234, 1.3, 0.7)},
@@ -71,7 +74,7 @@ phenology_MHmcmc<-function(result=stop("An output from fit_phenology() must be p
                            filename="intermediate.Rdata", 
                            previous=NULL) {
   
-  # result <- NULL; n.iter <- 10000; parametersMCMC <- NULL; n.chains = 1; n.adapt = 0; thin = 1; trace = FALSE; adaptive=FALSE; adaptive.lag=500; adaptive.fun=function(x) {ifelse(x>0.234, 1.3, 0.7)}; intermediate=NULL; filename="intermediate.Rdata"; previous=NULL
+  # result <- NULL; n.iter <- 10000; parametersMCMC <- NULL; n.chains = 1; n.adapt = 0; thin = 1; trace = FALSE; traceML = FALSE ; adaptive=FALSE; adaptive.lag=500; adaptive.fun=function(x) {ifelse(x>0.234, 1.3, 0.7)}; intermediate=NULL; filename="intermediate.Rdata"; previous=NULL
   # result <- result_Gratiot; parametersMCMC <- phenology_MHmcmc_p(result_Gratiot, accept = TRUE)
   
   if (is.character(previous)) {
@@ -87,8 +90,8 @@ phenology_MHmcmc<-function(result=stop("An output from fit_phenology() must be p
   }
   
 pt <- list(data=result$data, fixed=result$fixed.parameters, 
-        incertitude=result$method_incertitude, zerocounts=result$zero_counts, 
-        infinite=result$infinite, out=TRUE, 
+        zerocounts=result$zero_counts, 
+        tol=result$tol, out=TRUE, 
         cofactors=result$cofactors,
         add.cofactors=result$add.cofactors,
         zero=result$zero, 
@@ -100,7 +103,7 @@ print(parametersMCMC)
 out <- MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, 
                  n.chains = n.chains, n.adapt = n.adapt, thin=thin, 
                  adaptive = adaptive, adaptive.fun = adaptive.fun, adaptive.lag = adaptive.lag,
-                 trace=trace, pt=pt, likelihood=getFromNamespace(".Lnegbin", ns="phenology"))
+                 trace=trace, traceML = traceML, pt=pt, likelihood=getFromNamespace(".Lnegbin", ns="phenology"))
 
 fin <- try(summary(out), silent=TRUE)
 

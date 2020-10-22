@@ -147,9 +147,11 @@ type="l", xlab="Iterations", ylab="Ln L", bty="n", las=1)
 }
 }
 \seealso{
-Other Model of Internesting Period: \code{\link{IPFit}},
-  \code{\link{IPModel}}, \code{\link{IPPredict}},
-  \code{\link{summary.IP}}
+Other Model of Internesting Period: 
+\code{\link{IPFit}()},
+\code{\link{IPModel}()},
+\code{\link{IPPredict}()},
+\code{\link{summary.IP}()}
 }
 \author{
 Marc Girondot

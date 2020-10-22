@@ -6,6 +6,7 @@
 #' @description Extraction of 2002 PIT tagged marine turtles database
 #' @keywords datasets
 #' @usage MarineTurtles_2002
+#' @family Phenology model
 #' @examples
 #' library(phenology)
 #' data(MarineTurtles_2002)

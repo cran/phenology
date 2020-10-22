@@ -4,8 +4,7 @@
 \alias{toggle_Min_PMin}
 \title{Transform a set of parameters from Min, MinB or MinE to PMin, PminB or PminE, or reverse}
 \usage{
-
-  toggle_Min_PMin(parameters = stop("A set of parameters must be indicated"))
+toggle_Min_PMin(parameters = stop("A set of parameters must be indicated"))
 }
 \arguments{
 \item{parameters}{Set of current parameters}
@@ -23,7 +22,6 @@ toggle_Min_PMin transforms a set of parameters from Min, MinB or MinE to PMin, P
 }
 \examples{
 # Read a file with data
-# Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", , header=FALSE)
 data(Gratiot)
 # Generate a formatted list nammed data_Gratiot
 refdate <- as.Date("2001-01-01")

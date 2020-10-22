@@ -4,12 +4,19 @@
 \alias{map_phenology}
 \title{Generate a likelihood map varying Phi and Delta.}
 \usage{
-map_phenology(data = NULL, fitted.parameters = NULL,
-  fixed.parameters = NA, Phi = seq(from = 0.2, to = 20, length.out =
-  100), Delta = NULL, infinite = 50,
-  method_incertitude = "convolution", zero_counts = TRUE,
-  progressbar = TRUE, cofactors = NULL, add.cofactors = NULL,
-  zero = 1e-09)
+map_phenology(
+  data = NULL,
+  fitted.parameters = NULL,
+  fixed.parameters = NA,
+  Phi = seq(from = 0.2, to = 20, length.out = 100),
+  Delta = NULL,
+  tol = 1e-06,
+  zero_counts = TRUE,
+  progressbar = any(installed.packages()[, "Package"] == "pbapply"),
+  cofactors = NULL,
+  add.cofactors = NULL,
+  zero = 1e-09
+)
 }
 \arguments{
 \item{data}{dataset generated with add_format}
@@ -22,10 +29,7 @@ map_phenology(data = NULL, fitted.parameters = NULL,
 
 \item{Delta}{Delta value to be analyzed}
 
-\item{infinite}{Number of iterations for dmnbinom() used for method_incertitude='convolution'}
-
-\item{method_incertitude}{'combinatory' estimates likelihood of all combinations for nest numbers;\cr
-'convolution' [default] uses the exact likelihood of the sum of negative binomial distribution.}
+\item{tol}{Tolerance of recurrence for dSnbinom() used for convolution of negative binomial distribution}
 
 \item{zero_counts}{Example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 been recorded for each of these timeseries. Defaut is TRUE for all.}
@@ -49,7 +53,7 @@ This function generates a map of likelihood varying Phi and Delta.\cr
 	Note that it is possible to fit or fixed Alpha[n], Beta[n], Tau[n], Phi[n] and Delta[n] with [n]=1 or 2 
 	and then it is possible to use this function to establish the likelihood map for a 
 	second or third sinusoids added to the global pattern.\cr
-	If Delta is not specified, it is estimated from Phi and the same precision as Phi is used.\cr
+	If Delta is not specified, it is estimated from Phi and the same precision as Phi is used.
 }
 \details{
 map_phenology generates a likelihood map.
@@ -57,47 +61,87 @@ map_phenology generates a likelihood map.
 \examples{
 library("phenology")
 # Read a file with data
-\dontrun{
-Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", 
-header=FALSE)
-}
 data(Gratiot)
 # Generate a formatted list nammed data_Gratiot 
-data_Gratiot<-add_phenology(Gratiot, name="Complete", 
-		reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
+data_Gratiot <- add_phenology(Gratiot, name = "Complete", 
+		reference = as.Date("2001-01-01"), format = "\%d/\%m/\%Y")
 # Generate initial points for the optimisation
-parg<-par_init(data_Gratiot, fixed.parameters=NULL)
+parg <- par_init(data_Gratiot, fixed.parameters = NULL)
 # Run the optimisation
 \dontrun{
-result_Gratiot<-fit_phenology(data=data_Gratiot, 
-		fitted.parameters=parg, fixed.parameters=NULL)
+result_Gratiot <- fit_phenology(data = data_Gratiot, 
+		fitted.parameters = parg, fixed.parameters = NULL)
 }
 data(result_Gratiot)
 # Extract the fitted parameters
-parg1<-extract_result(result_Gratiot)
+parg1 <- extract_result(result_Gratiot)
 # Add constant Alpha and Tau values 
 # [day d amplitude=(Alpha+Nd*Beta)^Tau with Nd being the number of counts for day d]
-pfixed<-c(parg1, Alpha=0, Tau=1)
-pfixed<-pfixed[-which(names(pfixed)=="Theta")]
+pfixed <- c(parg1, Alpha=0, Tau=1)
+pfixed <- pfixed[-which(names(pfixed)=="Theta")]
 # The only fitted parameter will be Beta
-parg2<-c(Beta=0.5, parg1["Theta"])
+parg2 <- c(Beta=0.5, parg1["Theta"])
 # Generate a likelihood map 
 # [default Phi=seq(from=0.1, to=20, length.out=100) but it is very long]
 # Take care, it takes 20 hours ! The data map_Gratiot has the result
 \dontrun{
-map_Gratiot<-map_phenology(data=data_Gratiot, Phi=seq(from=0.1, to=20, length.out=100), 
-		fitted.parameters=parg2, fixed.parameters=pfixed)
+library(phenology)
+map_Gratiot <- map_phenology(data = data_Gratiot, 
+                             Phi = seq(from=0.1, to=30, length.out=100), 
+		                          fitted.parameters = parg2, 
+		                          fixed.parameters = pfixed)
 }
 data(map_Gratiot)
 # Plot the map
-plot(map_Gratiot, col=heat.colors(128))
+plot(map_Gratiot, col = heat.colors(128))
 # Plot the min(-Ln L) for Phi varying at any delta value
-plot_phi(map=map_Gratiot)
+plot_phi(map = map_Gratiot)
 # Plot the min(-Ln L) for Delta varying with Phi equal to the value for maximum likelihood
-plot_delta(map=map_Gratiot)
+plot_delta(map = map_Gratiot)
 # Plot the min(-Ln L) for Delta varying with Phi the nearest to 15
-plot_delta(map=map_Gratiot, Phi=15)
+plot_delta(map = map_Gratiot, Phi = 15)
+}
+\seealso{
+Other Phenology model: 
+\code{\link{AutoFitPhenology}()},
+\code{\link{BE_to_LBLE}()},
+\code{\link{Gratiot}},
+\code{\link{LBLE_to_BE}()},
+\code{\link{LBLE_to_L}()},
+\code{\link{L_to_LBLE}()},
+\code{\link{MarineTurtles_2002}},
+\code{\link{MinBMinE_to_Min}()},
+\code{\link{adapt_parameters}()},
+\code{\link{add_SE}()},
+\code{\link{add_phenology}()},
+\code{\link{extract_result}()},
+\code{\link{fit_phenology}()},
+\code{\link{likelihood_phenology}()},
+\code{\link{logLik.phenology}()},
+\code{\link{map_Gratiot}},
+\code{\link{par_init}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc_p}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology}()},
+\code{\link{plot.phenologymap}()},
+\code{\link{plot.phenology}()},
+\code{\link{plot_delta}()},
+\code{\link{plot_phi}()},
+\code{\link{print.phenologymap}()},
+\code{\link{print.phenologyout}()},
+\code{\link{print.phenology}()},
+\code{\link{remove_site}()},
+\code{\link{result_Gratiot1}},
+\code{\link{result_Gratiot2}},
+\code{\link{result_Gratiot_Flat}},
+\code{\link{result_Gratiot_mcmc}},
+\code{\link{result_Gratiot}},
+\code{\link{summary.phenologymap}()},
+\code{\link{summary.phenologyout}()},
+\code{\link{summary.phenology}()}
 }
 \author{
 Marc Girondot
 }
+\concept{Phenology model}

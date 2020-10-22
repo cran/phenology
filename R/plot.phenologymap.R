@@ -8,11 +8,11 @@
 #' @param xlab Label for x axis
 #' @param ylab Label for y axis
 #' @description This function plots a likelihood map obtained after map_phenology.
+#' @family Phenology model
 #' @examples
 #' \dontrun{
 #' library("phenology")
 #' # Read a file with data
-#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' data_Gratiot<-add_phenology(Gratiot, name="Complete", 

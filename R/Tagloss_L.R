@@ -329,7 +329,7 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
     if (groups > nrow(individuals)) groups <- nrow(individuals)
     
     # # print(individu)
-    # Je sépare les individus en mccores groupes
+    # Je sépare les individus en cores groupes
     nrind <- nrow(individuals)
     
     if (nrind <= groups) {
@@ -349,7 +349,7 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
                list(nindsample[((groups-1)*nbpargroup+1):nrind]))
     }
     
-    if(.Platform$OS.type == "unix") {
+    if (.Platform$OS.type == "unix") {
       L <- mclapply(1:groups,
                     FUN=function(individu) Tagloss_Lind(individuals[group[[individu]], , drop=FALSE],
                                                        dfq, progressbar=FALSE),

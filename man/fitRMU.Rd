@@ -4,20 +4,33 @@
 \alias{fitRMU}
 \title{Adjust incomplete timeseries with various constraints.}
 \usage{
-fitRMU(RMU.data = stop("data parameter must be provided"),
-  years.byrow = TRUE, RMU.names = NULL, model.trend = "Constant",
-  model.rookeries = "Constant", model.SD = "Global-constant",
-  parameters = NULL, fixed.parameters = NULL, SE = NULL,
-  method = c("Nelder-Mead", "BFGS"), control = list(trace = 1, REPORT =
-  100, maxit = 1500), itnmax = c(1500, 1500), hessian = TRUE,
-  replicate.CI = 1000, colname.year = "Year", maxL = 1e+09)
+fitRMU(
+  RMU.data = stop("data parameter must be provided"),
+  years.byrow = TRUE,
+  RMU.names = NULL,
+  model.trend = "Constant",
+  model.rookeries = "Constant",
+  model.SD = "Global-constant",
+  parameters = NULL,
+  fixed.parameters = NULL,
+  SE = NULL,
+  method = c("Nelder-Mead", "BFGS"),
+  control = list(trace = 1),
+  itnmax = c(1500, 1500),
+  cptmax.optim = 100,
+  limit.cpt.optim = 1e-05,
+  hessian = TRUE,
+  replicate.CI = 1000,
+  colname.year = "Year",
+  maxL = 1e+09
+)
 }
 \arguments{
-\item{RMU.data}{A data.frame with a column Year (the name is defined in colname.year) and two columns per rookery defined in RMU.names}
+\item{RMU.data}{A data.frame with a column Year (the name is defined in colname.year) and one to three columns per rookery defined in RMU.names}
 
 \item{years.byrow}{If TRUE, the RMU.data data.frame is organized with years in rows}
 
-\item{RMU.names}{A dataframe with two columns indicating name of columns for mean and standard error for roockerys}
+\item{RMU.names}{A dataframe with one to three columns indicating name of columns for mean, standard deviation, and distribution for roockeris}
 
 \item{model.trend}{Can be Constant, Exponential or Year-specific}
 
@@ -37,6 +50,10 @@ fitRMU(RMU.data = stop("data parameter must be provided"),
 
 \item{itnmax}{A vector with maximum iterations for each method.}
 
+\item{cptmax.optim}{How many times optim can be ran when likelihood is better.}
+
+\item{limit.cpt.optim}{Limit to consider that likelihood is better.}
+
 \item{hessian}{If TRUE, the hessian matrix is calculated and then the standard error of parameters.}
 
 \item{replicate.CI}{Number of replicates to estimate CI of proportion for each rookery}
@@ -51,7 +68,10 @@ Return a list with the results from optim and synthesis for proportions and numb
 \description{
 The data must be a data.frame with the first column being years \cr
 and two columns for each beach: the average and the se for the estimate.\cr
-The correspondance between mean and se for each rookery are given in the RMU.names data.frame.\cr
+The correspondence between mean, se and density for each rookery are given in the RMU.names data.frame.\cr
+This data.frame must have a column named mean, another named se and a third named density. If 
+no sd column exists, no sd will be considered for the series and is no density column exists, it 
+will be considered as being "dnorm".\cr
 In the result list, the mean proportions for each rookeries are in $proportions, $proportions.CI.0.05 and $proportions.CI.0.95.\cr
 The names of beach columns must not begin by T_, SD_, a0_, a1_ or a2_ and cannot be r.\cr
 A RMU is the acronyme for Regional Managment Unit. See:\cr
@@ -64,11 +84,14 @@ Seminoff, J.A., Troëng, S., Witherington, B., Mast, R.B., 2010. Regional
 management units for marine turtles: a novel framework for prioritizing 
 conservation and research across multiple scales. PLoS One 5, e15465.\cr
 Variance for each value is additive based on both the observed SE (in the RMU.data 
-object) and a constant value dependent on the rookery when model.SD is equal to 
-"beach-constant". The value is a global constant when model.SD is "global-constant". 
+object) and a value.\cr
+The value is a global constant when model.SD is "global-constant". 
 The value is proportional to the observed number of nests when model.SD is 
 "global-proportional" with aSD_*observed+SD_ with aSD_ and SD_ being fitted 
-values. This value is fixed to zero when model.SD is "Zero".
+values. This value is fixed to zero when model.SD is "Zero".\cr
+The value is dependent on the rookery when model.SD is equal to 
+"Rookery-constant" or "Rookery-proportional" with a similar formula as previously 
+described for "global".
 }
 \details{
 fitRMU is used to estimate missing information when several linked values are observed along a timeseries
@@ -81,20 +104,27 @@ RMU.names.AtlanticW <- data.frame(mean=c("Yalimapo.French.Guiana",
                                          "Irakumpapy.French.Guiana"), 
                                  se=c("se_Yalimapo.French.Guiana", 
                                       "se_Galibi.Suriname", 
-                                      "se_Irakumpapy.French.Guiana"))
+                                      "se_Irakumpapy.French.Guiana"), 
+                                 density=c("density_Yalimapo.French.Guiana", 
+                                           "density_Galibi.Suriname", 
+                                           "density_Irakumpapy.French.Guiana"))
 data.AtlanticW <- data.frame(Year=c(1990:2000), 
       Yalimapo.French.Guiana=c(2076, 2765, 2890, 2678, NA, 
                                6542, 5678, 1243, NA, 1566, 1566),
       se_Yalimapo.French.Guiana=c(123.2, 27.7, 62.5, 126, NA, 
                                  230, 129, 167, NA, 145, 20),
+      density_Yalimapo.French.Guiana=rep("dnorm", 11), 
       Galibi.Suriname=c(276, 275, 290, NA, 267, 
                        542, 678, NA, 243, 156, 123),
       se_Galibi.Suriname=c(22.3, 34.2, 23.2, NA, 23.2, 
                            4.3, 2.3, NA, 10.3, 10.1, 8.9),
+      density_Galibi.Suriname=rep("dnorm", 11), 
       Irakumpapy.French.Guiana=c(1076, 1765, 1390, 1678, NA, 
                                3542, 2678, 243, NA, 566, 566),
       se_Irakumpapy.French.Guiana=c(23.2, 29.7, 22.5, 226, NA, 
-                                 130, 29, 67, NA, 15, 20))
+                                 130, 29, 67, NA, 15, 20), 
+      density_Irakumpapy.French.Guiana=rep("dnorm", 11)
+      )
                            
 cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
                colname.year="Year", model.trend="Constant", 
@@ -104,24 +134,22 @@ cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
                model.SD="Zero", 
                control=list(trace=1, REPORT=100, maxit=500, parscale = c(3000, -0.2, 0.6)))
                
-# Example with optimx
-require("optimx")
 cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
                colname.year="Year", model.trend="Constant", 
-               model.SD="Zero", optim="optimx", method=c("Nelder-Mead","BFGS"), 
+               model.SD="Zero", method=c("Nelder-Mead","BFGS"), 
                control = list(trace = 0, REPORT = 100, maxit = 500, 
                parscale = c(3000, -0.2, 0.6)))
 expo <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
                colname.year="Year", model.trend="Exponential", 
-               model.SD="Zero", optim="optimx", method=c("Nelder-Mead","BFGS"), 
+               model.SD="Zero", method=c("Nelder-Mead","BFGS"), 
                control = list(trace = 0, REPORT = 100, maxit = 500, 
                parscale = c(6000, -0.05, -0.25, 0.6)))
 YS <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
              colname.year="Year", model.trend="Year-specific", method=c("Nelder-Mead","BFGS"), 
-             optim="optimx", model.SD="Zero")
+             model.SD="Zero")
 YS1 <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
              colname.year="Year", model.trend="Year-specific", method=c("Nelder-Mead","BFGS"), 
-             optim="optimx", model.SD="Zero", model.rookeries="First-order")
+             model.SD="Zero", model.rookeries="First-order")
 YS1_cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
              colname.year="Year", model.trend="Year-specific", 
              model.SD="Constant", model.rookeries="First-order", 
@@ -129,11 +157,11 @@ YS1_cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
 YS2 <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
              colname.year="Year", model.trend="Year-specific",
              model.SD="Zero", model.rookeries="Second-order", 
-             optim="optimx", parameters=YS1$par, method=c("Nelder-Mead","BFGS"))
+             parameters=YS1$par, method=c("Nelder-Mead","BFGS"))
 YS2_cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
              colname.year="Year", model.trend="Year-specific",
              model.SD="Constant", model.rookeries="Second-order", 
-             optim="optimx", parameters=YS1_cst$par, method=c("Nelder-Mead","BFGS"))
+             parameters=YS1_cst$par, method=c("Nelder-Mead","BFGS"))
                
 compare_AIC(Constant=cst, Exponential=expo, 
 YearSpecific=YS)
@@ -148,10 +176,6 @@ compare_AIC(YearSpecific_ProportionsConstant=YS,
 compare_AIC(YearSpecific_ProportionsFirstOrder=YS1_cst,
            YearSpecific_ProportionsSecondOrder=YS2_cst)
 
-barplot_errbar(YS1_cst$proportions[1, ], y.plus = YS1_cst$proportions.CI.0.95[1, ], 
-y.minus = YS1_cst$proportions.CI.0.05[1, ], las=1, ylim=c(0, 0.7), 
-main="Proportion of the different rookeries in the region")
-
 plot(cst, main="Use of different beaches along the time", what="total")
 plot(expo, main="Use of different beaches along the time", what="total")
 plot(YS2_cst, main="Use of different beaches along the time", what="total")
@@ -160,15 +184,50 @@ plot(YS1, main="Use of different beaches along the time")
 plot(YS1_cst, main="Use of different beaches along the time")
 plot(YS1_cst, main="Use of different beaches along the time", what="numbers")
 
+# Gamma distribution should be used for MCMC outputs
+
+RMU.names.AtlanticW <- data.frame(mean=c("Yalimapo.French.Guiana", 
+                                         "Galibi.Suriname", 
+                                         "Irakumpapy.French.Guiana"), 
+                                 se=c("se_Yalimapo.French.Guiana", 
+                                      "se_Galibi.Suriname", 
+                                      "se_Irakumpapy.French.Guiana"), 
+                                 density=c("density_Yalimapo.French.Guiana", 
+                                           "density_Galibi.Suriname", 
+                                           "density_Irakumpapy.French.Guiana"), 
+                                           stringsAsFactors = FALSE)
+                                           
+data.AtlanticW <- data.frame(Year=c(1990:2000), 
+      Yalimapo.French.Guiana=c(2076, 2765, 2890, 2678, NA, 
+                               6542, 5678, 1243, NA, 1566, 1566),
+      se_Yalimapo.French.Guiana=c(123.2, 27.7, 62.5, 126, NA, 
+                                 230, 129, 167, NA, 145, 20),
+      density_Yalimapo.French.Guiana=rep("dgamma", 11), 
+      Galibi.Suriname=c(276, 275, 290, NA, 267, 
+                       542, 678, NA, 243, 156, 123),
+      se_Galibi.Suriname=c(22.3, 34.2, 23.2, NA, 23.2, 
+                           4.3, 2.3, NA, 10.3, 10.1, 8.9),
+      density_Galibi.Suriname=rep("dgamma", 11), 
+      Irakumpapy.French.Guiana=c(1076, 1765, 1390, 1678, NA, 
+                               3542, 2678, 243, NA, 566, 566),
+      se_Irakumpapy.French.Guiana=c(23.2, 29.7, 22.5, 226, NA, 
+                                 130, 29, 67, NA, 15, 20), 
+      density_Irakumpapy.French.Guiana=rep("dgamma", 11), stringsAsFactors = FALSE
+      )
+cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
+               colname.year="Year", model.trend="Constant", 
+               model.SD="Zero")
 }
 }
 \seealso{
-Other Fill gaps in RMU: \code{\link{fitRMU_MHmcmc_p}},
-  \code{\link{fitRMU_MHmcmc}}, \code{\link{logLik.fitRMU}},
-  \code{\link{plot.fitRMU}}
+Other Fill gaps in RMU: 
+\code{\link{CI.RMU}()},
+\code{\link{fitRMU_MHmcmc_p}()},
+\code{\link{fitRMU_MHmcmc}()},
+\code{\link{logLik.fitRMU}()},
+\code{\link{plot.fitRMU}()}
 }
 \author{
 Marc Girondot
 }
 \concept{Fill gaps in RMU}
-\concept{Fill the gaps for RMU}

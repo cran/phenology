@@ -4,13 +4,22 @@
 \alias{fitRMU_MHmcmc}
 \title{Run the Metropolis-Hastings algorithm for RMU.data}
 \usage{
-
-  fitRMU_MHmcmc(result = stop("An output from fitRMU_MHmcmc() must be provided"),
+fitRMU_MHmcmc(
+  result = stop("An output from fitRMU() must be provided"),
   n.iter = 10000,
-  parametersMCMC = stop("A model generated with fitRMU_MHmcmc_p() must be provided"),
-  n.chains = 4, n.adapt = 0, thin = 1, trace = FALSE,
-  intermediate = NULL, filename = "intermediate.Rdata",
-  previous = NULL)
+  parametersMCMC = stop("A parameter set from fitRMU_MHmcmc_p() must be provided"),
+  n.chains = 1,
+  n.adapt = 0,
+  thin = 1,
+  adaptive = FALSE,
+  adaptive.lag = 500,
+  adaptive.fun = function(x) {     ifelse(x > 0.234, 1.3, 0.7) },
+  trace = FALSE,
+  traceML = FALSE,
+  intermediate = NULL,
+  filename = "intermediate.Rdata",
+  previous = NULL
+)
 }
 \arguments{
 \item{result}{An object obtained after a SearchR fit}
@@ -25,7 +34,15 @@
 
 \item{thin}{Number of iterations between each stored output}
 
-\item{trace}{True or False, shows progress}
+\item{adaptive}{Should an adaptive process for SDProp be used}
+
+\item{adaptive.lag}{Lag to analyze the SDProp value in an adaptive content}
+
+\item{adaptive.fun}{Function used to change the SDProp}
+
+\item{trace}{TRUE or FALSE or period, shows progress}
+
+\item{traceML}{TRUE or FALSE to show ML}
 
 \item{intermediate}{Period for saving intermediate result, NULL for no save}
 
@@ -80,9 +97,12 @@ parametersMCMC = pMCMC, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
 }
 }
 \seealso{
-Other Fill gaps in RMU: \code{\link{fitRMU_MHmcmc_p}},
-  \code{\link{fitRMU}}, \code{\link{logLik.fitRMU}},
-  \code{\link{plot.fitRMU}}
+Other Fill gaps in RMU: 
+\code{\link{CI.RMU}()},
+\code{\link{fitRMU_MHmcmc_p}()},
+\code{\link{fitRMU}()},
+\code{\link{logLik.fitRMU}()},
+\code{\link{plot.fitRMU}()}
 }
 \author{
 Marc Girondot

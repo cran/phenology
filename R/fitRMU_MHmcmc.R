@@ -8,7 +8,11 @@
 #' @param n.chains Number of replicates
 #' @param n.adapt Number of iterations before to store outputs
 #' @param thin Number of iterations between each stored output
-#' @param trace True or False, shows progress
+#' @param adaptive Should an adaptive process for SDProp be used
+#' @param adaptive.lag  Lag to analyze the SDProp value in an adaptive content
+#' @param adaptive.fun Function used to change the SDProp
+#' @param trace TRUE or FALSE or period, shows progress
+#' @param traceML TRUE or FALSE to show ML
 #' @param filename If intermediate is not NULL, save intermediate result in this file
 #' @param intermediate Period for saving intermediate result, NULL for no save
 #' @param previous Previous result to be continued. Can be the filename in which intermediate results are saved.
@@ -53,9 +57,17 @@
 #' @export
 
 
-fitRMU_MHmcmc <- function(result=stop("An output from fitRMU_MHmcmc() must be provided"), n.iter=10000, 
-parametersMCMC=stop("A model generated with fitRMU_MHmcmc_p() must be provided"), n.chains = 4, 
-n.adapt = 0, thin=1, trace=FALSE, intermediate=NULL, filename="intermediate.Rdata", previous=NULL) {
+fitRMU_MHmcmc <- function(result=stop("An output from fitRMU() must be provided"), 
+                          n.iter=10000, 
+                          parametersMCMC=stop("A parameter set from fitRMU_MHmcmc_p() must be provided"), 
+                          n.chains = 1,
+                          n.adapt = 0, thin=1, 
+                          adaptive=FALSE, 
+                          adaptive.lag=500, 
+                          adaptive.fun=function(x) {ifelse(x>0.234, 1.3, 0.7)},
+                          trace=FALSE, 
+                          traceML=FALSE, 
+                          intermediate=NULL, filename="intermediate.Rdata", previous=NULL) {
   
   if (is.character(previous)) {
     itr <- NULL
@@ -78,8 +90,11 @@ n.adapt = 0, thin=1, trace=FALSE, intermediate=NULL, filename="intermediate.Rdat
   # pt <- list(fixed=result$fixed.parameters, RMU.data=result$RMU.data, model.trend=result$model.trend, colname.year=result$colname.year, RMU.names=result$RMU.names)
 
 out <- MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, n.chains = n.chains, n.adapt = n.adapt, 
-                 thin=thin, trace=trace, likelihood=fun,
-                 fixed=result$fixed.parameters, RMU.data=result$RMU.data, model.trend=result$model.trend,
+                 thin=thin, trace=trace, traceML=traceML, likelihood=fun,
+                 adaptive = adaptive, adaptive.fun = adaptive.fun, adaptive.lag = adaptive.lag,
+                 fixed.parameters=result$fixed.parameters.computing, 
+                 RMU.data=result$RMU.data, model.trend=result$model.trend,
+                 model.SD=result$model.SD, 
                  colname.year=result$colname.year, RMU.names=result$RMU.names)
 
 fin <- try(summary(out), silent=TRUE)

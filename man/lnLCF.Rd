@@ -4,8 +4,7 @@
 \alias{lnLCF}
 \title{Calculate the -log likelihood of data within a model.}
 \usage{
-lnLCF(x, data, fixed.parameters = NULL, parallel = TRUE,
-  verbose = FALSE)
+lnLCF(x, data, fixed.parameters = NULL, parallel = TRUE, verbose = FALSE)
 }
 \arguments{
 \item{x}{A named vector of parameters (mu, sd, mu_season, sd_season, a, p and OTN).}
@@ -56,10 +55,13 @@ lnLCF(x=par, data=ECFOCF_2002, fixed.parameters=fixed.parameters)
 
 }
 \seealso{
-Other Model of Clutch Frequency: \code{\link{ECFOCF_f}},
-  \code{\link{TableECFOCF}}, \code{\link{fitCF}},
-  \code{\link{logLik.ECFOCF}}, \code{\link{plot.ECFOCF}},
-  \code{\link{plot.TableECFOCF}}
+Other Model of Clutch Frequency: 
+\code{\link{ECFOCF_f}()},
+\code{\link{TableECFOCF}()},
+\code{\link{fitCF}()},
+\code{\link{logLik.ECFOCF}()},
+\code{\link{plot.ECFOCF}()},
+\code{\link{plot.TableECFOCF}()}
 }
 \author{
 Marc Girondot

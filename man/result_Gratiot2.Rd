@@ -4,7 +4,9 @@
 \name{result_Gratiot2}
 \alias{result_Gratiot2}
 \title{Result of the fit of Leatherback nest counts}
-\format{A list with Gratiot data and the result of the fit.}
+\format{
+A list with Gratiot data and the result of the fit.
+}
 \usage{
 result_Gratiot2
 }
@@ -27,7 +29,48 @@ Gratiot, N., Gratiot, J., de Thoisy, B. & Kelle, L. 2006.
             data ; statistical adjustment of a sinusoidal function. Animal 
             Conservation, 9, 95-102.
 }
+\seealso{
+Other Phenology model: 
+\code{\link{AutoFitPhenology}()},
+\code{\link{BE_to_LBLE}()},
+\code{\link{Gratiot}},
+\code{\link{LBLE_to_BE}()},
+\code{\link{LBLE_to_L}()},
+\code{\link{L_to_LBLE}()},
+\code{\link{MarineTurtles_2002}},
+\code{\link{MinBMinE_to_Min}()},
+\code{\link{adapt_parameters}()},
+\code{\link{add_SE}()},
+\code{\link{add_phenology}()},
+\code{\link{extract_result}()},
+\code{\link{fit_phenology}()},
+\code{\link{likelihood_phenology}()},
+\code{\link{logLik.phenology}()},
+\code{\link{map_Gratiot}},
+\code{\link{map_phenology}()},
+\code{\link{par_init}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc_p}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology}()},
+\code{\link{plot.phenologymap}()},
+\code{\link{plot.phenology}()},
+\code{\link{plot_delta}()},
+\code{\link{plot_phi}()},
+\code{\link{print.phenologymap}()},
+\code{\link{print.phenologyout}()},
+\code{\link{print.phenology}()},
+\code{\link{remove_site}()},
+\code{\link{result_Gratiot1}},
+\code{\link{result_Gratiot_Flat}},
+\code{\link{result_Gratiot_mcmc}},
+\code{\link{result_Gratiot}},
+\code{\link{summary.phenologymap}()},
+\code{\link{summary.phenologyout}()},
+\code{\link{summary.phenology}()}
+}
 \author{
 Marc Girondot \email{marc.girondot@u-psud.fr}
 }
+\concept{Phenology model}
 \keyword{datasets}

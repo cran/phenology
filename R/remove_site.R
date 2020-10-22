@@ -6,12 +6,10 @@
 #' @param help If TRUE, an help is displayed
 #' @description This function is used to remove the information of the site
 #' from a set of parameters. It can be used to other timeseries after.
+#' @family Phenology model
 #' @examples
 #' library(phenology)
 #' # Read a file with data
-#' \dontrun{
-#' Gratiot<-read.delim("http://max2.ese.u-psud.fr/epc/conservation/BI/Complete.txt", header=FALSE)
-#' }
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
 #' data_Gratiot<-add_phenology(Gratiot, name="Complete", 
