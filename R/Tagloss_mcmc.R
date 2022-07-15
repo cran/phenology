@@ -7,12 +7,12 @@
 #' @param fixed.parameters Set of fixed parameters
 #' @param model_before Transformation of parameters before to use Tagloss_model()
 #' @param model_after Transformation of parameters after to use Tagloss_model()
-#' @param cores Number of cores to use for parallel computing
+#' @param mc.cores Number of cores to use for parallel computing
 #' @param groups Number of groups for parallel computing
 #' @param n.iter Number of iterations for each chain
 #' @param n.chains Number of chains
 #' @param n.adapt Number of iteration to stabilize likelihood
-#' @param thin Interval for thinning likelihoods
+#' @param thin Interval for thinning Markov chain
 #' @param trace Or FALSE or period to show progress
 #' @param traceML TRUE or FALSE to show ML
 #' @param intermediate Or NULL of period to save intermediate result
@@ -44,9 +44,12 @@
 #'          delta_1=3.2E-4)
 #' pfixed <- c(a2_2=0, a3_2=0, a2_1=0, a3_1=0)
 #' model_before <- "par['a0_1']=par['a0_2'];par['a1_1']=par['a1_2'];par['a4_1']=par['a4_2']"
-#' pMCMC <- data.frame()
-#' o <- Tagloss_mcmc(data=data_f_21, parameters=pMCMC, fixed.parameters=pfixed, 
+#' o <- Tagloss_fit(data=data_f_21, fitted.parameters=par, fixed.parameters=pfixed, 
 #'                  model_before=model_before)
+#' pMCMC <- Tagloss_mcmc_p(o, accept=TRUE)
+#' o_MCMC <- Tagloss_mcmc(data=data_f_21, parameters=pMCMC, fixed.parameters=pfixed, 
+#'                  model_before=model_before, 
+#'                  n.iter=10000, n.chains = 1, n.adapt = 100, thin=30)
 #' }
 #' @export
 
@@ -55,7 +58,7 @@ Tagloss_mcmc <- function (data = stop("A database formated using Tagloss_format(
                           fixed.parameters = NULL, 
                           model_before = NULL, 
                           model_after = NULL, 
-                          cores = detectCores(all.tests = FALSE, logical = TRUE), 
+                          mc.cores = detectCores(all.tests = FALSE, logical = TRUE), 
                           groups = detectCores(all.tests = FALSE, logical = TRUE), 
                           n.iter=10000, n.chains = 1, n.adapt = 100, thin=30, 
                           trace=FALSE, traceML=FALSE, 
@@ -65,6 +68,21 @@ Tagloss_mcmc <- function (data = stop("A database formated using Tagloss_format(
                           previous=NULL) 
 {
   
+  
+  # data = NULL 
+  # parameters = NULL
+  # fixed.parameters = NULL
+  # model_before = NULL
+  # model_after = NULL 
+  # mc.cores = detectCores(all.tests = FALSE, logical = TRUE)
+  # groups = detectCores(all.tests = FALSE, logical = TRUE)
+  # n.iter=10000; n.chains = 1; n.adapt = 100; thin=30
+  # trace=FALSE; traceML=FALSE
+  # adaptive = FALSE; adaptive.lag = 500
+  # adaptive.fun = function(x) {ifelse(x>0.234, 1.3, 0.7)}
+  # intermediate=NULL; filename="intermediate.Rdata"
+  # previous=NULL
+  
   Tagloss_MCMC <- function(x, individuals=NULL, 
                            days.maximum = NULL, 
                            fixed.parameters = NULL, 
@@ -72,7 +90,7 @@ Tagloss_mcmc <- function (data = stop("A database formated using Tagloss_format(
                            model_after = NULL, 
                            names.par = NULL, 
                            groups = groups, 
-                           cores = cores) {
+                           mc.cores = mc.cores) {
     
     Tagloss_L(individuals=individuals, par=x, 
               days.maximum = days.maximum, 
@@ -81,7 +99,7 @@ Tagloss_mcmc <- function (data = stop("A database formated using Tagloss_format(
               model_after = model_after, 
               names.par = names.par, 
               groups = groups, 
-              cores = cores, 
+              mc.cores = mc.cores, 
               progressbar = FALSE)
     
   }
@@ -95,7 +113,7 @@ Tagloss_mcmc <- function (data = stop("A database formated using Tagloss_format(
                     model_before = model_before, 
                     model_after = model_after, 
                     groups = groups, 
-                    cores = cores, 
+                    mc.cores = mc.cores, 
                     n.iter=n.iter, 
                     n.chains = n.chains, n.adapt = n.adapt, thin = thin, 
                     adaptive.lag = adaptive.lag, 

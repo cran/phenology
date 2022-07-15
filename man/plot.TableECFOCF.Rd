@@ -105,9 +105,13 @@ plot(ECFOCF_2002, period=13)
 }
 \seealso{
 Other Model of Clutch Frequency: 
+\code{\link{ECFOCF_full}()},
 \code{\link{ECFOCF_f}()},
 \code{\link{TableECFOCF}()},
+\code{\link{fitCF_MHmcmc_p}()},
+\code{\link{fitCF_MHmcmc}()},
 \code{\link{fitCF}()},
+\code{\link{generateCF}()},
 \code{\link{lnLCF}()},
 \code{\link{logLik.ECFOCF}()},
 \code{\link{plot.ECFOCF}()}

@@ -80,15 +80,28 @@ be included. The \code{OTN2} is forced to be 1. Then the relative frequency
 for category 1 is \code{OTN1/(OTN1+1)} and for category 2 is \code{1/(OTN1+1)}. 
 Same logic must be applied for 3 and more categories with always the last one 
 being fixed to 1.\cr
-if p or a are equal to -Inf, the probability is 0 and if they are equal to 
+
+if p or a (logit of the capture probability) are equal to -Inf, 
+the probability of capture is 0 and if they are equal to 
 +Inf, the probability is 1.\cr
+
+The value of p out of the period 
+of nesting must be set to +Inf (capture probability=1)
+to indicate that no turtle is nesting in this period.\cr
+
+p must be set to -Inf (capture probability=0) to indicate that no
+monitoring has been done during a specific period of the nesting season.\cr
+
 The best way to indicate capture probability for 3D model (OCF, ECF, Period) 
 is to indicate p.period common for all categories and a1, a2, etc for each category. 
 The capture probability for category 1 will be p.period * a1, and for category 2 
-will be p.period * a2, etc. 
+will be p.period * a2, etc. \cr
+
 In this case, the parameters p.period should be indicated in fitted parameters 
 as well as a1, but a2 must be fixed to +Inf in fixed.parameters. Then the capture 
-probability for category 2 will be p.period and for category 1 a1 * p.period.
+probability for category 2 will be p.period and for category 1 a1 * p.period.\cr
+
+If itnmax is equal to 0, it will return the model using the parameters without fitting them.\cr
 }
 \details{
 fitCF fit a model of Clutch Frequency for marine turtles.
@@ -100,7 +113,7 @@ library(phenology)
 data(MarineTurtles_2002)
 ECFOCF_2002 <- TableECFOCF(MarineTurtles_2002)
 
-# Paraetric model for clutch frequency
+# Parametric model for clutch frequency
 o_mu1p1_CFp <- fitCF(x = c(mu = 2.1653229641404539, 
                  sd = 1.1465246643327098, 
                  p = 0.25785366120357966), 
@@ -217,13 +230,15 @@ par <- c(mu = 2.6404831115214353,
         mu_season = 12.6404831115214353, 
         sd_season = 1.69362774786433479)
 par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
-                 attributes(ECFOCF_2002)$table["end"]])
-# The value of p (logit -capture probability) out of the period 
-# of monitoring is set to +Inf (capture probability=1)
-# to indicate that no turtle is nesting in the period out of 
-# monitoring time
-# p is set to -Inf (capture probability=0) to indicate that no
-# monitoring has been done but some turtles could have been present.
+                 attributes(ECFOCF_2002)$table["final"]])
+                 
+# The value of p (logit of the capture probability) out of the period 
+# of nesting must be set to +Inf (capture probability=1)
+# to indicate that no turtle is nesting in this period
+
+# p must be set to -Inf (capture probability=0) to indicate that no
+# monitoring has been done during a specific period of the nesting season.
+
 fixed.parameters <- c(p=+Inf)
 # The fitted values are:
 par <- c(mu = 2.4911638591178051, 
@@ -256,10 +271,10 @@ par <- c(mu = 2.6404831115214353,
         mu_season = 12.6404831115214353, 
         sd_season = 1.69362774786433479)
 par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
-                 attributes(ECFOCF_2002)$table["end"]])
+                 attributes(ECFOCF_2002)$table["final"]])
 names(fp) <- paste0("p2.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
 par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
-                 attributes(ECFOCF_2002)$table["end"]])
+                 attributes(ECFOCF_2002)$table["final"]])
 fixed.parameters <- c(p1=+Inf, p2=+Inf)
 
 o_mu1p2season1 <- fitCF(x=par, data=ECFOCF_2002, 
@@ -275,10 +290,10 @@ names(fp) <- paste0("p.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
 par <- c(mu = 2.6404831115214353, 
         sd = 0.69362774786433479, 
         mu_season = 12.6404831115214353, 
-        sd_season = 1.69362774786433479, 
+        sd_season = 1.69362774786433479,  
         a2=0)
 par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
-                 attributes(ECFOCF_2002)$table["end"]])
+                 attributes(ECFOCF_2002)$table["final"]])
 fixed.parameters <- c(a1=+Inf, p=+Inf)
 
 o_mu1p1aseason1 <- fitCF(x=par, data=ECFOCF_2002, 
@@ -299,14 +314,18 @@ Fossette S, Kelle L, Girondot M, Goverse E, Hilterman ML, Verhage B,
          and Ecology 356:69-82
 
 Other Model of Clutch Frequency: 
+\code{\link{ECFOCF_full}()},
 \code{\link{ECFOCF_f}()},
 \code{\link{TableECFOCF}()},
+\code{\link{fitCF_MHmcmc_p}()},
+\code{\link{fitCF_MHmcmc}()},
+\code{\link{generateCF}()},
 \code{\link{lnLCF}()},
 \code{\link{logLik.ECFOCF}()},
 \code{\link{plot.ECFOCF}()},
 \code{\link{plot.TableECFOCF}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Model of Clutch Frequency}

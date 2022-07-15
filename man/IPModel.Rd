@@ -73,6 +73,6 @@ Other Model of Internesting Period:
 \code{\link{summary.IP}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Model of Internesting Period}

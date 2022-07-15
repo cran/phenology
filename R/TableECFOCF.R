@@ -100,7 +100,7 @@ TableECFOCF <- function(data=stop("A dataframe with a column 'ID' and a column '
     OCFECF[ECFOCF_Obs[i, "OCF"]+1, ECFOCF_Obs[i, "ECF"] +1, ECFOCF_Obs[i, "period"]] <- 1 + OCFECF[ECFOCF_Obs[i, "OCF"]+1, ECFOCF_Obs[i, "ECF"] +1, ECFOCF_Obs[i, "period"]]
   }
   
- class(OCFECF) <- "TableECFOCF"
+  OCFECF <- addS3Class(OCFECF, "TableECFOCF")
  
  if (end==1) {
    attributes(OCFECF) <- c(attributes(OCFECF), table=list(c(begin=1, end=1, final=1, min=1, max=1)))

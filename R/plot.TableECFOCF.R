@@ -90,7 +90,8 @@ plot.TableECFOCF <- function(x, ..., result="ecfocf",
   # pch.0=4; 
   # cex.0=0.5;
   # col.0="blue"; 
-  # show.scale = TRUE
+  # show.scale = TRUE;
+  # max.scale = NULL
   
   p3p <- list(...)
   result <- tolower(result)
@@ -110,6 +111,7 @@ plot.TableECFOCF <- function(x, ..., result="ecfocf",
     } else {
       sc <- max.scale
     }
+    if (sc == 0) sc <- 0.0001
     
     for (c in 1:ncol(x)) {
       for (r in 1:nrow(x)) {
@@ -140,11 +142,9 @@ plot.TableECFOCF <- function(x, ..., result="ecfocf",
              pch=c(ifelse(show.0, pch.0, NA), pch, pch, pch), 
              col=c(col.0, col, col, col), 
              pt.cex=c(cex.0, (seq(from=0, to=sc, length.out = 4)[2:4])/sc*cex.points), 
-             legend=c(0, floor(seq(from=0, to=sc, length.out = 4)[2:4])), 
+             legend=c(0, specify_decimal(seq(from=0, to=sc, length.out = 4)[2:4], decimals = ifelse(sc < 1, floor(-log10(sc)+1), 0))), 
              title="Scale"
       )
-      
-      
     }
     
   } else {

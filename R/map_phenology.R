@@ -1,6 +1,6 @@
 #' map_phenology generates a likelihood map.
 #' @title Generate a likelihood map varying Phi and Delta.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Display a likelihood map
 #' @param data dataset generated with add_format
 #' @param fixed.parameters Set of fixed parameters
@@ -75,6 +75,8 @@ map_phenology <-
            cofactors=NULL, add.cofactors=NULL, zero=1E-9) {
     
     # data=NULL; fitted.parameters=NULL; fixed.parameters=NA;Phi=seq(from=0.2,to=20, length.out=100); Delta=NULL; tol=1E-6; zero_counts=TRUE; progressbar=TRUE; cofactors=NULL; add.cofactors=NULL; zero=1E-9
+    mc.cores <- getOption("mc.cores", detectCores())
+    forking <- getOption("forking", ifelse(.Platform$OS.type == "windows", FALSE, TRUE))
     
     if (is.null(fixed.parameters)) {fixed.parameters<-NA}
     if (is.null(fitted.parameters)) {fitted.parameters<-NA}
@@ -142,8 +144,7 @@ map_phenology <-
     
     pt <- list(data=data, fixed=fixed.parameters, 
                zerocounts=zero_counts, out=TRUE, tol=tol, 
-               parallel=FALSE, 
-               cofactors=cofactors, 
+               cofactors=cofactors, parallel=FALSE, 
                add.cofactors=add.cofactors, zero=zero, 
                store.intermediate=FALSE, 
                file.intermediate="")
@@ -206,7 +207,7 @@ map_phenology <-
                             Deltavalue = Deltavalue, 
                             Phivalue = Phivalue), 
     clusterEvalQ = CEG, 
-    progressbar=progressbar)
+    progressbar=progressbar, forking=forking, mc.cores=mc.cores)
     
     input <- matrix(unlist(outma), nrow=LPhi, ncol=LDelta, byrow=FALSE)
     rownames(input) <- Phivalue
@@ -225,8 +226,7 @@ map_phenology <-
                       Fixed.parameters=fixed.parameters, 
                       Data=names(data))
     
-    class(outputmap) <- "phenologymap"
-    
+    outputmap <- addS3Class(outputmap, "phenologymap")
     return(outputmap)
     
   }

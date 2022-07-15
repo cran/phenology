@@ -3,26 +3,28 @@
 #' \tabular{ll}{
 #'  Package: \tab phenology\cr
 #'  Type: \tab Package\cr
-#'  Version: \tab 7.6 build 1168\cr
-#'  Date: \tab 2020-10-22\cr
+#'  Version: \tab 7.8 build 1441\cr
+#'  Date: \tab 2022-07-14\cr
 #'  License: \tab GPL (>= 2)\cr
 #'  LazyLoad: \tab yes\cr
 #'  }
 #' @title Tools to Manage a Parametric Function that Describes Phenology and More
-#' @author Marc Girondot \email{marc.girondot@@universite-paris-saclay.fr}
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @docType package
 #' @name phenology-package
 #' @description Functions used to fit and test the phenology of species based on counts.\cr
 #' Note that only the most significant changes are reported in the NEWS.\cr
-#' The lastest version of this package can always been installed using:\cr
-#' install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/HelpersMG.tar.gz", repos=NULL, type="source")\cr
-#' install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", repos=NULL, type="source")
+#' The latest version of this package can always been installed using:\cr
+#' install.packages("https://hebergement.universite-paris-saclay.fr/marcgirondot/CRAN/HelpersMG.tar.gz", repos=NULL, type="source")\cr
+#' install.packages("https://hebergement.universite-paris-saclay.fr/marcgirondot/CRAN/phenology.tar.gz", repos=NULL, type="source")\cr
+#' \if{html}{\figure{imgfile.png}{options: alt="phenology logo", align="right"}}
+#' \if{latex}{\figure{imgfile.png}}
 #' @references Girondot, M. 2010. Estimating density of animals during 
 #'             migratory waves: application to marine turtles at nesting site. 
 #'             Endangered Species Research, 12, 85-105.
 #' @references Girondot M. and Rizzo A. 2015. Bayesian framework to integrate 
 #'             traditional ecological knowledge into ecological modeling: A case 
-#'             study. Journal of Ethnobiology, 35, 339-355.
+#'             study. Journal of Ethnobiology, 35, 339-355. <doi:10.2993/etbi-35-02-337-353.1>
 #' @references Girondot, M. 2010. Editorial: The zero counts. Marine 
 #'             Turtle Newsletter, 129, 5-6.
 #' @references Girondot, M., 2017. Optimizing sampling design to infer marine turtles 
@@ -50,9 +52,6 @@
 #' @examples
 #' \dontrun{
 #' library(phenology)
-#' # Get the lastest version at:
-#' # install.packages("http://www.ese.u-psud.fr/epc/conservation/CRAN/phenology.tar.gz", 
-#' #     repos=NULL, type="source")
 #' # Read a file with data
 #' data(Gratiot)
 #' # Generate a formatted list nammed data_Gratiot 
@@ -66,6 +65,14 @@
 #' data(result_Gratiot)
 #' # Plot the phenology and get some stats
 #' output <- plot(result_Gratiot)
+#' 
+#' # How many times this package has been download
+#' library(cranlogs)
+#' phenology <- cran_downloads("phenology", from = "2012-10-06", 
+#'                             to = Sys.Date() - 1) 
+#' sum(phenology$count)
+#' plot(phenology$date, phenology$count, type="l", bty="n")
+
 #' }
 
 NULL

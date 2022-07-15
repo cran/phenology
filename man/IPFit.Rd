@@ -23,7 +23,9 @@ IPFit(
   trace = TRUE,
   adaptive = TRUE,
   adaptive.lag = 500,
-  adaptive.fun = function(x) {     ifelse(x > 0.234, 1.3, 0.7) },
+  adaptive.fun = function(x) {
+     ifelse(x > 0.234, 1.3, 0.7)
+ },
   intermediate = NULL,
   filename = "intermediate.Rdata"
 )
@@ -345,6 +347,6 @@ Other Model of Internesting Period:
 \code{\link{summary.IP}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Model of Internesting Period}

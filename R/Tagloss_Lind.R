@@ -32,7 +32,7 @@
   
   kl <- 0
   for (klj in 1:nrow(individu)) {
-    
+    # print(klj)
     if (progressbar) {
       if (libp) pb$tick() else setTxtProgressBar(pb, klj)
     }

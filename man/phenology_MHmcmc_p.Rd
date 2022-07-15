@@ -24,7 +24,7 @@ A matrix with the parameters
 Interactive script used to generate set of parameters to be used with phenology_MHmcmc().
 }
 \details{
-phenology_MHmcmc_p generates set of parameters to be used with MHmcmc()
+phenology_MHmcmc_p generates set of parameters to be used with phenology_MHmcmc()
 }
 \examples{
 \dontrun{

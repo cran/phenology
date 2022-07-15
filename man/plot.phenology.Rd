@@ -90,16 +90,17 @@ data_Gratiot <- add_phenology(Gratiot, name = "Complete",
 # Generate initial points for the optimisation
 parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 parg <- c('Max_Complete' = 33.076044848500167, 25, 
-  'MinB_Complete' = 0.21758630798131923, 
-  'MinE_Complete' = 0.42493953463205936, 
-  'LengthB' = 96.158007568020523, 
-  'Peak' = 174.62435300274245, 
-  'LengthE' = 62.084876419654634, 
-  'Flat' = 0, 
-  'Theta' = 3.5864650991821954)
+          'MinB_Complete' = 0.21758630798131923, 
+          'MinE_Complete' = 0.42493953463205936, 
+          'LengthB' = 96.158007568020523, 
+          'Peak' = 174.62435300274245, 
+          'LengthE' = 62.084876419654634, 
+          'Flat' = 0, 
+          'Theta' = 3.5864650991821954)
 # Run the optimisation
 result_Gratiot <- fit_phenology(data=data_Gratiot, 
-		fitted.parameters=parg, fixed.parameters=NULL)
+		                             fitted.parameters=parg, 
+		                             fixed.parameters=NULL)
 data(result_Gratiot)
 # Plot the phenology and get some stats
 output <- plot(result_Gratiot)
@@ -162,6 +163,6 @@ Other Phenology model:
 \code{\link{summary.phenology}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Phenology model}

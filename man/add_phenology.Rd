@@ -18,6 +18,7 @@ add_phenology(
   include0 = FALSE,
   datepeakfor0 = NULL,
   expandRange0Observation = TRUE,
+  check.overlapping.dates = TRUE,
   silent = FALSE
 )
 }
@@ -48,6 +49,8 @@ add_phenology(
 
 \item{expandRange0Observation}{If TRUE, the range of date with 0 observations are expanded into individual dates}
 
+\item{check.overlapping.dates}{If TRUE, will check for date overlapping}
+
 \item{silent}{Does information about added timeseries is shown}
 }
 \value{
@@ -57,7 +60,7 @@ Return a list of formated data that can be used ith fit_phenology()
 To create a new dataset, the syntaxe is :\cr
 data <- add_phenology(add=newdata, name="Site", reference=as.Date('2001-12-31'), 
 format='\%d/\%m/\%y')\cr\cr
-To add a dataset to a previous one, the syntaxe is :\cr
+To add a dataset to a previous one, the syntax is :\cr
 data <- add_phenology(previous=previousdata, add=newdata, name='Site', \cr
 reference=as.Date('2001-01-01'), format="\%Y-\%m-\%d") \cr\cr
 The dataset to be added must include 2 or 3 columns.\cr
@@ -65,7 +68,7 @@ The colname.Date included the dates in the format specified by
 the parameter format. If the number of nests is known  
 for an exact date, then only one date must be indicated.\cr  
 If the number of nests is known for a range of date, the 
-first and last dates must be separated but a sep.dates character.\cr
+first and last dates must be separated by a sep.dates character.\cr
 For example: 1/2/2000-10/2/2000\cr
 Note that date in the colname.Date column can be already formated and in this case 
 the parameter format is ignored.\cr\cr
@@ -78,7 +81,7 @@ the default name Site will be used, but take care, only one
 rookery of this name can be used.\cr\cr
 Several rookeries can be included in the same file but in this case 
 the rookery name is obligatory at the colname.Rookery column.\cr\cr
-#' The model cannot be fitted if a timeseries has no observation because the trivial 
+The model cannot be fitted if a timeseries has no observation because the trivial 
 solution is of course with max=0. The solution is to include a fake false observation at the closest 
 position of the peak, and then the estimated number of nests/tracks will be the estimated number - 1.\cr
 If include0 is TRUE, then the series with no observation are included and one observation is added 
@@ -180,6 +183,6 @@ Other Phenology model:
 \code{\link{summary.phenology}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Phenology model}

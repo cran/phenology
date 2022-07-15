@@ -1,6 +1,6 @@
 #' IPFit fit a model of Internesting Period for marine turtles.
 #' @title Fit a model of Internesting Period for marine turtles.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return a list of class IP with the fit informations and the fitted model.\cr
 #' @param x Initial parameters to be fitted
 #' @param fixed.parameters Parameters that are fixed.
@@ -382,6 +382,6 @@ IPFit <- function (x = NULL, fixed.parameters = NULL,
   }
   model <- IPModel(par = c(par, pfixed))
   result <- list(ML = resultML, MH = resultMH, model = model)
-  class(result) <- "IP"
+  result <- addS3Class(result, "IP")
   return(result)
 }

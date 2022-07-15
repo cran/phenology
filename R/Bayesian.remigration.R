@@ -1,6 +1,6 @@
 #' Bayesian.remigration fits a remigration interval using Bayesian MCMC
 #' @title Return a posterior remigration interval.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return a posterior remigration interval.\cr
 #' @param parameters Priors for Bayesian MCMC
 #' @param data Data to be fitted
@@ -104,7 +104,7 @@ Bayesian.remigration <- function(parameters = stop("Priors must be supplied"),
               })
   
   rMCMC <- list(rMCMC, RI=ri)
-  class(rMCMC) <- "Remigration"
+  rMCMC <- addS3Class(rMCMC, "Remigration")
   return(rMCMC)
 }
 

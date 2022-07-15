@@ -7,7 +7,9 @@
 Tagloss_cumul(
   t,
   par = NULL,
-  hessian = NULL,
+  Hessian = NULL,
+  mcmc = NULL,
+  method = NULL,
   model_before = NULL,
   model_after = NULL,
   model = NULL,
@@ -20,7 +22,11 @@ Tagloss_cumul(
 
 \item{par}{Parameters}
 
-\item{hessian}{hessian matrix of parameters}
+\item{Hessian}{Hessian matrix of parameters}
+
+\item{mcmc}{A mcmc result}
+
+\item{method}{Can be NULL, "delta", "SE", "Hessian", "MCMC", or "PseudoHessianFromMCMC"}
 
 \item{model_before}{Function to be used before estimation of daily tagloss rate}
 
@@ -162,6 +168,7 @@ Other Model of Tag-loss:
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_fit}()},
 \code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_mcmc}()},
 \code{\link{Tagloss_model}()},
 \code{\link{Tagloss_simulate}()},
@@ -171,6 +178,6 @@ Other Model of Tag-loss:
 \code{\link{plot.Tagloss}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Model of Tag-loss}

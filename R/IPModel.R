@@ -1,6 +1,6 @@
 #' IPModel estimates the pattern of internesting intervals for a set of parameters.
 #' @title Estimates the pattern of internesting intervals for a set of parameters.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return a list with two elements.\cr
 #' @param par Set of parameters
 #' @param parallel If TRUE, will use parallel computing
@@ -53,6 +53,7 @@ IPModel <- function (par, parallel = TRUE, limits = list(meanIP = 40, meanECF = 
                                                          minIP = 15, sdAbort = 1, sdIP = 1, sdECF = 1, DeltameanIP = 0.5, 
                                                          maxDays = 365)) 
 {
+  # print(d(par))
   meanIP <- abs(par["meanIP"])
   sdIP <- abs(par["sdIP"])
   minIP <- abs(par["minIP"])
@@ -80,6 +81,7 @@ IPModel <- function (par, parallel = TRUE, limits = list(meanIP = 40, meanECF = 
   nc <- 1
   if ((parallel) & (.Platform$OS.type == "unix")) 
     nc <- detectCores()
+  
   ind <- rep(N/nc, nc - 1)
   ind <- c(ind, N - sum(ind))
   if ((meanIP < limits$meanIP) & (meanECF < limits$meanECF) & 
@@ -190,6 +192,6 @@ IPModel <- function (par, parallel = TRUE, limits = list(meanIP = 40, meanECF = 
   
   }
   out <- list(cumuld = cumuld, reverseECF = reverseECF)
-  class(out) <- "IP"
+  out <-addS3Class(out, "IP")
   return(out)
 }

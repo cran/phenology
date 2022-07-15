@@ -1,6 +1,6 @@
 #' adapt_parameters get the fitted parameters from a result object.
 #' @title Extract the parameters from a set of parameters to be used with another dataset.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return the set of parameters
 #' @param parameters A set of parameters
 #' @param data A dataset of counts

@@ -77,9 +77,8 @@ fitRMU_MHmcmc <- function(result=stop("An output from fitRMU() must be provided"
     print("Continue previous mcmc run")
   }
 
-  if (class(result)!="fitRMU") {
-    warning("An output from fitRMU() must be provided")
-    return()
+  if (!inherits(result, "fitRMU")) {
+    stop("An output from fitRMU() must be provided")
   }
 
   fun <- getFromNamespace(".LikelihoodRMU", ns="phenology")
@@ -99,7 +98,7 @@ out <- MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, n.chains = n.chains, 
 
 fin <- try(summary(out), silent=TRUE)
 
-if (class(fin)=="try-error") {
+if (inherits(fin, "try-error")) {
   lp <- rep(NA, nrow(out$parametersMCMC$parameters))
   names(lp) <- rownames(out$parametersMCMC$parameters)
   out <- c(out, SD=list(lp))
@@ -107,7 +106,7 @@ if (class(fin)=="try-error") {
   out <- c(out, SD=list(fin$statistics[,"SD"]))
 }
 
-class(out) <- "mcmcComposite"
+out <- addS3Class(out, "mcmcComposite")
 
 return(out)
 

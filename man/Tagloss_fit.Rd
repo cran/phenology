@@ -15,7 +15,7 @@ Tagloss_fit(
   lower = -Inf,
   upper = Inf,
   hessian = FALSE,
-  cores = detectCores(all.tests = FALSE, logical = TRUE),
+  mc.cores = detectCores(all.tests = FALSE, logical = TRUE),
   groups = NULL
 )
 }
@@ -40,7 +40,7 @@ Tagloss_fit(
 
 \item{hessian}{Does the hessian matrix should be estimated}
 
-\item{cores}{Number of cores to use for parallel computing}
+\item{mc.cores}{Number of cores to use for parallel computing}
 
 \item{groups}{Number of groups for parallel computing}
 }
@@ -50,7 +50,7 @@ Return a list object with the model describing tag loss.
 \description{
 This function fits a model of tag loss using a CMR database.\cr
 The names of parameters can be:\cr
-Model Pfaller et al. (Submitted):\cr
+Model Pfaller et al. (2019):\cr
 \describe{
   \item{Left tag lost when 2 are present}{\code{D1_L2}, \code{D2D1_L2}, \code{D3D2_L2}, \code{A_L2}, \code{B_L2}, \code{C_L2}, \code{delta_L2}}
   \item{Right tag lost when 2 are present}{\code{D1_R2}, \code{D2D1_R2}, \code{D3D2_R2}, \code{A_R2}, \code{B_R2}, \code{C_R2}, \code{delta_R2}}
@@ -139,12 +139,19 @@ o_4p_p1p2 <- Tagloss_fit(data=data_f_21, fitted.parameters = par,
                          
 # Without the N20 the computing is much faster
 data_f_21_fast <- subset(data_f_21, subset=(is.na(data_f_21$N20)))
-par <- structure(c(48.8292784204825, 1039.02842229274, -89.3162940697861, 
-5.21817463244988, 8.00575451188548, 8.32971268127933, 161.265553603601, 
-602.935748681661, 2643.57415102633, 16.752815732218, 10.181616195839, 
-7.14279063312016), .Names = c("D1_2", "D2D1_2", "D3D2_2", "A_2", 
-"B_2", "C_2", "D1_1", "D2D1_1", "D3D2_1", "A_1", "B_1", "C_1"))
-o <- Tagloss_fit(data=data_f_21_fast, fitted.parameters=par)
+par <- c('D1_2' = 49.78891736351531, 
+         'D2D1_2' = 1059.3635769732305, 
+         'D3D2_2' = 12.434313273804602, 
+         'A_2' = 5.2238379144659683, 
+         'B_2' = 8.0050044071275543, 
+         'C_2' = 8.4317863609499675, 
+         'D1_1' = 701.80273287212935, 
+         'D2D1_1' = 0.010951749100596819, 
+         'D3D2_1' = 3773.6290607434876, 
+         'A_1' = 205.42435592344776, 
+         'B_1' = 9.9598342503239863, 
+         'C_1' = 6.7234868237164722)
+o <- Tagloss_fit(data=data_f_21_fast, fitted.parameters=par, hessian = TRUE)
 plot(o, model="1", col="red")
 plot(o, model="2", col="blue", add=TRUE)
 legend("topright", legend=c("2->1", "1->0"), lty=1, col=c("blue", "red"))
@@ -155,7 +162,7 @@ Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C., Girondot, M., 2005. Maximum
 
 Casale, P., Freggi, D., Salvemini, P., 2017. Tag loss is a minor limiting factor in sea turtle tagging programs relying on distant tag returns: the case of Mediterranean loggerhead sea turtles. European Journal of Wildlife Research 63.
 
-Pfaller, J.B., Williams, K.L., Frick, M.G., Shamblin, B.M., Nairn, C.J., Girondot, M., Submitted. Genetic determination of tag loss dynamics in nesting loggerhead turtles: A new chapter in “the tag loss problem”.
+Pfaller JB, Williams KL, Frick MG, Shamblin BM, Nairn CJ, Girondot M (2019) Genetic determination of tag loss dynamics in nesting loggerhead turtles: A new chapter in “the tag loss problem”. Marine Biology 166: 97 doi 10.1007/s00227-019-3545-x
 }
 \seealso{
 Other Model of Tag-loss: 
@@ -164,6 +171,7 @@ Other Model of Tag-loss:
 \code{\link{Tagloss_cumul}()},
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_mcmc}()},
 \code{\link{Tagloss_model}()},
 \code{\link{Tagloss_simulate}()},
@@ -173,6 +181,6 @@ Other Model of Tag-loss:
 \code{\link{plot.Tagloss}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Model of Tag-loss}

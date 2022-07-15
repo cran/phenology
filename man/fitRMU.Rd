@@ -44,9 +44,9 @@ fitRMU(
 
 \item{SE}{Parameters SE for example from fitRMU_MHmcmc()}
 
-\item{method}{Methods to be used by optimx()}
+\item{method}{Methods to be used by optim()}
 
-\item{control}{List of controls for optimx()}
+\item{control}{List of controls for optim()}
 
 \item{itnmax}{A vector with maximum iterations for each method.}
 
@@ -66,13 +66,13 @@ fitRMU(
 Return a list with the results from optim and synthesis for proportions and numbers
 }
 \description{
-The data must be a data.frame with the first column being years \cr
+The data must be a data.frame with the first column being years 
 and two columns for each beach: the average and the se for the estimate.\cr
 The correspondence between mean, se and density for each rookery are given in the RMU.names data.frame.\cr
 This data.frame must have a column named mean, another named se and a third named density. If 
-no sd column exists, no sd will be considered for the series and is no density column exists, it 
-will be considered as being "dnorm".\cr
-In the result list, the mean proportions for each rookeries are in $proportions, $proportions.CI.0.05 and $proportions.CI.0.95.\cr
+no sd column exists, no sd will be considered for the series and if no density column exists, it 
+will be considered as being "dnorm" (Gaussian distribution).\cr
+The aggregated number of nests and its confidence interval can be obtained using CI.RMU().\cr
 The names of beach columns must not begin by T_, SD_, a0_, a1_ or a2_ and cannot be r.\cr
 A RMU is the acronyme for Regional Managment Unit. See:\cr
 Wallace, B.P., DiMatteo, A.D., Hurley, B.J., Finkbeiner, E.M., Bolten, A.B., 
@@ -85,13 +85,14 @@ management units for marine turtles: a novel framework for prioritizing
 conservation and research across multiple scales. PLoS One 5, e15465.\cr
 Variance for each value is additive based on both the observed SE (in the RMU.data 
 object) and a value.\cr
-The value is a global constant when model.SD is "global-constant". 
+The value is a global constant when model.SD is "global-constant". \cr
 The value is proportional to the observed number of nests when model.SD is 
 "global-proportional" with aSD_*observed+SD_ with aSD_ and SD_ being fitted 
 values. This value is fixed to zero when model.SD is "Zero".\cr
 The value is dependent on the rookery when model.SD is equal to 
 "Rookery-constant" or "Rookery-proportional" with a similar formula as previously 
-described for "global".
+described for "global".\cr
+if method is NULL, it will simply return the names of required parameters.
 }
 \details{
 fitRMU is used to estimate missing information when several linked values are observed along a timeseries
@@ -153,7 +154,7 @@ YS1 <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
 YS1_cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
              colname.year="Year", model.trend="Year-specific", 
              model.SD="Constant", model.rookeries="First-order", 
-             optim="optimx", parameters=YS1$par, method=c("Nelder-Mead","BFGS"))
+             parameters=YS1$par, method=c("Nelder-Mead","BFGS"))
 YS2 <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
              colname.year="Year", model.trend="Year-specific",
              model.SD="Zero", model.rookeries="Second-order", 
@@ -176,7 +177,16 @@ compare_AIC(YearSpecific_ProportionsConstant=YS,
 compare_AIC(YearSpecific_ProportionsFirstOrder=YS1_cst,
            YearSpecific_ProportionsSecondOrder=YS2_cst)
 
-plot(cst, main="Use of different beaches along the time", what="total")
+# Example of different types of plots
+plot(cst, main="Use of different beaches along the time", what="total", 
+     ylim=c(0, 4000))
+plot(cst, main="Use of different beaches along the time", what = "proportions", 
+     replicate.CI=0)
+plot(cst, main="Use of different beaches along the time", what = "numbers", 
+     aggregate="model", ylim=c(0, 4000), replicate.CI=0)
+plot(cst, main="Use of different beaches along the time", what = "numbers", 
+     aggregate="both", ylim=c(0, 11000), replicate.CI=0)
+     
 plot(expo, main="Use of different beaches along the time", what="total")
 plot(YS2_cst, main="Use of different beaches along the time", what="total")
 
@@ -228,6 +238,6 @@ Other Fill gaps in RMU:
 \code{\link{plot.fitRMU}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Fill gaps in RMU}

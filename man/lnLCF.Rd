@@ -47,7 +47,7 @@ par <- c(mu1 = 0.6404831115214353,
          mu_season = 12.6404831115214353, 
          sd_season = 1.69362774786433479, 
          OTN=1)
-par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:attributes(ECFOCF_2002)$table["end"]])
+par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:attributes(ECFOCF_2002)$table["final"]])
 fixed.parameters <- c(p=-Inf)
 
 lnLCF(x=par, data=ECFOCF_2002, fixed.parameters=fixed.parameters)
@@ -56,9 +56,13 @@ lnLCF(x=par, data=ECFOCF_2002, fixed.parameters=fixed.parameters)
 }
 \seealso{
 Other Model of Clutch Frequency: 
+\code{\link{ECFOCF_full}()},
 \code{\link{ECFOCF_f}()},
 \code{\link{TableECFOCF}()},
+\code{\link{fitCF_MHmcmc_p}()},
+\code{\link{fitCF_MHmcmc}()},
 \code{\link{fitCF}()},
+\code{\link{generateCF}()},
 \code{\link{logLik.ECFOCF}()},
 \code{\link{plot.ECFOCF}()},
 \code{\link{plot.TableECFOCF}()}

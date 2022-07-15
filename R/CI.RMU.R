@@ -5,6 +5,7 @@
 #' @param result A result of fitRMu()
 #' @param resultMCMC A resuts of fitRMU_MHmcmc()
 #' @param chain Number of MCMC chain to be used
+#' @param regularThin If TRUE, use regular thin for MCMC
 #' @param replicate.CI Number of replicates
 #' @param silent If TRUE does not display anything
 #' @family Fill gaps in RMU
@@ -66,6 +67,11 @@
 #' cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
 #'                colname.year="Year", model.trend="Constant", 
 #'                model.SD="Zero")
+#'                
+#' out.CI.Cst <- CI.RMU(result=cst)
+#' 
+#' 
+#'
 #' cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
 #'                colname.year="Year", model.trend="Constant", 
 #'                model.SD="Zero", 
@@ -90,7 +96,7 @@
 #' YS1_cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
 #'              colname.year="Year", model.trend="Year-specific", 
 #'              model.SD="Constant", model.rookeries="First-order", 
-#'              optim="optimx", parameters=YS1$par, method=c("Nelder-Mead","BFGS"))
+#'              parameters=YS1$par, method=c("Nelder-Mead","BFGS"))
 #' YS2 <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
 #'              colname.year="Year", model.trend="Year-specific",
 #'              model.SD="Zero", model.rookeries="Second-order", 
@@ -100,8 +106,9 @@
 #'              model.SD="Constant", model.rookeries="Second-order", 
 #'              parameters=YS1_cst$par, method=c("Nelder-Mead","BFGS"))
 #'                
-#' compare_AIC(Constant=cst, Exponential=expo, 
-#' YearSpecific=YS)
+#' compare_AIC(Constant=cst, 
+#'             Exponential=expo, 
+#'             YearSpecific=YS)
 #' 
 #' compare_AIC(YearSpecific_ProportionsFirstOrder_Zero=YS1,
 #' YearSpecific_ProportionsFirstOrder_Constant=YS1_cst)
@@ -160,9 +167,10 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
                    resultMCMC=NULL, 
                    chain=1, 
                    replicate.CI=10000, 
+                   regularThin = TRUE, 
                    silent=FALSE) {
   
-  #  result=NULL; resultMCMC=NULL; chain=1; replicate.CI=10000; silent=FALSE
+  #  result=NULL; resultMCMC=NULL; chain=1; replicate.CI=10000; silent=FALSE; regularThin = TRUE
   
   result$RMU.names$mean <- as.character(result$RMU.names$mean)
   rownames(result$RMU.names) <- result$RMU.names$mean
@@ -173,17 +181,15 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
     result$RMU.names$density <- as.character(result$RMU.names$density)
   }
   
-  
+  df_random <- NULL
   hessian <- result$hessian
   pfixed <- c(result$fixed.parameters.initial, result$fixed.parameters.computing)
   totpar <- c(result$par, pfixed)
-  
-  # Je crée un data.frame avec replicate.CI values
-  df_random <- NULL
-  
+                                       
+  # J'ai une matrice hessienne et pas de MCMC et replicate.CI ne vaut pas 0
   if (((!is.null(hessian)) & is.null(resultMCMC)) & (replicate.CI != 0)) {
     sigma <- try(solve(hessian), silent = TRUE)
-    if (class(sigma) != "try-error") {
+    if (!inherits(sigma, "try-error")) {
       s. <- svd(sigma)
       R <- t(s.$v %*% (t(s.$u) * sqrt(pmax(s.$d, 0))))
       df_random <- matrix(rnorm(replicate.CI * ncol(sigma)), nrow = replicate.CI, byrow = TRUE) %*% R
@@ -231,10 +237,11 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
   if (is.null(df_random)) {
     # Je n'ai pas de moyen de calculer le CI
     if (!silent) warning('No confidence interval is calculated')
-    replicate.CI <- 1
+    replicate.CI_ec <- 1
     df_random <- matrix(data=totpar, nrow=1, 
                         dimnames = list(c(NULL), names(totpar)))
-    
+  } else {
+    replicate.CI_ec <- replicate.CI
   }
   
   
@@ -261,7 +268,7 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
   nbeach <- nrow(result$RMU.names)
   nabeach <- as.character(result$RMU.names[, "mean"])
   
-  years <- as.character(min(as.numeric(rownames(result$RMU.data))):max(as.numeric(rownames(result$RMU.data))))
+  years <- as.character(min(as.numeric(result$RMU.data[, result$colname.year])):max(result$RMU.data[, result$colname.year]))
   nyear <- length(years)
   
   
@@ -269,8 +276,8 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
   # Dans df_random, j'ai les paramètres
   # Maintenant je vais faire un array avec (replicat, année, plage)
   
-  map_prop <- array(data = rep(NA, replicate.CI*nbeach*nyear), 
-                    dim=c(replicate.CI, nyear, nbeach), 
+  map_prop <- array(data = rep(NA, replicate.CI_ec*nbeach*nyear), 
+                    dim=c(replicate.CI_ec, nyear, nbeach), 
                     dimnames = list(c(NULL), years, nabeach))
   
   map_number <- map_prop
@@ -279,7 +286,7 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
   
   errmissing <- FALSE
   
-  for (rep in 1:replicate.CI) {
+  for (rep in 1:replicate.CI_ec) {
     
     # D'abord je génère le modèle des proportions par site
     x <- df_random[rep, ]
@@ -309,7 +316,7 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
     if (result$model.trend == "year-specific") {
       Tot <- rep(NA, nyear)
       names(Tot) <- years
-      Tot[rownames(result$RMU.data)] <- abs(x[paste0("T_", rownames(result$RMU.data))])
+      Tot[years] <- abs(x[paste0("T_", years)])
       if (any(is.na(Tot))) {
         if (!silent) errmissing <- TRUE
       }
@@ -329,7 +336,7 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
   }
   
   if (errmissing) warning("Some years are missing; the option year-specific cannot be used safely")
-
+  
   
   tot2 <- matrix(cumulTot, nrow=nyear, byrow = FALSE)
   
@@ -359,49 +366,55 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
   }
   
   # Les observations sont dans result$RMU.data
-  # Les noms de colonne sont dans result$RMU.names avec meas, se, et density
+  # Les noms de colonne sont dans result$RMU.names avec mean, se, et density
   
   map_number_both <- map_number
   
   for (beach in nabeach) {
     for (y in years) {
       
-      if ((y %in% rownames(result$RMU.data)) & (beach %in% colnames(result$RMU.data))) {
-        mean <- result$RMU.data[y, beach]
+      if ((y %in% as.character(result$RMU.data[, result$colname.year])) & (beach %in% colnames(result$RMU.data))) {
+        pos_y <- which(result$RMU.data[, result$colname.year] == y)
+        mean_number <- result$RMU.data[pos_y, beach]
       } else {
-        mean <- NA
+        mean_number <- NA
       }
       
-      if (!is.na(mean)) {
+      if (!is.na(mean_number)) {
         # J'ai une valeur
         
-        if (any(colnames(result$RMU.names) == "density")) {
-          density <- result$RMU.data[y, result$RMU.names[beach, "density"]]
+        if (replicate.CI == 0) {
+          v <- mean_number
         } else {
-          density <- ""
+          
+          if (any(colnames(result$RMU.names) == "density")) {
+            density <- result$RMU.data[pos_y, result$RMU.names[beach, "density"]]
+          } else {
+            density <- ""
+          }
+          
+          if (any(colnames(result$RMU.names) == "se")) {
+            se <- result$RMU.data[pos_y, result$RMU.names[beach, "se"]]
+          } else {
+            se <- 0
+          }
+          
+          if (density == "dnorm") {
+            v <- rnorm(replicate.CI, mean=mean_number, sd=se)
+          }
+          if ((density == "dgamma") & (se != 0)) {
+            scale <- se^2/mean_number
+            shape <- mean_number*mean_number/(se^2)
+            rate <- 1/scale
+            v <- rgamma(replicate.CI, shape=shape, rate=rate)
+          }
+          if ((density == "")  | (se == 0)) {
+            v <- rep(mean_number, replicate.CI)
+          }
+          
+          # print(y);print(b); print(mean(map_number_both[, y, b])); print(mean(v))
         }
-        
-        if (any(colnames(result$RMU.names) == "se")) {
-          se <- result$RMU.data[y, result$RMU.names[beach, "se"]]
-        } else {
-          se <- 0
-        }
-        
-        if (density == "dnorm") {
-          v <- rnorm(replicate.CI, mean=mean, sd=se)
-        }
-        if ((density == "dgamma") & (se != 0)) {
-          scale <- se^2/mean
-          shape <- mean*mean/(se^2)
-          rate <- 1/scale
-          v <- rgamma(replicate.CI, shape=shape, rate=rate)
-        }
-        if ((density == "")  | (se == 0)) {
-          v <- rep(mean, replicate.CI)
-        }
-        
-        # print(y);print(b); print(mean(map_number_both[, y, b])); print(mean(v))
-        
+        # Correction 23/6/2021; c'est y et non pos_y
         map_number_both[, y, beach] <- v
         
       }
@@ -411,7 +424,7 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
   # Je calcule maintenant les stats totales
   cumulTot <- NULL
   for(y in years) {
-    dfi <- map_number_both[, y,  ,drop = FALSE]
+    dfi <- map_number_both[, y,  , drop = FALSE]
     cumulTot <- c(cumulTot, rowSums(x=dfi, dims = 1, na.rm = TRUE))
   }
   
@@ -424,7 +437,7 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
   
   # Je vérifie que si j'ai des années manquante en year-specific, ça doit être NA
   if (result$model.trend=="year-specific") {
-    dfTot_both[, !(colnames(dfTot_both) %in% rownames(result$RMU.data))] <- NA
+    dfTot_both[, !(colnames(dfTot_both) %in% years)] <- NA
   }
   
   map_number_synthesis_both <- array(data = rep(NA, 5*nbeach*nyear), 

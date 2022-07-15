@@ -13,12 +13,12 @@ Tagloss_L(
   model_after = NULL,
   names.par = NULL,
   groups = NULL,
-  cores = detectCores(all.tests = FALSE, logical = TRUE),
+  mc.cores = detectCores(all.tests = FALSE, logical = TRUE),
   progressbar = FALSE
 )
 }
 \arguments{
-\item{individuals}{Set of indivuals}
+\item{individuals}{Set of individuals}
 
 \item{par}{Set of parameters}
 
@@ -34,7 +34,7 @@ Tagloss_L(
 
 \item{groups}{Number of groups for parallel computing}
 
-\item{cores}{Number of cores to use for parallel computing}
+\item{mc.cores}{Number of cores to use for parallel computing}
 
 \item{progressbar}{Is shown a progressbar?}
 }
@@ -45,7 +45,8 @@ Return the -log likelihood of a set of individuals
 This function must be used within optim().\cr
   model_before is applied to the par parameter.\cr
   model_after is applied after par is separated in p1, p2, pL1, pL2, pR1 and pR2 parameters.\cr
-progressbar is set to FALSE if cores is different from 1.
+progressbar is set to FALSE if mc.cores is different from 1.\cr
+If days.maximum is not indicated, it is estimated using Tagloss_daymax().
 }
 \details{
 Tagloss_L returns the -log likelihood of a set of individuals under a model of tagloss.
@@ -65,11 +66,11 @@ par <- structure(c(49.5658922243074, 808.136085362158, 106.283783786853,
 pfixed <- NULL
 # All the data are analyzed; the N20 are very long to compute
 Tagloss_L(individuals=data_f_21, par=par, days.maximum=Tagloss_daymax(data_f_21), 
-          fixed.parameters=pfixed, cores=1, progressbar=TRUE)
+          fixed.parameters=pfixed, mc.cores=1, progressbar=TRUE)
 # Without the N20 the computing is much faster
 data_f_21_fast <- subset(data_f_21, subset=(is.na(data_f_21$N20)))
 Tagloss_L(individuals=data_f_21_fast, par=par, days.maximum=Tagloss_daymax(data_f_21_fast), 
-          fixed.par=pfixed, cores=1, progressbar=TRUE)
+          fixed.par=pfixed, mc.cores=1, progressbar=TRUE)
 o <- Tagloss_fit(data=data_f_21_fast, fitted.parameters=par)
 # Here it is the result of the previous function
 o <- structure(list(par = structure(c(49.5658922243074, 808.136085362158, 
@@ -125,7 +126,7 @@ NA), .Names = c("function", "gradient")), convergence = 0L, message = NULL,
     "A_1", "B_1", "C_1"), c("D1_2", "D2D1_2", "D3D2_2", "A_2", 
     "B_2", "C_2", "D1_1", "D2D1_1", "D3D2_1", "A_1", "B_1", "C_1"
     )))), .Names = c("par", "value", "counts", "convergence", 
-"message", "hessian"), class = "Tagloss")
+"message", "hessian"), class = c("list", "Tagloss"))
 par(mar=c(4, 4, 1, 1))
 plot(o, t=1:3000, model="2", scale=1000, ylim=c(0, 3), 
             col="red")
@@ -169,7 +170,7 @@ o <- structure(list(par = structure(c(55.2184044121564, 5.2630294044259,
     8.79936123965308e-05, 107.941018768543), .Dim = c(6L, 6L), .Dimnames = list(
         c("D1_2", "A_2", "B_2", "D1_1", "A_1", "B_1"), c("D1_2", 
         "A_2", "B_2", "D1_1", "A_1", "B_1")))), .Names = c("par", 
-"value", "counts", "convergence", "message", "hessian"), class = "Tagloss")
+"value", "counts", "convergence", "message", "hessian"), class = c("list", "Tagloss"))
 par(mar=c(4, 4, 1, 1))
 plot(o, t=1:3000, model="2", scale=1000, ylim=c(0, 3), 
             col="red")
@@ -205,7 +206,7 @@ NA), .Names = c("function", "gradient")), convergence = 0L, message = NULL,
     3.73816044429987, 30.4781699469459, 9.47964940678503), .Dim = c(4L, 
     4L), .Dimnames = list(c("D1_2", "A_2", "B_2", "delta"), c("D1_2", 
     "A_2", "B_2", "delta")))), .Names = c("par", "value", "counts", 
-"convergence", "message", "hessian"), class = "Tagloss")
+"convergence", "message", "hessian"), class = c("list", "Tagloss"))
 par(mar=c(4, 4, 1, 1))
 plot(o, t=1:3000, model="2", scale=1000, ylim=c(0, 3), 
             col="red")
@@ -222,7 +223,7 @@ pfixed <- NULL
 # A progress bar can be shown when one core is used
 system.time(
 print(Tagloss_L(individuals=data_f_LR, par=par, days.maximum=Tagloss_daymax(data_f_LR), 
-          fixed.parameters=pfixed, cores=1, model_after="pR2=pL2;pR1=pL2;pL1=pL2", 
+          fixed.parameters=pfixed, mc.cores=1, model_after="pR2=pL2;pR1=pL2;pL1=pL2", 
           progressbar = TRUE))
 )
 # When parallel computing is done, no progress bar can be shown
@@ -252,6 +253,7 @@ Other Model of Tag-loss:
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_fit}()},
 \code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_mcmc}()},
 \code{\link{Tagloss_model}()},
 \code{\link{Tagloss_simulate}()},

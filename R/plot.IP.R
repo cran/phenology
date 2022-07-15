@@ -1,6 +1,6 @@
 #' plot.IP plots a result of Internesting Period fit or data
 #' @title Plot a result of Internesting Period fit or data.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Nothing
 #' @param x A result for IPFit() or IPModel().
 #' @param ... Graphic parameters, see par().
@@ -8,6 +8,7 @@
 #' @param clutch The rank of clutch when DeltameanIP is used.
 #' @param result What result will be plotted: data, model, data&model, IP, Abort, ECF, reverseECF
 #' @description This function plots the result of IPFit() or IPModel().\cr
+#' If col is defined with a number of colors, only these colors and shown in legend.
 #' @family Model of Internesting Period
 #' @examples
 #' \dontrun{
@@ -18,7 +19,7 @@
 #'   37, 27, 23, 24, 22, 41, 42, 44, 33, 39, 24, 18, 18, 22, 22, 19, 
 #'   24, 28, 17, 18, 19, 17, 4, 12, 9, 6, 11, 7, 11, 12, 5, 4, 6, 
 #'   11, 5, 6, 7, 3, 2, 1, 3, 2, 1, 2, 0, 0, 3, 1, 0, 2, 0, 0, 1)
-#'   class(data) <- "IP"
+#'   class(data) <- unique(append("IP", class(data)))
 #'   plot(data)
 #'   
 #' ######### Fit parametric ECF using Maximum-Likelihood
@@ -133,6 +134,10 @@
 
 
 plot.IP <- plot.IP <- function (x, ..., N = NULL, clutch = 1, result = "data") {
+  
+  
+  result <- match.arg(arg=result, choices = c("data", "model", "data&model", "IP", "Abort", "ECF", "reverseECF"))
+  
   p3p <- list(...)
   result <- tolower(result)
   if (is.list(x)) {
@@ -279,10 +284,15 @@ plot.IP <- plot.IP <- function (x, ..., N = NULL, clutch = 1, result = "data") {
     }
     if (is.null(p3p$col)) {
       color <- rainbow(maxy)
+      k_maxy <- maxy
     } else {
       color <- p3p$col
-      if (length(color) != maxy) {
-        p3p$col <- color[floor(length(color) * (1:maxy)/(maxy))]
+      k_maxy <- length(color)
+      if (length(color) < maxy) {
+        color <- c(p3p$col, rep(tail(p3p$col, n=1), maxy-length(p3p$col)))
+        
+        # p3p$col <- color[floor(length(color) * (1:maxy)/(maxy))]
+        
       }
     }
     par(mar = c(4, 4, 2, 6) + 0.4)
@@ -302,15 +312,15 @@ plot.IP <- plot.IP <- function (x, ..., N = NULL, clutch = 1, result = "data") {
     par(xpd = TRUE)
     maxx <- ScalePreviousPlot()$xlim[2]
     dx <- maxx/10
-    for (ecf in 1:maxy) {
-      y <- 0.1 + (ecf - 1) * 0.9/(maxy)
-      dy <- 0.1 + (ecf - 1 + 0.8) * 0.9/(maxy)
+    for (ecf in 1:k_maxy) {
+      y <- 0.1 + (ecf - 1) * 0.9/(k_maxy)
+      dy <- 0.1 + (ecf - 1 + 0.8) * 0.9/(k_maxy)
+      if (ecf !=1) {
       polygon(x = c(maxx + dx, (maxx + dx)*1.05, (maxx + dx)*1.05, maxx + dx), y = c(y, y, dy, dy), col = color[ecf], 
               border = NA)
-      text(x = (maxx + dx)*1.07, y = mean(c(y, dy)), labels = (ecf - 
-                                                                 1))
+      }
+      text(x = (maxx + dx)*1.07, y = mean(c(y, dy)), labels = (ecf - 1))
     }
-    text((maxx + dx)*1.025, y = 1*1.05, 
-         labels = "Clutch")
+    text((maxx + dx)*1.025, y = 1*1.05, labels = "Clutch")
   }
 }

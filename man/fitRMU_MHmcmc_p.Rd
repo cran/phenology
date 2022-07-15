@@ -13,15 +13,18 @@ fitRMU_MHmcmc_p(
 \arguments{
 \item{result}{An object obtained after a fitRMU() fit}
 
-\item{density}{Preset of density; can be dnorm or dunif}
+\item{density}{Preset of density; can be dnorm, dunif, or dgamma}
 
-\item{accept}{If TRUE, does not wait for use interaction}
+\item{accept}{If TRUE, does not wait for user interaction}
 }
 \value{
 A matrix with the parameters
 }
 \description{
-Interactive script used to generate set of parameters to be used with phenology_MHmcmc().\cr
+Interactive or automatic script used to generate set of parameters to be 
+used with fitRMU_MHmcmc().\cr
+If density="dgamma" is used, a uniform distribution is used for r, as 
+r can be negative.
 }
 \details{
 fitRMU_MHmcmc_p generates set of parameters to be used with fitRMU_MHmcmc()

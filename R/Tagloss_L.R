@@ -2,7 +2,7 @@
 #' @title Return the -log likelihood of a set of individuals under a model of tagloss.
 #' @author Marc Girondot
 #' @return Return the -log likelihood of a set of individuals
-#' @param individuals Set of indivuals
+#' @param individuals Set of individuals
 #' @param par Set of parameters
 #' @param days.maximum Maximum number of days. Can be determined using Tagloss_daymax()
 #' @param fixed.parameters Set of fixed parameters
@@ -10,12 +10,13 @@
 #' @param model_after Transformation of parameters after to use Tagloss_model()
 #' @param names.par Name of parameters. Normally unused. 
 #' @param groups Number of groups for parallel computing
-#' @param cores Number of cores to use for parallel computing
+#' @param mc.cores Number of cores to use for parallel computing
 #' @param progressbar Is shown a progressbar?
 #' @description This function must be used within optim().\cr
 #'   model_before is applied to the par parameter.\cr
 #'   model_after is applied after par is separated in p1, p2, pL1, pL2, pR1 and pR2 parameters.\cr
-#' progressbar is set to FALSE if cores is different from 1.
+#' progressbar is set to FALSE if mc.cores is different from 1.\cr
+#' If days.maximum is not indicated, it is estimated using Tagloss_daymax().
 #' @family Model of Tag-loss
 #' @examples
 #' \dontrun{
@@ -32,11 +33,11 @@
 #' pfixed <- NULL
 #' # All the data are analyzed; the N20 are very long to compute
 #' Tagloss_L(individuals=data_f_21, par=par, days.maximum=Tagloss_daymax(data_f_21), 
-#'           fixed.parameters=pfixed, cores=1, progressbar=TRUE)
+#'           fixed.parameters=pfixed, mc.cores=1, progressbar=TRUE)
 #' # Without the N20 the computing is much faster
 #' data_f_21_fast <- subset(data_f_21, subset=(is.na(data_f_21$N20)))
 #' Tagloss_L(individuals=data_f_21_fast, par=par, days.maximum=Tagloss_daymax(data_f_21_fast), 
-#'           fixed.par=pfixed, cores=1, progressbar=TRUE)
+#'           fixed.par=pfixed, mc.cores=1, progressbar=TRUE)
 #' o <- Tagloss_fit(data=data_f_21_fast, fitted.parameters=par)
 #' # Here it is the result of the previous function
 #' o <- structure(list(par = structure(c(49.5658922243074, 808.136085362158, 
@@ -92,7 +93,7 @@
 #'     "A_1", "B_1", "C_1"), c("D1_2", "D2D1_2", "D3D2_2", "A_2", 
 #'     "B_2", "C_2", "D1_1", "D2D1_1", "D3D2_1", "A_1", "B_1", "C_1"
 #'     )))), .Names = c("par", "value", "counts", "convergence", 
-#' "message", "hessian"), class = "Tagloss")
+#' "message", "hessian"), class = c("list", "Tagloss"))
 #' par(mar=c(4, 4, 1, 1))
 #' plot(o, t=1:3000, model="2", scale=1000, ylim=c(0, 3), 
 #'             col="red")
@@ -136,7 +137,7 @@
 #'     8.79936123965308e-05, 107.941018768543), .Dim = c(6L, 6L), .Dimnames = list(
 #'         c("D1_2", "A_2", "B_2", "D1_1", "A_1", "B_1"), c("D1_2", 
 #'         "A_2", "B_2", "D1_1", "A_1", "B_1")))), .Names = c("par", 
-#' "value", "counts", "convergence", "message", "hessian"), class = "Tagloss")
+#' "value", "counts", "convergence", "message", "hessian"), class = c("list", "Tagloss"))
 #' par(mar=c(4, 4, 1, 1))
 #' plot(o, t=1:3000, model="2", scale=1000, ylim=c(0, 3), 
 #'             col="red")
@@ -172,7 +173,7 @@
 #'     3.73816044429987, 30.4781699469459, 9.47964940678503), .Dim = c(4L, 
 #'     4L), .Dimnames = list(c("D1_2", "A_2", "B_2", "delta"), c("D1_2", 
 #'     "A_2", "B_2", "delta")))), .Names = c("par", "value", "counts", 
-#' "convergence", "message", "hessian"), class = "Tagloss")
+#' "convergence", "message", "hessian"), class = c("list", "Tagloss"))
 #' par(mar=c(4, 4, 1, 1))
 #' plot(o, t=1:3000, model="2", scale=1000, ylim=c(0, 3), 
 #'             col="red")
@@ -189,7 +190,7 @@
 #' # A progress bar can be shown when one core is used
 #' system.time(
 #' print(Tagloss_L(individuals=data_f_LR, par=par, days.maximum=Tagloss_daymax(data_f_LR), 
-#'           fixed.parameters=pfixed, cores=1, model_after="pR2=pL2;pR1=pL2;pL1=pL2", 
+#'           fixed.parameters=pfixed, mc.cores=1, model_after="pR2=pL2;pR1=pL2;pL1=pL2", 
 #'           progressbar = TRUE))
 #' )
 #' # When parallel computing is done, no progress bar can be shown
@@ -217,8 +218,15 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
                       model_before=NULL, model_after=NULL, 
                       names.par=NULL, 
                       groups=NULL, 
-                      cores=detectCores(all.tests = FALSE, logical = TRUE), 
+                      mc.cores=detectCores(all.tests = FALSE, logical = TRUE), 
                       progressbar=FALSE) {
+  
+  # individuals=NULL; par=NULL; days.maximum=NULL; fixed.parameters=NULL
+  # model_before=NULL; model_after=NULL 
+  # names.par=NULL 
+  # groups=NULL 
+  # mc.cores=detectCores(all.tests = FALSE, logical = TRUE) 
+  # progressbar=FALSE
   
   # individuals <- data_f_LR
   # par <- structure(c(72.0399239978454, 58.1034231071992, 645.068735669251, 
@@ -229,9 +237,9 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
   # model_before=NULL
   # model_after="pR2=pL2;pR1=pL2;pL1=pL2"
   # groups=NULL
-  # cores=1
+  # mc.cores=1
   
-  # days.maximum=NULL; fixed.parameters=NULL; model_before=NULL; model_after=NULL; names.par=NULL; groups=NULL; cores=4; progressbar=FALSE
+  # days.maximum=NULL; fixed.parameters=NULL; model_before=NULL; model_after=NULL; names.par=NULL; groups=NULL; mc.cores=4; progressbar=FALSE
   # par <- structure(c(45.1329605991567, 450.853116508527, -0.00575380257262254, 4.50622019412649, 26.1727077014068, 7.98271155711244), .Names = c("D1_2", "D2D1_2", "D3D2_2", "A_2", "B_2", "C_2"))
   # pfixed <- NULL
   # load(file=file.path("/Users/marcgirondot/Dropbox/Stephanie Kalberer", "dataOut", "m1_1.Rdata"))
@@ -239,17 +247,18 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
   # par <- m1_1$par
   # individuals <- data_f_21_fast
   
-  class(individuals) <- "data.frame"
+  if (!inherits(individuals, "TaglossData")) {
+    stop("individuals parameter is not correctly formatted")
+  }
   
   if (!is.null(names.par)) names(par) <- names.par
   
-  if (cores > 1) progressbar=FALSE
+  if (mc.cores > 1) progressbar=FALSE
   
   Tagloss_Lind <- getFromNamespace(".Tagloss_Lind", ns="phenology")
   
   p1 <- p2 <- pR1 <- pR2 <- pL1 <- pL2 <- Q1 <- Q2 <- Q3 <- Q4 <- Q5 <- Q6 <- Q7 <- Q8 <- LC_Q1 <- NA
-
-  if ((class(individuals) != "matrix") & (class(individuals) != "data.frame")) individuals <- matrix(data = individuals, nrow=1, dimnames = list(NULL, names(individuals)))
+  
 
   par <- c(par, fixed.parameters)
   
@@ -257,6 +266,7 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
   
   cn <- colnames(individuals)
   totnames <- c("NLR_LR", "NLR_L0", "NLR_0R", "NL0_L0", "N0R_0R", "NL0_00", "N0R_00", "NLR_00", "N22", "N21", "N11", "N10", "N20")
+  # Dans newnames j'ai les noms de colonnes pour lesquelles je n'ai pas d'information
   newnames <- totnames[!(totnames %in% cn)]
   
   if (length(newnames) != 0) {
@@ -321,11 +331,11 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
                     Q5=Q5, Q6=Q6, Q7=Q7, Q8=Q8, LC_Q1=LC_Q1)
   
   
-  if (is.null(groups)) groups <- cores # nrow(individuals)
+  if (is.null(groups)) groups <- mc.cores # nrow(individuals)
   
-  if ((cores > 1) & (groups != 1)) {
-  
-  # library("parallel")
+  if ((mc.cores > 1) & (groups != 1)) {
+    
+    # library("parallel")
     if (groups > nrow(individuals)) groups <- nrow(individuals)
     
     # # print(individu)
@@ -335,47 +345,47 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
     if (nrind <= groups) {
       group <- as.list(1:nrind)
     } else {
-    # Ajouté le 24-09-2017. 6.0 pour les cas où les N20 sont tous groupés sur un coeur
-    # Maintenant je les randomise avant de les envoyer
+      # Ajouté le 24-09-2017. 6.0 pour les cas où les N20 sont tous groupés sur un coeur
+      # Maintenant je les randomise avant de les envoyer
       nindsample <- sample(1:nrind, nrind)
       group <- list()
       nbpargroup <- floor(nrind/groups)
-    for (core in 0:(groups-2)) {
+      for (core in 0:(groups-2)) {
+        group <- c(group, 
+                   list(nindsample[(core*nbpargroup+1):((core+1)*nbpargroup)]))
+      }
+      # Corrigé le 29-09-2017. 6.0.1
       group <- c(group, 
-                 list(nindsample[(core*nbpargroup+1):((core+1)*nbpargroup)]))
-    }
-    # Corrigé le 29-09-2017. 6.0.1
-    group <- c(group, 
-               list(nindsample[((groups-1)*nbpargroup+1):nrind]))
+                 list(nindsample[((groups-1)*nbpargroup+1):nrind]))
     }
     
     if (.Platform$OS.type == "unix") {
       L <- mclapply(1:groups,
                     FUN=function(individu) Tagloss_Lind(individuals[group[[individu]], , drop=FALSE],
-                                                       dfq, progressbar=FALSE),
-                    mc.cores = cores)
+                                                        dfq, progressbar=FALSE),
+                    mc.cores = mc.cores)
       
     } else {
-      cl <- makeCluster(cores )
+      cl <- makeCluster(mc.cores )
       # If you must use other package in the parallel function; use
       # invisible(clusterEvalQ(cl = cl , library(xxxxxx)))
       L <- parLapply(cl=cl, X=1:groups,
                      fun=function(individu) Tagloss_Lind(individuals[group[[individu]], , drop=FALSE], 
-                                                        dfq, progressbar=FALSE)
+                                                         dfq, progressbar=FALSE)
       )
       stopCluster(cl)
     }
     
   } else {
     L <- Tagloss_Lind(individuals,
-                     dfq, 
-                     progressbar)
+                      dfq, 
+                      progressbar)
   }
-
-
-    
-    L <- (- sum(unlist(L)))
- 
+  
+  
+  
+  L <- (- sum(unlist(L)))
+  
   
   return(L)
   # return(L)

@@ -1,6 +1,6 @@
 #' Parameter_Global_Year transforms a set of parameters from Year to global effect, or reverse
 #' @title Transform a set of parameters from Year to global effect, or reverse
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return a set of modified parameters
 #' @param parameters Set of current parameters
 #' @param parname Name of parameter to transform
@@ -11,7 +11,8 @@
 #' that uses Peak, LengthB, LengthE, B, E, or Length to the same parameter 
 #' with Year effect, or reverse.\cr
 #' The parameter series can be or a result from add_phenology() or from 
-#' fit_phenology() or simply a vector of names.
+#' fit_phenology() or simply a vector of names.\cr
+#' If this is a vector of names, it is checked to remove _ characters.
 #' @examples 
 #' \dontrun{
 #' Parameter_Global_Year(parameters=c("Peak_Beach1-2018"=151, "Peak_Beach1-2019"=161), 
@@ -34,8 +35,12 @@ Parameter_Global_Year <-
                          several.ok = FALSE)
     
     if (!is.null(class(series))) {
-      if (class(series)=="phenologydata") series <- names(series)
-      if (class(series)=="phenology") series <- names(series$data)
+      if (inherits(series, "phenologydata")) series <- names(series)
+      if (inherits(series, "phenology")) series <- names(series$data)
+      if (any(grepl("_", series))) {
+        print("The character _ is forbiden in names of timesseries. It has been changed to '.'.")
+        series <- gsub("_", ".", names(series))
+      }
     }
     px <- which(substr(names(parameters), 1, nchar(parname)) == parname)
     if (perYear) {

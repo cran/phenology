@@ -15,7 +15,9 @@ phenology_MHmcmc(
   traceML = FALSE,
   adaptive = FALSE,
   adaptive.lag = 500,
-  adaptive.fun = function(x) {     ifelse(x > 0.234, 1.3, 0.7) },
+  adaptive.fun = function(x) {
+     ifelse(x > 0.234, 1.3, 0.7)
+ },
   intermediate = NULL,
   filename = "intermediate.Rdata",
   previous = NULL
@@ -56,11 +58,11 @@ A list with resultMCMC being mcmc.list object, resultLnL being likelihoods and p
 \description{
 Run the Metropolis-Hastings algorithm for data.\cr
 The number of iterations is n.iter+n.adapt+1 because the initial likelihood is also displayed.\cr
-I recommend thin=1 because the method to estimate SE uses resampling.\cr
-As initial point is maximum likelihood, n.adapt = 0 is a good solution.\cr
+I recommend thin=10.\cr
+If initial point is maximum likelihood, n.adapt = 0 is a good solution.\cr
 The parameters intermediate and filename are used to save intermediate results every 'intermediate' iterations (for example 1000). Results are saved in a file of name filename.\cr
 The parameter previous is used to indicate the list that has been save using the parameters intermediate and filename. It permits to continue a mcmc search.\cr
-These options are used to prevent the consequences of computer crash or if the run is very very long and computer processes at time limited.
+These options are used to prevent the consequences of computer crash or if the run is very very long and computer processes are time limited.
 }
 \details{
 phenology_MHmcmc runs the Metropolis-Hastings algorithm for data (Bayesian MCMC)

@@ -1,6 +1,6 @@
 #' fitCF fit a model of Clutch Frequency for marine turtles.
 #' @title Fit a model of Clutch Frequency for marine turtles.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return a list of class ECFOCF with the fit information.\cr
 #' The list has the following items:\cr
 #' \itemize{
@@ -52,15 +52,29 @@
 #' for category 1 is \code{OTN1/(OTN1+1)} and for category 2 is \code{1/(OTN1+1)}. 
 #' Same logic must be applied for 3 and more categories with always the last one 
 #' being fixed to 1.\cr
-#' if p or a are equal to -Inf, the probability is 0 and if they are equal to 
+#' 
+#' if p or a (logit of the capture probability) are equal to -Inf, 
+#' the probability of capture is 0 and if they are equal to 
 #' +Inf, the probability is 1.\cr
+#' 
+#' The value of p out of the period 
+#' of nesting must be set to +Inf (capture probability=1)
+#' to indicate that no turtle is nesting in this period.\cr
+#' 
+#' p must be set to -Inf (capture probability=0) to indicate that no
+#' monitoring has been done during a specific period of the nesting season.\cr
+#' 
 #' The best way to indicate capture probability for 3D model (OCF, ECF, Period) 
 #' is to indicate p.period common for all categories and a1, a2, etc for each category. 
 #' The capture probability for category 1 will be p.period * a1, and for category 2 
-#' will be p.period * a2, etc. 
+#' will be p.period * a2, etc. \cr
+#' 
 #' In this case, the parameters p.period should be indicated in fitted parameters 
 #' as well as a1, but a2 must be fixed to +Inf in fixed.parameters. Then the capture 
-#' probability for category 2 will be p.period and for category 1 a1 * p.period.
+#' probability for category 2 will be p.period and for category 1 a1 * p.period.\cr
+#' 
+#' If itnmax is equal to 0, it will return the model using the parameters without fitting them.\cr
+#' 
 #' @family Model of Clutch Frequency
 #' @seealso Briane J-P, Rivalan P, Girondot M (2007) The inverse problem applied 
 #'             to the Observed Clutch Frequency of Leatherbacks from Yalimapo beach, 
@@ -77,7 +91,7 @@
 #' data(MarineTurtles_2002)
 #' ECFOCF_2002 <- TableECFOCF(MarineTurtles_2002)
 #' 
-#' # Paraetric model for clutch frequency
+#' # Parametric model for clutch frequency
 #' o_mu1p1_CFp <- fitCF(x = c(mu = 2.1653229641404539, 
 #'                  sd = 1.1465246643327098, 
 #'                  p = 0.25785366120357966), 
@@ -194,13 +208,15 @@
 #'         mu_season = 12.6404831115214353, 
 #'         sd_season = 1.69362774786433479)
 #' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
-#'                  attributes(ECFOCF_2002)$table["end"]])
-#' # The value of p (logit -capture probability) out of the period 
-#' # of monitoring is set to +Inf (capture probability=1)
-#' # to indicate that no turtle is nesting in the period out of 
-#' # monitoring time
-#' # p is set to -Inf (capture probability=0) to indicate that no
-#' # monitoring has been done but some turtles could have been present.
+#'                  attributes(ECFOCF_2002)$table["final"]])
+#'                  
+#' # The value of p (logit of the capture probability) out of the period 
+#' # of nesting must be set to +Inf (capture probability=1)
+#' # to indicate that no turtle is nesting in this period
+#' 
+#' # p must be set to -Inf (capture probability=0) to indicate that no
+#' # monitoring has been done during a specific period of the nesting season.
+#' 
 #' fixed.parameters <- c(p=+Inf)
 #' # The fitted values are:
 #' par <- c(mu = 2.4911638591178051, 
@@ -233,10 +249,10 @@
 #'         mu_season = 12.6404831115214353, 
 #'         sd_season = 1.69362774786433479)
 #' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
-#'                  attributes(ECFOCF_2002)$table["end"]])
+#'                  attributes(ECFOCF_2002)$table["final"]])
 #' names(fp) <- paste0("p2.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
 #' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
-#'                  attributes(ECFOCF_2002)$table["end"]])
+#'                  attributes(ECFOCF_2002)$table["final"]])
 #' fixed.parameters <- c(p1=+Inf, p2=+Inf)
 #' 
 #' o_mu1p2season1 <- fitCF(x=par, data=ECFOCF_2002, 
@@ -252,10 +268,10 @@
 #' par <- c(mu = 2.6404831115214353, 
 #'         sd = 0.69362774786433479, 
 #'         mu_season = 12.6404831115214353, 
-#'         sd_season = 1.69362774786433479, 
+#'         sd_season = 1.69362774786433479,  
 #'         a2=0)
 #' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:
-#'                  attributes(ECFOCF_2002)$table["end"]])
+#'                  attributes(ECFOCF_2002)$table["final"]])
 #' fixed.parameters <- c(a1=+Inf, p=+Inf)
 #' 
 #' o_mu1p1aseason1 <- fitCF(x=par, data=ECFOCF_2002, 
@@ -278,25 +294,27 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
                   hessian=TRUE, parallel=TRUE, verbose=FALSE) {
   
   
-#  x=c(mu=4, sd=100, p=-1);
-#  fixed.parameters=NULL;
-#  data=NULL;
-#  method = c("Nelder-Mead","BFGS");
-#  control=list(trace=1, REPORT=100, maxit=500);
-#  itnmax=c(500, 100);
-#  hessian=TRUE; parallel=TRUE
+  #  x=c(mu=4, sd=100, p=-1);
+  #  fixed.parameters=NULL;
+  #  data=NULL;
+  #  method = c("Nelder-Mead","BFGS");
+  #  control=list(trace=1, REPORT=100, maxit=500);
+  #  itnmax=c(500, 100);
+  #  hessian=TRUE; parallel=TRUE
   
   MaxNests <- max(dim(data)[c(1, 2)])-1
   
+  if (any(itnmax != 0)) {
+  
   repeat {
     o <- try(suppressWarnings(optimx::optimx(par = x,
-                            data=data, 
-                            fixed.parameters=fixed.parameters,
-                            fn=lnLCF, 
-                            method=method, 
-                            itnmax=itnmax, 
-                            control=modifyList(control, list(dowarn=FALSE, follow.on=TRUE, kkt=FALSE)), 
-                            hessian=FALSE, parallel=parallel, verbose=verbose)), silent=TRUE)
+                                             data=data, 
+                                             fixed.parameters=fixed.parameters,
+                                             fn=lnLCF, 
+                                             method=method, 
+                                             itnmax=itnmax, 
+                                             control=modifyList(control, list(dowarn=FALSE, follow.on=TRUE, kkt=FALSE)), 
+                                             hessian=FALSE, parallel=parallel, verbose=verbose)), silent=TRUE)
     
     minL <- nrow(o)
     nm <- names(x)
@@ -317,6 +335,10 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
     if (conv == 0) break
     # par <- x
     message("Convergence is not achieved. Optimization continues !")
+  }
+  } else {
+    value <- lnLCF(x=x, data=data, fixed.parameters = fixed.parameters)
+    conv <- 0
   }
   
   result <- list()
@@ -350,7 +372,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
       res_se <- SEfromHessian(mathessian)
     }
   } else {
-    warning("Standard errors are not estimated.")
+    if (verbose) warning("Standard errors are not estimated.")
     mathessian <- NULL
     res_se <- rep(NA, length(x))
     names(res_se) <- names(x)
@@ -364,7 +386,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
   
   totx <- c(x, fixed.parameters)
   
-  ml <- floor(as.numeric(gsub("[a-zA-z]+", "", names(totx ))))
+  ml <- suppressWarnings(floor(as.numeric(gsub("[a-zA-Z_]+", "", names(totx)))))
   if ((length(ml) == 1) | all(is.na(ml)) | (max(c(0, ml), na.rm=TRUE)==0)) {
     mln <- 1
   } else {
@@ -457,16 +479,16 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
   result$sd <- sd
   
   if (!identical(unname(mu_season), numeric(0))) {
-  
-  mu_season <- abs(c(mu_season, rep(mu_season[length(mu_season)], mln-length(mu_season))))
-  names(mu_season) <- paste0("mu_season", 1:mln)
-  
-  result$mu_season <- mu_season
-  
-  sd_season <- abs(c(sd_season, rep(sd_season[length(sd_season)], mln-length(sd_season))))
-  names(sd_season) <- paste0("sd_season", 1:mln)
-  
-  result$sd_season <- sd_season
+    
+    mu_season <- abs(c(mu_season, rep(mu_season[length(mu_season)], mln-length(mu_season))))
+    names(mu_season) <- paste0("mu_season", 1:mln)
+    
+    result$mu_season <- mu_season
+    
+    sd_season <- abs(c(sd_season, rep(sd_season[length(sd_season)], mln-length(sd_season))))
+    names(sd_season) <- paste0("sd_season", 1:mln)
+    
+    result$sd_season <- sd_season
   }
   
   OCFECF <- data
@@ -476,8 +498,8 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
   names(CF) <- paste0("CF", as.character(1:MaxNests))
   
   if (dim(data)[3] != 1) {
-    period <- structure(rep(0, dim(data)[3]-MaxNests), 
-                        .Names=paste0("period", formatC(1:(dim(data)[3]-MaxNests), width=2, flag="0")))
+    period <- structure(rep(0, dim(data)[3]-MaxNests+1), 
+                        .Names=paste0("period", formatC(1:(dim(data)[3]-MaxNests+1), width=2, flag="0")))
   } else {
     period <- NA
   }
@@ -499,16 +521,21 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
     names(pvrai)[substr(names(pvrai), 1, 2) =="p."] <- paste0("p", i, ".", substr(names(pvrai[substr(names(pvrai), 1, 2) =="p."]), 3, 20))
     names(pvrai)[names(pvrai) =="p"] <- paste0("p", i)
     
+    if (dim(data)[3] == 1) {
+      d3 <- 1
+    } else {
+      d3 <- dim(data)[3]-MaxNests-1
+    }
+    
     OCFECF_int <- ECFOCF_f(mu=mu[grepl(paste0("mu", i), names(mu))],
                            sd=sd[paste0("sd", i)], 
                            p=pvrai, 
                            MaxNests=MaxNests, 
                            mu_season=mu_season[paste0("mu_season", i)], 
                            sd_season=sd_season[paste0("sd_season", i)], 
-                           length_season = dim(data)[3]-MaxNests, 
-                           parallel=parallel
-    ) 
-    class(OCFECF_int) <- "TableECFOCF"
+                           length_season = d3, 
+                           parallel=parallel) 
+    OCFECF_int <- addS3Class(OCFECF_int, "TableECFOCF")
     OCFECF_categories <- c(OCFECF_categories, list(OCFECF_int))
     OCFECF <- OCFECF+ OCFECF_int* OTN[paste0("OTN", i)]
     
@@ -520,7 +547,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
     if (!is.na(sd[paste0("sd", i)])) {
       # Ancienne formule
       CF_int <- dlnorm(1:MaxNests, meanlog=log(abs(mu[paste0("mu", i)])), 
-                  sdlog=abs(sd[paste0("sd", i)]))
+                       sdlog=abs(sd[paste0("sd", i)]))
     } else {
       # Nouvelle formule
       # Je dois sortir les mu classés par ordre croissant
@@ -530,15 +557,15 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
     
     CF_int <- structure(c(CF_int / sum(CF_int)), .Names=paste0("CF", as.character(1:MaxNests)))
     CF_categories <- c(CF_categories, 
-                 list(CF_int))
+                       list(CF_int))
     CF <- CF+ CF_int * OTN[paste0("OTN", i)]
     
     if (!is.na(period[1])) {
-      time_int <- dlnorm(1:(dim(data)[3]-MaxNests), 
+      time_int <- dlnorm(1:(dim(data)[3]-MaxNests+1), 
                          meanlog=log(abs(mu_season[paste0("mu_season", i)])), 
                          sdlog=abs(sd_season[paste0("sd_season", i)]))
       time_int <- structure(c(time_int / sum(time_int)), 
-                            .Names=paste0("period", formatC(1:(dim(data)[3]-MaxNests), width=2, flag="0")))
+                            .Names=paste0("period", formatC(1:(dim(data)[3]-MaxNests+1), width=2, flag="0")))
       
       period_categories <- c(period_categories, list(time_int))
       
@@ -548,14 +575,14 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
   
   result$ECFOCF_categories <- OCFECF_categories
   result$CF_categories <- CF_categories
-  class(OCFECF) <- "TableECFOCF"
+  OCFECF <- addS3Class(OCFECF, "TableECFOCF")
   result$ECFOCF <- OCFECF
   result$CF <- CF
   if (!is.na(period[1])) {
     result$period_categories <- period_categories
     result$period <- period
     
-    result$length_season <- dim(data)[3]-MaxNests
+    result$length_season <- dim(data)[3]-MaxNests+1
   }
   
   
@@ -571,140 +598,140 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
   
   if (hessian & is.element('car', installed.packages()[,1])) {
     vcov <- try(solve(mathessian), silent = TRUE)
-    if (class(vcov) == "try-error") {
+    if (inherits(vcov, "try-error")) {
       message("Error in inverse of Hessian matrix, some standard errors cannot be calculated")
     }
-      # mu
-      SE_df <- data.frame(Estimate=numeric(), 
-                          SE=numeric(), 
-                          "2.5 %"=numeric(),
-                          "97.5 %"=numeric())
-      colnames(SE_df) <- c("Estimate", "SE", "2.5 %", "97.5 %")
-      # SE_df_0 <- SE_df
-      
-      par_mu <- names(x)[(substr(names(x), 1, 2) == "mu") & (substr(names(x), 1, 9) != "mu_season")]
-      for (i in seq_along(par_mu)) {
-        if (class(vcov) == "try-error") {
-          SE_df[nrow(SE_df)+1, ] <- c(eval(parse(text=x[par_mu[i]])), NA, NA, NA)
-        } else {
-          SE_df[nrow(SE_df)+1, ] <- unlist(car::deltaMethod(x, par_mu[i], vcov.=vcov)[1, c(1:4), drop = TRUE])
-        }
-      }
-      colnames(SE_df) <- c("Estimate", "SE", "2.5 %", "97.5 %")
-      rownames(SE_df) <- par_mu
-      
-      rownames(SE_df) <- gsub("mu", "mean", par_mu)
-      SE_df[, "Estimate"] <- SE_df[, "Estimate"] +1 
-      SE_df[, "2.5 %"] <- SE_df[, "2.5 %"] +1 
-      SE_df[, "97.5 %"] <- SE_df[, "97.5 %"] +1 
-      
-      rn <- rownames(SE_df)
-      par_mu_season <- names(x)[(substr(names(x), 1, 9) == "mu_season")]
-      for (i in seq_along(par_mu_season)) {
-        if (class(vcov) == "try-error") {
-          SE_df[nrow(SE_df)+1,] <- c(eval(parse(text=x[par_mu_season[i]])), NA, NA, NA)
-        } else {
-          SE_df[nrow(SE_df)+1,] <- unlist(car::deltaMethod(x, par_mu_season[i], vcov.=vcov)[1, c(1:4), drop = TRUE])
-        }
-      }
-      rownames(SE_df) <- c(rn, gsub("mu_", "mean_", par_mu_season))
-      
-      # OTN
-      
-      par_OTN <- names(x)[substr(names(x), 1, 3) == "OTN"]
-      rn <- rownames(SE_df)
-      if (! identical(par_OTN, character(0))) {
-        
-        for (i in c(par_OTN, "1")) {
-          if (class(vcov) == "try-error") {
-            
-            denom <- paste0("/(1 + ",paste(paste0("x['", par_OTN, "']") , collapse = "+"), ")", collapse="")
-            num <- ifelse(i=="1", "1", paste0("x['", i, "']"))
-            SE_df[nrow(SE_df)+1, ] <- c(eval(parse(text=paste0(num, denom))), NA, NA, NA)
-          } else {
-            denom <- paste0("/(1 + ", paste(par_OTN , collapse = "+"), ")", collapse="")
-            
-            SE_df[nrow(SE_df)+1, ] <- unlist(car::deltaMethod(x, 
-                                                                          paste0(i, denom)
-                                                                          , vcov.=vcov)[1, c(1:4), drop = TRUE])
-          }
-        }
-        rownames(SE_df) <- c(rn, paste0("OTN", as.character(1:(nrow(SE_df)-length(rn)))))
-      }
-      
-      rn <- rownames(SE_df)
-      # p
-      par_p <- names(x)[substr(names(x), 1, 1) == "p"]
-      par_a_tot <- names(totx)[substr(names(totx), 1, 1) == "a"]
-      par_a <- names(x)[substr(names(x), 1, 1) == "a"]
-      
-      if (! identical(par_a_tot, character(0))) {
-        for (j in par_a_tot) {
-          for (i in par_p) {
-            
-            categp <- gsub("p", "", gsub("\\.[0-9]+", "", i))
-            catega <- gsub("p", "", gsub("\\.[0-9]+", "", j))
-            
-            if ((categp == "") | (catega == categp)) {
-              
-              if (any(j == par_a)) {
-                if (class(vcov) == "try-error") {
-                  SE_df[nrow(SE_df)+1, ] <- c(eval(parse(text=paste0("1/(1+exp(", x[i], ")) * 1/(1+exp(", x[catega], "))"))), NA, NA, NA)
-                  rn <- c(rn, paste0("1/(1+exp(", i, ")) * 1/(1+exp(", catega, "))"))
-                } else {
-                  SE_df[nrow(SE_df)+1, ] <- unlist(car::deltaMethod(x, 
-                                                                                paste0("1/(1+exp(", i, ")) * 1/(1+exp(", catega, "))")
-                                                                                , vcov.=vcov)[1, c(1:4), drop = TRUE])
-                  rn <- c(rn, paste0("1/(1+exp(", i, ")) * 1/(1+exp(", catega, "))"))
-                }
-                  } else {
-                    if (class(vcov) == "try-error") {
-                      SE_df[nrow(SE_df)+1, ] <- c(eval(parse(text=paste0("1/(1+exp(", x[i], "))"))), NA, NA, NA)
-                      rn <- c(rn, row.names = paste0("1/(1+exp(", i, "))"))
-                    } else {
-                      
-                      SE_df[nrow(SE_df)+1, ] <- unlist(car::deltaMethod(x, 
-                                                                                paste0("1/(1+exp(", i, "))")
-                                                                                , vcov.=vcov)[1, c(1:4), drop = TRUE])
-                      rn <- c(rn, row.names = paste0("1/(1+exp(", i, "))"))
-                    }
-                      }
-            }
-          }
-        }
+    # mu
+    SE_df <- data.frame(Estimate=numeric(), 
+                        SE=numeric(), 
+                        "2.5 %"=numeric(),
+                        "97.5 %"=numeric())
+    colnames(SE_df) <- c("Estimate", "SE", "2.5 %", "97.5 %")
+    # SE_df_0 <- SE_df
+    
+    par_mu <- names(x)[(substr(names(x), 1, 2) == "mu") & (substr(names(x), 1, 9) != "mu_season")]
+    for (i in seq_along(par_mu)) {
+      if (inherits(vcov, "try-error")) {
+        SE_df[nrow(SE_df)+1, ] <- c(eval(parse(text=x[par_mu[i]])), NA, NA, NA)
       } else {
-        for (i in par_p) {
-          if (class(vcov) == "try-error") {
-            SE_df[nrow(SE_df)+1, ] <- c(eval(parse(text=paste0("1/(1+exp(", x[i], "))"))), NA, NA, NA)
-            rn <- c(rn, row.names = paste0("1/(1+exp(", i, "))"))
-          } else {
-            SE_df[nrow(SE_df)+1, ] <- unlist(car::deltaMethod(x, 
-                                                       paste0("1/(1+exp(", i, "))")
-                                                       , vcov.=vcov)[1, c(1:4), drop = TRUE])
-            rn <- c(rn, row.names = paste0("1/(1+exp(", i, "))"))
-          }
-            }
+        SE_df[nrow(SE_df)+1, ] <- unlist(car::deltaMethod(x, par_mu[i], vcov.=vcov)[1, c(1:4), drop = TRUE])
       }
-      rnp <- rn
-      rnp <- gsub("1/\\(1\\+exp\\(", "", rnp)
-      # rnp <- gsub("1/\\(1 \\+ exp\\(", "", rnp)
-      rnp <- gsub("\\)", "", rnp)
-      rnp <- gsub("p", "prob", rnp)
-      rownames(SE_df) <- rnp
-
-      or <- gsub("[A-Za-z_]+([0-9\\.]+)$", "\\1", rownames(SE_df))
-      or <- gsub("[A-Za-z_]+$", "", or)
-      or <- gsub("^[A-Za-z_]+", "", or)
-      or <- gsub("([0-9\\.]+) \\* ([0-9\\.]+)", "\\2\\1", or)
-      or <- ifelse (or=="", 0, or)
-      # NA dans certains cas 20/1/2018
-      SE_df <- SE_df[order(as.numeric(or)), ]
+    }
+    colnames(SE_df) <- c("Estimate", "SE", "2.5 %", "97.5 %")
+    rownames(SE_df) <- par_mu
+    
+    rownames(SE_df) <- gsub("mu", "mean", par_mu)
+    SE_df[, "Estimate"] <- SE_df[, "Estimate"] +1 
+    SE_df[, "2.5 %"] <- SE_df[, "2.5 %"] +1 
+    SE_df[, "97.5 %"] <- SE_df[, "97.5 %"] +1 
+    
+    rn <- rownames(SE_df)
+    par_mu_season <- names(x)[(substr(names(x), 1, 9) == "mu_season")]
+    for (i in seq_along(par_mu_season)) {
+      if (inherits(vcov, "try-error")) {
+        SE_df[nrow(SE_df)+1,] <- c(eval(parse(text=x[par_mu_season[i]])), NA, NA, NA)
+      } else {
+        SE_df[nrow(SE_df)+1,] <- unlist(car::deltaMethod(x, par_mu_season[i], vcov.=vcov)[1, c(1:4), drop = TRUE])
+      }
+    }
+    rownames(SE_df) <- c(rn, gsub("mu_", "mean_", par_mu_season))
+    
+    # OTN
+    
+    par_OTN <- names(x)[substr(names(x), 1, 3) == "OTN"]
+    rn <- rownames(SE_df)
+    if (! identical(par_OTN, character(0))) {
       
-      result$SE_df <- SE_df
+      for (i in c(par_OTN, "1")) {
+        if (inherits(vcov, "try-error")) {
+          
+          denom <- paste0("/(1 + ",paste(paste0("x['", par_OTN, "']") , collapse = "+"), ")", collapse="")
+          num <- ifelse(i=="1", "1", paste0("x['", i, "']"))
+          SE_df[nrow(SE_df)+1, ] <- c(eval(parse(text=paste0(num, denom))), NA, NA, NA)
+        } else {
+          denom <- paste0("/(1 + ", paste(par_OTN , collapse = "+"), ")", collapse="")
+          
+          SE_df[nrow(SE_df)+1, ] <- unlist(car::deltaMethod(x, 
+                                                            paste0(i, denom)
+                                                            , vcov.=vcov)[1, c(1:4), drop = TRUE])
+        }
+      }
+      rownames(SE_df) <- c(rn, paste0("OTN", as.character(1:(nrow(SE_df)-length(rn)))))
+    }
+    
+    rn <- rownames(SE_df)
+    # p
+    par_p <- names(x)[substr(names(x), 1, 1) == "p"]
+    par_a_tot <- names(totx)[substr(names(totx), 1, 1) == "a"]
+    par_a <- names(x)[substr(names(x), 1, 1) == "a"]
+    
+    if (! identical(par_a_tot, character(0))) {
+      for (j in par_a_tot) {
+        for (i in par_p) {
+          
+          categp <- gsub("p", "", gsub("\\.[0-9]+", "", i))
+          catega <- gsub("p", "", gsub("\\.[0-9]+", "", j))
+          
+          if ((categp == "") | (catega == categp)) {
+            
+            if (any(j == par_a)) {
+              if (inherits(vcov, "try-error")) {
+                SE_df[nrow(SE_df)+1, ] <- c(eval(parse(text=paste0("1/(1+exp(", x[i], ")) * 1/(1+exp(", x[catega], "))"))), NA, NA, NA)
+                rn <- c(rn, paste0("1/(1+exp(", i, ")) * 1/(1+exp(", catega, "))"))
+              } else {
+                SE_df[nrow(SE_df)+1, ] <- unlist(car::deltaMethod(x, 
+                                                                  paste0("1/(1+exp(", i, ")) * 1/(1+exp(", catega, "))")
+                                                                  , vcov.=vcov)[1, c(1:4), drop = TRUE])
+                rn <- c(rn, paste0("1/(1+exp(", i, ")) * 1/(1+exp(", catega, "))"))
+              }
+            } else {
+              if (inherits(vcov, "try-error")) {
+                SE_df[nrow(SE_df)+1, ] <- c(eval(parse(text=paste0("1/(1+exp(", x[i], "))"))), NA, NA, NA)
+                rn <- c(rn, row.names = paste0("1/(1+exp(", i, "))"))
+              } else {
+                
+                SE_df[nrow(SE_df)+1, ] <- unlist(car::deltaMethod(x, 
+                                                                  paste0("1/(1+exp(", i, "))")
+                                                                  , vcov.=vcov)[1, c(1:4), drop = TRUE])
+                rn <- c(rn, row.names = paste0("1/(1+exp(", i, "))"))
+              }
+            }
+          }
+        }
+      }
+    } else {
+      for (i in par_p) {
+        if (inherits(vcov, "try-error")) {
+          SE_df[nrow(SE_df)+1, ] <- c(eval(parse(text=paste0("1/(1+exp(", x[i], "))"))), NA, NA, NA)
+          rn <- c(rn, row.names = paste0("1/(1+exp(", i, "))"))
+        } else {
+          SE_df[nrow(SE_df)+1, ] <- unlist(car::deltaMethod(x, 
+                                                            paste0("1/(1+exp(", i, "))")
+                                                            , vcov.=vcov)[1, c(1:4), drop = TRUE])
+          rn <- c(rn, row.names = paste0("1/(1+exp(", i, "))"))
+        }
+      }
+    }
+    rnp <- rn
+    rnp <- gsub("1/\\(1\\+exp\\(", "", rnp)
+    # rnp <- gsub("1/\\(1 \\+ exp\\(", "", rnp)
+    rnp <- gsub("\\)", "", rnp)
+    rnp <- gsub("p", "prob", rnp)
+    rownames(SE_df) <- rnp
+    
+    or <- gsub("[A-Za-z_]+([0-9\\.]+)$", "\\1", rownames(SE_df))
+    or <- gsub("[A-Za-z_]+$", "", or)
+    or <- gsub("^[A-Za-z_]+", "", or)
+    or <- gsub("([0-9\\.]+) \\* ([0-9\\.]+)", "\\2\\1", or)
+    or <- ifelse (or=="", 0, or)
+    # NA dans certains cas 20/1/2018
+    SE_df <- SE_df[order(as.numeric(or)), ]
+    
+    result$SE_df <- SE_df
     
   }
   
-  class(result) <- "ECFOCF"
+  result <- addS3Class(result, "ECFOCF")
   return(result)
 }
 

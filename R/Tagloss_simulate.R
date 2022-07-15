@@ -1,6 +1,6 @@
 #' Tagloss_simulate returns a list with the number of days different kinds of individuals are seen.
 #' @title Return a list with the number of days different kinds of individuals are seen.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return a list with the number of days different kinds of individuals are seen.
 #' @param n Number of individuals to simulate
 #' @param par Set of parameters

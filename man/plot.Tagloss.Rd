@@ -18,8 +18,10 @@
   text.col = grey.colors(4, start = 0.9, end = 0.3),
   label.col = "black",
   add = FALSE,
-  hessian = NULL,
+  mcmc = FALSE,
+  Hessian = NULL,
   replicates = NULL,
+  method = NULL,
   probs = c(0.025, 0.975),
   progressbar = FALSE,
   decoration = FALSE,
@@ -51,9 +53,13 @@
 
 \item{add}{Should the data be added to a previous plot?}
 
-\item{hessian}{Hessian matrix of parameters}
+\item{mcmc}{The mcmc result}
+
+\item{Hessian}{Hessian matrix of parameters}
 
 \item{replicates}{Number of replicates for confidence interval}
+
+\item{method}{Which method to use to estimate confidence interval}
 
 \item{probs}{Quantiles to show for confidence interval}
 
@@ -129,7 +135,32 @@ phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, model="Cumul
 phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, model="R1", 
                          decoration = TRUE)                         
 phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, model="R2", 
-                         decoration = TRUE)                         
+                         decoration = TRUE)
+# Example of fit
+
+data_f_21 <- Tagloss_format(outLR, model="21")
+data_f_21_fast <- subset(data_f_21, subset=(is.na(data_f_21$N20)))
+par <- c('D1_2' = 49.78891736351531, 
+         'D2D1_2' = 1059.3635769732305, 
+         'D3D2_2' = 12.434313273804602, 
+         'A_2' = 5.2238379144659683, 
+         'B_2' = 8.0050044071275543, 
+         'C_2' = 8.4317863609499675, 
+         'D1_1' = 701.80273287212935, 
+         'D2D1_1' = 0.010951749100596819, 
+         'D3D2_1' = 3773.6290607434876, 
+         'A_1' = 205.42435592344776, 
+         'B_1' = 9.9598342503239863, 
+         'C_1' = 6.7234868237164722)
+phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, model="1", 
+                         decoration = TRUE)
+phenology:::plot.Tagloss(x=list(), t=1:1000, fitted.parameters=par, model="2", 
+                         decoration = TRUE)
+o <- Tagloss_fit(data=data_f_21_fast, fitted.parameters=par, hessian = TRUE)
+plot(x=o, model="1", replicates=0, 
+     method=NULL, decoration = TRUE)
+plot(x=o, model="1", replicates=1000, 
+     method="Hessian", decoration = TRUE)
 }
 }
 \seealso{
@@ -140,6 +171,7 @@ Other Model of Tag-loss:
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_fit}()},
 \code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_mcmc}()},
 \code{\link{Tagloss_model}()},
 \code{\link{Tagloss_simulate}()},

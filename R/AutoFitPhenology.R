@@ -28,7 +28,7 @@ AutoFitPhenology <-
            progressbar=TRUE, 
            ...) {
     
-    if (class(data)!="phenologydata") {
+    if (!inherits(data, "phenologydata")) {
       stop("Data must be formated first using the function add_phenology().")
     }
     

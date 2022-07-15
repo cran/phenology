@@ -19,7 +19,11 @@
   #  save.image("courant.RData")
   
   nxparec <- strsplit(names(xpar), "_")
-  ec <- sapply(nxparec, function(x) ifelse(length(x)>1, grepl(x[[2]], serie), TRUE))
+  # 1/11/2021 Le grepl me donne des résultats bizarres
+  # gsub("([().])", "\\\\\\1", x[[2]]): je retire les (). et remplace par \\( et \\) et \\.
+  ec <- sapply(nxparec, function(x) ifelse(length(x)>1, grepl(x[[2]], serie, fixed = TRUE), TRUE))
+  # ec2 <- sapply(nxparec, function(x) ifelse(length(x)>1, substr(x[[2]], 1, nchar(serie))==serie, TRUE))
+  # ec <- ec | ec2
   
   xparec <- xpar[ec]
   names(xparec) <- sapply(nxparec[ec], function(x) x[[1]])
@@ -34,13 +38,15 @@
   if (is.na(xparec["MinE.2"]) && is.na(xparec["PMinE.2"]) && is.na(xparec["Min.2"]) && is.na(xparec["PMin.2"])) {xparec["MinE.2"] <- 0}
   
   ec <- !is.na(match(names(xparec), 
-                     c("MinB", "MinE", "Min", "PMin", "PminE", "PMinB", "Peak", 
+                     c("MinB", "MinE", "Min", "PMin", "PMinE", "PMinB", "Peak", 
+                       "Flat", "Flat.1", "Flat.2", 
                        "Begin", "End", "Max", "Theta", "Length", "LengthB", "LengthE", 
                        "Tau", "Tau1", "Tau2", 
-                       "MinB.1", "MinE.1", "Min.1", "PMin.1", "PminE.1", "PMinB.1", "Peak.1", 
+                       "MinB.1", "MinE.1", "Min.1", "PMin.1", "PMinE.1", "PMinB.1", "Peak.1", 
                        "Begin.1", "End.1", "Max.1", "Length.1", "LengthB.1", "LengthE.1", 
-                       "MinB.2", "MinE.2", "Min.2", "PMin.2", "PminE.2", "PMinB.2", "Peak.2", 
-                       "Begin.2", "End.2", "Max.2", "Length.2", "LengthB.2", "LengthE.2")))
+                       "MinB.2", "MinE.2", "Min.2", "PMin.2", "PMinE.2", "PMinB.2", "Peak.2", 
+                       "Begin.2", "End.2", "Max.2", "Length.2", "LengthB.2", "LengthE.2", 
+                       "alpha", "tp", "s", "tf", "s1", "s2", "sr")))
   xparec[ec] <- abs(xparec[ec])
   
   xparec["Flat"] <- ifelse(is.na(xparec["Flat"]), 0, abs(xparec["Flat"]))

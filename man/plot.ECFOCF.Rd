@@ -4,7 +4,16 @@
 \alias{plot.ECFOCF}
 \title{Plot a result of clutch frequency fit.}
 \usage{
-\method{plot}{ECFOCF}(x, ..., result = "CF", category = NA, period = 1)
+\method{plot}{ECFOCF}(
+  x,
+  ...,
+  result = "CF",
+  category = NA,
+  period = 1,
+  resultMCMC = NULL,
+  chain = 1,
+  replicates = "all"
+)
 }
 \arguments{
 \item{x}{A result for fitCF().}
@@ -16,6 +25,12 @@
 \item{category}{What category will be plotted, numeric or NA for all.}
 
 \item{period}{The period that will be plotted.}
+
+\item{resultMCMC}{A result from fitRMU_MHmcmc.}
+
+\item{chain}{Which chain to be used in resultMCMC.}
+
+\item{replicates}{How many replicates fron resultMCMC.}
 }
 \value{
 Nothing
@@ -35,7 +50,10 @@ The result \code{period} plots the probabilities of nesting according to period.
 If category is left to NA, the compound value for all the population is plotted.\cr
 When result="data" is used, this is a parser for plot.TableECFOCF().\cr
 See this function for the parameters.\cr
-The parameter y.axis is the shift of the x legends for result="prob".
+The parameter y.axis is the shift of the x legends for result="prob".\cr
+When a \code{resultMCMC} is indicated, if replicates is "all", all values are used; 
+if a value lower than number of iterations is indicated, a regular thinning is used and 
+if a value larger then number if iteration is indicated, a sampling with replacement is used.\cr
 }
 \details{
 plot.ECFOCF plots a result of clutch frequency fit.
@@ -83,9 +101,13 @@ plot(o_mu1p2_NB, result="Prob", category=c(2, 1), bty="n", las=1)
 }
 \seealso{
 Other Model of Clutch Frequency: 
+\code{\link{ECFOCF_full}()},
 \code{\link{ECFOCF_f}()},
 \code{\link{TableECFOCF}()},
+\code{\link{fitCF_MHmcmc_p}()},
+\code{\link{fitCF_MHmcmc}()},
 \code{\link{fitCF}()},
+\code{\link{generateCF}()},
 \code{\link{lnLCF}()},
 \code{\link{logLik.ECFOCF}()},
 \code{\link{plot.TableECFOCF}()}

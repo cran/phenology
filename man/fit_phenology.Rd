@@ -12,15 +12,14 @@ fit_phenology(
   zero_counts = TRUE,
   store.intermediate = FALSE,
   file.intermediate = "Intermediate.rda",
-  parallel = TRUE,
   hessian = TRUE,
   silent = FALSE,
-  growlnotify = TRUE,
   cofactors = NULL,
   add.cofactors = NULL,
   zero = 1e-09,
   lower = 0,
   upper = Inf,
+  stop.fit = FALSE,
   control = list(trace = 1, REPORT = 1, maxit = 1000),
   method = c("Nelder-Mead", "L-BFGS-B")
 )
@@ -41,23 +40,21 @@ been recorded for each of these timeseries. Defaut is TRUE for all.}
 
 \item{file.intermediate}{Name of the file where to save the intermediates as a list}
 
-\item{parallel}{If FALSE, no parallel computing is done to evaluate likelihood}
-
 \item{hessian}{If FALSE does not estimate se of parameters}
 
 \item{silent}{If TRUE does not show any message}
-
-\item{growlnotify}{If FALSE, does not send growl notification (only in MacOSX)}
 
 \item{cofactors}{data.frame with a column Date and a column for each cofactor}
 
 \item{add.cofactors}{Names of the column of parameter cofactors to use as a cofactor}
 
-\item{zero}{If the theoretical nest number is under this value, this value wll be used}
+\item{zero}{If the theoretical nest number is under this value, this value will be used}
 
 \item{lower}{Lower bound for each parameter}
 
 \item{upper}{Upper bound for each parameter}
+
+\item{stop.fit}{If TRUE, will stop search for parameters even if not ML}
 
 \item{control}{List for control parameters for optim}
 
@@ -73,7 +70,8 @@ Result <- fit_phenology(data=dataset, fitted.parameters=par, fixed.parameters=pf
 or if no parameter is fixed :\cr
 Result <- fit_phenology(data=dataset, fitted.parameters=par)\cr
 Add trace=1 [default] to have information on the fit progression or trace=0 to hide information on the fit progression.\cr
-zero_counts = c(TRUE, TRUE, FALSE) indicates whether the zeros have been recorded for each of these timeseries. Defaut is TRUE for all.\cr
+zero_counts = c(TRUE, TRUE, FALSE) indicates whether the zeros have been recorded for each of these timeseries. 
+Defaut is TRUE for all. If a named vector zero_counts is used, the names indicate the timeseries.\cr
 hessian = FALSE does not estimate Hessian matrix and SE of parameters.\cr
 If the parameter Theta is fixed to +Inf, a Poissonian model of daily nest distribution is implemented.\cr
 Special section about cofactors:\cr
@@ -83,6 +81,11 @@ The model is then: parameter[add.cofactors] * cofactor[, add.cofactors]\cr
 If the name of the parameter is paste0(add.cofactors, "multi"), then the model is:\cr
 parameter[paste0(add.cofactors, "multi")] * cofactor[, add.cofactors] * 
        (number of nests without cofactor)\cr
+About parallel computing:\cr
+Set options mc.cores and forking to tell what sort of parallel computing\cr
+Example:\cr
+options(mc.cores = detectCores())
+options(forking = FALSE)
 }
 \details{
 fit_phenology fits parameters to timeseries.
@@ -105,6 +108,29 @@ data(result_Gratiot)
 output <- plot(result_Gratiot)
 # or
 output <- summary(result_Gratiot)
+
+# With parametrization based on Girondot 2010
+parg <- c('Peak' = 173.52272236775076, 
+          'Flat' = 0, 
+          'LengthB' = 94.433284359804205, 
+          'LengthE' = 64.288485646867329, 
+          'Max_Complete' = 32.841568389778033, 
+          'PMin' = 1.0368261725650889, 
+          'Theta' = 3.5534818927979592)
+result_Gratiot_par1 <- fit_phenology(data=data_Gratiot, 
+		                    fitted.parameters=parg, fixed.parameters=NULL)
+# With new parametrization based on Omeyer et al. (In prep)
+parg <- result_Gratiot_par1$par
+parg <- c(tp=unname(parg["Peak"]), tf=unname(parg["Flat"]), 
+          s1=unname(parg["LengthB"])/4.8, s2=unname(parg["LengthE"])/4.8, 
+          alpha=unname(parg["Max_Complete"]), Theta=0.66)
+result_Gratiot_par2 <- fit_phenology(data=data_Gratiot, 
+		                             fitted.parameters=parg, 
+		                             fixed.parameters=NULL)
+compare_AICc(GirondotModel=result_Gratiot_par1, 
+             OmeyerModel=result_Gratiot_par2)
+plot(result_Gratiot_par1)
+plot(result_Gratiot_par2)
 
 # Use fit with co-factor
 
@@ -217,6 +243,6 @@ Other Phenology model:
 \code{\link{summary.phenology}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Phenology model}

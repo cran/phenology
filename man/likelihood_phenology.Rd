@@ -25,7 +25,7 @@ likelihood_phenology(
 
 \item{fixed.parameters}{Set of fixed parameters}
 
-\item{zero_counts}{example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
+\item{zero_counts}{Example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
 been recorder for each of these timeseries. Defaut is TRUE for all.}
 
 \item{parallel}{If TRUE, parallel computing is used.}
@@ -56,14 +56,19 @@ likelihood_phenology estimate likelihood for a set of parameters.
 # Read a file with data
 data(Gratiot)
 # Generate a formated list nammed data_Gratiot 
-data_Gratiot<-add_phenology(Gratiot, name="Complete", 
+data_Gratiot <- add_phenology(Gratiot, name="Complete", 
 		reference=as.Date("2001-01-01"), format="\%d/\%m/\%Y")
 # Generate initial points for the optimisation
-parg<-par_init(data_Gratiot, fixed.parameters=NULL)
+parg <- par_init(data_Gratiot, fixed.parameters=NULL)
 # Estimate likelihood with this initial set of parameters
 likelihood_phenology(data=data_Gratiot, fitted.parameters=parg, fixed.parameters=NULL)
 # Or directly from a result object
 likelihood_phenology(result=result_Gratiot)
+# With new parametrization based on Omeyer et al. (In prep)
+parg <- c(tp=unname(parg["Peak"]), tf=unname(parg["Flat"]), 
+          s1=unname(parg["LengthB"])/4.8, s2=unname(parg["LengthE"])/4.8, 
+          alpha=unname(parg["Max_Complete"]), Theta=unname(parg["Theta"]))
+likelihood_phenology(data=data_Gratiot, fitted.parameters=parg, fixed.parameters=NULL)
 }
 }
 \seealso{

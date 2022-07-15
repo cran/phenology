@@ -1,10 +1,10 @@
 #' ECFOCF_f calculate a table of probabilities of ECF and OCF.
 #' @title Calculate a table of probabilities of ECF and OCF.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return a matrix of class TableECFOCF.\cr
 #' @param mu The average of lognormal for clutch frequency.
 #' @param sd The sd parameter of lognormal for clutch frequency.
-#' @param p The capture probability for an individual nesting event.
+#' @param p The capture probability for an individual nesting event. As a probability.
 #' @param MaxNests Maximum number of nests by a female.
 #' @param MeanDaysBetween2Nests Average number of days between two nests.
 #' @param mu_season The average of ordinal day for beginning of nesting season.
@@ -15,7 +15,7 @@
 #' If p is lower or higher than 1E-100 or 1-1E-100, it is changed to 1E-100 and 1-(1E-100) respectively.\cr
 #' Names for p vector elements should be p, or px (with x=1:categories), or px.period.\cr
 #' If mu_season and sd_season are equal to NA, the model is not temporalized.\cr
-#' If mu_season and sd_season are not NA, the model is temporalized.\cr
+#' If mu_season and sd_season are not NA, the model returns a 3D-table OCFECF.\cr
 #' @family Model of Clutch Frequency
 #' @examples
 #' \dontrun{
@@ -33,8 +33,7 @@
 #'                     p=c(p1=invlogit(1.3578137414575)), 
 #'                     MaxNests=15, 
 #'                     MeanDaysBetween2Nests=9.8, 
-#'                     length_season=floor(365/9.8)+1
-#'                     )
+#'                     length_season=floor(365/9.8)+1)
 #' plot(modelECFOCF, period=2)
 #' }
 #' @export
@@ -52,7 +51,7 @@ ECFOCF_f <- function(mu, sd = NA, p, MaxNests=15,
   # length_season  <- floor(365/MeanDaysBetween2Nests)+1
   # parallel <- TRUE
   
-  if (is.na(mu_season) | is.na(sd_season)) {
+  if (any(is.na(mu_season) | is.na(sd_season))) {
     x <- 1:MaxNests
     p <- ifelse(p < 1E-100, 1E-100, p)
     p <- ifelse(p > 1 - 1E-100, 1 - 1E-100, p)
@@ -106,7 +105,7 @@ ECFOCF_f <- function(mu, sd = NA, p, MaxNests=15,
     }
     
     
-    # je crée une chaîne avec toute les prob nommées
+    # je crée une chaîne avec toutes les prob nommées
     commonprob <- ifelse(is.na(p[paste0("p", as.character(nm))]), 0, p[paste0("p", as.character(nm))])
     prob_ec <- structure(rep(commonprob, length_season+MaxNests), 
                          .Names=paste0("p", as.character(nm), ".", formatC(1:(length_season+MaxNests), width=2, flag="0")))
@@ -121,10 +120,10 @@ ECFOCF_f <- function(mu, sd = NA, p, MaxNests=15,
     # p <- ifelse(p > 1 - 1E-9, 1 - 1E-9, p)
     
     # length_season+MaxNests pas length_season+MaxNests+1
-    OCFECF <- array(data = 0, dim=c(MaxNests+1, MaxNests+1, length_season+MaxNests), 
+    OCFECF <- array(data = 0, dim=c(MaxNests+1, MaxNests+1, length_season+MaxNests+1), 
                     dimnames = list(paste0("OCF", 0:(MaxNests)), paste0("ECF", 0:(MaxNests)), 
                                     # Là aussi
-                                    paste0("time", 1:(length_season+MaxNests))
+                                    paste0("time", 1:(length_season+MaxNests+1))
                                     )
                     )
     
@@ -134,7 +133,7 @@ ECFOCF_f <- function(mu, sd = NA, p, MaxNests=15,
     
     # j'ai length_season valeurs et pour chacune la probabilité
     
-    if ((.Platform$OS.type == "unix") & (parallel)) {
+    if (parallel) {
       cores <- detectCores()
     } else {
       cores <- 1
@@ -198,7 +197,7 @@ ECFOCF_f <- function(mu, sd = NA, p, MaxNests=15,
     }
     
    
-    OCFECF_L <- mclapply(X=tlist, mc.cores = cores, 
+    OCFECF_L <- universalmclapply(X=tlist, mc.cores = cores, 
                          FUN=function(t_int) {
       OCFECF_int <- OCFECF
       # print(t)
@@ -234,7 +233,10 @@ ECFOCF_f <- function(mu, sd = NA, p, MaxNests=15,
       }
       }
       return(OCFECF_int)
-    })
+    }, 
+    clusterExport = list(varlist=c("OCFECF", "x", "diverses_list", "time", 
+                                   "first_obs_list", "OCF_ec_list", "ECF_ec_list"), envir=environment())
+    )
     
 
     for (i in seq_along(OCFECF_L)) OCFECF <- OCFECF + OCFECF_L[[i]]
@@ -244,6 +246,6 @@ ECFOCF_f <- function(mu, sd = NA, p, MaxNests=15,
     
     
     # OCFECF <- OCFECF / (1-sum(OCFECF[1, 1, ]))
-    class(OCFECF) <- "TableECFOCF"
+    OCFECF <- addS3Class(OCFECF, "TableECFOCF")
     return(OCFECF)
 }

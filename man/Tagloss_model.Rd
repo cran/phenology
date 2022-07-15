@@ -5,12 +5,14 @@
 \title{Return the daily rate of tag loss.}
 \usage{
 Tagloss_model(
-  t,
+  t = NULL,
   par = NULL,
-  hessian = NULL,
+  Hessian = NULL,
+  mcmc = NULL,
   model_before = NULL,
   model_after = NULL,
-  model = NULL,
+  model = stop("You must specify which tag loss rate you want."),
+  method = NULL,
   replicates = NULL,
   x = NULL
 )
@@ -20,13 +22,17 @@ Tagloss_model(
 
 \item{par}{Parameters}
 
-\item{hessian}{hessian matrix of parameters}
+\item{Hessian}{Hessian matrix of parameters}
+
+\item{mcmc}{A mcmc result}
 
 \item{model_before}{Function to be used before estimation of daily tagloss rate}
 
 \item{model_after}{Function to be used after estimation of daily tagloss rate}
 
 \item{model}{The model of parameter to be used, can be 1, 2, L1, L2, R1 or R2}
+
+\item{method}{Can be NULL, "delta", "SE", "Hessian", "MCMC", or "PseudoHessianFromMCMC"}
 
 \item{replicates}{Number of replicates to estimate se of output}
 
@@ -37,9 +43,7 @@ Return the daily rate of tag loss if hessian is null or a data.frame with distri
 }
 \description{
 This function compute a model of daily tag loss rate for days t 
-based on a set of parameters, par.\cr
-If hessian is not null, it will estimate standard error of the output using numerical delta method is replicates 
-is null or using resampling if replicates is not null.\cr
+based on a set of parameters, par or a fitted tag loss model in x.\cr
 Parameters are described in \code{\link{Tagloss_fit}}.
 }
 \details{
@@ -53,7 +57,7 @@ library(phenology)
 t <- 1:1000
 par <- c(D1=200, D2D1=100, D3D2=200, 
          A=-logit(0.02), B=-logit(0.05), C=-logit(0.07))
-y <- Tagloss_model(t, par)
+y <- Tagloss_model(t, par, model="1")
 plot(x=t, y, type="l")
 par <- c(D1_1=200, D2D1_1=100, D3D2_1=200, 
          A_1=-logit(0.02), B_1=-logit(0.05), C_1=-logit(0.07))
@@ -89,6 +93,28 @@ plot(x=t, y, type="l")
 par <- c(a0=-0.1, a1=-10, a2=0.2, a3=60, a4=0.1)
 y <- Tagloss_model(t, par)
 plot(x=t, y, type="l")
+
+# Example with fitted data
+data_f_21 <- Tagloss_format(outLR, model="21")
+# Without the N20 the computing is much faster
+data_f_21_fast <- subset(data_f_21, subset=(is.na(data_f_21$N20)))
+par <- c('D1_2' = 49.086835072129126, 
+         'D2D1_2' = 1065.0992647723231, 
+         'D3D2_2' = 6.15531475922079, 
+         'A_2' = 5.2179675647973758, 
+         'B_2' = 8.0045560376751386, 
+         'C_2' = 8.4082505219581876, 
+         'D1_1' = 177.23337287498103, 
+         'D2D1_1' = 615.42690323741033, 
+         'D3D2_1' = 2829.0806609455867, 
+         'A_1' = 28.500118091731551, 
+         'B_1' = 10.175426055942701, 
+         'C_1' = 6.9616630417169398)
+o <- Tagloss_fit(data=data_f_21_fast, fitted.parameters=par)
+t <- 1:10
+y <- Tagloss_model(t, o$par, model="1")
+y <- Tagloss_model(t, x=o, method=NULL, model="1")
+y <- Tagloss_model(t, x=o, method="Hessian", model="1", replicates=1000)
 }
 }
 \seealso{
@@ -99,6 +125,7 @@ Other Model of Tag-loss:
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_fit}()},
 \code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_mcmc}()},
 \code{\link{Tagloss_simulate}()},
 \code{\link{logLik.Tagloss}()},
@@ -107,6 +134,6 @@ Other Model of Tag-loss:
 \code{\link{plot.Tagloss}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Model of Tag-loss}

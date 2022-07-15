@@ -13,7 +13,9 @@ fitRMU_MHmcmc(
   thin = 1,
   adaptive = FALSE,
   adaptive.lag = 500,
-  adaptive.fun = function(x) {     ifelse(x > 0.234, 1.3, 0.7) },
+  adaptive.fun = function(x) {
+     ifelse(x > 0.234, 1.3, 0.7)
+ },
   trace = FALSE,
   traceML = FALSE,
   intermediate = NULL,

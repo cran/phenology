@@ -1,11 +1,13 @@
 #' Tagloss_cumul returns the cumulative rate of tag loss.
 #' @title Return the cumulative rate of tag loss.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return the cumulative rate of tag loss if hessian is null or a data.frame with distribution of cumulative rate of tag loss if hessian is not null.
 #' @param t Time for which values of model must be estimated
 #' @param x A Tagloss fitted model
 #' @param par Parameters
-#' @param hessian hessian matrix of parameters
+#' @param Hessian Hessian matrix of parameters
+#' @param mcmc A mcmc result
+#' @param method Can be NULL, "delta", "SE", "Hessian", "MCMC", or "PseudoHessianFromMCMC"
 #' @param model_before Function to be used before estimation of daily tagloss rate
 #' @param model_after Function to be used after estimation of daily tagloss rate
 #' @param model The model of parameter to use, can be N2, N1 or N0; or NLR, NL0, N0R, or N00 or NULL if hessian is NULL.
@@ -127,11 +129,18 @@
 #' }
 #' @export
 
-Tagloss_cumul <- function(t, par=NULL, hessian=NULL, model_before = NULL, 
-                          model_after=NULL, 
-                          model=NULL, replicates=NULL, x=NULL) {
+Tagloss_cumul <- function(t                                                     , 
+                          par=NULL                                              , 
+                          Hessian=NULL                                          , 
+                          mcmc=NULL                                             , 
+                          method=NULL                                           , 
+                          model_before = NULL                                   , 
+                          model_after=NULL                                      , 
+                          model=NULL                                            , 
+                          replicates=NULL                                       , 
+                          x=NULL                                                ) {
   
-  # par=NULL; hessian=NULL; model_before = NULL; model_after=NULL; model="cumul"; replicates=NULL; x=NULL
+  # par=NULL; Hessian=NULL; model_before = NULL; model_after=NULL; model="cumul"; replicates=NULL; x=NULL
   
   if (!is.null(model)) model <- toupper(model)
   # D'abord je fais sans hessian
@@ -142,16 +151,27 @@ Tagloss_cumul <- function(t, par=NULL, hessian=NULL, model_before = NULL,
     stop("Both par and x cannot be null at the same time")
   }
   
+  if (is.null(replicates)) replicates <- 0
+  if (is.null(method) | (replicates == 0)) method <- "null"
+  method <- tolower(method)
+  method <- match.arg(method, choices = c("null", 
+                                          "delta", 
+                                          "se", 
+                                          "hessian", 
+                                          "mcmc", 
+                                          "pseudohessianfrommcmc"))
+  
+  
   if (!is.null(x)) {
     if (is.null(par)) par <- c(x$par, x$fixed.par)
-    if (is.null(hessian)) hessian <- x$hessian
+    if (is.null(Hessian)) Hessian <- x$hessian
     if (is.null(model_before)) model_before <- x$model_before
     if (is.null(model_after)) model_after <- x$model_after
   }
   
   days.maximum <- max(t)
   
-  if (is.null(hessian)) {
+  if (method == "null") {
     
     if (!is.null(model_before)) eval(parse(text=model_before), envir= environment())
     
@@ -214,11 +234,15 @@ Tagloss_cumul <- function(t, par=NULL, hessian=NULL, model_before = NULL,
     return(d)
     
     
-  } else {
+  } 
+  
+  if (method == "delta") {
     
     # Bon, j'ai une matrice... mais maintenant je dois l'utliser !
     
-    VCov <- solve(hessian)
+    # Méthode Delta
+    
+    VCov <- solve(Hessian)
     
     par_hess <- par[colnames(VCov)]
     par_add <- par[!names(par) %in% colnames(VCov)]
@@ -239,7 +263,7 @@ Tagloss_cumul <- function(t, par=NULL, hessian=NULL, model_before = NULL,
       tgm <- Tagloss_cumul(Time, par=c(par, pfixed), 
                            model_before=model_before, 
                            model_after=model_after, 
-                           hessian = NULL, model = NULL)
+                           Hessian = NULL, model = NULL)
       
       return(tgm[1, model])
     }
@@ -261,9 +285,9 @@ Tagloss_cumul <- function(t, par=NULL, hessian=NULL, model_before = NULL,
         if (is.null(obj)) 
           mess = "Both  'obj' and 'coeff' are missing"
         else {
-          clm = class(obj)
-          part1 = "There are no coef() methods for model objects of class \""
-          mess = paste0(part1, clm, "\".\nInput the 'coeff' parameter.")
+          clm <- class(obj)
+          part1 <- "There are no coef() methods for model objects of class \""
+          mess <- paste0(part1, clm, "\".\nInput the 'coeff' parameter.")
         }
         stop(mess)
       }
@@ -271,9 +295,9 @@ Tagloss_cumul <- function(t, par=NULL, hessian=NULL, model_before = NULL,
         if (is.null(obj)) 
           mess = "Both  'obj' and 'Vcov' are missing"
         else {
-          clm = class(obj)
-          part1 = "There are no vcov() methods for model objects of class \""
-          mess = paste0(part1, clm, "\".\nInput the 'Vcov' parameter.")
+          clm <- class(obj)
+          part1 <- "There are no vcov() methods for model objects of class \""
+          mess <- paste0(part1, clm, "\".\nInput the 'Vcov' parameter.")
         }
         stop(mess)
       }
@@ -310,7 +334,7 @@ Tagloss_cumul <- function(t, par=NULL, hessian=NULL, model_before = NULL,
           fli <- as.formula(paste("~", ltext[i]))
         }
         z = try(deriv(as.formula(fli), namess), silent = T)
-        if (class(z) == "try-error") {
+        if (inherits(z, "try-error")) {
           tei = as.character(i)
           tri2 = ", numerical derivatives were used in delta-method"
           wate = paste0("Note: For function ", i, tri2)
@@ -390,6 +414,17 @@ Tagloss_cumul <- function(t, par=NULL, hessian=NULL, model_before = NULL,
     return(gh)
     
   }
+  
+  # Je suis en SE, hessian, mcmc ou peudohessian
+  
+  dfr <- RandomFromHessianOrMCMC(method = method, mcmc=mcmc, Hessian = Hessian, 
+                                 fitted.parameters = par, replicates = replicates, 
+                                 fn=Tagloss_cumul, ParTofn = "par",  model_before = model_before, 
+                                 model_after = model_after, 
+                                 model=model, x=x, t=t)
+  return(dfr$quantiles)
+  
+  
   
 }
 

@@ -1,6 +1,6 @@
 #' Tagloss_LengthObs returns a list with the number of days for different kinds of individuals are seen.
 #' @title Return a list with the number of days for different kinds of individuals are seen.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return a list with the number of days for different kinds of individuals are seen.
 #' @param data Set of indivuals
 #' @param progressbar Is shown a progressbar?
@@ -16,8 +16,6 @@
 #' @export
 
 Tagloss_LengthObs <- function(data, progressbar=TRUE) {
-  
-  class(data) <- "data.frame"
   
   lv <- levels(data$ID)
   

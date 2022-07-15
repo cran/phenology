@@ -79,6 +79,6 @@ Other Phenology model:
 \code{\link{summary.phenology}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Phenology model}

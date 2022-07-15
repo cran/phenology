@@ -15,7 +15,9 @@ Bayesian.remigration(
   trace = 10,
   adaptive = TRUE,
   adaptive.lag = 500,
-  adaptive.fun = function(x) {     ifelse(x > 0.234, 1.3, 0.7) },
+  adaptive.fun = function(x) {
+     ifelse(x > 0.234, 1.3, 0.7)
+ },
   intermediate = NULL,
   filename = "intermediate.Rdata",
   previous = NULL
@@ -110,6 +112,6 @@ Other Model of Remigration Interval:
 \code{\link{plot.Remigration}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Model of Remigration Interval}

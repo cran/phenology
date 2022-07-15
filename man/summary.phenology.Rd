@@ -36,11 +36,14 @@
 \item{...}{Not used}
 }
 \value{
-A list with four objects: synthesis is a data.frame with global estimate of nesting.\cr
-details_MCMC, details_ML and details_mean are lists with day by day information for each series.
+A list with five objects: synthesis is a data.frame with global estimate of nesting.\cr
+details_MCMC, details_ML, details_mean are lists with day by day information for each series, and 
+sum_synthesis is the synthesis of the sum of all analyzed time-series.
 }
 \description{
-The function summary.phenology shows result and estimates confidence interval.
+The function summary.phenology shows result and estimates confidence interval.\cr
+If several years are analyzed, the sum_synthesis result can be obtained only if there is 
+not a mix of bisextile and non-bisextile years.
 }
 \details{
 summary.phenology prints the information from a result object.
@@ -60,9 +63,9 @@ result_Gratiot<-fit_phenology(data=data_Gratiot,
 		fitted.parameters=parg, fixed.parameters=NULL)
 data(result_Gratiot)
 # Display information from the result
-summary(result_Gratiot)
+s <- summary(result_Gratiot)
 # Using mcmc
-summary(object=result_Gratiot, resultmcmc=result_Gratiot_mcmc)
+s <- summary(object=result_Gratiot, resultmcmc=result_Gratiot_mcmc)
 }
 }
 \seealso{
@@ -106,6 +109,6 @@ Other Phenology model:
 \code{\link{summary.phenologyout}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Phenology model}

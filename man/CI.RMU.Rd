@@ -9,6 +9,7 @@ CI.RMU(
   resultMCMC = NULL,
   chain = 1,
   replicate.CI = 10000,
+  regularThin = TRUE,
   silent = FALSE
 )
 }
@@ -20,6 +21,8 @@ CI.RMU(
 \item{chain}{Number of MCMC chain to be used}
 
 \item{replicate.CI}{Number of replicates}
+
+\item{regularThin}{If TRUE, use regular thin for MCMC}
 
 \item{silent}{If TRUE does not display anything}
 }
@@ -89,6 +92,11 @@ data.AtlanticW <- data.frame(Year=c(1990:2000),
 cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
                colname.year="Year", model.trend="Constant", 
                model.SD="Zero")
+               
+out.CI.Cst <- CI.RMU(result=cst)
+
+
+
 cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
                colname.year="Year", model.trend="Constant", 
                model.SD="Zero", 
@@ -113,7 +121,7 @@ YS1 <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
 YS1_cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
              colname.year="Year", model.trend="Year-specific", 
              model.SD="Constant", model.rookeries="First-order", 
-             optim="optimx", parameters=YS1$par, method=c("Nelder-Mead","BFGS"))
+             parameters=YS1$par, method=c("Nelder-Mead","BFGS"))
 YS2 <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
              colname.year="Year", model.trend="Year-specific",
              model.SD="Zero", model.rookeries="Second-order", 
@@ -123,8 +131,9 @@ YS2_cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
              model.SD="Constant", model.rookeries="Second-order", 
              parameters=YS1_cst$par, method=c("Nelder-Mead","BFGS"))
                
-compare_AIC(Constant=cst, Exponential=expo, 
-YearSpecific=YS)
+compare_AIC(Constant=cst, 
+            Exponential=expo, 
+            YearSpecific=YS)
 
 compare_AIC(YearSpecific_ProportionsFirstOrder_Zero=YS1,
 YearSpecific_ProportionsFirstOrder_Constant=YS1_cst)

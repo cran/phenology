@@ -65,8 +65,7 @@
 .IPlnL <- function (x, fixed.parameters, data, zero = 1e-10, verbose = FALSE, 
                     parallel = TRUE) 
 {
-  if (verbose) 
-    d(x)
+  if (verbose) d(x)
   c <- IPModel(c(x, fixed.parameters), parallel = parallel)$cumuld
   if (is.matrix(data)) {
     if (ncol(data) > length(c)) {
@@ -77,19 +76,28 @@
     }
     pb <- c/sum(c)
     pb[pb == 0] <- zero
+    if (any(is.na(pb))) {
+      pb <- c(1, rep(zero, ncol(data)-1))
+    }
     lnL <- 0
     for (r in 1:nrow(data)) {
-      lnL <- lnL + -dmultinom(data[r, ], prob = pb, log = TRUE)
+      lnL <- lnL - dmultinom(data[r, ], prob = pb, log = TRUE)
     }
     return(lnL)
   }    else {
-    if (length(data) > length(c)) {
-      c <- c(c, rep(0, length(data) - length(c)))
-    }        else {
-      data <- c(data, rep(0, length(c) - length(data)))
+    if (any(is.na(c))) {
+      pb <- c(1, rep(zero, length(data)-1))
+      return(-dmultinom(data, prob = pb, log = TRUE))
+    } else {
+      if (length(data) > length(c)) {
+        c <- c(c, rep(0, length(data) - length(c)))
+      }        else {
+        data <- c(data, rep(0, length(c) - length(data)))
+      }
+      pb <- c/sum(c)
+      pb[pb == 0] <- zero
+      
+      return(-dmultinom(data, prob = pb, log = TRUE))
     }
-    pb <- c/sum(c)
-    pb[pb == 0] <- zero
-    return(-dmultinom(data, prob = pb, log = TRUE))
   }
 }

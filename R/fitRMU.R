@@ -1,6 +1,6 @@
 #' fitRMU is used to estimate missing information when several linked values are observed along a timeseries
 #' @title Adjust incomplete timeseries with various constraints.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return a list with the results from optim and synthesis for proportions and numbers
 #' @param RMU.data A data.frame with a column Year (the name is defined in colname.year) and one to three columns per rookery defined in RMU.names
 #' @param years.byrow If TRUE, the RMU.data data.frame is organized with years in rows
@@ -14,20 +14,20 @@
 #' @param replicate.CI Number of replicates to estimate CI of proportion for each rookery
 #' @param colname.year Name of the column to be used as time index
 #' @param RMU.names A dataframe with one to three columns indicating name of columns for mean, standard deviation, and distribution for roockeris
-#' @param method Methods to be used by optimx()
-#' @param control List of controls for optimx()
+#' @param method Methods to be used by optim()
+#' @param control List of controls for optim()
 #' @param itnmax A vector with maximum iterations for each method.
 #' @param cptmax.optim How many times optim can be ran when likelihood is better.
 #' @param limit.cpt.optim Limit to consider that likelihood is better.
 #' @param maxL If an error is produced during the estimation of likelihood, replace -Ln L by this value
 #' @family Fill gaps in RMU
-#' @description The data must be a data.frame with the first column being years \cr
+#' @description The data must be a data.frame with the first column being years 
 #' and two columns for each beach: the average and the se for the estimate.\cr
 #' The correspondence between mean, se and density for each rookery are given in the RMU.names data.frame.\cr
 #' This data.frame must have a column named mean, another named se and a third named density. If 
-#' no sd column exists, no sd will be considered for the series and is no density column exists, it 
-#' will be considered as being "dnorm".\cr
-#' In the result list, the mean proportions for each rookeries are in $proportions, $proportions.CI.0.05 and $proportions.CI.0.95.\cr
+#' no sd column exists, no sd will be considered for the series and if no density column exists, it 
+#' will be considered as being "dnorm" (Gaussian distribution).\cr
+#' The aggregated number of nests and its confidence interval can be obtained using CI.RMU().\cr
 #' The names of beach columns must not begin by T_, SD_, a0_, a1_ or a2_ and cannot be r.\cr
 #' A RMU is the acronyme for Regional Managment Unit. See:\cr
 #' Wallace, B.P., DiMatteo, A.D., Hurley, B.J., Finkbeiner, E.M., Bolten, A.B., 
@@ -40,13 +40,14 @@
 #' conservation and research across multiple scales. PLoS One 5, e15465.\cr
 #' Variance for each value is additive based on both the observed SE (in the RMU.data 
 #' object) and a value.\cr
-#' The value is a global constant when model.SD is "global-constant". 
+#' The value is a global constant when model.SD is "global-constant". \cr
 #' The value is proportional to the observed number of nests when model.SD is 
 #' "global-proportional" with aSD_*observed+SD_ with aSD_ and SD_ being fitted 
 #' values. This value is fixed to zero when model.SD is "Zero".\cr
 #' The value is dependent on the rookery when model.SD is equal to 
 #' "Rookery-constant" or "Rookery-proportional" with a similar formula as previously 
-#' described for "global".
+#' described for "global".\cr
+#' if method is NULL, it will simply return the names of required parameters.
 #' @examples
 #' \dontrun{
 #' library("phenology")
@@ -104,7 +105,7 @@
 #' YS1_cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
 #'              colname.year="Year", model.trend="Year-specific", 
 #'              model.SD="Constant", model.rookeries="First-order", 
-#'              optim="optimx", parameters=YS1$par, method=c("Nelder-Mead","BFGS"))
+#'              parameters=YS1$par, method=c("Nelder-Mead","BFGS"))
 #' YS2 <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW, 
 #'              colname.year="Year", model.trend="Year-specific",
 #'              model.SD="Zero", model.rookeries="Second-order", 
@@ -127,7 +128,16 @@
 #' compare_AIC(YearSpecific_ProportionsFirstOrder=YS1_cst,
 #'            YearSpecific_ProportionsSecondOrder=YS2_cst)
 #' 
-#' plot(cst, main="Use of different beaches along the time", what="total")
+#' # Example of different types of plots
+#' plot(cst, main="Use of different beaches along the time", what="total", 
+#'      ylim=c(0, 4000))
+#' plot(cst, main="Use of different beaches along the time", what = "proportions", 
+#'      replicate.CI=0)
+#' plot(cst, main="Use of different beaches along the time", what = "numbers", 
+#'      aggregate="model", ylim=c(0, 4000), replicate.CI=0)
+#' plot(cst, main="Use of different beaches along the time", what = "numbers", 
+#'      aggregate="both", ylim=c(0, 11000), replicate.CI=0)
+#'      
 #' plot(expo, main="Use of different beaches along the time", what="total")
 #' plot(YS2_cst, main="Use of different beaches along the time", what="total")
 #' 
@@ -351,27 +361,42 @@ fitRMU <- function (RMU.data = stop("data parameter must be provided"),
   
   # print(d(x))
   
+  if (is.null(method)) return(list(fitted.parameters=x, fixed.parameters=fixed.parameters))
+  
+  nm <- names(x)
+  
   repeat {
     # rep(1, length(x))
     scale.factor <- x
     scale.factor <- ifelse(scale.factor == 0, 1, scale.factor)
     
-    result <- try(suppressWarnings(optimx::optimx(par = x, 
-                                                  fn = LikelihoodRMU, gr = NULL, fixed.parameters = fixed.parameters, 
-                                                  RMU.data = RMU.data, index = index, model.trend = model.trend, 
-                                                  colname.year=colname.year, RMU.names = RMU.names , 
-                                                  model.SD = model.SD, method = method, itnmax = itnmax, 
-                                                  control = modifyList(control, list(dowarn = FALSE, follow.on = TRUE, parscale=scale.factor)), 
-                                                  hessian = FALSE)), silent = TRUE)
-    if (any(class(result) == "try-error")) 
-      stop("An error occurred during the fit. Check initial conditions.")
-    minL <- dim(result)[1]
-    nm <- names(x)
-    x <- result[minL, 1:length(nm), drop = TRUE]
-    x <- unlist(x)
-    names(x) <- nm
-    conv <- result[minL, "convcode"]
-    value <- result[minL, "value"]
+    itnmax <- rep(itnmax, length(method))[1:length(method)]
+    
+    for (i in 1:length(method)) {
+      result <- optim(par = x, 
+                      fn = LikelihoodRMU, gr = NULL, fixed.parameters = fixed.parameters, 
+                      RMU.data = RMU.data, index = index, model.trend = model.trend, 
+                      colname.year=colname.year, RMU.names = RMU.names , 
+                      model.SD = model.SD, 
+                      method = method[i], 
+                      control = modifyList(control, list(maxit = itnmax[i], 
+                                                         parscale=scale.factor)), 
+                      hessian = FALSE)
+      
+      x <- result$par
+      # C'est utile à cause de la méthode Brent
+      names(x) <- nm
+    }
+    
+    # if (any(class(result) == "try-error")) 
+    #   stop("An error occurred during the fit. Check initial conditions.")
+    # minL <- dim(result)[1]
+    # nm <- names(x)
+    # x <- result[minL, 1:length(nm), drop = TRUE]
+    # x <- unlist(x)
+    # names(x) <- nm
+    # conv <- result[minL, "convcode"]
+    value <- result$value
     x[substr(names(x), 1, 2) == "T_"] <- abs(x[substr(names(x), 
                                                       1, 2) == "T_"])
     x[substr(names(x), 1, 3) == "SD_"] <- abs(x[substr(names(x), 
@@ -414,12 +439,9 @@ fitRMU <- function (RMU.data = stop("data parameter must be provided"),
     res_se <- rep(NA, length(x))
     names(res_se) <- names(x)
   }
-  result_list <- list()
-  result_list$par <- x
-  result_list$value <- value
-  result_list$convergence <- conv
-  result_list$hessian <- mathessian
-  result_list$SE <- modifyVector(res_se, SE)
+  
+  result$hessian <- mathessian
+  result$SE <- modifyVector(res_se, SE)
   if (value > 0) {
     print(paste("Convergence is achieved. -LnL=", 
                 format(value, digit = floor(log(abs(value))/log(10)) + 3)))
@@ -427,24 +449,24 @@ fitRMU <- function (RMU.data = stop("data parameter must be provided"),
     print(paste("Convergence is achieved. -LnL=", value))
   }
   
-  result_list$AIC <- 2 * value + 2 * length(x)
+  result$AIC <- 2 * value + 2 * length(x)
   print(paste("Parameters=", length(x)))
   
-  if (result_list$AIC > 0) {
-    print(paste("AIC=", format(result_list$AIC, digit = floor(log(abs(result_list$AIC))/log(10)) + 3)))
+  if (result$AIC > 0) {
+    print(paste("AIC=", format(result$AIC, digit = floor(log(abs(result$AIC))/log(10)) + 3)))
   }    else {
-    print(paste("AIC=", result_list$AIC))
+    print(paste("AIC=", result$AIC))
   }
   
-  result_list$model.trend <- model.trend
-  result_list$model.rookeries <- model.rookeries
-  result_list$RMU.data <- RMU.data
-  result_list$model.SD <- model.SD
-  result_list$RMU.names <- RMU.names
-  result_list$fixed.parameters.initial <- fpar
-  result_list$fixed.parameters.computing <- fixed.parameters
-  result_list$replicate.CI <- replicate.CI
-  result_list$colname.year <- colname.year
-  class(result_list) = "fitRMU"
-  return(result_list)
+  result$model.trend <- model.trend
+  result$model.rookeries <- model.rookeries
+  result$RMU.data <- RMU.data
+  result$model.SD <- model.SD
+  result$RMU.names <- RMU.names
+  result$fixed.parameters.initial <- fpar
+  result$fixed.parameters.computing <- fixed.parameters
+  result$replicate.CI <- replicate.CI
+  result$colname.year <- colname.year
+  result <- addS3Class(result, "fitRMU")
+  return(result)
 }

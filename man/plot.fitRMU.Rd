@@ -12,10 +12,14 @@
   replicate.CI = 10000,
   CI.RMU = NULL,
   what = "proportions",
+  criteria = "50\%",
   aggregate = "both",
   order = NULL,
   control.legend = list(),
-  show.legend = TRUE
+  show.legend = TRUE,
+  col = rainbow,
+  border = NA,
+  names.legend = NULL
 )
 }
 \arguments{
@@ -33,6 +37,8 @@
 
 \item{what}{Can be proportions, numbers or total}
 
+\item{criteria}{What criteria will be used for proportions or numbers: mean or 50\%}
+
 \item{aggregate}{Can be model or both}
 
 \item{order}{Give the order of series in plot, from bottom to top. Can be used to not show series.}
@@ -40,12 +46,20 @@
 \item{control.legend}{Parameters send to legend}
 
 \item{show.legend}{If FALSE, does not show legend}
+
+\item{col}{The function used to generate colors.}
+
+\item{border}{The border of polygons used to represent the proportions.}
+
+\item{names.legend}{Names to show in legend.}
 }
 \value{
 Return A list with result of CI.RMU()
 }
 \description{
-The function plot.fitRMU plots the results of fitRMU().
+The function plot.fitRMU plots the results of fitRMU().\cr
+In most of the cases, replicate.CI can be set to 0 for what="proportions" or "numbers".\cr
+The parameter CI.RMU can be used when this function is used several times with the same data.
 }
 \details{
 plot.fitRMU plots the results of a fit RMU.
@@ -112,8 +126,8 @@ compare_AIC(YearSpecific_ProportionsFirstOrder=YS1_cst,
            YearSpecific_ProportionsSecondOrder=YS2_cst)
 
 barplot_errbar(YS1_cst$proportions[1, ], y.plus = YS1_cst$proportions.CI.0.95[1, ], 
-y.minus = YS1_cst$proportions.CI.0.05[1, ], las=1, ylim=c(0, 0.7), 
-main="Proportion of the different rookeries in the region")
+               y.minus = YS1_cst$proportions.CI.0.05[1, ], las=1, ylim=c(0, 0.7), 
+               main="Proportion of the different rookeries in the region")
 
 plot(cst, main="Use of different beaches along the time", what="total")
 plot(expo, main="Use of different beaches along the time", what="total")
@@ -126,12 +140,17 @@ plot(YS1_cst, main="Use of different beaches along the time", what="numbers")
 parpre <- par(mar=c(4, 4, 2, 5)+0.4)
 par(xpd=TRUE)
 plot(YS, main="Use of different beaches along the time", 
-control.legend=list(x=2000, y=0.4, legend=c("Yalimapo", "Galibi", "Irakumpapy")))
+     control.legend=list(x=2000, y=0.4, legend=c("Yalimapo", "Galibi", "Irakumpapy")))
 par(mar=parpre)
 
 # Example to modify order of series
 plot(cst, order=c("Galibi.Suriname", "Irakumpapy.French.Guiana"))
 plot(cst, order=c("Galibi.Suriname", "Irakumpapy.French.Guiana", "Yalimapo.French.Guiana"))
+
+# Example to change the color
+plot(cst, order=c("Galibi.Suriname", "Irakumpapy.French.Guiana", "Yalimapo.French.Guiana"), 
+     col=function(n) rep(c("gray", "lightgrey"), floor(n/2)), border="black", 
+     names.legend=c("Yalimapo", "Galibi", "Irakumpapy"))
 }
 }
 \seealso{

@@ -1,6 +1,6 @@
 #' toggle_Min_PMin transforms a set of parameters from Min, MinB or MinE to PMin, PminB or PminE, or reverse
 #' @title Transform a set of parameters from Min, MinB or MinE to PMin, PminB or PminE, or reverse
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return a set of modified parameters
 #' @param parameters Set of current parameters
 #' @description This function is used to transform a set of parameters 

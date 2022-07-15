@@ -18,11 +18,11 @@
 #' @param previous Previous result to be continued. Can be the filename in which intermediate results are saved.
 #' @description Run the Metropolis-Hastings algorithm for data.\cr
 #' The number of iterations is n.iter+n.adapt+1 because the initial likelihood is also displayed.\cr
-#' I recommend thin=1 because the method to estimate SE uses resampling.\cr
-#' As initial point is maximum likelihood, n.adapt = 0 is a good solution.\cr
+#' I recommend thin=10.\cr
+#' If initial point is maximum likelihood, n.adapt = 0 is a good solution.\cr
 #' The parameters intermediate and filename are used to save intermediate results every 'intermediate' iterations (for example 1000). Results are saved in a file of name filename.\cr
 #' The parameter previous is used to indicate the list that has been save using the parameters intermediate and filename. It permits to continue a mcmc search.\cr
-#' These options are used to prevent the consequences of computer crash or if the run is very very long and computer processes at time limited.
+#' These options are used to prevent the consequences of computer crash or if the run is very very long and computer processes are time limited.
 #' @family Phenology model
 #' @examples 
 #' \dontrun{
@@ -85,8 +85,8 @@ phenology_MHmcmc<-function(result=stop("An output from fit_phenology() must be p
     print("Continue previous mcmc run")
   }
 
-  if (class(result)!="phenology") {
-    stop("An output from fit_phenology() must be provided")
+  if (!inherits(result, "phenology")) {
+    stop("An output of fit_phenology() must be provided")
   }
   
 pt <- list(data=result$data, fixed=result$fixed.parameters, 
@@ -103,11 +103,12 @@ print(parametersMCMC)
 out <- MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, 
                  n.chains = n.chains, n.adapt = n.adapt, thin=thin, 
                  adaptive = adaptive, adaptive.fun = adaptive.fun, adaptive.lag = adaptive.lag,
-                 trace=trace, traceML = traceML, pt=pt, likelihood=getFromNamespace(".Lnegbin", ns="phenology"))
+                 trace=trace, traceML = traceML, pt=pt, 
+                 likelihood=getFromNamespace(".Lnegbin", ns="phenology"))
 
 fin <- try(summary(out), silent=TRUE)
 
-if (class(fin)=="try-error") {
+if (inherits(fin, "try-error")) {
   lp <- rep(NA, nrow(out$parametersMCMC$parameters))
   names(lp) <- rownames(out$parametersMCMC$parameters)
   out <- c(out, SD=list(lp))
@@ -115,7 +116,7 @@ if (class(fin)=="try-error") {
   out <- c(out, SD=list(fin$statistics[,"SD"]))
 }
 
-class(out) <- "mcmcComposite"
+out <-addS3Class(out, "mcmcComposite")
 
 return(out)
 

@@ -22,6 +22,7 @@ Nothing
 }
 \description{
 This function plots the result of IPFit() or IPModel().\cr
+If col is defined with a number of colors, only these colors and shown in legend.
 }
 \details{
 plot.IP plots a result of Internesting Period fit or data
@@ -35,7 +36,7 @@ data <- c(0, 47, 15, 6, 5, 4, 2, 5, 57, 203, 205, 103, 35, 24, 12, 10,
   37, 27, 23, 24, 22, 41, 42, 44, 33, 39, 24, 18, 18, 22, 22, 19, 
   24, 28, 17, 18, 19, 17, 4, 12, 9, 6, 11, 7, 11, 12, 5, 4, 6, 
   11, 5, 6, 7, 3, 2, 1, 3, 2, 1, 2, 0, 0, 3, 1, 0, 2, 0, 0, 1)
-  class(data) <- "IP"
+  class(data) <- unique(append("IP", class(data)))
   plot(data)
   
 ######### Fit parametric ECF using Maximum-Likelihood
@@ -154,6 +155,6 @@ Other Model of Internesting Period:
 \code{\link{summary.IP}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Model of Internesting Period}

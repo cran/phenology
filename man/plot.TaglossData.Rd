@@ -55,6 +55,7 @@ Other Model of Tag-loss:
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_fit}()},
 \code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_mcmc}()},
 \code{\link{Tagloss_model}()},
 \code{\link{Tagloss_simulate}()},
@@ -63,6 +64,6 @@ Other Model of Tag-loss:
 \code{\link{plot.Tagloss}()}
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }
 \concept{Model of Tag-loss}

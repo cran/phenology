@@ -4,7 +4,16 @@
 \alias{Tagloss_format}
 \title{Format a CMR dataset into a file that Tagloss_L can use.}
 \usage{
-Tagloss_format(data, model = "21", progressbar = TRUE)
+Tagloss_format(
+  data,
+  model = "21",
+  progressbar = TRUE,
+  column.Date = "Date",
+  column.ID = "ID",
+  column.left = "L",
+  column.right = "R",
+  keeponly2 = TRUE
+)
 }
 \arguments{
 \item{data}{CMR file}
@@ -12,6 +21,16 @@ Tagloss_format(data, model = "21", progressbar = TRUE)
 \item{model}{Can be "21" or "LR"}
 
 \item{progressbar}{Is a progressbar been shown?}
+
+\item{column.Date}{Name of the column with Date}
+
+\item{column.ID}{Name of the column with ID}
+
+\item{column.left}{Name of the column with left tag}
+
+\item{column.right}{Name of the column with right tag}
+
+\item{keeponly2}{If TRUE, keep only individuals tagged with 2 tags}
 }
 \value{
 Return the maximum number of days an individual has been observed in a dataset.
@@ -32,7 +51,9 @@ Tagloss_format formats a CMR dataset into a file that Tagloss_L can use.
 \dontrun{
 library(phenology)
 # Example
+head(outLR)
 data_f_21 <- Tagloss_format(outLR, model="21")
+data_f_LR <- Tagloss_format(outLR, model="LR")
 }
 }
 \seealso{
@@ -42,6 +63,7 @@ Other Model of Tag-loss:
 \code{\link{Tagloss_cumul}()},
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_fit}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_mcmc}()},
 \code{\link{Tagloss_model}()},
 \code{\link{Tagloss_simulate}()},

@@ -1,6 +1,6 @@
 #' add_phenology creates a new dataset.
 #' @title Create a new dataset or add a timeserie to a previous dataset.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return a list of formated data that can be used ith fit_phenology()
 #' @param previous Previous data formated with add_phenology or NULL [default] if no previous data exist
 #' @param add The data to be added. It can be a set of several entities that uses the same reference and date format
@@ -13,13 +13,14 @@
 #' @param colname.Number Name or number of column with numbers
 #' @param colname.Rookery Name or number of column with rookery names
 #' @param include0 Does timeseries with only 0 should be included?
+#' @param check.overlapping.dates If TRUE, will check for date overlapping
 #' @param datepeakfor0 If series with no observation are included, where add a 1 value in ordinal date (see description)
 #' @param expandRange0Observation If TRUE, the range of date with 0 observations are expanded into individual dates
 #' @param silent Does information about added timeseries is shown
 #' @description To create a new dataset, the syntaxe is :\cr
 #' data <- add_phenology(add=newdata, name="Site", reference=as.Date('2001-12-31'), 
 #' format='\%d/\%m/\%y')\cr\cr
-#' To add a dataset to a previous one, the syntaxe is :\cr
+#' To add a dataset to a previous one, the syntax is :\cr
 #' data <- add_phenology(previous=previousdata, add=newdata, name='Site', \cr
 #' reference=as.Date('2001-01-01'), format="\%Y-\%m-\%d") \cr\cr
 #' The dataset to be added must include 2 or 3 columns.\cr
@@ -27,7 +28,7 @@
 #' the parameter format. If the number of nests is known  
 #' for an exact date, then only one date must be indicated.\cr  
 #' If the number of nests is known for a range of date, the 
-#' first and last dates must be separated but a sep.dates character.\cr
+#' first and last dates must be separated by a sep.dates character.\cr
 #' For example: 1/2/2000-10/2/2000\cr
 #' Note that date in the colname.Date column can be already formated and in this case 
 #' the parameter format is ignored.\cr\cr
@@ -40,7 +41,7 @@
 #' rookery of this name can be used.\cr\cr
 #' Several rookeries can be included in the same file but in this case 
 #' the rookery name is obligatory at the colname.Rookery column.\cr\cr
-#' #' The model cannot be fitted if a timeseries has no observation because the trivial 
+#' The model cannot be fitted if a timeseries has no observation because the trivial 
 #' solution is of course with max=0. The solution is to include a fake false observation at the closest 
 #' position of the peak, and then the estimated number of nests/tracks will be the estimated number - 1.\cr
 #' If include0 is TRUE, then the series with no observation are included and one observation is added 
@@ -105,13 +106,13 @@ add_phenology <-
            month_ref= NULL, sep.dates="-", 
            colname.Date=1, colname.Number=2, colname.Rookery=3, 
            format="%d/%m/%Y", previous=NULL, include0=FALSE, datepeakfor0=NULL, 
-           expandRange0Observation=TRUE, 
+           expandRange0Observation=TRUE, check.overlapping.dates=TRUE, 
            silent=FALSE) {
     
     
     # name=NULL; reference=NULL; month_ref= NULL; sep.dates="-"; format="%d/%m/%Y"; previous=NULL; colname.Date=1; colname.Number=2; colname.Rookery=3; silent=FALSE; include0=FALSE; datepeakfor0=NULL; expandRange0Observation=TRUE
     
-    if (class(previous) != "phenologydata" && !is.null(previous)) {
+    if ((!inherits(previous, "phenologydata")) & !is.null(previous)) {
       stop("The previous dataset must be already formated using add_phenology()!")
     }
     
@@ -123,15 +124,15 @@ add_phenology <-
         }
       }
       
-      if (class(try(add[, colname.Date], silent = TRUE)) == "try-error") {
+      if (inherits(try(add[, colname.Date], silent = TRUE), "try-error")) {
         stop("The columns with dates does not exist")
       }
       
-      if (class(try(add[, colname.Number], silent = TRUE)) == "try-error") {
+      if (inherits(try(add[, colname.Number], silent = TRUE), "try-error")) {
         stop("The columns with numbers does not exist")
       }
       
-      if (class(try(add[, colname.Rookery], silent = TRUE)) == "try-error") {
+      if (inherits(try(add[, colname.Rookery], silent = TRUE), "try-error")) {
         if (!silent) message("The columns with rookery name does not exist; I create one")
         add <- cbind(add, Site=rep(name, nrow(add)))
       }
@@ -228,6 +229,7 @@ add_phenology <-
         
         lg <- ifelse(as.POSIXlt(refencours+365)$mday == as.POSIXlt(refencours)$mday, 365, 366)
         
+        if (check.overlapping.dates) {
         # test cohérence
         if (max(c(df$ordinal, df$ordinal2)+1, na.rm = TRUE) > lg) {
           stop("More than one year for this series")
@@ -249,6 +251,9 @@ add_phenology <-
             }
           }
         }
+        } else {
+          if (!silent) message("Take care: no check for dates coherence.")
+        }
         df <- list(df)
         names(df) <- site
         intermediaire <- c(intermediaire, df)
@@ -256,8 +261,8 @@ add_phenology <-
       }
       
       previous <- c(previous, intermediaire)
-      class(previous) <- "phenologydata"
-      
+      # class(previous) <- "phenologydata"
+      class(previous) <- unique(append(class(previous), "phenologydata"))
     }
     
     if (length(previous) == 0) {
@@ -354,7 +359,8 @@ add_phenology <-
       }
       
       previous <- intermediaire
-      class(previous) <- "phenologydata"
+      
+      previous <- addS3Class(previous, "phenologydata")
     }
     
     return(previous)

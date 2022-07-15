@@ -34,5 +34,5 @@ parg1<-toggle_Min_PMin(parameters=parg)
 parg2<-toggle_Min_PMin(parameters=parg1)
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }

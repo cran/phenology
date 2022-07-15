@@ -3,10 +3,13 @@
 #' @author Marc Girondot
 #' @return A matrix with the parameters
 #' @param result An object obtained after a fitRMU() fit
-#' @param density Preset of density; can be dnorm or dunif
-#' @param accept If TRUE, does not wait for use interaction
+#' @param density Preset of density; can be dnorm, dunif, or dgamma
+#' @param accept If TRUE, does not wait for user interaction
 #' @family Fill gaps in RMU
-#' @description Interactive script used to generate set of parameters to be used with phenology_MHmcmc().\cr
+#' @description Interactive or automatic script used to generate set of parameters to be 
+#' used with fitRMU_MHmcmc().\cr
+#' If density="dgamma" is used, a uniform distribution is used for r, as 
+#' r can be negative.
 #' @examples 
 #' \dontrun{
 #' library("phenology")
@@ -40,7 +43,7 @@
 fitRMU_MHmcmc_p <- function(result=stop("An output from fitRMU() must be provided"), 
                             density="dunif", accept=FALSE) {
   
-  if (class(result)!="fitRMU") {
+  if (!inherits(result, "fitRMU")) {
     stop("An output from fitRMU() must be provided")
   }
   
@@ -55,84 +58,194 @@ fitRMU_MHmcmc_p <- function(result=stop("An output from fitRMU() must be provide
   
   for (indice.par in seq_along(result$par)) {
     par <- result$par[indice.par]
-    SE <- result$SE[indice.par]
-    if (is.na(SE)) SE <- par/10
     nm <- names(par)
+    par <- unname(par)
+    SE <- unname(abs(result$SE[indice.par]))
+    # 9/4/2022
+    SE <- ifelse(is.na(SE), abs(par/10), SE)
+    # if (is.na(SE)) SE <- abs(par/10)
+    
     if (nm=="r") {
       if (density[indice.par] == "dnorm") {
-        parametersMCMC_ec <- data.frame(Density="dnorm", Prior1=unname(par), Prior2=abs(unname(SE)), 
-                                        SDProp=2, Min=min(-1, unname(par)-1), 
-                                        Max=max(1, unname(par)+1), Init=unname(par), 
+        parametersMCMC_ec <- data.frame(Density="dnorm", Prior1=par, Prior2=SE, 
+                                        SDProp=2, Min=min(-1, par-1), 
+                                        Max=max(1, par+1), Init=par, 
                                         row.names = nm, stringsAsFactors = FALSE)
       } else {
+        if (density[indice.par] == "dgamma") {
+          warning("Gamma distribution is replaced by uniform distribution for r.")
+        }
         parametersMCMC_ec <- data.frame(Density="dunif", Prior1=-2, Prior2=+2, 
-                                        SDProp=2, Min=min(-2, unname(par)-2), 
-                                        Max=max(2, unname(par)+2), Init=unname(par), 
+                                        SDProp=2, Min=min(-2, par-2), 
+                                        Max=max(2, par+2), Init=par, 
                                         row.names = nm, stringsAsFactors = FALSE)
       }
     }
     if (substr(nm, 1, 2)=="T_") {
       if (density[indice.par] == "dnorm") {
         parametersMCMC_ec <- data.frame(Density="dnorm", 
-                                        Prior1=unname(par), Prior2=abs(unname(SE)), 
-                                        SDProp=2, 
+                                        Prior1=par, Prior2=SE, 
+                                        SDProp=par, 
                                         Min=0, 
-                                        Max=unname(par)*2, 
-                                        Init=unname(par), 
+                                        Max=par*2, 
+                                        Init=par, 
                                         row.names = nm, stringsAsFactors = FALSE)
       } else {
-        parametersMCMC_ec <- data.frame(Density="dunif", 
-                                        Prior1=0, Prior2=unname(par)*2, 
-                                        SDProp=2, 
-                                        Min=unname(par)/2, 
-                                        Max=unname(par)*2, 
-                                        Init=unname(par), 
-                                        row.names = nm, stringsAsFactors = FALSE)
+        if (density[indice.par] == "dgamma") {
+          # Prior1 est shape=a
+          # Prior2 est rate=1/s
+          # Moyenne=a*s
+          # Var=a*s^2
+          
+          # a=Moyenne/s=Moyenne*r
+          # Var=Moyenne/s*s^2
+          # Var=Moyenne*s
+          # s=Var/Moyenne
+          # r=Moyenne/Var
+          # a=Moyenne*r
+          
+          r <- par/(SE^2)
+          a <- par*r
+          parametersMCMC_ec <- data.frame(Density="dgamma", 
+                                          Prior1=a, Prior2=r, 
+                                          SDProp=par, 
+                                          Min=0, 
+                                          Max=par * 2, 
+                                          Init=par, 
+                                          row.names = nm, stringsAsFactors = FALSE)
+        } else {
+          parametersMCMC_ec <- data.frame(Density="dunif", 
+                                          Prior1=0, Prior2=par*2, 
+                                          SDProp=par, 
+                                          Min=0, 
+                                          Max=par*2, 
+                                          Init=par, 
+                                          row.names = nm, stringsAsFactors = FALSE)
+          
+        }
       }
     }
     
     if (substr(nm, 1, 3)=="SD_") {
       if (density[indice.par] == "dnorm") {
-        parametersMCMC_ec <- data.frame(Density="dnorm", Prior1=unname(par), Prior2=abs(unname(SE)), 
-                                        SDProp=2, Min=0.01, Max=max(20, unname(par)+20), Init=unname(par), 
+        parametersMCMC_ec <- data.frame(Density="dnorm", Prior1=par, Prior2=SE, 
+                                        SDProp=2, Min=0.01, Max=max(20, par+20), Init=par, 
                                         row.names = nm, stringsAsFactors = FALSE)
       } else {
-        parametersMCMC_ec <- data.frame(Density="dunif", Prior1=1E-5, Prior2=unname(par)+20, 
-                                        SDProp=2, Min=1E-5, Max=max(20, unname(par)+20), 
-                                        Init=unname(par), 
-                                        row.names = nm, stringsAsFactors = FALSE)
+        if (density[indice.par] == "dgamma") {
+          # Prior1 est shape=a
+          # Prior2 est rate=1/s
+          # Moyenne=a*s
+          # Var=a*s^2
+          
+          # a=Moyenne/s=Moyenne*r
+          # Var=Moyenne/s*s^2
+          # Var=Moyenne*s
+          # s=Var/Moyenne
+          # r=Moyenne/Var
+          # a=Moyenne*r
+          
+          r <- par/(SE^2)
+          a <- par*r
+          parametersMCMC_ec <- data.frame(Density="dgamma", 
+                                          Prior1=a, Prior2=r, 
+                                          SDProp=par, 
+                                          Min=0, 
+                                          Max=par * 2, 
+                                          Init=par, 
+                                          row.names = nm, stringsAsFactors = FALSE)
+        } else {
+          parametersMCMC_ec <- data.frame(Density="dunif", Prior1=1E-5, Prior2=par+20, 
+                                          SDProp=2, Min=1E-5, Max=max(20, par+20), 
+                                          Init=par, 
+                                          row.names = nm, stringsAsFactors = FALSE)
+          
+        }
         
       }
     }
     if (substr(nm, 1, 4)=="aSD_") {
       if (density[indice.par] == "dnorm") {
         parametersMCMC_ec <- data.frame(Density="dnorm", 
-                                        Prior1=unname(par), Prior2=abs(unname(SE)), 
-                                        SDProp=2, Min=1E-5, Max=max(20, unname(par)+20), 
-                                        Init=unname(par), 
+                                        Prior1=par, Prior2=SE, 
+                                        SDProp=2, Min=1E-5, Max=max(20, par+20), 
+                                        Init=par, 
                                         row.names = nm, stringsAsFactors = FALSE)
       } else {
-        parametersMCMC_ec <- data.frame(Density="dunif", 
-                                        Prior1=1E-5, Prior2=max(20, unname(par)+20), 
-                                        SDProp=2, Min=1E-5, Max=max(20, unname(par)+20), 
-                                        Init=unname(par), 
-                                        row.names = nm, stringsAsFactors = FALSE)
+        
+        if (density[indice.par] == "dgamma") {
+          # Prior1 est shape=a
+          # Prior2 est rate=1/s
+          # Moyenne=a*s
+          # Var=a*s^2
+          
+          # a=Moyenne/s=Moyenne*r
+          # Var=Moyenne/s*s^2
+          # Var=Moyenne*s
+          # s=Var/Moyenne
+          # r=Moyenne/Var
+          # a=Moyenne*r
+          
+          r <- par/(SE^2)
+          a <- par*r
+          parametersMCMC_ec <- data.frame(Density="dgamma", 
+                                          Prior1=a, Prior2=r, 
+                                          SDProp=par, 
+                                          Min=0, 
+                                          Max=par * 2, 
+                                          Init=par, 
+                                          row.names = nm, stringsAsFactors = FALSE)
+        } else {
+          parametersMCMC_ec <- data.frame(Density="dunif", 
+                                          Prior1=1E-5, Prior2=max(20, par+20), 
+                                          SDProp=2, Min=1E-5, Max=max(20, par+20), 
+                                          Init=par, 
+                                          row.names = nm, stringsAsFactors = FALSE)
+        }
+        
       }
     }
     if (substr(nm, 1, 1)=="a" & substr(nm, 3, 3)=="_") {
       if (density[indice.par] == "dnorm") {
         parametersMCMC_ec <- data.frame(Density="dnorm", 
-                                        Prior1=unname(par), Prior2=abs(unname(SE)), 
+                                        Prior1=par, Prior2=SE, 
                                         SDProp=2, Min=0, 
-                                        Max=max(20, unname(par)*2), Init=unname(par), 
+                                        Max=max(20, par*2), Init=par, 
                                         row.names = nm, stringsAsFactors = FALSE)
       } else {
-        parametersMCMC_ec <- data.frame(Density="dunif", 
-                                        Prior1=unname(par)/2, 
-                                        Prior2=unname(par)*2, 
-                                        SDProp=2, Min=unname(par)/2, 
-                                        Max=unname(par)*2, Init=unname(par), 
-                                        row.names = nm, stringsAsFactors = FALSE)
+        
+        if (density[indice.par] == "dgamma") {
+          # Prior1 est shape=a
+          # Prior2 est rate=1/s
+          # Moyenne=a*s
+          # Var=a*s^2
+          
+          # a=Moyenne/s=Moyenne*r
+          # Var=Moyenne/s*s^2
+          # Var=Moyenne*s
+          # s=Var/Moyenne
+          # r=Moyenne/Var
+          # a=Moyenne*r
+          
+          r <- par/(SE^2)
+          a <- par*r
+          parametersMCMC_ec <- data.frame(Density="dgamma", 
+                                          Prior1=a, Prior2=r, 
+                                          SDProp=par, 
+                                          Min=0, 
+                                          Max=par * 2, 
+                                          Init=par, 
+                                          row.names = nm, stringsAsFactors = FALSE)
+        } else {
+          parametersMCMC_ec <- data.frame(Density="dunif", 
+                                          Prior1=par/2, 
+                                          Prior2=par*2, 
+                                          SDProp=2, Min=par/2, 
+                                          Max=par*2, Init=par, 
+                                          row.names = nm, stringsAsFactors = FALSE)
+          
+        }
+        
         
       }
     }

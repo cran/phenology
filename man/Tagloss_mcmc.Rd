@@ -10,7 +10,7 @@ Tagloss_mcmc(
   fixed.parameters = NULL,
   model_before = NULL,
   model_after = NULL,
-  cores = detectCores(all.tests = FALSE, logical = TRUE),
+  mc.cores = detectCores(all.tests = FALSE, logical = TRUE),
   groups = detectCores(all.tests = FALSE, logical = TRUE),
   n.iter = 10000,
   n.chains = 1,
@@ -20,7 +20,9 @@ Tagloss_mcmc(
   traceML = FALSE,
   adaptive = FALSE,
   adaptive.lag = 500,
-  adaptive.fun = function(x) {     ifelse(x > 0.234, 1.3, 0.7) },
+  adaptive.fun = function(x) {
+     ifelse(x > 0.234, 1.3, 0.7)
+ },
   intermediate = NULL,
   filename = "intermediate.Rdata",
   previous = NULL
@@ -37,7 +39,7 @@ Tagloss_mcmc(
 
 \item{model_after}{Transformation of parameters after to use Tagloss_model()}
 
-\item{cores}{Number of cores to use for parallel computing}
+\item{mc.cores}{Number of cores to use for parallel computing}
 
 \item{groups}{Number of groups for parallel computing}
 
@@ -47,7 +49,7 @@ Tagloss_mcmc(
 
 \item{n.adapt}{Number of iteration to stabilize likelihood}
 
-\item{thin}{Interval for thinning likelihoods}
+\item{thin}{Interval for thinning Markov chain}
 
 \item{trace}{Or FALSE or period to show progress}
 
@@ -95,9 +97,12 @@ par <- c(a0_2=-5.43E-2, a1_2=-103.52, a4_2=5.62E-4,
          delta_1=3.2E-4)
 pfixed <- c(a2_2=0, a3_2=0, a2_1=0, a3_1=0)
 model_before <- "par['a0_1']=par['a0_2'];par['a1_1']=par['a1_2'];par['a4_1']=par['a4_2']"
-pMCMC <- data.frame()
-o <- Tagloss_mcmc(data=data_f_21, parameters=pMCMC, fixed.parameters=pfixed, 
+o <- Tagloss_fit(data=data_f_21, fitted.parameters=par, fixed.parameters=pfixed, 
                  model_before=model_before)
+pMCMC <- Tagloss_mcmc_p(o, accept=TRUE)
+o_MCMC <- Tagloss_mcmc(data=data_f_21, parameters=pMCMC, fixed.parameters=pfixed, 
+                 model_before=model_before, 
+                 n.iter=10000, n.chains = 1, n.adapt = 100, thin=30)
 }
 }
 \seealso{
@@ -108,6 +113,7 @@ Other Model of Tag-loss:
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_fit}()},
 \code{\link{Tagloss_format}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_model}()},
 \code{\link{Tagloss_simulate}()},
 \code{\link{logLik.Tagloss}()},

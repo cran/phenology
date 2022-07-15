@@ -1,6 +1,6 @@
 #' Tagloss_daymax returns the maximum number of days an individual has been observed in a dataset.
 #' @title Return the maximum number of days an individual has been observed in a dataset.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Return the maximum number of days an individual has been observed in a dataset.
 #' @param individuals Set of indivuals
 #' @param what By default is max, but can be min, mean or all
@@ -17,12 +17,14 @@
 
 
 Tagloss_daymax <- function (individuals, what = "max") {
-  if (any(class(individuals) == "TaglossData")) 
-    class(individuals) <- "data.frame"
-  if ((class(individuals) != "matrix") & (class(individuals) != 
-                                          "data.frame")) 
-    individuals <- matrix(data = individuals, nrow = 1, dimnames = list(NULL, 
-                                                                        names(individuals)))
+  # Je pense que ça n'est plus nécessaire, j'essaye de le retirer
+  if (FALSE)
+  if (inherits(individuals, "TaglossData")) 
+    class(individuals) <- unique(append("data.frame", class(individuals)))
+  
+  if ((!inherits(individuals,  "matrix")) & (!inherits(individuals, "data.frame"))) 
+    individuals <- matrix(data = individuals, nrow = 1, 
+                          dimnames = list(NULL,  names(individuals)))
   cn <- colnames(individuals)
   totnames <- c("NLR_LR", "NLR_L0", "NLR_0R", "NL0_L0", "N0R_0R", 
                 "NL0_00", "N0R_00", "NLR_00", "N22", "N21", "N11", "N10", 

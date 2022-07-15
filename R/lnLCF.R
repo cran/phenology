@@ -30,7 +30,7 @@
 #'          mu_season = 12.6404831115214353, 
 #'          sd_season = 1.69362774786433479, 
 #'          OTN=1)
-#' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:attributes(ECFOCF_2002)$table["end"]])
+#' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:attributes(ECFOCF_2002)$table["final"]])
 #' fixed.parameters <- c(p=-Inf)
 #' 
 #' lnLCF(x=par, data=ECFOCF_2002, fixed.parameters=fixed.parameters)
@@ -42,14 +42,16 @@
 
 lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) {
   
-  x <- c(x, fixed.parameters)
+ #  x <- NULL; data <- NULL; fixed.parameters <- NULL; parallel <- TRUE; verbose <- TRUE
   
-  if (verbose) d(x)
+  xx <- c(x, fixed.parameters)
+  
+  if (verbose) d(xx)
   
   # dans ml j'ai le nombre max de catégories
   # La partie entière c'est la catégorie
   # Donc je peux créer un mu1.1
-  ml <- suppressWarnings(floor(as.numeric(gsub("[a-zA-z]+", "", names(x)))))
+  ml <- suppressWarnings(floor(as.numeric(gsub("[a-zA-Z_]+", "", names(xx)))))
   if ((length(ml) == 1) | all(is.na(ml)) | (max(c(0, ml), na.rm=TRUE)==0)) {
     mln <- 1
   } else {
@@ -58,7 +60,7 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
   
   MaxNests <- max(dim(data)[c(1, 2)])-1
   
-  mu <- x[(substr(names(x), 1, 2)=="mu") & (substr(names(x), 1, 3) != "mu_")]
+  mu <- xx[(substr(names(xx), 1, 2)=="mu") & (substr(names(xx), 1, 3) != "mu_")]
   # if (length(mu)>1) mu <- mu[order(as.numeric(gsub("mu([0-9\\.]+)", "\\1", names(mu))))]
   # Ca ne va pas avec .
   # j'ai un mu. ou un mu
@@ -93,12 +95,12 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
     names(mu) <- gsub("mu[0-9]*(\\.*[0-9]*)", "mu1\\1", names(mu))
   }
   
-  sd <- x[(substr(names(x), 1, 2)=="sd") & (substr(names(x), 1, 3) != "sd_")]
+  sd <- xx[(substr(names(xx), 1, 2)=="sd") & (substr(names(xx), 1, 3) != "sd_")]
   if (identical(sd, structure(numeric(0), .Names = character(0)))) sd <- c(sd=NA)
   if (length(sd)>1) sd <- sd[order(as.numeric(gsub("sd([0-9]+)", "\\1", names(sd))))]
   sd <- structure(c(sd, rep(sd[length(sd)], mln-length(sd))), .Names=paste0("sd", 1:mln))
   
-  mu_season <- x[substr(names(x), 1, 9)=="mu_season"]
+  mu_season <- xx[substr(names(xx), 1, 9)=="mu_season"]
   if (length(mu_season)>1) mu_season <- mu_season[order(as.numeric(gsub("mu_season([0-9]+)", "\\1", names(mu_season))))]
   if (!identical(mu_season, structure(numeric(0), .Names = character(0)))) {
     mu_season <- c(mu_season, rep(mu_season[length(mu_season)], mln-length(mu_season)))
@@ -107,7 +109,7 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
     mu_season <- NA
   }
   
-  sd_season <- x[substr(names(x), 1, 9)=="sd_season"]
+  sd_season <- xx[substr(names(xx), 1, 9)=="sd_season"]
   if (length(sd_season)>1) sd_season <- sd_season[order(as.numeric(gsub("sd_season([0-9]+)", "\\1", names(sd_season))))]
   if (!identical(sd_season, structure(numeric(0), .Names = character(0)))) {
     sd_season <- c(sd_season, rep(sd_season[length(sd_season)], mln-length(sd_season)))
@@ -116,7 +118,7 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
     sd_season <- NA
   }
   
-  a <- x[substr(names(x), 1, 1)=="a"]
+  a <- xx[substr(names(xx), 1, 1)=="a"]
   if (identical(a, structure(numeric(0), .Names = character(0)))) {
     a <- structure(rep(Inf, mln), .Names=paste0("a", 1:mln))
   }
@@ -126,7 +128,7 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
   a <- 1/(1 + exp(-a_int))
   
   if (mln>1) {
-    OTN <- abs(x[substr(names(x), 1, 3)=="OTN"])
+    OTN <- abs(xx[substr(names(xx), 1, 3)=="OTN"])
     if (length(OTN)>1) OTN <- OTN[order(as.numeric(gsub("OTN([0-9]+)", "\\1", names(OTN))))]
     OTN <- c(OTN, 1)
     OTN <- c(OTN, rep(OTN[length(OTN)], mln-length(OTN)))
@@ -136,45 +138,27 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
     OTN <- c(OTN1=1)
   }
   
-  p <- x[substr(names(x), 1, 1)=="p"]
+  p <- xx[substr(names(xx), 1, 1)=="p"]
   # p <- 1/(1 + exp(-p))
   
-  OCFECF <- data
-  OCFECF[] <- 0
-  
-  for (j in 1:mln) {
-    
-    pcommon <- p[(names(p)=="p") | (names(p) == paste0("p", as.character(j)))][1]
-    # if (is.na(pcommon)) pcommon <- NA
-    if (dim(data)[3]>1) {
-      p_period <- structure(rep(pcommon, dim(data)[3]-MaxNests),
-                          .Names=paste0("p", as.character(j), ".",
-                                        formatC(1:(dim(data)[3]-MaxNests), width=2, flag="0")))
-    } else {
-      p_period <- structure(pcommon,
-                            .Names=paste0("p", as.character(j)))
-    }
-
-    m1 <- match(names(p), names(p_period))
-    if (all(is.na(m1))) m1 <- match(names(p), paste0("p.",
-                 formatC(1:(dim(data)[3]-MaxNests), width=2, flag="0")))
-
-    p_period[m1[!is.na(m1)]] <- p[!is.na(m1)]
-    p_period <- 1/(1+exp(-p_period))
-    
-    p_period[m1[!is.na(m1)]] <- p_period[m1[!is.na(m1)]] * a[paste0("a", j)]
-
-    nm <- paste0("p", as.character(j))
-    
-    OCFECF <- OCFECF+ ECFOCF_f(mu=mu[grepl(paste0("mu", j), names(mu))], 
-                               sd=sd[paste0("sd", j)], 
-                               p=p_period[substr(names(p_period), 1, nchar(nm))==nm],
-                               mu_season = mu_season[paste0("mu_season", j)], 
-                               sd_season = sd_season[paste0("sd_season", j)], 
-                               MaxNests=MaxNests, 
-                               length_season=dim(data)[3]-MaxNests, 
-                               parallel=parallel) * OTN[paste0("OTN", j)]
+  if (any((is.na(mu_season)) | (is.na((sd_season))))) {
+    length_mean_ec <- NA
+  } else {
+    length_mean_ec  <-  attributes(data)$characteristics["length_season"]
   }
+  
+  
+  OCFECF <- ECFOCF_full(mu=mu, 
+                        sd=sd, 
+                        p=p, 
+                        a=a, 
+                        MaxNests=MaxNests, 
+                        mu_season=mu_season, 
+                        sd_season=sd_season, 
+                        OTN=OTN, 
+                        MeanDaysBetween2Nests=attributes(data)$characteristics["MeanDaysBetween2Nest"], 
+                        length_season=length_mean_ec, 
+                        parallel=parallel)
   
   if (any(is.na(OCFECF[1, 1, ]))) {
     # ss1 <<- x

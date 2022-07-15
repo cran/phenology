@@ -1,4 +1,4 @@
-#' phenology_MHmcmc_p generates set of parameters to be used with MHmcmc()
+#' phenology_MHmcmc_p generates set of parameters to be used with phenology_MHmcmc()
 #' @title Generates set of parameters to be used with phenology_MHmcmc()
 #' @author Marc Girondot
 #' @return A matrix with the parameters
@@ -45,8 +45,8 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
                              default.density="dunif", 
                              accept=FALSE) {
   
-  if (class(result)!="phenology") {
-    stop("An output from fit_phenology() must be provided")
+  if (!inherits(result, "phenology")) {
+    stop("An output of fit_phenology() must be provided")
   }
   
   # d'abord je sors les paramètres à utiliser
@@ -293,17 +293,65 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
     Theta <- c("dnorm", pe, pe/2, 0.2, 0, max(c(10, pe+5)), pe)
   }
   
+  # "alpha"
+  pe <- ifelse(is.na(par["alpha"]), 5, par["alpha"])
+  if (default.density == "dunif") {
+    alpha <-c("dunif", 0, max(c(200, pe+50)), 0.4, 0, max(c(200, pe+50)), pe)
+  } else {
+    alpha <-c("dnorm", pe, pe/2, 0.4, 0, max(c(200, pe+50)), pe)
+  }
+  
+  # "tp"
+  pe <- ifelse(is.na(par["tp"]), 180, par["tp"])
+  if (default.density == "dunif") {
+    tp <-  c("dunif", 0, max(c(365, pe+100)), 5, 0, max(c(365, pe+100)), pe)
+  } else {
+    tp <-  c("dnorm", pe, pe/2, 5, 0, max(c(365, pe+100)), pe)
+  }
+  
+  # "tf"
+  pe <- ifelse(is.na(par["tf"]), 40, par["tf"])
+  if (default.density == "dunif") {
+    tf <-  c("dunif", 0, max(c(40, pe+50)), 20, 0, max(c(40, pe+50)), pe)
+  } else {
+    tf <-  c("dnorm", pe, pe/2, 20, 0, max(c(40, pe+50)), pe)
+  }
+  
+  # "s1"
+  pe <- ifelse(is.na(par["s1"]), 100, par["s1"])
+  if (default.density == "dunif") {
+    s1 <- c("dunif", 0, max(c(200, pe+50)), 20, 0, max(c(200, pe+50)), pe)
+  } else {
+    s1 <- c("dnorm", pe, pe/2, 20, 0, max(c(200, pe+50)), pe)
+  }
+  
+  # "s2"
+  pe <- ifelse(is.na(par["s2"]), 100, par["s2"])
+  if (default.density == "dunif") {
+    s2 <- c("dunif", 0, max(c(200, pe+50)), 20, 0, max(c(200, pe+50)), pe)
+  } else {
+    s2 <- c("dnorm", pe, pe/2, 20, 0, max(c(200, pe+50)), pe)
+  }
+  
+  # "sr"
+  pe <- ifelse(is.na(par["sr"]), 100, par["sr"])
+  if (default.density == "dunif") {
+    sr <- c("dunif", 0, max(c(200, pe+50)), 20, 0, max(c(200, pe+50)), pe)
+  } else {
+    sr <- c("dnorm", pe, pe/2, 20, 0, max(c(200, pe+50)), pe)
+  }
+  
   
   priors <- list(Peak, Flat, Begin, End, Length, LengthE, LengthB, 
                  Length, PMin, Min, PMinE, MinE, PMinB, MinB, Phi, Delta, Alpha, 
                  Beta, Tau, Phi1, Delta1, Alpha1, Beta1, Tau1, Phi2, Delta2, 
-                 Alpha2, Beta2, Tau2, Theta)
+                 Alpha2, Beta2, Tau2, Theta, alpha, tp, tf, s1, s2, sr)
   
   names(priors) <- c("Peak", "Flat", "Begin", "End", "Length", 
                      "LengthE", "LengthB", "Length", "PMin", "Min", "PMinE", "MinE", 
                      "PMinB", "MinB", "Phi", "Delta", "Alpha", "Beta", "Tau", "Phi1", 
                      "Delta1", "Alpha1", "Beta1", "Tau1", "Phi2", "Delta2", "Alpha2", 
-                     "Beta2", "Tau2", "Theta")
+                     "Beta2", "Tau2", "Theta", "alpha", "tp", "tf", "s1", "s2", "sr")
   
   for (i in 1:length(par)) {
     
@@ -386,6 +434,24 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       }
       names(priors)[length(priors)] <- names(par[i])
     }
+    if (substr(names(par[i]), 1, 6)=="Begin_") {
+      pe <- ifelse(is.na(par[i]), 100, par[i])
+      if (default.density == "dunif") {
+         priors <- c(priors, list(c("dunif", 0, max(c(365, pe+50)), 20, 0, max(c(365, pe+50)), pe)))
+      } else {
+        priors <- c(priors, list(c("dnorm", pe, pe/2, 20, 0, max(c(365, pe+50)), pe)))
+      }
+      names(priors)[length(priors)] <- names(par[i])
+    }
+    if (substr(names(par[i]), 1, 4)=="End_") {
+      pe <- ifelse(is.na(par[i]), 100, par[i])
+      if (default.density == "dunif") {
+        priors <- c(priors, list(c("dunif", 0, max(c(365, pe+50)), 20, 0, max(c(365, pe+50)), pe)))
+      } else {
+        priors <- c(priors, list(c("dnorm", pe, pe/2, 20, 0, max(c(365, pe+50)), pe)))
+      }
+      names(priors)[length(priors)] <- names(par[i])
+    }
   }
   
   
@@ -399,7 +465,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
   
   parametersMCMC <- matrix(prencours, ncol=7, byrow=T)
   colnames(parametersMCMC) <- c("Density", "Prior1", "Prior2", "SDProp", "Min", "Max", "Init")
-  rownames(parametersMCMC)<-names(par)
+  rownames(parametersMCMC)<- names(par)
   parametersMCMC <- as.data.frame(parametersMCMC, stringsAsFactors = FALSE)
   
   for (i in 2:7)

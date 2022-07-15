@@ -1,6 +1,6 @@
 #' plot.TaglossData plots formated data used for tagloss analysis
 #' @title Plot data used for tagloss analysis.
-#' @author Marc Girondot
+#' @author Marc Girondot \email{marc.girondot@@gmail.com}
 #' @return Nothing
 #' @param x A result for Tagloss_format.
 #' @param ... Graphic parameters, see par().
@@ -30,7 +30,10 @@ plot.TaglossData <- function (x, ...,
                               categories.legend=categories, 
                               show.legend=TRUE) {
   p3p <- list(...)
-  class(x) <- "data.frame"
+  # C'est bizarre ! Probablement plus nécessaire
+  # if (FALSE) 
+  # class(x) <- unique(append("data.frame", class(x)))
+  # class(x) <- "data.frame"
   par(mar=c(4, 2, 1, 1)+0.4)
   
   p3px <- modifyList(list(xlim=c(0, Tagloss_daymax(x)), ylim=c(1, nrow(x)), 

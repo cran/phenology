@@ -31,7 +31,8 @@ This function is used to transform a set of parameters
 that uses Peak, LengthB, LengthE, B, E, or Length to the same parameter 
 with Year effect, or reverse.\cr
 The parameter series can be or a result from add_phenology() or from 
-fit_phenology() or simply a vector of names.
+fit_phenology() or simply a vector of names.\cr
+If this is a vector of names, it is checked to remove _ characters.
 }
 \details{
 Parameter_Global_Year transforms a set of parameters from Year to global effect, or reverse
@@ -46,5 +47,5 @@ Parameter_Global_Year(parameters=c("Peak"=151),
 }
 }
 \author{
-Marc Girondot
+Marc Girondot \email{marc.girondot@gmail.com}
 }

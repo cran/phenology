@@ -18,7 +18,7 @@
 #'         a2=0)
 #' fp <- rep(0, dim(ECFOCF_2002)[3])
 #' names(fp) <- paste0("p.", formatC(1:(dim(ECFOCF_2002)[3]), width=2, flag="0"))
-#' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:attributes(ECFOCF_2002)$table["end"]])
+#' par <- c(par, fp[attributes(ECFOCF_2002)$table["begin"]:attributes(ECFOCF_2002)$table["final"]])
 #' fixed.parameters <- c(a1=Inf, p=-Inf)
 #' 
 #'  lnLCF(x=par, data=ECFOCF_2002, fixed.parameters=fixed.parameters)

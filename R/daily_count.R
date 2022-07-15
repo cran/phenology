@@ -1,4 +1,3 @@
-
 .daily_count <- function(d, xpar, 
                          cofactors=NULL, add.cofactors=NULL, 
                          print=FALSE, zero=1E-9) {
@@ -8,11 +7,29 @@
   # @author Marc Girondot
   # @param d Ordinal date (origin = 0)
   # @param xpar Set of fixed+fitted parameters
-  # @param print If TRUE, the result is displayed
-  # @param help If TRUE, an help is displayed
+  # @param print If TRUE, the result is printed
   # @return The number of each day in d
   # @description Function estimates counts based on set of parameters.
   
+  # Si c'est le modèle de Godley
+  
+  if (any(names(xpar) == "alpha", na.rm=TRUE)) {
+    alpha <- xpar["alpha"]
+    tp <- xpar["tp"]
+    tf <- xpar["tf"]
+    if (is.na(tf)) tf <- 0
+    s1 <- xpar["s1"]
+    s2 <- xpar["s2"]
+    sr <- xpar["sr"]
+    if (!is.na(sr)) {
+      if (is.na(s1)) s1 <- sr
+      if (is.na(s2)) s2 <- sr
+    }
+    
+    return(ifelse(d<(tp-tf), alpha*exp(-((d-tp+tf)/s1)^2), 
+                  ifelse(d>(tp+tf), alpha*exp(-((d-tp-tf)/s2)^2), 
+                         alpha)))
+  }
   
   
   nn <- ifelse(d<xpar["Begin"], xpar["MinB"],

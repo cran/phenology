@@ -171,6 +171,11 @@
     }
     L <- L.dnorm + L.gamma
   }
+  
+  if (!is.finite(L)) {
+    L <- 1E6
+    message(paste0("Error in likelihood ", d(x)))
+  }
   # print(L)
   return(L)
 }
