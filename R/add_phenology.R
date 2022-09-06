@@ -110,7 +110,7 @@ add_phenology <-
            silent=FALSE) {
     
     
-    # name=NULL; reference=NULL; month_ref= NULL; sep.dates="-"; format="%d/%m/%Y"; previous=NULL; colname.Date=1; colname.Number=2; colname.Rookery=3; silent=FALSE; include0=FALSE; datepeakfor0=NULL; expandRange0Observation=TRUE
+    # name=NULL; reference=NULL; month_ref= NULL; sep.dates="-"; format="%d/%m/%Y"; previous=NULL; colname.Date=1; colname.Number=2; colname.Rookery=3; include0=FALSE; datepeakfor0=NULL; expandRange0Observation=TRUE; check.overlapping.dates=TRUE; silent=FALSE
     
     if ((!inherits(previous, "phenologydata")) & !is.null(previous)) {
       stop("The previous dataset must be already formated using add_phenology()!")

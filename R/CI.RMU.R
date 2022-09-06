@@ -7,6 +7,7 @@
 #' @param chain Number of MCMC chain to be used
 #' @param regularThin If TRUE, use regular thin for MCMC
 #' @param replicate.CI Number of replicates
+#' @param probs The probabilities to return for quantiles
 #' @param silent If TRUE does not display anything
 #' @family Fill gaps in RMU
 #' @description The data must be a data.frame with the first column being years \cr
@@ -15,7 +16,7 @@
 #' This data.frame must have a column named mean, another named se and a third named density. If 
 #' no sd column exists, no sd will be considered for the series and is no density column exists, it 
 #' will be considered as being "dnorm".\cr
-#' In the result list, the mean proportions for each rookeries are in $proportions, $proportions.CI.0.05 and $proportions.CI.0.95.\cr
+#' In the result list, the mean proportions for each rookeries are in $proportions.\cr
 #' The names of beach columns must not begin by T_, SD_, a0_, a1_ or a2_ and cannot be r.\cr
 #' A RMU is the acronyme for Regional Managment Unit. See:\cr
 #' Wallace, B.P., DiMatteo, A.D., Hurley, B.J., Finkbeiner, E.M., Bolten, A.B., 
@@ -168,9 +169,10 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
                    chain=1, 
                    replicate.CI=10000, 
                    regularThin = TRUE, 
+                   probs=c(0.025, 0.5, 0.975), 
                    silent=FALSE) {
   
-  #  result=NULL; resultMCMC=NULL; chain=1; replicate.CI=10000; silent=FALSE; regularThin = TRUE
+  #  result=NULL; resultMCMC=NULL; chain=1; replicate.CI=10000; silent=FALSE; regularThin = TRUE; probs=c(0.025, 0.5, 0.975); silent=FALSE
   
   result$RMU.names$mean <- as.character(result$RMU.names$mean)
   rownames(result$RMU.names) <- result$RMU.names$mean
@@ -335,30 +337,34 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
     cumulTot <- c(cumulTot, Tot)
   }
   
-  if (errmissing) warning("Some years are missing; the option year-specific cannot be used safely")
+  if (errmissing) warning("Some years are missing. Take care when using these results.")
   
   
   tot2 <- matrix(cumulTot, nrow=nyear, byrow = FALSE)
   
-  dfTot <- apply(tot2, MARGIN=1, FUN=function(x) quantile(x, probs=c(0.025, 0.5, 0.975), na.rm = TRUE))
+  dfTot <- apply(tot2, MARGIN=1, FUN=function(x) quantile(x, probs=probs, na.rm = TRUE))
+  if (is.null(dim(dfTot))) {
+    dfTot <- matrix(dfTot, nrow = 1)
+    rownames(dfTot) <- paste0(as.character(probs*100), "%")
+  }
   dfTot <- rbind(dfTot, Mean=c(apply(tot2, MARGIN=1, FUN=mean)))
   dfTot <- rbind(dfTot, SD=c(apply(tot2, MARGIN=1, FUN=sd)))
   colnames(dfTot) <- years
   
-  map_prop_synthesis <- array(data = rep(NA, 5*nbeach*nyear), 
-                              dim=c(5, nyear, nbeach), 
-                              dimnames = list(c("2.5%", "50%", "97.5%", "Mean", "SD"), years, nabeach))
+  map_prop_synthesis <- array(data = rep(NA, (length(probs)+2)*nbeach*nyear), 
+                              dim=c(length(probs)+2, nyear, nbeach), 
+                              dimnames = list(c(paste0(as.character(probs*100), "%"), "Mean", "SD"), years, nabeach))
   map_number_synthesis <- map_prop_synthesis
   
   for (beach in nabeach) {
     for (y in years) {
       n <- map_prop[, y, beach]
-      nq <- quantile(n, probs=c(0.025, 0.5, 0.975), na.rm = TRUE)
+      nq <- quantile(n, probs=probs, na.rm = TRUE)
       nm <- mean(n, na.rm = TRUE)
       ns <- sd(n, na.rm = TRUE)
       map_prop_synthesis[, y, beach] <- c(nq, nm, ns)
       n <- map_number[, y, beach]
-      nq <- quantile(n, probs=c(0.025, 0.5, 0.975), na.rm = TRUE)
+      nq <- quantile(n, probs=probs, na.rm = TRUE)
       nm <- mean(n, na.rm = TRUE)
       ns <- sd(n, na.rm = TRUE)
       map_number_synthesis[, y, beach] <- c(nq, nm, ns)
@@ -430,7 +436,12 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
   
   tot <- matrix(cumulTot, nrow=nyear, byrow = TRUE)
   
-  dfTot_both <- apply(tot, MARGIN=1, FUN=function(x) quantile(x, probs=c(0.025, 0.5, 0.975), na.rm = TRUE))
+  dfTot_both <- apply(tot, MARGIN=1, FUN=function(x) quantile(x, probs=probs, na.rm = TRUE))
+  if (is.null(dim(dfTot_both))) {
+    dfTot_both <- matrix(dfTot_both, nrow = 1)
+    rownames(dfTot_both) <- paste0(as.character(probs*100), "%")
+  }
+  
   dfTot_both <- rbind(dfTot_both, Mean=c(apply(tot, MARGIN=1, FUN=mean, na.rm=TRUE)))
   dfTot_both <- rbind(dfTot_both, SD=c(apply(tot, MARGIN=1, FUN=sd, na.rm=TRUE)))
   colnames(dfTot_both) <- years
@@ -440,14 +451,14 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
     dfTot_both[, !(colnames(dfTot_both) %in% years)] <- NA
   }
   
-  map_number_synthesis_both <- array(data = rep(NA, 5*nbeach*nyear), 
-                                     dim=c(5, nyear, nbeach), 
-                                     dimnames = list(c("2.5%", "50%", "97.5%", "Mean", "SD"), years, nabeach))
+  map_number_synthesis_both <- array(data = rep(NA, (length(probs)+2)*nbeach*nyear), 
+                                     dim=c(length(probs)+2, nyear, nbeach), 
+                                     dimnames = list(c(paste0(as.character(probs*100), "%"), "Mean", "SD"), years, nabeach))
   
   for (beach in nabeach) {
     for (y in years) {
       n <- map_number_both[, y, beach,drop = FALSE]
-      nq <- quantile(n, probs=c(0.025, 0.5, 0.975), na.rm = TRUE)
+      nq <- quantile(n, probs=probs, na.rm = TRUE)
       nm <- mean(n, na.rm = TRUE)
       ns <- sd(n, na.rm = TRUE)
       map_number_synthesis_both[, y, beach] <- c(nq, nm, ns)

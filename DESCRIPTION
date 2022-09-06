@@ -2,8 +2,8 @@ Package: phenology
 Type: Package
 Title: Tools to Manage a Parametric Function that Describes Phenology
         and More
-Version: 7.8
-Date: 2022-07-14
+Version: 7.9
+Date: 2022-09-06
 Author: Marc Girondot
 Maintainer: Marc Girondot <marc.girondot@gmail.com>
 Depends: numDeriv, parallel, optimx, HelpersMG (>= 5.5), R (>= 4.1)
@@ -15,7 +15,7 @@ LazyData: yes
 LazyLoad: yes
 Encoding: UTF-8
 NeedsCompilation: no
-RoxygenNote: 7.2.0
-Packaged: 2022-07-14 05:47:07 UTC; marcgirondot
+RoxygenNote: 7.2.1
+Packaged: 2022-09-06 20:31:47 UTC; marcgirondot
 Repository: CRAN
-Date/Publication: 2022-07-15 13:00:02 UTC
+Date/Publication: 2022-09-06 21:20:02 UTC

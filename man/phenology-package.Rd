@@ -10,7 +10,7 @@ Note that only the most significant changes are reported in the NEWS.\cr
 The latest version of this package can always been installed using:\cr
 install.packages("https://hebergement.universite-paris-saclay.fr/marcgirondot/CRAN/HelpersMG.tar.gz", repos=NULL, type="source")\cr
 install.packages("https://hebergement.universite-paris-saclay.fr/marcgirondot/CRAN/phenology.tar.gz", repos=NULL, type="source")\cr
-\if{html}{\figure{imgfile.png}{options: alt="phenology logo", align="right"}}
+\if{html}{\figure{imgfile.png}{options: alt="phenology logo"}}
 \if{latex}{\figure{imgfile.png}}
 }
 \details{
@@ -19,8 +19,8 @@ Fit a parametric function that describes phenology
 \tabular{ll}{
  Package: \tab phenology\cr
  Type: \tab Package\cr
- Version: \tab 7.8 build 1441\cr
- Date: \tab 2022-07-14\cr
+ Version: \tab 7.9 build 1446\cr
+ Date: \tab 2022-09-06\cr
  License: \tab GPL (>= 2)\cr
  LazyLoad: \tab yes\cr
  }

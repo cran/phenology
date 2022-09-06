@@ -5,6 +5,15 @@ What must be done:
 
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
+            CHANGES IN VERSION 7.9 (2022-09-06)
+            
+* New CRAN version - 7.9 (2022-09-06)
+
+            CHANGES IN VERSION 7.8-4 (2022-09-06)
+            
+* Show intermediate fitted values in fit_phenology() - 7.8-1 (2022-08-22)
+* Customized probs values in CI.RMU - 7.8-3 (2022-09-06)
+
             CHANGES IN VERSION 7.8 (2022-07-14)
             
 * New CRAN version - 7.6 (2020-10-22)

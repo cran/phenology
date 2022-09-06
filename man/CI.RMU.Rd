@@ -10,6 +10,7 @@ CI.RMU(
   chain = 1,
   replicate.CI = 10000,
   regularThin = TRUE,
+  probs = c(0.025, 0.5, 0.975),
   silent = FALSE
 )
 }
@@ -24,6 +25,8 @@ CI.RMU(
 
 \item{regularThin}{If TRUE, use regular thin for MCMC}
 
+\item{probs}{The probabilities to return for quantiles}
+
 \item{silent}{If TRUE does not display anything}
 }
 \value{
@@ -36,7 +39,7 @@ The correspondence between mean, se and density for each rookery are given in th
 This data.frame must have a column named mean, another named se and a third named density. If 
 no sd column exists, no sd will be considered for the series and is no density column exists, it 
 will be considered as being "dnorm".\cr
-In the result list, the mean proportions for each rookeries are in $proportions, $proportions.CI.0.05 and $proportions.CI.0.95.\cr
+In the result list, the mean proportions for each rookeries are in $proportions.\cr
 The names of beach columns must not begin by T_, SD_, a0_, a1_ or a2_ and cannot be r.\cr
 A RMU is the acronyme for Regional Managment Unit. See:\cr
 Wallace, B.P., DiMatteo, A.D., Hurley, B.J., Finkbeiner, E.M., Bolten, A.B., 

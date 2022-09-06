@@ -286,6 +286,8 @@ fit_phenology <-
         
         resul$par <- resfit
         fitted.parameters <- resfit
+        # 22/8/2022
+        fake <- d(fitted.parameters)
       }
       
       conv <- resul$convergence

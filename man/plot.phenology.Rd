@@ -19,8 +19,8 @@
   col.SD = "red",
   col.SD.polygon = rgb(red = 1, green = 0, blue = 0, alpha = 0.2),
   col.MCMC.quantiles = "purple",
-  col.MCMC.quantiles.polygon = rgb(red = 160/255, green = 32/255, blue = 240/255, alpha
-    = 0.2),
+  col.MCMC.quantiles.polygon = rgb(red = 160/255, green = 32/255, blue = 240/255, alpha =
+    0.2),
   col.ML.quantiles = "black",
   col.ML.quantiles.polygon = rgb(red = 0, green = 0, blue = 0, alpha = 0.2),
   col.observations = "black",
