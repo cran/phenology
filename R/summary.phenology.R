@@ -66,7 +66,7 @@ summary.phenology <- function(object,
       cat(paste(names(object$data[i]), "\n", sep=""))
     }
     cat(paste("Date uncertainty management: ", object$method_incertitude, "\n", sep=""))
-    cat(paste("Managment of zero counts: ", object$zero_counts, "\n", sep=""))
+    
     cat("Fitted parameters:\n")
     for (i in 1:length(object$par)) {
       cat(paste(names(object$par[i]), "=", object$par[i], " SE ", object$se[i], "\n", sep=""))
@@ -170,17 +170,19 @@ summary.phenology <- function(object,
     nday <- ifelse(as.POSIXlt(dref+365)$mday==as.POSIXlt(dref)$mday, 365, 366)
     
     # Observed counts
-    observedPontes <- data.frame(ordinal=object$data[[nmser]][, "ordinal"], 
-                                 observed=object$data[[nmser]][, "nombre"])
+    observedPontes <- data.frame(ordinal=object$data[[nmser]][object$data[[nmser]]$CountTypes == "exact", "ordinal"], 
+                                 observed=object$data[[nmser]][object$data[[nmser]]$CountTypes == "exact", "nombre"])
     # je mets des 0 à toutes les dates supplémentaires de la série
-    if (any(!is.na(object$data[[nmser]][, "ordinal2"]))) {
-      for (i in which(!is.na(object$data[[nmser]][, "ordinal2"]))) {
+    if (any(!is.na(object$data[[nmser]][object$data[[nmser]]$CountTypes == "exact", "ordinal2"]))) {
+      for (i in which((!is.na(object$data[[nmser]][, "ordinal2"]) & (object$data[[nmser]]$CountTypes == "exact")))) {
         rnge <- (object$data[[nmser]][i, "ordinal"]+1):(object$data[[nmser]][i, "ordinal2"])
         observedPontes <- rbind(observedPontes, 
                                 data.frame(ordinal= rnge, 
                                            observed=rep(0, length(rnge))))
       }
     }
+    
+    
     
     
     parg <- formatpar(c(object$par, object$fixed.parameters), nmser)
@@ -220,7 +222,7 @@ summary.phenology <- function(object,
     SDMax <- NULL
     for (mu in dc_mean) {
       qnb <- qnbinom(p = c(probs[1], probs[3]), 
-                     size=c(object$par, object$fixed.parameters)["Theta"], 
+                     size=parg["Theta"], 
                      mu=mu)
       SDMin <- c(SDMin, qnb[1])
       SDMax <- c(SDMax, qnb[2])

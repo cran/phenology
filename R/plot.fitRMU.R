@@ -134,10 +134,11 @@ plot.fitRMU <- function (x, ..., resultMCMC=NULL, chain=1, replicate.CI=10000, C
   # if ((what == "proportions") | (what=="numbers")) replicate.CI <- 0
   
   if (((what == "proportions") | (what=="numbers")) & (replicate.CI != 0)) {
+    replicate.CI <- 0
     warning("Median of proportion of beach usage will be shown.") 
   }
   
-  if ((what == "total") & (is.null(x$hessian) & is.null(resultMCMC))) {
+  if ((what == "total") & (is.null(x$hessian) & is.null(resultMCMC)) & (replicate.CI != 0)) {
     replicate.CI <- 0
     warning("No confidence interval can be estimated") 
   }

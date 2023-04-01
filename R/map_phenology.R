@@ -7,9 +7,6 @@
 #' @param fitted.parameters Set of parameters to be fitted
 #' @param Phi Phi values to be analyzed
 #' @param Delta Delta value to be analyzed
-#' @param tol Tolerance of recurrence for dSnbinom() used for convolution of negative binomial distribution
-#' @param zero_counts Example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
-#'                    been recorded for each of these timeseries. Defaut is TRUE for all.
 #' @param cofactors data.frame with a column Date and a column for each cofactor
 #' @param add.cofactors Names of the column of parameter cofactors to use as a cofactor
 #' @param zero If the theoretical nest number is under this value, this value wll be used
@@ -69,12 +66,11 @@
 
 map_phenology <-
   function(data=NULL, fitted.parameters=NULL, fixed.parameters=NA, 
-           Phi=seq(from=0.2,to=20, length.out=100), Delta=NULL, tol=1E-6, 
-           zero_counts=TRUE, 
+           Phi=seq(from=0.2,to=20, length.out=100), Delta=NULL, 
            progressbar=any(installed.packages()[, "Package"] == "pbapply"), 
            cofactors=NULL, add.cofactors=NULL, zero=1E-9) {
     
-    # data=NULL; fitted.parameters=NULL; fixed.parameters=NA;Phi=seq(from=0.2,to=20, length.out=100); Delta=NULL; tol=1E-6; zero_counts=TRUE; progressbar=TRUE; cofactors=NULL; add.cofactors=NULL; zero=1E-9
+    # data=NULL; fitted.parameters=NULL; fixed.parameters=NA;Phi=seq(from=0.2,to=20, length.out=100); Delta=NULL; progressbar=TRUE; cofactors=NULL; add.cofactors=NULL; zero=1E-9
     mc.cores <- getOption("mc.cores", detectCores())
     forking <- getOption("forking", ifelse(.Platform$OS.type == "windows", FALSE, TRUE))
     
@@ -96,11 +92,6 @@ map_phenology <-
     
     # SET MATRIX
     # input <- matrix(data=NA, nrow=LPhi, ncol=LDelta)
-    
-    if (length(zero_counts)==1) {zero_counts <- rep(zero_counts, length(data))}
-    if (length(zero_counts)!=length(data)) {
-      stop("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) or possess the same number of logical values than the number of series analyzed.")
-    }
     
     
     # si ni Alpha ni Beta ne sont à ajuster, je mets Beta
@@ -142,8 +133,7 @@ map_phenology <-
       CEG <- list(expr=expression(library("phenology")))
     }
     
-    pt <- list(data=data, fixed=fixed.parameters, 
-               zerocounts=zero_counts, out=TRUE, tol=tol, 
+    pt <- list(data=data, fixed=fixed.parameters, out=TRUE, 
                cofactors=cofactors, parallel=FALSE, 
                add.cofactors=add.cofactors, zero=zero, 
                store.intermediate=FALSE, 

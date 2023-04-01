@@ -12,7 +12,10 @@ add_phenology(
   sep.dates = "-",
   colname.Date = 1,
   colname.Number = 2,
-  colname.Rookery = 3,
+  colname.Rookery = "Site",
+  colname.CountTypes = NULL,
+  colname.ZeroCounts = NULL,
+  ZeroCounts.default = TRUE,
   format = "\%d/\%m/\%Y",
   previous = NULL,
   include0 = FALSE,
@@ -29,17 +32,23 @@ add_phenology(
 
 \item{reference}{as.Date('2001-12-31') The date used as 1st date}
 
-\item{month_ref}{If no reference date is given, use this month as a reference}
+\item{month_ref}{If no reference date is given, use this month as a reference.}
 
-\item{sep.dates}{Separator used to separate dates when incertitude is included}
+\item{sep.dates}{Separator used to separate dates when incertitude is included.}
 
-\item{colname.Date}{Name or number of column with dates}
+\item{colname.Date}{Name or number of column with dates.}
 
-\item{colname.Number}{Name or number of column with numbers}
+\item{colname.Number}{Name or number of column with numbers.}
 
-\item{colname.Rookery}{Name or number of column with rookery names}
+\item{colname.Rookery}{Name or number of column with rookery names.}
 
-\item{format}{The format of the dates}
+\item{colname.CountTypes}{Model of count type. It can be "exact" (default) ou "minimum".}
+
+\item{colname.ZeroCounts}{The name of the column to indicate whether zero counts are included (TRUE is default).}
+
+\item{ZeroCounts.default}{The default for ZeroCounts.}
+
+\item{format}{The format of the dates.}
 
 \item{previous}{Previous data formated with add_phenology or NULL [default] if no previous data exist}
 

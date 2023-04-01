@@ -11,6 +11,10 @@
 .format_par <- function(xpar, serie) {
   
   #  xpar <- c(Min=12, Peak_Alpha=15, Peak_Beta=-16, Theta=16, Begin=15);serie="Alpha"
+  #  getFromNamespace(".format_par", ns="phenology")(xpar, serie)
+  
+  # xpar <- c(Min=12, Peak_Alpha=15, Peak_Beta=-16, Theta_Alpha=16, Begin=15);serie="Alpha"
+  # getFromNamespace(".format_par", ns="phenology")(xpar, serie)
   
   # xpar <- na.omit(xpar)
   

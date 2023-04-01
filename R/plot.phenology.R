@@ -22,6 +22,7 @@
 #' @param col.ML.quantiles.polygon Color of the confidence interval polygon based on ML. If FALSE not shown.
 #' @param col.observations Color of the points
 #' @param col.grouped.observations Color of the lines indicating grouped observations
+#' @param col.minimum.observations Color of the points indicating minimum counts
 #' @description The function plot.phenology plots the phenology graph from a result object.\cr
 #' If cofactors have been added, the plot does not show their effects.\cr
 #' plot.objects can be "observations", "ML" for maximum likelihood, "ML.SD" for dispersion of 
@@ -90,9 +91,10 @@ plot.phenology <-
            col.ML.quantiles="black",
            col.ML.quantiles.polygon=rgb(red = 0, green = 0, blue = 0, alpha = 0.2), 
            col.observations = "black", 
+           col.minimum.observations = "blue"                                                          ,
            col.grouped.observations = "green") {
     
-    # x=NULL; series="all"; moon=FALSE; level=0.95; replicate.CI=1000; progressbar=TRUE; growlnotify=TRUE; show.plot=TRUE; resultmcmc = NULL; chain = 1; replicate.CI.mcmc = "all"; plot.objects = c("observations", "ML", "ML.SD", "ML.quantiles", "MCMC.quantiles"); col.ML="black"; col.SD="red"; col.MCMC.quantiles="purple"; col.ML.quantiles="black"; col.observations = "black"; col.grouped.observations = "green"; col.SD.polygon=rgb(red = 1, green = 0, blue = 0, alpha = 0.2); col.MCMC.quantiles.polygon=rgb(red = 160/255, green = 32/255, blue = 240/255, alpha = 0.2); col.ML.quantiles.polygon=rgb(red = 0, green = 0, blue = 0, alpha = 0.2) 
+    # x=NULL; series="all"; moon=FALSE; level=0.95; replicate.CI=1000; progressbar=TRUE; growlnotify=TRUE; show.plot=TRUE; resultmcmc = NULL; chain = 1; replicate.CI.mcmc = "all"; plot.objects = c("observations", "ML", "ML.SD", "ML.quantiles", "MCMC.quantiles"); col.ML="black"; col.SD="red"; col.MCMC.quantiles="purple"; col.ML.quantiles="black"; col.observations = "black"; col.grouped.observations = "green"; col.observations = "black"; col.minimum.observations = "blue"; col.SD.polygon=rgb(red = 1, green = 0, blue = 0, alpha = 0.2); col.MCMC.quantiles.polygon=rgb(red = 160/255, green = 32/255, blue = 240/255, alpha = 0.2); col.ML.quantiles.polygon=rgb(red = 0, green = 0, blue = 0, alpha = 0.2) 
     
 
     p3p <- list(...)
@@ -224,9 +226,12 @@ plot.phenology <-
       }
       
       if (!is.null(data) & any(plot.objects == "observations")) {
+        
+        col_ec <- ifelse(data[[nmser]]$CountTypes[is.na(data[[nmser]]$Date2)] == "exact", col.observations, col.minimum.observations)
         points(x = data[[nmser]]$Date[is.na(data[[nmser]]$Date2)], 
                y=data[[nmser]]$nombre[is.na(data[[nmser]]$Date2)], 
-               pch=16, col=col.observations, cex=0.5)
+               pch=16, 
+               col=col_ec, cex=0.5)
         
         for(i in 1:dim(data[[nmser]])[1]) {
           

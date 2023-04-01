@@ -9,11 +9,11 @@ phenology_MHmcmc(
   n.iter = 10000,
   parametersMCMC = stop("A model generated with phenology_MHmcmc_p() must be provided"),
   n.chains = 1,
-  n.adapt = 0,
+  n.adapt = 1000,
   thin = 1,
   trace = FALSE,
   traceML = FALSE,
-  adaptive = FALSE,
+  adaptive = TRUE,
   adaptive.lag = 500,
   adaptive.fun = function(x) {
      ifelse(x > 0.234, 1.3, 0.7)

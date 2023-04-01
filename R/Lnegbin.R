@@ -6,33 +6,13 @@
 # @param pt Transfer parameters
 # pt=list(data=data, fixed=fixed.parameters, 
 #         parallel=parallel, 
-#         zerocounts=zero_counts, 
-#         tol=tol, out=out, 
+#         out=out, 
 #         namespar=names(fitted.parameters), 
 #         zero=zero, cofactors=cofactors, 
 #         add.cofactors=add.cofactors)
 # @description Function of the package phenology
 
 .Lnegbin <- function (x, pt) {
-  
-  # # pt$parallel = FALSE if no parallel (but mclapply is still used)
-  # mcutil <- 1
-  # 
-  # if (!is.null(pt$parallel)) {
-  #   if (pt$parallel) {
-  #     mcutil <- detectCores()
-  #     forking <- ifelse(.Platform$OS.type == "windows", FALSE, TRUE)
-  #   } 
-  # } else {
-  #   mcutil <- detectCores()
-  #   forking <- ifelse(.Platform$OS.type == "windows", FALSE, TRUE)
-  # }
-  # 
-  # # 12/10/2018. J'ai eu une erreur Error in if (mcutil != 1) { : valeur manquante là où TRUE / FALSE est requis
-  # if (is.null(mcutil)) mcutil <- 1
-  # if (is.na(mcutil)) mcutil <- 1
-  
-  # mcutil <- getOption("forking", ifelse(.Platform$OS.type == "windows", FALSE, TRUE))
   
   if (!is.null(pt$parallel)) {
     if (pt$parallel) {
@@ -50,10 +30,11 @@
   
   
   # 2/10/2019: A priori ca sert en méthode Brent qui ne transmet pas les noms. Oui c'est ça
-  if (!is.null(pt$namespar)) {
-    names(x) <- pt$namespar
+  if (is.null(names(x))) {
+    if (!is.null(pt$namespar)) {
+      names(x) <- pt$namespar
+    }
   }
-  
   
   # 19/3/2016: je rajoute cofactors et add.cofactors dans pt
   
@@ -61,96 +42,185 @@
   # .phenology.env<- NULL
   # rm(.phenology.env)
   
-  # pt=list(data=data, fixed=fixed.parameters, zerocounts=zero_counts)
+  # pt=list(data=data, fixed=fixed.parameters)
   
   sum = 0
   # je mets tous les paramètres dans xpar
   xpar <- c(x, pt$fixed)
   # Si out vaut TRUE, renvoie la somme des vraisemblances
   # Sinon la vraisemblance de chaque série
-  out <- pt$out
+  
+  if (is.null(pt$out)) {
+    out <- TRUE
+  } else {
+    out <- pt$out
+  }
+  
+  
+  if (is.null(pt$zero)) {
+    zero <- 1E-9
+  } else {
+    zero <- pt$zero
+  }
+  
+  # deb <- ifelse(zero, 0, 1)
+  
   
   datatot <- pt$data
-  tol <- pt$tol
-  if (is.null(tol)) tol <- 1e-6
+  
+  add.cofactors <- pt$add.cofactors
+  cofactors <- pt$cofactors
+  
+  
   daily_count <- getFromNamespace(".daily_count", ns = "phenology")
   format_par <- getFromNamespace(".format_par", ns = "phenology")
   
-  rg <- try(universalmclapply(X = seq_along(datatot), mc.cores =  mc.cores, 
+  rg <- try(universalmclapply(X = seq_along(datatot), mc.cores =  mc.cores,
                               FUN = function(k) {
-                                
+
                                 # for (k in seq_along(datatot)) {
-                                #   
-                                #   print(k)
+                                # 
+                                # print(k)
+                                # k <- 1
+                                
+                                deb <- 0
+                                
                                 
                                 data <- datatot[[k]]
                                 nmser <- names(datatot)[k]
-                                if (is.null(names(pt$zerocounts))) {
-                                  zero_counts <- pt$zerocounts[k] 
-                                } else {
-                                  zero_counts <- pt$zerocounts[nmser] 
-                                }
-                                zero <- pt$zero
-                                deb <- ifelse(zero, 0, 1)
+                                
                                 xparec <- format_par(xpar=xpar, serie=nmser)
                                 th <- xparec["Theta"]
-                                if (th < tol) th <- tol
-                                # Il faut que je fasse daily_count(data$ordinal[i], xparec, print = FALSE, zero = pt$zero) une seule fois
+                                if (th < 1E-6) th <- 1E-6
+                                # Il faut que je fasse daily_count(data$ordinal[i], xparec, print = FALSE, zero = zero) une seule fois
                                 # Le premier jour de la série est 0 et donc il est à l'indice 1
                                 # data$ordinal[i]
                                 # data$ordinal2[i]
                                 
-                                j <- unlist(apply(X = data, MARGIN = 1, FUN=function(x) x["ordinal"]:ifelse(is.na(x["ordinal2"]), x["ordinal"], x["ordinal2"])))
-                                nbperday <- rep(NA, max(366, j+1))
+                                j <- unname(unlist(apply(X = data, MARGIN = 1, FUN=function(x) seq(from=x["ordinal"], to=ifelse(is.na(x["ordinal2"]), x["ordinal"], x["ordinal2"]), by=1))))
+                                nbperday <- rep(NA, max(366, j+1)-deb)
                                 # Je dois envoyer les données de cofactors avec seulement les dates
                                 # à analyser
+                                
                                 cof <- NULL
-                                if ((!is.null(pt$add.cofactors)) & (!is.null(pt$cofactors))) {
-                                  cof <- pt$cofactors[pt$cofactors$Date %in% (data[1, "Date"]+j), ]
+                                if ((!is.null(add.cofactors)) & (!is.null(cofactors))) {
+                                  cof <- cofactors[cofactors$Date %in% (data[1, "Date"]+j), ]
                                   cof <- cof[, -1, drop=FALSE]
                                   cof <- as.data.frame(cbind(Date=j, cof))
                                 }
                                 
-                                nbperday[j+1] <- daily_count(d=j, xpar=xparec, 
+                                nbperday[j+1] <- daily_count(d=unname(j), xpar=xparec, 
                                                              cofactors=cof, 
-                                                             add.cofactors=pt$add.cofactors, 
-                                                             print = FALSE, zero = pt$zero)
+                                                             add.cofactors=add.cofactors, 
+                                                             print = FALSE, zero = zero)
                                 
-                                if (zero_counts) {
+                                
+                                
+                                for (i in 1:nrow(data)) {
                                   
-                                  for (i in 1:nrow(data)) {
+                                  if (data$ZeroCounts[i]) {
                                     
-                                    if (is.na(data$Date2[i])) {
-                                      
-                                      # sumnbcount <- daily_count(data$ordinal[i], xparec, print = FALSE, zero = pt$zero)
-                                      # Le premier jour de la série est 0 et donc il est à l'indice 1
-                                      sumnbcount <- nbperday[data$ordinal[i]+1]
-                                      
-                                      lnli2 <- -dnbinom(data$nombre[i], size = th, 
-                                                        mu = sumnbcount, log = TRUE)
-                                    } else {
-                                      nbjour <- data$ordinal2[i] - data$ordinal[i] + 1
-                                      # nbcount <- daily_count((1:nbjour) + data$ordinal[i] - 1, xparec, print = FALSE)
-                                      # Le premier jour de la série est 0 et donc il est à l'indice 1
-                                      nbcount <- nbperday[((1:nbjour) + data$ordinal[i] - 1)+1]
-                                      sumnbcount <- sum(nbcount)
-                                      lnli2 <- -dSnbinom(x=data$nombre[i], size = th, mu = nbcount, log = TRUE, tol=tol)
-                                    }
-                                    datatot[[k]]$LnL[i] <- lnli2
-                                    datatot[[k]]$Modeled[i] <- sumnbcount
-                                  }
-                                } else {
-                                  for (i in 1:nrow(data)) {
-                                    if ((data$nombre[i] != 0) || zero_counts) {
+                                    if (data$CountTypes[i] == "exact") {
                                       if (is.na(data$Date2[i])) {
                                         
-                                        # sumnbcount <- daily_count(data$ordinal[i], xparec, print = FALSE, zero = pt$zero)
+                                        # sumnbcount <- daily_count(data$ordinal[i], xparec, print = FALSE, zero = zero)
                                         # Le premier jour de la série est 0 et donc il est à l'indice 1
                                         sumnbcount <- nbperday[data$ordinal[i]+1]
                                         
-                                       
-                                        lnli2 <- -log(dnbinom(data$nombre[i], size = th, mu = sumnbcount, log = FALSE)/
-                                                        (1 - dnbinom(0, size = th, mu = sumnbcount,  log = FALSE)))
+                                        lnli2 <- -dnbinom(data$nombre[i], size = th, 
+                                                          mu = sumnbcount, log = TRUE)
+                                      } else {
+                                        # break
+                                        nbjour <- data$ordinal2[i] - data$ordinal[i] + 1
+                                        # nbcount <- daily_count((1:nbjour) + data$ordinal[i] - 1, xparec, print = FALSE)
+                                        # Le premier jour de la série est 0 et donc il est à l'indice 1
+                                        nbcount <- nbperday[((1:nbjour) + data$ordinal[i] - 1)+1]
+                                        sumnbcount <- sum(nbcount)
+                                        
+                                        method_Snbinom <- "furman"
+                                        if ((th > 10) | (any(nbcount <1E-5))) {
+                                          if (length(nbcount) <= 5) {
+                                            method_Snbinom <- "Vellaisamy&Upadhye"
+                                          } else {
+                                            method_Snbinom <- "approximate.negativebinomial"
+                                          }
+                                        }
+                                        
+                                        lnli2 <- try(-dSnbinom(x=data$nombre[i], size = th, mu = nbcount, 
+                                                           log = TRUE, method = method_Snbinom), silent = TRUE)
+                                        if (inherits(lnli2 ,"try-error")) {
+                                          method_Snbinom <- "approximate.negativebinomial"
+                                          lnli2 <- -dSnbinom(x=data$nombre[i], size = th, mu = nbcount, 
+                                                                 log = TRUE, method = method_Snbinom)
+                                        }
+                                      }
+                                    } else {
+                                      # je suis en minimum
+                                      if (is.na(data$Date2[i])) {
+                                        
+                                        # sumnbcount <- daily_count(data$ordinal[i], xparec, print = FALSE, zero = zero)
+                                        # Le premier jour de la série est 0 et donc il est à l'indice 1
+                                        sumnbcount <- nbperday[data$ordinal[i]+1]
+                                        # Par exemple j'ai un minimum de 1
+                                        # pnbinom(q=1-1, size = 3, mu = 10, log.p = FALSE, lower.tail = FALSE)
+                                        # C'est bon puisque 
+                                        # pnbinom(q=1-1, size = 3, mu = 10, log.p = FALSE, lower.tail = FALSE)+dnbinom(0, size = 3, mu = 10, log=FALSE) = 1
+                                        if (data$nombre[i]-1 >= 0) { 
+                                          
+                                          lnli2 <- -pnbinom(q=data$nombre[i]-1, size = th, 
+                                                            mu = sumnbcount, log.p = TRUE, 
+                                                            lower.tail = TRUE)
+                                          
+                                          
+                                        } else {
+                                          # si j'ai 0 observation forcément likelihood=1
+                                          lnli2 <- 0
+                                        }
+                                      } else {
+                                        # j'ai une range de dates
+                                        nbjour <- data$ordinal2[i] - data$ordinal[i] + 1
+                                        # nbcount <- daily_count((1:nbjour) + data$ordinal[i] - 1, xparec, print = FALSE)
+                                        # Le premier jour de la série est 0 et donc il est à l'indice 1
+                                        nbcount <- nbperday[((1:nbjour) + data$ordinal[i] - 1)+1]
+                                        sumnbcount <- sum(nbcount)
+                                        if (data$nombre[i]-1 >= 0) { 
+                                          method_Snbinom <- "furman"
+                                          if ((th > 10) | (any(nbcount <1E-5))) {
+                                            if (length(nbcount) <= 5) {
+                                              method_Snbinom <- "Vellaisamy&Upadhye"
+                                            } else {
+                                              method_Snbinom <- "approximate.negativebinomial"
+                                            }
+                                          }
+                                          lnli2 <- try(-pSnbinom(q=data$nombre[i]-1, size = th, mu = nbcount, log.p = TRUE, 
+                                                             lower.tail = FALSE, method = method_Snbinom), silent = TRUE)
+                                          
+                                          if (inherits(lnli2 ,"try-error")) {
+                                            method_Snbinom <- "approximate.negativebinomial"
+                                            lnli2 <- -pSnbinom(q=data$nombre[i]-1, size = th, mu = nbcount, log.p = TRUE, 
+                                                               lower.tail = FALSE, method = method_Snbinom)
+                                          }
+                                          
+                                          
+                                        } else {
+                                          lnli2 <- 0
+                                        }
+                                      }
+                                    }
+                                  } else {
+                                    # Là je suis en ZeroCounts == FALSE
+                                    
+                                    if (data$CountTypes[i] == "exact") {
+                                      if (is.na(data$Date2[i])) {
+                                        
+                                        # sumnbcount <- daily_count(data$ordinal[i], xparec, print = FALSE, zero = zero)
+                                        # Le premier jour de la série est 0 et donc il est à l'indice 1
+                                        sumnbcount <- nbperday[data$ordinal[i]+1]
+                                        
+                                        
+                                        lnli2 <- (- dnbinom(data$nombre[i], size = th, mu = sumnbcount, log = TRUE)+
+                                                        log(1 - dnbinom(0, size = th, mu = sumnbcount,  log = FALSE)))
+                                        
                                       } else {
                                         nbjour <- data$ordinal2[i] - data$ordinal[i] + 1
                                         # nbcount <- daily_count((1:nbjour) + data$ordinal[i] - 1, xparec, print = FALSE)
@@ -159,35 +229,106 @@
                                         sumnbcount <- sum(nbcount)
                                         
                                         # Est ce que les 0 ont été comptés
-                                        lnli2 <- -log(dSnbinom(data$nombre[i], size = th, mu = nbcount, log = FALSE, tol=tol)/
-                                                        (1 - dSnbinom(0, size = th, mu = nbcount, log = FALSE, tol=tol)))
+                                        
+                                        method_Snbinom <- "furman"
+                                        if ((th > 10) | (any(nbcount <1E-5))) {
+                                          if (length(nbcount) <= 5) {
+                                            method_Snbinom <- "Vellaisamy&Upadhye"
+                                          } else {
+                                            method_Snbinom <- "approximate.negativebinomial"
+                                          }
+                                        }
+                                        
+                                        lnli2 <- try((- dSnbinom(data$nombre[i], size = th, mu = nbcount, log = TRUE, method = method_Snbinom) + 
+                                                  log(1 - dSnbinom(0, size = th, mu = nbcount, log = FALSE, method = method_Snbinom))), silent = TRUE)
+                                        
+                                        
+                                        if (inherits(lnli2 ,"try-error")) {
+                                          method_Snbinom <- "approximate.negativebinomial"
+                                          lnli2 <- (- dSnbinom(data$nombre[i], size = th, mu = nbcount, log = TRUE, method = method_Snbinom) + 
+                                                          log(1 - dSnbinom(0, size = th, mu = nbcount, log = FALSE, method = method_Snbinom)))
+                                          
+                                        }
+                                        
+                                        
                                         
                                         
                                       }
                                     } else {
-                                      lnli2 <- NA
-                                      sumnbcount <- NA
+                                      # Je suis en minimum
+                                      
+                                      if (is.na(data$Date2[i])) {
+                                        
+                                        
+                                        # sumnbcount <- daily_count(data$ordinal[i], xparec, print = FALSE, zero = zero)
+                                        # Le premier jour de la série est 0 et donc il est à l'indice 1
+                                        sumnbcount <- nbperday[data$ordinal[i]+1]
+                                        
+                                        if (data$nombre[i]-1 >= 0) {
+                                          
+                                          prob.sup.egal.obs <- pnbinom(q=data$nombre[i]-1, size = th, mu = sumnbcount, log.p = TRUE, lower.tail = FALSE)
+                                          prob0 <- dnbinom(0, size = th, mu = sumnbcount,  log = FALSE)
+                                          
+                                          lnli2 <- (- prob.sup.egal.obs + log(1 - prob0))
+                                        } else {
+                                          lnli2 <- 0
+                                        }
+                                      } else {
+                                        nbjour <- data$ordinal2[i] - data$ordinal[i] + 1
+                                        # nbcount <- daily_count((1:nbjour) + data$ordinal[i] - 1, xparec, print = FALSE)
+                                        # Le premier jour de la série est 0 et donc il est à l'indice 1
+                                        nbcount <- nbperday[((1:nbjour) + data$ordinal[i] - 1)+1]
+                                        sumnbcount <- sum(nbcount)
+                                        
+                                        # Est ce que les 0 ont été comptés
+                                        if (data$nombre[i]-1 >= 0) {
+                                          
+                                          method_Snbinom <- "furman"
+                                          if ((th > 10) | (any(nbcount <1E-5))) {
+                                            if (length(nbcount) <= 5) {
+                                              method_Snbinom <- "Vellaisamy&Upadhye"
+                                            } else {
+                                              method_Snbinom <- "approximate.negativebinomial"
+                                            }
+                                          }
+                                          
+                                          prob.sup.egal.obs <- pSnbinom(q=data$nombre[i]-1, size = th, mu = nbcount, log.p = TRUE, 
+                                                                        lower.tail = FALSE, method = method_Snbinom)
+                                          prob0 <- dSnbinom(0, size = th, mu = nbcount,  log = FALSE, method = method_Snbinom)
+                                          
+                                          lnli2 <- (- prob.sup.egal.obs + log(1 - prob0))
+                                        } else {
+                                          lnli2 <- 0
+                                        }
+                                        
+                                      }
+                                      
                                     }
-                                    datatot[[k]]$LnL[i] <- lnli2
-                                    datatot[[k]]$Modeled[i] <- sumnbcount
                                   }
+                                  # print(paste0(as.character(i), "  ", lnli2))
+                                  
+                                  data$LnL[i] <- lnli2
+                                  data$Modeled[i] <- sumnbcount
+                                  
                                 }
-                                # }
-                                datatot[[k]]$LnL[is.infinite(datatot[[k]]$LnL)] <- -log(1e-50)
-                                return(datatot[[k]])
-                                # }
                                 
+                                data$LnL[is.infinite(data$LnL)] <- 115.1293 # -log(1e-50)
                                 
+                              
                                 
-                              }, 
-                              clusterExport = list(varlist=c("xpar", "datatot", "tol", 
-                                                             "daily_count", "format_par", "pt"), 
-                                                   envir=environment()), 
+                               return(data)
+
+                              },
+                              clusterExport = list(varlist=c("xpar", "datatot",
+                                                             "daily_count", "format_par",
+                                                             "zero",
+                                                             "add.cofactors", "cofactors"),
+                                                   envir=environment()),
                               clusterEvalQ=list(expr=expression(library(phenology))
-                              ), 
-                              forking = forking
-  ), silent = FALSE
-  )
+                              ),
+                              forking = forking), silent = FALSE)
+                                
+                                # }
   
   if (inherits(rg, "try-error")) {
     save(x, file = "x.Rdata")

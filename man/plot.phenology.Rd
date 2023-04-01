@@ -24,6 +24,7 @@
   col.ML.quantiles = "black",
   col.ML.quantiles.polygon = rgb(red = 0, green = 0, blue = 0, alpha = 0.2),
   col.observations = "black",
+  col.minimum.observations = "blue",
   col.grouped.observations = "green"
 )
 }
@@ -63,6 +64,8 @@
 \item{col.ML.quantiles.polygon}{Color of the confidence interval polygon based on ML. If FALSE not shown.}
 
 \item{col.observations}{Color of the points}
+
+\item{col.minimum.observations}{Color of the points indicating minimum counts}
 
 \item{col.grouped.observations}{Color of the lines indicating grouped observations}
 }

@@ -5,6 +5,25 @@ What must be done:
 
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
+            CHANGES IN VERSION 9.0 (2023-04-01)
+            
+* New CRAN version - 9.0 (2023-04-01)
+
+            CHANGES IN VERSION 8.0.6 (2023-03-22)
+            
+* New CRAN version - 8.0 (2022-12-12)
+* New model to use a minimum observed number - 8.0 (2022-12-12)
+* The Zero Counts model applies now at the level of daily counts, not automatically to the entire timeseries. 
+It is a big change that makes previous formated datasets no more compatible with this version - 8.0 (2022-12-13)
+* Minor change in .Lnegbin - 8.0.1 (2022-12-29)
+* .Lnegbin uses furman, Vellaisamy&Upadhye or approximate.negativebinomial method adaptively for Snbinom to prevent overflow - 8.0.2 (2022-12-29)
+* Correction of examples in fit_phenology() - 8.0.3 (2022-12-29)
+* silent parameters from fit_phenology() is used also for SEfromHessian() in the function - 8.0.4 (2023-01-08)
+* Prevent error when theta is very large - 8.0.5 (2023-03-10)
+* Hessian is FALSE be default in fit_phenology() - 8.0.6 (2023-03-20)
+* Change the default parameters for phenology_MHmcmc() - 8.0.6 (2023-03-20)
+* Restore functional shiny version - 8.0.7 (2023-04-01)
+
             CHANGES IN VERSION 7.9 (2022-09-06)
             
 * New CRAN version - 7.9 (2022-09-06)
@@ -18,7 +37,7 @@ THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
             
 * New CRAN version - 7.6 (2020-10-22)
 * Minor changes in the documentation - 7.6-1 (2020-12-14)
-* Tagloff_format() cleans data before to format them - 7.6-2 (2020-12-14)
+* Tagloss_format() cleans data before to format them - 7.6-2 (2020-12-14)
 * New function Tagloss_mcmc_p() - 7.6-3 (2020-12-18)
 * Minor changes in Tagloss_model - 7.6-4 (2020-12-21)
 * Growlnotify option is removed - 7.6-5 (2021-01-13)

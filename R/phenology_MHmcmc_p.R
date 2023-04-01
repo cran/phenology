@@ -288,9 +288,9 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
   # "Theta"
   pe <- ifelse(is.na(par["Theta"]), 5, par["Theta"])
   if (default.density == "dunif") {
-    Theta <- c("dunif", 0, max(c(10, pe+5)), 0.2, 0, max(c(10, pe+5)), pe)
+    Theta <- c("dunif", 1E-6, max(c(10, pe+5)), 0.2, 1E-6, max(c(10, pe+5)), pe)
   } else {
-    Theta <- c("dnorm", pe, pe/2, 0.2, 0, max(c(10, pe+5)), pe)
+    Theta <- c("dnorm", pe, pe/2, 0.2, 1E-6, max(c(10, pe+5)), pe)
   }
   
   # "alpha"
@@ -353,7 +353,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
                      "Delta1", "Alpha1", "Beta1", "Tau1", "Phi2", "Delta2", "Alpha2", 
                      "Beta2", "Tau2", "Theta", "alpha", "tp", "tf", "s1", "s2", "sr")
   
-  for (i in 1:length(par)) {
+  for (i in seq_along(par)) {
     
     if (substr(names(par[i]), 1, 4)=="Max_") {
       pe <- ifelse(is.na(par[i]), 50, par[i])
@@ -437,7 +437,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
     if (substr(names(par[i]), 1, 6)=="Begin_") {
       pe <- ifelse(is.na(par[i]), 100, par[i])
       if (default.density == "dunif") {
-         priors <- c(priors, list(c("dunif", 0, max(c(365, pe+50)), 20, 0, max(c(365, pe+50)), pe)))
+        priors <- c(priors, list(c("dunif", 0, max(c(365, pe+50)), 20, 0, max(c(365, pe+50)), pe)))
       } else {
         priors <- c(priors, list(c("dnorm", pe, pe/2, 20, 0, max(c(365, pe+50)), pe)))
       }
@@ -452,12 +452,22 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       }
       names(priors)[length(priors)] <- names(par[i])
     }
+    if (substr(names(par[i]), 1, 6)=="Theta_") {
+      pe <- ifelse(is.na(par[i]), 1, par[i])
+      if (default.density == "dunif") {
+        priors <- c(priors, list(c("dunif", 1E-6, max(c(10, pe+5)), 2, 1E-6, max(c(10, pe+5)), pe)))
+      } else {
+        priors <- c(priors, list(c("dnorm", pe, pe/2, 2, 1E-6, max(c(10, pe+5)), pe)))
+      }
+      names(priors)[length(priors)] <- names(par[i])
+    }
+    
   }
   
   
   prencours <- NULL
   
-  for (i in 1:length(par)) {
+  for (i in seq_along(par)) {
     prencours <- c(prencours, priors[[names(par)[i]]])
   }
   

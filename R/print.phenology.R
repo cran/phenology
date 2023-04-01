@@ -35,7 +35,6 @@ print.phenology <- function(x, ...) {
     cat(paste(names(x$data[i]), "\n", sep=""))
   }
   cat(paste("Date uncertainty management: ", x$method_incertitude, "\n", sep=""))
-  cat(paste("Managment of zero counts: ", x$zero_counts, "\n", sep=""))
   cat("Fitted parameters:\n")
   for (i in 1:length(x$par)) {
     cat(paste(names(x$par[i]), "=", x$par[i], " SE ", x$se[i], "\n", sep=""))

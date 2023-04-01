@@ -10,8 +10,6 @@ map_phenology(
   fixed.parameters = NA,
   Phi = seq(from = 0.2, to = 20, length.out = 100),
   Delta = NULL,
-  tol = 1e-06,
-  zero_counts = TRUE,
   progressbar = any(installed.packages()[, "Package"] == "pbapply"),
   cofactors = NULL,
   add.cofactors = NULL,
@@ -28,11 +26,6 @@ map_phenology(
 \item{Phi}{Phi values to be analyzed}
 
 \item{Delta}{Delta value to be analyzed}
-
-\item{tol}{Tolerance of recurrence for dSnbinom() used for convolution of negative binomial distribution}
-
-\item{zero_counts}{Example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
-been recorded for each of these timeseries. Defaut is TRUE for all.}
 
 \item{progressbar}{If FALSE, do not show the progress bar}
 

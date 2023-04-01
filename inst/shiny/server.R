@@ -203,9 +203,13 @@ shinyServer(function(input, output, session) {
       table
     })
     
+    zLogic <- ifelse(iZero==1, TRUE, FALSE)
+    
+    
     Formated <- add_phenology(add=table, silent=TRUE, name=nm,
                               format=zFormatDate,
-                              month_ref = zmonthRef)
+                              month_ref = zmonthRef, 
+                              ZeroCounts.default = zLogic)
     
     pfixed <- NULL
     if (max(sapply(Formated, function(xxx) max(xxx[, "nombre"])))<10) pfixed <- c(Theta=+Inf)
@@ -222,39 +226,38 @@ shinyServer(function(input, output, session) {
       Par <- toggle_Min_PMin(Par)
     }
     
-    zLogic <- ifelse(iZero==1, TRUE, FALSE)
-    
     result <- fit_phenology(data=Formated, fitted.parameters = Par,
                             fixed.parameters=pfixed,
                             silent=TRUE,
                             control = list(trace = 0, REPORT =
                                              100, maxit = 500), 
-                            zero_counts = zLogic)
+                            hessian = TRUE)
     
     
     x <- summary(result, series="all", print=FALSE)
     
-    plot(result, series= max(as.numeric(input$Plot), length(Formated)), plot.objects=c("observations", "ML.SD", "ML.quantiles"))
+    plot(result, series= max(as.numeric(input$Plot), length(Formated)), 
+         plot.objects=c("observations", "ML", "ML.SD", "ML.quantiles"))
     
     output$resultsInfo <- renderText({
       
     rtxt <- paste("\n", babel["NumeroSerie" , ilanguage], nrow(x$synthesis), "\n", sep = "")
       
       for (i in 1:nrow(x$synthesis)) {
-        nmser <- rownames(x$synthesis)[i]
-        tirets <- paste0(rep("-", nchar(nmser)), sep="", collapse = "")
-        pp <- ""
-        if (i != 1)
-          pp <- "\n"
-        rtxt <- paste0(rtxt, pp, tirets, "\n", sep = "", collapse = "")
-        rtxt <- paste0(rtxt, nmser, "\n", collapse = "")
-        rtxt <- paste0(rtxt, tirets, "\n", sep = "", collapse = "")
-        mnponte <- x$synthesis[i, "with_obs_Mean"]
-        # sdponte <- x$synthesis[[i]]$estimates["SD.ML.with.obs"]
+         nmser <- rownames(x$synthesis)[i]
+         tirets <- paste0(rep("-", nchar(nmser)), sep="", collapse = "")
+         pp <- ""
+         if (i != 1)
+           pp <- "\n"
+         rtxt <- paste0(rtxt, pp, tirets, "\n", sep = "", collapse = "")
+         rtxt <- paste0(rtxt, nmser, "\n", collapse = "")
+         rtxt <- paste0(rtxt, tirets, "\n", sep = "", collapse = "")
+         mnponte <- x$synthesis[i, "with_obs_Mean"]
+         # sdponte <- x$synthesis[[i]]$estimates["SD.ML.with.obs"]
         rtxt <- paste0(rtxt, babel["Total" , ilanguage], format(mnponte, digits = floor(log10(mnponte) +
                                                                                           5)), "\n", sep = "", collapse = "")
-        mnponte1 <- x$synthesis[i, "with_obs_Low_ML"]
-        mnponte2 <- x$synthesis[i, "with_obs_High_ML"]
+         mnponte1 <- x$synthesis[i, "with_obs_Low_ML"]
+         mnponte2 <- x$synthesis[i, "with_obs_High_ML"]
         if ((mnponte1 == 0) | (mnponte2 == 0)) {
           rtxt <- paste0(rtxt, babel["IC95ND" , ilanguage])
         }

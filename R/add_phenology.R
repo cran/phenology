@@ -6,12 +6,15 @@
 #' @param add The data to be added. It can be a set of several entities that uses the same reference and date format
 #' @param name The name of the monitored site
 #' @param reference as.Date('2001-12-31') The date used as 1st date
-#' @param sep.dates Separator used to separate dates when incertitude is included
-#' @param month_ref If no reference date is given, use this month as a reference
-#' @param format The format of the dates
-#' @param colname.Date Name or number of column with dates
-#' @param colname.Number Name or number of column with numbers
-#' @param colname.Rookery Name or number of column with rookery names
+#' @param sep.dates Separator used to separate dates when incertitude is included.
+#' @param month_ref If no reference date is given, use this month as a reference.
+#' @param format The format of the dates.
+#' @param colname.Date Name or number of column with dates.
+#' @param colname.Number Name or number of column with numbers.
+#' @param colname.CountTypes Model of count type. It can be "exact" (default) ou "minimum".
+#' @param colname.Rookery Name or number of column with rookery names.
+#' @param colname.ZeroCounts The name of the column to indicate whether zero counts are included (TRUE is default).
+#' @param ZeroCounts.default The default for ZeroCounts.
 #' @param include0 Does timeseries with only 0 should be included?
 #' @param check.overlapping.dates If TRUE, will check for date overlapping
 #' @param datepeakfor0 If series with no observation are included, where add a 1 value in ordinal date (see description)
@@ -104,13 +107,18 @@
 add_phenology <-
   function(add=NULL, name="Site", reference=NULL, 
            month_ref= NULL, sep.dates="-", 
-           colname.Date=1, colname.Number=2, colname.Rookery=3, 
+           colname.Date=1, colname.Number=2, colname.Rookery="Site", 
+           colname.CountTypes=NULL, colname.ZeroCounts=NULL, 
+           ZeroCounts.default = TRUE, 
            format="%d/%m/%Y", previous=NULL, include0=FALSE, datepeakfor0=NULL, 
            expandRange0Observation=TRUE, check.overlapping.dates=TRUE, 
            silent=FALSE) {
     
     
-    # name=NULL; reference=NULL; month_ref= NULL; sep.dates="-"; format="%d/%m/%Y"; previous=NULL; colname.Date=1; colname.Number=2; colname.Rookery=3; include0=FALSE; datepeakfor0=NULL; expandRange0Observation=TRUE; check.overlapping.dates=TRUE; silent=FALSE
+    # name="Site"; reference=NULL; month_ref= 1; sep.dates="-"; format="%d/%m/%Y"
+    # previous=NULL; colname.Date=1; colname.Number=2; colname.Rookery="Site"; colname.CountTypes=NULL
+    # colname.ZeroCounts=NULL; include0=FALSE; ZeroCounts.default=TRUE
+    # datepeakfor0=NULL; expandRange0Observation=TRUE; check.overlapping.dates=TRUE; silent=FALSE
     
     if ((!inherits(previous, "phenologydata")) & !is.null(previous)) {
       stop("The previous dataset must be already formated using add_phenology()!")
@@ -130,6 +138,24 @@ add_phenology <-
       
       if (inherits(try(add[, colname.Number], silent = TRUE), "try-error")) {
         stop("The columns with numbers does not exist")
+      }
+      
+      if (!is.null(colname.CountTypes)) {
+        if (inherits(try(add[, colname.CountTypes], silent = TRUE), "try-error")) {
+          stop("The columns with count types does not exist")
+        }
+      } else {
+        colname.CountTypes <- "CountTypes"
+        add <- cbind(add, CountTypes=rep("exact", nrow(add)))
+      }
+      
+      if (!is.null(colname.ZeroCounts)) {
+        if (inherits(try(add[, colname.ZeroCounts], silent = TRUE), "try-error")) {
+          stop("The columns with zero counts information does not exist.")
+        }
+      } else {
+        colname.ZeroCounts <- "ZeroCounts"
+        add <- cbind(add, ZeroCounts=rep(ZeroCounts.default, nrow(add)))
       }
       
       if (inherits(try(add[, colname.Rookery], silent = TRUE), "try-error")) {
@@ -164,6 +190,7 @@ add_phenology <-
       intermediaire <- list()
       
       for (site in unique(add[, colname.Rookery])) {
+        # site <- unique(add[, colname.Rookery])[1]
         if (!silent) message(paste0("Site: ", site))
         dfadd <- add[add[, colname.Rookery] == site, ]
         dfadd <- dfadd[order(dfadd[, "D18989898"]), ]
@@ -175,7 +202,7 @@ add_phenology <-
           premiermois <- as.POSIXlt(premieredate)$mon+1
           
           if (premiermois < month_ref) {
-            premieredate <- premieredate - ifelse(as.POSIXlt(premieredate-365)$mday==as.POSIXlt(premieredate)$mday, 365, 366)
+            premieredate <- premieredate - ifelse(as.POSIXlt(premieredate-365)$mday == as.POSIXlt(premieredate)$mday, 365, 366)
             refencours <- as.character(premieredate)
             substr(refencours, 9, 10) <- "01"
             m <- paste0("0", as.character(month_ref))
@@ -200,6 +227,8 @@ add_phenology <-
                          ordinal=as.numeric(dfadd$D18989898-refencours), 
                          ordinal2=as.numeric(dfadd$D28989898-refencours), 
                          Modeled=rep(NA, nrow(dfadd)), 
+                         CountTypes=dfadd[, colname.CountTypes],
+                         ZeroCounts=dfadd[, colname.ZeroCounts], 
                          LnL=rep(NA, nrow(dfadd)), 
                          stringsAsFactors = FALSE)
         if ((expandRange0Observation) & (any(!is.na(df[, "Date2"])))) {
@@ -214,6 +243,8 @@ add_phenology <-
                                  ordinal=as.numeric(dt-refencours), 
                                  ordinal2=rep(NA, length(dt)), 
                                  Modeled=rep(NA, length(dt)), 
+                                 CountTypes=rep(df[idf, colname.CountTypes], length(dt)), 
+                                 ZeroCounts=rep(df[idf, colname.ZeroCounts], length(dt)), 
                                  LnL=rep(NA, length(dt)), 
                                  stringsAsFactors = FALSE)
               dfec <- rbind(dfec, dfe0)
@@ -230,27 +261,27 @@ add_phenology <-
         lg <- ifelse(as.POSIXlt(refencours+365)$mday == as.POSIXlt(refencours)$mday, 365, 366)
         
         if (check.overlapping.dates) {
-        # test cohérence
-        if (max(c(df$ordinal, df$ordinal2)+1, na.rm = TRUE) > lg) {
-          stop("More than one year for this series")
-        }
-        
-        test <- logical(lg)
-        for (i in 1:nrow(df)) {
-          if (is.na(df[i, "ordinal2"])) {
-            if (test[df[i, "ordinal"]+1]) {
-              stop(paste("Error; some dates are duplicated. Look at", as.character(df[i, "Date"])))
+          # test cohérence
+          if (max(c(df$ordinal, df$ordinal2)+1, na.rm = TRUE) > lg) {
+            stop("More than one year for this series")
+          }
+          
+          test <- logical(lg)
+          for (i in 1:nrow(df)) {
+            if (is.na(df[i, "ordinal2"])) {
+              if (test[df[i, "ordinal"]+1]) {
+                stop(paste("Error; some dates are duplicated. Look at", as.character(df[i, "Date"])))
+              } else {
+                test[df[i, "ordinal"]+1] <- TRUE
+              }
             } else {
-              test[df[i, "ordinal"]+1] <- TRUE
-            }
-          } else {
-            if (any(test[(df[i, "ordinal"]:df[i, "ordinal2"])+1])) {
-              stop(paste("Error; some dates are duplicated. Look at", as.character(df[i, "Date"])))
-            } else {
-              test[(df[i, "ordinal"]:df[i, "ordinal2"])+1] <- TRUE
+              if (any(test[(df[i, "ordinal"]:df[i, "ordinal2"])+1])) {
+                stop(paste("Error; some dates are duplicated. Look at", as.character(df[i, "Date"])))
+              } else {
+                test[(df[i, "ordinal"]:df[i, "ordinal2"])+1] <- TRUE
+              }
             }
           }
-        }
         } else {
           if (!silent) message("Take care: no check for dates coherence.")
         }

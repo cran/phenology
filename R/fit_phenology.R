@@ -7,9 +7,6 @@
 #' @param fitted.parameters Set of parameters to be fitted
 #' @param lower Lower bound for each parameter
 #' @param upper Upper bound for each parameter
-#' @param zero_counts example c(TRUE, TRUE, FALSE) indicates whether the zeros have 
-#'                    been recorded for each of these timeseries. Defaut is TRUE for all.
-#' @param tol Tolerance of recurrence for dSnbinom() used for convolution of negative binomial distribution
 #' @param hessian If FALSE does not estimate se of parameters
 #' @param cofactors data.frame with a column Date and a column for each cofactor
 #' @param add.cofactors Names of the column of parameter cofactors to use as a cofactor
@@ -22,12 +19,10 @@
 #' @param file.intermediate Name of the file where to save the intermediates as a list
 #' @description Function of the package phenology to fit parameters to timeseries.\cr
 #' To fit data, the syntax is :\cr
-#' Result <- fit_phenology(data=dataset, fitted.parameters=par, fixed.parameters=pfixed, trace=1, zero_counts=TRUE, hessian=TRUE)\cr
+#' Result <- fit_phenology(data=dataset, fitted.parameters=par, fixed.parameters=pfixed, trace=1, hessian=TRUE)\cr
 #' or if no parameter is fixed :\cr
 #' Result <- fit_phenology(data=dataset, fitted.parameters=par)\cr
 #' Add trace=1 [default] to have information on the fit progression or trace=0 to hide information on the fit progression.\cr
-#' zero_counts = c(TRUE, TRUE, FALSE) indicates whether the zeros have been recorded for each of these timeseries. 
-#' Defaut is TRUE for all. If a named vector zero_counts is used, the names indicate the timeseries.\cr
 #' hessian = FALSE does not estimate Hessian matrix and SE of parameters.\cr
 #' If the parameter Theta is fixed to +Inf, a Poissonian model of daily nest distribution is implemented.\cr
 #' Special section about cofactors:\cr
@@ -72,7 +67,14 @@
 #'           'Theta' = 3.5534818927979592)
 #' result_Gratiot_par1 <- fit_phenology(data=data_Gratiot, 
 #' 		                    fitted.parameters=parg, fixed.parameters=NULL)
-#' # With new parametrization based on Omeyer et al. (In prep)
+#' # With new parametrization based on Omeyer et al. (2022):
+#' # Omeyer, L. C. M., McKinley, T. J., Bréheret, N., Bal, G., Balchin, G. P., 
+#' # Bitsindou, A., Chauvet, E., Collins, T., Curran, B. K., Formia, A., Girard, A., 
+#' # Girondot, M., Godley, B. J., Mavoungou, J.-G., Poli, L., Tilley, D., 
+#' # VanLeeuwe, H. & Metcalfe, K. 2022. Missing data in sea turtle population 
+#' # monitoring: a Bayesian statistical framework accounting for incomplete 
+#' # sampling Front. Mar. Sci. (IF 3.661), 9, 817014.
+#' 
 #' parg <- result_Gratiot_par1$par
 #' parg <- c(tp=unname(parg["Peak"]), tf=unname(parg["Flat"]), 
 #'           s1=unname(parg["LengthB"])/4.8, s2=unname(parg["LengthE"])/4.8, 
@@ -88,29 +90,27 @@
 #' # Use fit with co-factor
 #' 
 #' # First extract tide information for that place
-#' td <- tide.info(year=2001, latitude=4.9167, longitude=-52.3333, tz="America/Cayenne")
+#' td <- tide.info(year=2001, latitude=4.9167, longitude=-52.3333)
 #' # I keep only High tide level
-#' td2 <- td[td$Tide=="High Tide", ]
+#' td2 <- td[td$Phase=="High Tide", ]
 #' # I get the date
-#' td3 <- cbind(td2, Date=as.Date(td2$Date.Time))
-#' td4 <- td3[(as.POSIXlt(td3$Date.Time)$hou<10) | (as.POSIXlt(td3$Date.Time)$hou>15), ]
-#' td5 <- aggregate(x=td4[, c("Date", "Date.Time", "Level")], 
-#'                  by=list(Date=td4[, "Date"]), FUN=max)[, 2:4]
-#' with(td5, plot(Date.Time, Level, type="l"))
-#' td6 <- td5[, c("Date", "Level")]
-#' parg <- par_init(data_Gratiot, fixed.parameters=NULL, add.cofactors="Level")
+#' td3 <- cbind(td2, Date=as.Date(td2$DateTime.local))
+#' td5 <- aggregate(x=td3[, c("Date", "DateTime.local", "Tide.meter")], 
+#'                  by=list(Date=td3[, "Date"]), FUN=max)[, 2:4]
+#' with(td5, plot(DateTime.local, Tide.meter, type="l"))
+#' td6 <- td5[, c("Date", "Tide.meter")]
+#' parg <- par_init(data_Gratiot, fixed.parameters=NULL, 
+#'                  add.cofactors="Tide.meter")
+#' 
+#' likelihood_phenology(data=data_Gratiot, fitted.parameters = parg, 
+#'                      cofactors=td6, add.cofactors="Tide.meter")
+#' 
 #' result_Gratiot_CF <- fit_phenology(data=data_Gratiot, 
 #' 		fitted.parameters=parg, fixed.parameters=NULL, cofactors=td6, 
-#' 		add.cofactors="Level")
+#' 		add.cofactors="Tide.meter")
+#' 		
 #' compare_AIC(WithoutCF=result_Gratiot, WithCF=result_Gratiot_CF)
 #' plot(result_Gratiot_CF)
-#' 
-#' parg <- par_init(data_Gratiot, fixed.parameters=NULL, add.cofactors="Levelmulti")
-#' result_Gratiot_CF2 <- fit_phenology(data=data_Gratiot, 
-#' 		fitted.parameters=parg, fixed.parameters=NULL, cofactors=td6, 
-#' 		add.cofactors="Level")
-#' compare_AIC(WithoutCF=result_Gratiot, WithCF2=result_Gratiot_CF2)
-#' plot(result_Gratiot_CF2)
 #' 
 #' # Example with two series fitted with different peaks but same Length of season
 #' 
@@ -151,18 +151,105 @@
 #' pfixed <- c('MinB.2_Complete' = 0, 
 #'           'Flat.1' = 0, 
 #'           'Flat.2' = 0)
-#' result_g <- fit_phenology(data=data_g, fitted.parameters=p0, fixed.parameters=pfixed)
+#' result_g <- fit_phenology(data=data_g, fitted.parameters=parg, fixed.parameters=pfixed)
 #' plot(result_g)
+#' 
+#' # Exemple with some minimum counts
+#' 
+#' nb <- Gratiot[, 2]
+#' nbs <-  sample(0:1, length(nb), replace=TRUE)
+#' nb <- ifelse(nb != 0, ifelse(nbs == 1, 1, nb), 0)
+#' nbc <- ifelse(nb != 0, ifelse(nbs == 1, "minimum", "exact"), "exact")
+#' 
+#' Gratiot_minimal <- cbind(Gratiot, CountTypes=nbc)
+#' Gratiot_minimal[, 2] <- nb
+#' 
+#' data_Gratiot_minimal <- add_phenology(add=Gratiot_minimal, 
+#'                                       colname.CountTypes = "CountTypes", 
+#'                                       month_ref=1)
+#' parg <- par_init(data_Gratiot_minimal, fixed.parameters=NULL)
+#' 
+#' result_Gratiot_minimal <- fit_phenology(data=data_Gratiot_minimal, 
+#' 		fitted.parameters=parg, fixed.parameters=NULL)
+#' plot(result_Gratiot_minimal)
+#' 
+#' summary(result_Gratiot_minimal)
+#' 
+#' # Exemple with all zero counts being not recorded
+#' 
+#' Gratiot_NoZeroCounts <- cbind(Gratiot[Gratiot[, 2] != 0, ], ZeroCounts=FALSE)
+#' data_Gratiot_NoZeroCounts <- add_phenology(add=Gratiot_NoZeroCounts, 
+#'                                          colname.ZeroCounts = "ZeroCounts", 
+#'                                          ZeroCounts.defaul=FALSE, 
+#'                                          month_ref=1)
+#' # or
+#' data_Gratiot_NoZeroCounts <- add_phenology(add=Gratiot[Gratiot[, 2] != 0, ], 
+#'                                          ZeroCounts.default=FALSE, 
+#'                                          month_ref=1)
+#'                                          
+#' parg <- par_init(data_Gratiot_NoZeroCounts, fixed.parameters=NULL)
+#' 
+#' result_Gratiot_NoZeroCounts <- fit_phenology(data=data_Gratiot_NoZeroCounts, 
+#' 		fitted.parameters=parg, fixed.parameters=NULL)
+#' plot(result_Gratiot_NoZeroCounts)
+#' 
+#' summary(result_Gratiot_NoZeroCounts)
+#' 
+#' # Exemple with data in range of date
+#' Gratiot_rangedate <- Gratiot
+#' Gratiot_rangedate[, 1] <- as.character(Gratiot_rangedate[, 1])
+#' Gratiot_rangedate[148, 1] <- paste0(Gratiot_rangedate[148, 1], "-", Gratiot_rangedate[157, 1])
+#' Gratiot_rangedate[148, 2] <- sum(Gratiot_rangedate[148:157, 2])
+#' Gratiot_rangedate <- Gratiot_rangedate[-(149:157), ]
+#' 
+#' data_Gratiot_rangedate <- add_phenology(add=Gratiot_rangedate, 
+#'                                          month_ref=1)
+#' parg <- par_init(data_Gratiot_rangedate, fixed.parameters=NULL)
+#' 
+#' likelihood_phenology(data=data_Gratiot_rangedate, 
+#'                      fitted.parameters=parg)
+#' 
+#' result_Gratiot_rangedate <- fit_phenology(data=data_Gratiot_rangedate, 
+#' 		                                       fitted.parameters=parg, 
+#' 		                                       fixed.parameters=NULL)
+#' 		                                       
+#' plot(result_Gratiot_rangedate)
+#' 		
+#' 		likelihood_phenology(result=result_Gratiot_rangedate)
+#' 		
+#' # Exemple with data in range of date and CountTypes being minimum
+#' Gratiot_rangedate <- Gratiot
+#' Gratiot_rangedate[, 1] <- as.character(Gratiot_rangedate[, 1])
+#' Gratiot_rangedate[148, 1] <- paste0(Gratiot_rangedate[148, 1], "-", Gratiot_rangedate[157, 1])
+#' Gratiot_rangedate[148, 2] <- sum(Gratiot_rangedate[148:157, 2])
+#' Gratiot_rangedate <- Gratiot_rangedate[-(149:157), ]
+#' Gratiot_rangedate <- cbind(Gratiot_rangedate, CountTypes="exact")
+#' Gratiot_rangedate[148, 2] <- 100
+#' Gratiot_rangedate[148, "CountTypes"] <- "minimum"
+#' Gratiot_rangedate[28, "CountTypes"] <- "minimum"
+#' 
+#' 
+#' data_Gratiot_rangedate <- add_phenology(add=Gratiot_rangedate, 
+#'                                         colname.CountTypes="CountTypes", 
+#'                                          month_ref=1)
+#' parg <- par_init(data_Gratiot_rangedate, fixed.parameters=NULL)
+#' 
+#' result_Gratiot_rangedate <- fit_phenology(data=data_Gratiot_rangedate, 
+#' 		fitted.parameters=parg, fixed.parameters=NULL)
+#' 		
+#' 	likelihood_phenology(result=result_Gratiot_rangedate)
+#' 	
+#' 	plot(result_Gratiot_rangedate)
+#' 		
 #' }
 #' @export
 
 
 fit_phenology <-
   function(data=file.choose(), fitted.parameters=NULL, fixed.parameters=NULL, 
-           tol=1E-6, 
-           zero_counts=TRUE, store.intermediate=FALSE, 
+           store.intermediate=FALSE, 
            file.intermediate="Intermediate.rda", 
-           hessian=TRUE, silent=FALSE, 
+           hessian=FALSE, silent=FALSE, 
            cofactors=NULL, add.cofactors=NULL, zero=1E-9, 
            lower=0, upper=Inf, 
            stop.fit=FALSE, 
@@ -174,8 +261,6 @@ fit_phenology <-
     # upper = Inf
     # fitted.parameters=NULL
     # fixed.parameters=NA
-    # tol=1E-6
-    # zero_counts=TRUE
     # cofactors=NULL
     # add.cofactors=NULL
     # hessian=TRUE
@@ -219,10 +304,6 @@ fit_phenology <-
       fitted.parameters <- par_init(data, fixed.parameters=fixed.parameters)
     }
     
-    if (length(zero_counts)==1) {zero_counts <- rep(zero_counts, length(data))}
-    if (length(zero_counts)!=length(data)) {
-      stop("zero_counts parameter must be TRUE (the zeros are used for all timeseries) or FALSE (the zeros are not used for all timeseries) and with the same number of logical values (TRUE or FALSE) than the number of series analyzed.")
-    }
     
     if ((!is.null(add.cofactors)) & (!is.null(cofactors))) {
       cf1 <- cofactors
@@ -242,8 +323,7 @@ fit_phenology <-
         if ((method[m] == "L-BFGS-B") | (method[m] == "Brent")) {
           resul <- optim(par=fitted.parameters, fn=Lnegbin, 
                          pt=list(data=data, fixed=fixed.parameters, 
-                                 zerocounts=zero_counts, 
-                                 tol=tol, out=TRUE, cofactors=cofactors, 
+                                 out=TRUE, cofactors=cofactors, 
                                  add.cofactors=add.cofactors, zero=zero, 
                                  namespar=names(fitted.parameters), 
                                  store.intermediate=store.intermediate, 
@@ -256,8 +336,7 @@ fit_phenology <-
         } else {
           resul <- optim(par=fitted.parameters, fn=Lnegbin, 
                          pt=list(data=data, fixed=fixed.parameters, 
-                                 zerocounts=zero_counts, 
-                                 tol=tol, out=TRUE, cofactors=cofactors, 
+                                 out=TRUE, cofactors=cofactors, 
                                  add.cofactors=add.cofactors, zero=zero, 
                                  namespar=names(fitted.parameters), 
                                  store.intermediate=store.intermediate, 
@@ -273,7 +352,7 @@ fit_phenology <-
         }
         
         if (any(grepl("^Peak", names(resfit)))) resfit[substr(names(resfit), 1, 4)=="Peak"] <- abs(resfit[substr(names(resfit), 1, 4)=="Peak"])
-        if (any(grepl("^Theta", names(resfit)))) resfit["Theta"] <- abs(resfit["Theta"])
+        if (any(grepl("^Theta", names(resfit)))) resfit[substr(names(resfit), 1, 5)=="Theta"] <- abs(resfit[substr(names(resfit), 1, 5)=="Theta"])
         if (any(grepl("^PMin", names(resfit)))) resfit["PMin"] <- abs(resfit["PMin"])
         # 28/3/2018. J'avais oublié ceux là
         if (any(grepl("^PMinE", names(resfit)))) resfit["PMinE"] <- abs(resfit["PMinE"])
@@ -341,8 +420,7 @@ fit_phenology <-
                                                                    x=resfit, 
                                                                    method="Richardson", 
                                                                    pt=list(data=data, fixed=fixed.parameters, 
-                                                                           zerocounts=zero_counts, 
-                                                                           tol=tol, out=TRUE, cofactors=cofactors, 
+                                                                           out=TRUE, cofactors=cofactors, 
                                                                            add.cofactors=add.cofactors, zero=zero,  
                                                                            namespar=names(fitted.parameters), 
                                                                            store.intermediate=store.intermediate, 
@@ -360,7 +438,7 @@ fit_phenology <-
         rownames(mathessian) <- colnames(mathessian) <- names(resfit)
         resul$hessian <- mathessian
         
-        res_se <- SEfromHessian(mathessian)
+        res_se <- SEfromHessian(mathessian, silent=silent)
         
       }
     } else {
@@ -378,14 +456,9 @@ fit_phenology <-
     
     resul$method_incertitude <- "convolution"
     
-    resul$zero_counts <- zero_counts
-    
-    resul$tol <- tol
-    
     resul$data <- data
     # Lnegbin(x=resfit, pt=list(data=data, fixed=fixed.parameters, 
-    #                     zerocounts=zero_counts, 
-    #                     tol=tol, out=FALSE, cofactors=cofactors, 
+    #                     out=FALSE, cofactors=cofactors, 
     #                     add.cofactors=add.cofactors, zero=zero))
     
     for(kl in 1:length(res_se)) {
