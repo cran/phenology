@@ -2,6 +2,8 @@
                          cofactors=NULL, add.cofactors=NULL, 
                          print=FALSE, zero=1E-9) {
   
+
+  
   # daily_count estimates nest number based on set of parameters.
   # @title Estimate expected counts based on set of parameters.
   # @author Marc Girondot
@@ -31,7 +33,13 @@
                          alpha)))
   }
   
+  # 10/5/2023
+  index <- na.omit(suppressWarnings(as.numeric(gsub(".+\\.(\\d+).*", "\\1", names(xpar)))))
+  if (length(index) != 0) index <- max(index) else index <- 0
   
+  nn <- NULL
+  
+  if (!is.na(xpar["Begin"]))
   nn <- ifelse(d<xpar["Begin"], xpar["MinB"],
                ifelse(d<xpar["PmoinsF"], ((1+cos(pi*(xpar["PmoinsF"]-d)/xpar["PmoinsFB"]))/2)*xpar["MaxMinB"]+xpar["MinB"],
                       ifelse(d<xpar["PplusF"], xpar["Max"],
@@ -42,40 +50,39 @@
                )
   )
   
-  nn.1 <- ifelse(d<xpar["Begin.1"], xpar["MinB.1"],
-               ifelse(d<xpar["PmoinsF.1"], ((1+cos(pi*(xpar["PmoinsF.1"]-d)/xpar["PmoinsFB.1"]))/2)*xpar["MaxMinB.1"]+xpar["MinB.1"],
-                      ifelse(d<xpar["PplusF.1"], xpar["Max.1"],
-                             ifelse(d<xpar["End.1"], ((1+cos(pi*(d-(xpar["PplusF.1"]))/xpar["EPplusF.1"]))/2)*xpar["MaxMinE.1"]+xpar["MinE.1"],
-                                    xpar["MinE.1"]
-                             )
-                      )
-               )
-  )
+  if (index != 0)
+    for (i in as.character(1:index)) {
+      nn <- c(nn,  ifelse(d<xpar[paste0("Begin.", i)], xpar[paste0("MinB.", i)],
+                     ifelse(d<xpar[paste0("PmoinsF.", i)], ((1+cos(pi*(xpar[paste0("PmoinsF.", i)]-d)/xpar[paste0("PmoinsFB.", i)]))/2)*xpar[paste0("MaxMinB.", i)]+xpar[paste0("MinB.", i)],
+                            ifelse(d<xpar[paste0("PplusF.", i)], xpar[paste0("Max.", i)],
+                                   ifelse(d<xpar[paste0("End.", i)], ((1+cos(pi*(d-(xpar[paste0("PplusF.", i)]))/xpar[paste0("EPplusF.", i)]))/2)*xpar[paste0("MaxMinE.", i)]+xpar[paste0("MinE.", i)],
+                                          xpar[paste0("MinE.", i)]
+                                   )
+                            )
+                     )
+      )
+      )
+    }
   
-  nn.2 <- ifelse(d<xpar["Begin.2"], xpar["MinB.2"],
-               ifelse(d<xpar["PmoinsF.2"], ((1+cos(pi*(xpar["PmoinsF.2"]-d)/xpar["PmoinsFB.2"]))/2)*xpar["MaxMinB.2"]+xpar["MinB.2"],
-                      ifelse(d<xpar["PplusF.2"], xpar["Max.2"],
-                             ifelse(d<xpar["End.2"], ((1+cos(pi*(d-(xpar["PplusF.2"]))/xpar["EPplusF.2"]))/2)*xpar["MaxMinE.2"]+xpar["MinE.2"],
-                                    xpar["MinE.2"]
-                             )
-                      )
-               )
-  )
   
-  nn <- ifelse(is.na(nn), 0, nn)
-  nn.1 <- ifelse(is.na(nn.1), 0, nn.1)
-  nn.2 <- ifelse(is.na(nn.2), 0, nn.2)
-  nn <- nn + nn.1 + nn.2
-  
+  if (is.null(nn)) {
+    print("No global model: Error, the parameters at the time of error are:")
+    stop(dput(xpar))
+  } else {
   if (any(is.na(nn))) {
-    print("Global: Error, the parameters at the time of error are:")
+    print("Global is NA: Error, the parameters at the time of error are:")
     stop(dput(xpar))
     #	assign("par_error", xpar, envir=as.environment(.phenology.env))
   }
+  }
+  
+  nn <- matrix(nn, ncol = length(d), byrow = TRUE)
+  nn <- colSums(nn, dims=1)
   
   
   if (xpar["sin"]) {
-    ns<-sin(2*pi*((d+xpar["Delta"])/xpar["Phi"]))*(xpar["Alpha"]+(xpar["Beta"]*nn^xpar["Tau"]))
+    if (xpar["Phi"] == 0) xpar["Phi"] <- 1E-9
+    ns <- sin(2*pi*((d+xpar["Delta"])/xpar["Phi"]))*(xpar["Alpha"]+(xpar["Beta"]*nn^xpar["Tau"]))
     if (any(is.na(ns))) {
       print(d)
       print("Sin: Error, the parameters at the time of error are:")
@@ -87,7 +94,8 @@
   }
   
   if (xpar["sin1"]) {
-    ns1<-sin(2*pi*((d+xpar["Delta1"])/xpar["Phi1"]))*(xpar["Alpha1"]+(xpar["Beta1"]*nn^xpar["Tau1"]))
+    if (xpar["Phi1"] == 0) xpar["Phi1"] <- 1E-9
+    ns1 <- sin(2*pi*((d+xpar["Delta1"])/xpar["Phi1"]))*(xpar["Alpha1"]+(xpar["Beta1"]*nn^xpar["Tau1"]))
     if (any(is.na(ns1))) {
       print(d)
       print("Sin 1: Error, the parameters at the time of error are:")
@@ -100,6 +108,7 @@
   
   
   if (xpar["sin2"]) {
+    if (xpar["Phi2"] == 0) xpar["Phi2"] <- 1E-9
     ns2<-sin(2*pi*((d+xpar["Delta2"])/xpar["Phi2"]))*(xpar["Alpha2"]+(xpar["Beta2"]*nn^xpar["Tau2"]))
     if (any(is.na(ns2))) {
       print(d)

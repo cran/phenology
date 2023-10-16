@@ -8,6 +8,7 @@
 #' @param lower Lower bound for each parameter
 #' @param upper Upper bound for each parameter
 #' @param hessian If FALSE does not estimate se of parameters
+#' @param model_before The change of parameters before to estimate daily counts.
 #' @param cofactors data.frame with a column Date and a column for each cofactor
 #' @param add.cofactors Names of the column of parameter cofactors to use as a cofactor
 #' @param silent If TRUE does not show any message
@@ -15,6 +16,7 @@
 #' @param stop.fit If TRUE, will stop search for parameters even if not ML
 #' @param control List for control parameters for optim
 #' @param method Method used by optim. Several can be setup.
+#' @param method_Snbinom Can be Furman, exact, or saddlepoint.
 #' @param store.intermediate TRUE or FALSE to save the intermediates
 #' @param file.intermediate Name of the file where to save the intermediates as a list
 #' @description Function of the package phenology to fit parameters to timeseries.\cr
@@ -35,7 +37,7 @@
 #' About parallel computing:\cr
 #' Set options mc.cores and forking to tell what sort of parallel computing\cr
 #' Example:\cr
-#' options(mc.cores = detectCores())
+#' options(mc.cores = detectCores())\cr
 #' options(forking = FALSE)
 #' @family Phenology model
 #' @examples
@@ -56,6 +58,45 @@
 #' output <- plot(result_Gratiot)
 #' # or
 #' output <- summary(result_Gratiot)
+#' 
+#' # With one sinusoid
+#' parg <- c('LengthB' = 95.187648986054285, 
+#'            'Peak' = 173.86111755419921, 
+#'            'LengthE' = 63.183281230994481, 
+#'            'Max_Complete' = 33.052091519419136, 
+#'            'MinB_Complete' = 0.21716081973776738, 
+#'            'MinE_Complete' = 0.42444245288475702, 
+#'            'Theta' = 3.9554976911657187, 
+#'            'Alpha' = 0, 
+#'            'Beta' = 0.21019683898423902, 
+#'            'Delta' = 3.6798422076201724,
+#' result_Gratiot1 <- fit_phenology(data=data_Gratiot, 
+#' 		fitted.parameters=parg, fixed.parameters=NULL)
+#' plot(result_Gratiot1)
+#' 		
+#' # With two sinusoids
+#' parg <- c('LengthB' = 95.821859173220659, 
+#'           'Peak' = 174.89756503758881, 
+#'           'LengthE' = 60.954167489825352, 
+#'           'Max_Complete' = 33.497846416498774, 
+#'           'MinB_Complete' = 0.21331670808871037, 
+#'           'MinE_Complete' = 0.43730327416828613, 
+#'           'Theta' = 4.2569203480842814, 
+#'           'Alpha1' = 0.15305562092653918, 
+#'           'Beta1' = 0, 
+#'           'Delta1' = 9.435730952200263, 
+#'           'Phi1' = 15.7944494669335, 
+#'           'Alpha' = 0, 
+#'           'Beta' = 0.28212926001402688, 
+#'           'Delta' = 18.651087311957518, 
+#'           'Phi' = 9.7549929595313056)
+#' result_Gratiot2 <- fit_phenology(data=data_Gratiot, 
+#' 		fitted.parameters=parg, fixed.parameters=NULL)
+#' plot(result_Gratiot2)
+#' 
+#' compare_AICc(no=result_Gratiot, 
+#'              one=result_Gratiot1, 
+#'              two=result_Gratiot2)
 #' 
 #' # With parametrization based on Girondot 2010
 #' parg <- c('Peak' = 173.52272236775076, 
@@ -247,12 +288,14 @@
 
 fit_phenology <-
   function(data=file.choose(), fitted.parameters=NULL, fixed.parameters=NULL, 
+           model_before=NULL, 
            store.intermediate=FALSE, 
            file.intermediate="Intermediate.rda", 
            hessian=FALSE, silent=FALSE, 
            cofactors=NULL, add.cofactors=NULL, zero=1E-9, 
            lower=0, upper=Inf, 
            stop.fit=FALSE, 
+           method_Snbinom = "saddlepoint", 
            control=list(trace=1, REPORT=1, maxit=1000), 
            method = c("Nelder-Mead", "L-BFGS-B")) {
     
@@ -323,9 +366,11 @@ fit_phenology <-
         if ((method[m] == "L-BFGS-B") | (method[m] == "Brent")) {
           resul <- optim(par=fitted.parameters, fn=Lnegbin, 
                          pt=list(data=data, fixed=fixed.parameters, 
+                                 model_before=model_before, 
                                  out=TRUE, cofactors=cofactors, 
                                  add.cofactors=add.cofactors, zero=zero, 
                                  namespar=names(fitted.parameters), 
+                                 method_Snbinom=method_Snbinom, 
                                  store.intermediate=store.intermediate, 
                                  file.intermediate=file.intermediate),
                          lower = lower, 
@@ -336,9 +381,11 @@ fit_phenology <-
         } else {
           resul <- optim(par=fitted.parameters, fn=Lnegbin, 
                          pt=list(data=data, fixed=fixed.parameters, 
+                                 model_before=model_before, 
                                  out=TRUE, cofactors=cofactors, 
                                  add.cofactors=add.cofactors, zero=zero, 
                                  namespar=names(fitted.parameters), 
+                                 method_Snbinom=method_Snbinom, 
                                  store.intermediate=store.intermediate, 
                                  file.intermediate=file.intermediate),
                          method = method[m], 
@@ -420,9 +467,11 @@ fit_phenology <-
                                                                    x=resfit, 
                                                                    method="Richardson", 
                                                                    pt=list(data=data, fixed=fixed.parameters, 
+                                                                           model_before=model_before, 
                                                                            out=TRUE, cofactors=cofactors, 
                                                                            add.cofactors=add.cofactors, zero=zero,  
                                                                            namespar=names(fitted.parameters), 
+                                                                           method_Snbinom=method_Snbinom, 
                                                                            store.intermediate=store.intermediate, 
                                                                            file.intermediate=file.intermediate))
                         , silent=TRUE)
@@ -455,10 +504,11 @@ fit_phenology <-
     resul$fixed.parameters <- fixed.parameters
     
     resul$method_incertitude <- "convolution"
-    
+    resul$method_Snbinom <- method_Snbinom
     resul$data <- data
     # Lnegbin(x=resfit, pt=list(data=data, fixed=fixed.parameters, 
     #                     out=FALSE, cofactors=cofactors, 
+    #                     method_Snbinom=method_Snbinom, 
     #                     add.cofactors=add.cofactors, zero=zero))
     
     for(kl in 1:length(res_se)) {
@@ -480,13 +530,13 @@ fit_phenology <-
       intdtout <- c(reference=ref)
       # save(list = ls(all.names = TRUE), file = "total.RData", envir = environment())
       
-      par <- getFromNamespace(".format_par", ns="phenology")(c(resfit, fixed.parameters), names(resul$data[kl]))
+      par <- getFromNamespace(".format_par", ns="phenology")(c(resfit, fixed.parameters), names(resul$data[kl]), model_before=model_before)
       # C'est quoi ça ? Je retire 26/8/2019
       # par <- par[1:(length(par)-9)]
       sepfixed <- fixed.parameters[strtrim(names(fixed.parameters), 3)=="se#"]
       if (!is.null(sepfixed) & (!identical(unname(sepfixed), numeric(0)))) names(sepfixed) <- substring(names(sepfixed), 4)
       se <- c(res_se, sepfixed)
-      se <- getFromNamespace(".format_par", ns="phenology")(se, names(resul$data[kl]))
+      se <- getFromNamespace(".format_par", ns="phenology")(se, names(resul$data[kl]), model_before=model_before)
       # C'est quoi ça ? Je retire 26/8/2019
       # se <- se[1:(length(se)-9)]
       
@@ -607,6 +657,7 @@ fit_phenology <-
     
     resul$cofactors <- cofactors
     resul$add.cofactors <- add.cofactors
+    resul$model_before <- model_before
     resul$zero <- zero
     
     return(resul)

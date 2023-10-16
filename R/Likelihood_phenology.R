@@ -85,6 +85,7 @@ likelihood_phenology <-  function(data=NULL                  ,
                                                                 parallel=parallel, 
                                                                 out=out, 
                                                                 namespar=names(fitted.parameters), 
+                                                                method_Snbinom=result$method_Snbinom, 
                                                                 zero=zero, cofactors=cofactors, 
                                                                 add.cofactors=add.cofactors))
     

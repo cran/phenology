@@ -134,7 +134,7 @@ map_phenology <-
     }
     
     pt <- list(data=data, fixed=fixed.parameters, out=TRUE, 
-               cofactors=cofactors, parallel=FALSE, 
+               cofactors=cofactors, 
                add.cofactors=add.cofactors, zero=zero, 
                store.intermediate=FALSE, 
                file.intermediate="")

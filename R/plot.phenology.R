@@ -134,7 +134,11 @@ plot.phenology <-
           reference <- as.Date(refencours)
         }
       }
-      nday <- ifelse(as.POSIXlt(reference+365)$mday==as.POSIXlt(reference)$mday, 365, 366)
+      
+      nday <- 366 * (max(unlist(lapply(data, FUN = function(x) max(c(x[, "ordinal"], x[, "ordinal2"]), na.rm = TRUE))) %/% 366) + 1)
+      
+      
+      # nday <- ifelse(as.POSIXlt(reference+365)$mday==as.POSIXlt(reference)$mday, 365, 366)
       
       vmaxx <- c(reference, reference+nday)
       

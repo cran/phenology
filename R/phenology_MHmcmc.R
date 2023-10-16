@@ -91,9 +91,11 @@ phenology_MHmcmc<-function(result=stop("An output from fit_phenology() must be p
   
 pt <- list(data=result$data, fixed=result$fixed.parameters, 
         out=TRUE, 
+        model_before=result$model_before, 
         cofactors=result$cofactors,
         add.cofactors=result$add.cofactors,
         zero=result$zero, 
+        method_Snbinom=result$method_Snbinom, 
         store.intermediate=FALSE, 
         file.intermediate="")
 

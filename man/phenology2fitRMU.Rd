@@ -41,13 +41,24 @@ to be used with fitRMU().\cr
 The value of density can be dnorm or dgamma. dnorm is better if ML results are used and 
 dgamma is for MCMC.\cr
 Here are some example of regular expressions (regex) in grep:\cr
-If format of timeseries is beachname-2005: rookeries.names.grep="(.+)-.+", years.grep=".+-(.+)$"\cr
-gsub("(.+)-.+", "\\1", "beachname-2005"); gsub(".+-(.+)$", "\\1", "beachname-2005")\cr
-If format of timeseries is beachname-2005-2006: rookeries.names.grep="(.+)-.+", years.grep=".+-([0-9]{4,})-.+$"\cr
-gsub("(.+)-.+", "\\1", "beachname-2005-2006"); gsub(".+-([0-9]{4,})-.+$", "\\1", "beachname-2005-2006")\cr
-If format of timeseries is beachname-20052006: rookeries.names.grep="(.+)-.+", years.grep=".+-([0-9]{4,})([0-9]{4,})$"\cr
-gsub("(.+)-.+", "\\1", "beachname-20052006"); gsub(".+-([0-9]{4,})([0-9]{4,})$", "\\1", "beachname-20052006")\cr
-The return is a list with these elements: \cr
+If format of timeseries is beachname-2005: \cr
+rookeries.names.grep="(.+)-.+"\cr
+years.grep=".+-(.+)$"\cr
+Examples:\cr
+gsub("(.+)-.+", "\\\\1", "beachname-2005"); gsub(".+-(.+)$", "\\\\1", "beachname-2005")\cr
+If format of timeseries is beachname-2005-2006: \cr
+rookeries.names.grep="(.+)-.+-.+"\cr
+years.grep=".+-([0-9][0-9][0-9][0-9])-.+$"\cr
+Examples:\cr
+gsub("(.+)-.+-.+", "\\\\1", "beachname-2005-2006"); 
+gsub(".+-([0-9][0-9][0-9][0-9])-.+$", "\\\\1", "beachname-2005-2006")\cr
+If format of timeseries is beachname-20052006:\cr
+rookeries.names.grep="(.+)-.+"\cr
+years.grep=".+-([0-9][0-9][0-9][0-9])([0-9][0-9][0-9][0-9])$"\cr
+Examples:\cr
+gsub("(.+)-.+", "\\\\1", "beachname-20052006"); 
+gsub(".+-([0-9][0-9][0-9][0-9])([0-9][0-9][0-9][0-9])$", "\\\\1", "beachname-20052006")\cr
+The return is a list with these elements:\cr
 RMU.data, years.byrow, colname.year, and RMU.names.\cr
 If density is a vector, the density used is linked to the rank of the timeseries in phenologyout.
 }

@@ -5,13 +5,14 @@
 #' @param previous Previous data formated with add_phenology or NULL [default] if no previous data exist
 #' @param add The data to be added. It can be a set of several entities that uses the same reference and date format
 #' @param name The name of the monitored site
-#' @param reference as.Date('2001-12-31') The date used as 1st date
+#' @param reference as.Date('2001-12-31') The date used as day 1 in the ordinal date model.
 #' @param sep.dates Separator used to separate dates when incertitude is included.
 #' @param month_ref If no reference date is given, use this month as a reference.
+#' @param end.season.date The date corresponding to the end of nesting season. 
 #' @param format The format of the dates.
 #' @param colname.Date Name or number of column with dates.
 #' @param colname.Number Name or number of column with numbers.
-#' @param colname.CountTypes Model of count type. It can be "exact" (default) ou "minimum".
+#' @param colname.CountTypes Model of count type. It can be "exact" (default), "minimum" or a number to indicate the maximum possible.
 #' @param colname.Rookery Name or number of column with rookery names.
 #' @param colname.ZeroCounts The name of the column to indicate whether zero counts are included (TRUE is default).
 #' @param ZeroCounts.default The default for ZeroCounts.
@@ -107,6 +108,7 @@
 add_phenology <-
   function(add=NULL, name="Site", reference=NULL, 
            month_ref= NULL, sep.dates="-", 
+           end.season.date=NULL, 
            colname.Date=1, colname.Number=2, colname.Rookery="Site", 
            colname.CountTypes=NULL, colname.ZeroCounts=NULL, 
            ZeroCounts.default = TRUE, 
@@ -116,6 +118,7 @@ add_phenology <-
     
     
     # name="Site"; reference=NULL; month_ref= 1; sep.dates="-"; format="%d/%m/%Y"
+    # end.season.date=NULL
     # previous=NULL; colname.Date=1; colname.Number=2; colname.Rookery="Site"; colname.CountTypes=NULL
     # colname.ZeroCounts=NULL; include0=FALSE; ZeroCounts.default=TRUE
     # datepeakfor0=NULL; expandRange0Observation=TRUE; check.overlapping.dates=TRUE; silent=FALSE
@@ -219,6 +222,10 @@ add_phenology <-
           refencours <- reference
         }
         
+        # end.season.date=NULL 
+        
+        if (is.character(end.season.date)) end.season.date <- as.Date(end.season.date, format=format)
+        
         if (!silent) message(paste("Reference date:", as.character(refencours)))
         
         df <- data.frame(Date=dfadd$D18989898, 
@@ -243,8 +250,8 @@ add_phenology <-
                                  ordinal=as.numeric(dt-refencours), 
                                  ordinal2=rep(NA, length(dt)), 
                                  Modeled=rep(NA, length(dt)), 
-                                 CountTypes=rep(df[idf, colname.CountTypes], length(dt)), 
-                                 ZeroCounts=rep(df[idf, colname.ZeroCounts], length(dt)), 
+                                 CountTypes=rep(df[idf, "CountTypes"], length(dt)), 
+                                 ZeroCounts=rep(df[idf, "ZeroCounts"], length(dt)), 
                                  LnL=rep(NA, length(dt)), 
                                  stringsAsFactors = FALSE)
               dfec <- rbind(dfec, dfe0)
@@ -255,10 +262,20 @@ add_phenology <-
           df <- dfec
         }
         
+        # Ca ne marche que sur une année
+        lg <- ifelse(as.POSIXlt(refencours+365)$mday == as.POSIXlt(refencours)$mday, 365, 366)
+        nday <- (max(c(df[, "ordinal"], df[, "ordinal2"]), na.rm = TRUE) %/% 366) * 366
+        
+        if (is.null(end.season.date)) {
+          if (nday < 400) {
+          end.season.date <- refencours + lg
+          } else {
+            end.season.date <- refencours + nday
+          }
+        }
         
         attributes(df) <- modifyList(attributes(df), list(reference=refencours))
-        
-        lg <- ifelse(as.POSIXlt(refencours+365)$mday == as.POSIXlt(refencours)$mday, 365, 366)
+        attributes(df) <- modifyList(attributes(df), list(end.season.date=end.season.date))
         
         if (check.overlapping.dates) {
           # test cohérence
@@ -293,7 +310,9 @@ add_phenology <-
       
       previous <- c(previous, intermediaire)
       # class(previous) <- "phenologydata"
-      class(previous) <- unique(append(class(previous), "phenologydata"))
+      # class(previous) <- unique(append(class(previous), "phenologydata"))
+      # 16/5/2023
+      previous <- addS3Class(previous, "phenologydata")
     }
     
     if (length(previous) == 0) {

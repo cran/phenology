@@ -59,6 +59,10 @@ summary.phenology <- function(object,
   formatpar <- getFromNamespace(".format_par", ns="phenology")
   dailycount <- getFromNamespace(".daily_count", ns="phenology")
   
+  model_before <- object$model_before
+  
+  
+  nday <- 366 * (max(unlist(lapply(object$data, FUN = function(x) max(c(x[, "ordinal"], x[, "ordinal2"]), na.rm = TRUE))) %/% 366) + 1)
   
   if (print) {
     cat(paste("Number of timeseries: ", length(object$data), "\n", sep=""))
@@ -127,11 +131,11 @@ summary.phenology <- function(object,
   klist_ML <- list()
   klist_Mean <- list()
   
-  Sum_dailydata_mean <- matrix(0, nrow = 366, ncol=1)
+  Sum_dailydata_mean <- matrix(0, nrow = nday, ncol=1)
   Sum_dailydata_withObs_mean <- Sum_dailydata_mean
   
   if (!is.null(object$hessian)) {
-    Sum_dailydata_ML <- matrix(0, nrow = 366, ncol=replicate.CI)
+    Sum_dailydata_ML <- matrix(0, nrow = nday, ncol=replicate.CI)
     Sum_dailydata_withObs_ML <- Sum_dailydata_ML
   } else {
     Sum_dailydata_ML <- NULL
@@ -145,7 +149,7 @@ summary.phenology <- function(object,
     } else {
       replicate.CI.mcmc.x <- replicate.CI.mcmc
     }
-    Sum_dailydata_MCMC <- matrix(0, nrow = 366, ncol=replicate.CI.mcmc.x)
+    Sum_dailydata_MCMC <- matrix(0, nrow = nday, ncol=replicate.CI.mcmc.x)
     Sum_dailydata_withObs_MCMC <- Sum_dailydata_MCMC
   } else {
     Sum_dailydata_MCMC <- NULL
@@ -167,7 +171,8 @@ summary.phenology <- function(object,
     
     dref <- object$Dates[[nmser]]["reference"]
     # dref <- attributes(object$data[[nmser]])[["reference"]]
-    nday <- ifelse(as.POSIXlt(dref+365)$mday==as.POSIXlt(dref)$mday, 365, 366)
+    # nday <- ifelse(as.POSIXlt(dref+365)$mday==as.POSIXlt(dref)$mday, 365, 366)
+    
     
     # Observed counts
     observedPontes <- data.frame(ordinal=object$data[[nmser]][object$data[[nmser]]$CountTypes == "exact", "ordinal"], 
@@ -185,7 +190,7 @@ summary.phenology <- function(object,
     
     
     
-    parg <- formatpar(c(object$par, object$fixed.parameters), nmser)
+    parg <- formatpar(c(object$par, object$fixed.parameters), nmser, model_before=model_before)
     
     cof <- NULL
     if ((!is.null(object$add.cofactors)) & (!is.null(object$cofactors))) {
@@ -329,14 +334,14 @@ summary.phenology <- function(object,
       if (ncol(pfixed.df.mcmc) != 0) {
         dailydata <- sapply(X = 1:replicate.CI.mcmc, FUN=function(xxx) {
           px <- c(unlist(resultmcmc$resultMCMC[[chain]][mcmctobeused[xxx], ]), pfixed.df.mcmc[xxx, ])
-          xparec <- formatpar(px, nmser)
+          xparec <- formatpar(px, nmser, model_before=model_before)
           dailycount(lnday, xparec, print=FALSE, cofactors=cof, 
                      add.cofactors=object$add.cofactors)
         })
       } else {
         dailydata <- sapply(X = 1:replicate.CI.mcmc, FUN=function(xxx) {
           px <- c(unlist(resultmcmc$resultMCMC[[chain]][mcmctobeused[xxx], ]))
-          xparec <- formatpar(px, nmser)
+          xparec <- formatpar(px, nmser, model_before=model_before)
           dailycount(lnday, xparec, print=FALSE, cofactors=cof, 
                      add.cofactors=object$add.cofactors)
         })
@@ -417,7 +422,8 @@ summary.phenology <- function(object,
         par2 <- par2$random
         
         dailydata <- sapply(1:replicate.CI, FUN=function(xxx) {
-          dailycount(lnday, formatpar(unlist(par2[xxx, , drop=TRUE]), nmser), print=FALSE, cofactors=cof, 
+          dailycount(lnday, formatpar(unlist(par2[xxx, , drop=TRUE]), nmser, model_before=model_before), 
+                     print=FALSE, cofactors=cof, 
                      add.cofactors=object$add.cofactors)
         })
         

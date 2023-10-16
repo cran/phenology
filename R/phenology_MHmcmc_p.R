@@ -343,12 +343,12 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
   
   
   priors <- list(Peak, Flat, Begin, End, Length, LengthE, LengthB, 
-                 Length, PMin, Min, PMinE, MinE, PMinB, MinB, Phi, Delta, Alpha, 
+                 Length, Max, PMin, Min, PMinE, MinE, PMinB, MinB, Phi, Delta, Alpha, 
                  Beta, Tau, Phi1, Delta1, Alpha1, Beta1, Tau1, Phi2, Delta2, 
                  Alpha2, Beta2, Tau2, Theta, alpha, tp, tf, s1, s2, sr)
   
   names(priors) <- c("Peak", "Flat", "Begin", "End", "Length", 
-                     "LengthE", "LengthB", "Length", "PMin", "Min", "PMinE", "MinE", 
+                     "LengthE", "LengthB", "Length", "Max", "PMin", "Min", "PMinE", "MinE", 
                      "PMinB", "MinB", "Phi", "Delta", "Alpha", "Beta", "Tau", "Phi1", 
                      "Delta1", "Alpha1", "Beta1", "Tau1", "Phi2", "Delta2", "Alpha2", 
                      "Beta2", "Tau2", "Theta", "alpha", "tp", "tf", "s1", "s2", "sr")
@@ -466,12 +466,18 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
   
   
   prencours <- NULL
-  
+  perror <- NULL
   for (i in seq_along(par)) {
+    if (!is.null(priors[[names(par)[i]]])) {
     prencours <- c(prencours, priors[[names(par)[i]]])
+    } else {
+      perror <- c(perror, names(par)[i])
+    }
   }
   
-  
+  if (length(perror) != 0) {
+    stop(paste0(c("The parameters", perror, "are not managed by this function; you must build the priors by yourself."), collapse = ", "))
+  }
   
   parametersMCMC <- matrix(prencours, ncol=7, byrow=T)
   colnames(parametersMCMC) <- c("Density", "Prior1", "Prior2", "SDProp", "Min", "Max", "Init")

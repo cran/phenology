@@ -10,6 +10,7 @@ add_phenology(
   reference = NULL,
   month_ref = NULL,
   sep.dates = "-",
+  end.season.date = NULL,
   colname.Date = 1,
   colname.Number = 2,
   colname.Rookery = "Site",
@@ -30,11 +31,13 @@ add_phenology(
 
 \item{name}{The name of the monitored site}
 
-\item{reference}{as.Date('2001-12-31') The date used as 1st date}
+\item{reference}{as.Date('2001-12-31') The date used as day 1 in the ordinal date model.}
 
 \item{month_ref}{If no reference date is given, use this month as a reference.}
 
 \item{sep.dates}{Separator used to separate dates when incertitude is included.}
+
+\item{end.season.date}{The date corresponding to the end of nesting season.}
 
 \item{colname.Date}{Name or number of column with dates.}
 
@@ -42,7 +45,7 @@ add_phenology(
 
 \item{colname.Rookery}{Name or number of column with rookery names.}
 
-\item{colname.CountTypes}{Model of count type. It can be "exact" (default) ou "minimum".}
+\item{colname.CountTypes}{Model of count type. It can be "exact" (default), "minimum" or a number to indicate the maximum possible.}
 
 \item{colname.ZeroCounts}{The name of the column to indicate whether zero counts are included (TRUE is default).}
 

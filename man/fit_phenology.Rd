@@ -8,6 +8,7 @@ fit_phenology(
   data = file.choose(),
   fitted.parameters = NULL,
   fixed.parameters = NULL,
+  model_before = NULL,
   store.intermediate = FALSE,
   file.intermediate = "Intermediate.rda",
   hessian = FALSE,
@@ -18,6 +19,7 @@ fit_phenology(
   lower = 0,
   upper = Inf,
   stop.fit = FALSE,
+  method_Snbinom = "saddlepoint",
   control = list(trace = 1, REPORT = 1, maxit = 1000),
   method = c("Nelder-Mead", "L-BFGS-B")
 )
@@ -28,6 +30,8 @@ fit_phenology(
 \item{fitted.parameters}{Set of parameters to be fitted}
 
 \item{fixed.parameters}{Set of fixed parameters}
+
+\item{model_before}{The change of parameters before to estimate daily counts.}
 
 \item{store.intermediate}{TRUE or FALSE to save the intermediates}
 
@@ -48,6 +52,8 @@ fit_phenology(
 \item{upper}{Upper bound for each parameter}
 
 \item{stop.fit}{If TRUE, will stop search for parameters even if not ML}
+
+\item{method_Snbinom}{Can be Furman, exact, or saddlepoint.}
 
 \item{control}{List for control parameters for optim}
 
@@ -75,7 +81,7 @@ parameter[paste0(add.cofactors, "multi")] * cofactor[, add.cofactors] *
 About parallel computing:\cr
 Set options mc.cores and forking to tell what sort of parallel computing\cr
 Example:\cr
-options(mc.cores = detectCores())
+options(mc.cores = detectCores())\cr
 options(forking = FALSE)
 }
 \details{
@@ -99,6 +105,45 @@ data(result_Gratiot)
 output <- plot(result_Gratiot)
 # or
 output <- summary(result_Gratiot)
+
+# With one sinusoid
+parg <- c('LengthB' = 95.187648986054285, 
+           'Peak' = 173.86111755419921, 
+           'LengthE' = 63.183281230994481, 
+           'Max_Complete' = 33.052091519419136, 
+           'MinB_Complete' = 0.21716081973776738, 
+           'MinE_Complete' = 0.42444245288475702, 
+           'Theta' = 3.9554976911657187, 
+           'Alpha' = 0, 
+           'Beta' = 0.21019683898423902, 
+           'Delta' = 3.6798422076201724,
+result_Gratiot1 <- fit_phenology(data=data_Gratiot, 
+		fitted.parameters=parg, fixed.parameters=NULL)
+plot(result_Gratiot1)
+		
+# With two sinusoids
+parg <- c('LengthB' = 95.821859173220659, 
+          'Peak' = 174.89756503758881, 
+          'LengthE' = 60.954167489825352, 
+          'Max_Complete' = 33.497846416498774, 
+          'MinB_Complete' = 0.21331670808871037, 
+          'MinE_Complete' = 0.43730327416828613, 
+          'Theta' = 4.2569203480842814, 
+          'Alpha1' = 0.15305562092653918, 
+          'Beta1' = 0, 
+          'Delta1' = 9.435730952200263, 
+          'Phi1' = 15.7944494669335, 
+          'Alpha' = 0, 
+          'Beta' = 0.28212926001402688, 
+          'Delta' = 18.651087311957518, 
+          'Phi' = 9.7549929595313056)
+result_Gratiot2 <- fit_phenology(data=data_Gratiot, 
+		fitted.parameters=parg, fixed.parameters=NULL)
+plot(result_Gratiot2)
+
+compare_AICc(no=result_Gratiot, 
+             one=result_Gratiot1, 
+             two=result_Gratiot2)
 
 # With parametrization based on Girondot 2010
 parg <- c('Peak' = 173.52272236775076, 
