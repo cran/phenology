@@ -19,7 +19,7 @@ IPPredict(x = NULL, par = NULL, N = NULL, IP = 0:100)
 A data.frame
 }
 \description{
-This function predicts the possible clutch number 
+This function predicts the possible clutch number
 based on observed Internesting Period.\cr
 }
 \details{

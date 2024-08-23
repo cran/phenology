@@ -27,10 +27,10 @@ Parameter_Global_Year(
 Return a set of modified parameters
 }
 \description{
-This function is used to transform a set of parameters 
-that uses Peak, LengthB, LengthE, B, E, or Length to the same parameter 
+This function is used to transform a set of parameters
+that uses Peak, LengthB, LengthE, B, E, or Length to the same parameter
 with Year effect, or reverse.\cr
-The parameter series can be or a result from add_phenology() or from 
+The parameter series can be or a result from add_phenology() or from
 fit_phenology() or simply a vector of names.\cr
 If this is a vector of names, it is checked to remove _ characters.
 }

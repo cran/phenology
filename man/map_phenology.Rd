@@ -40,13 +40,13 @@ Display a likelihood map
 }
 \description{
 This function generates a map of likelihood varying Phi and Delta.\cr
-	Parameters are the same than for the fit_phenology() function except for trace that is disabled.\cr
-	If Alpha, Beta or Tau are not indicated, Alpha and Tau are set to 0 and 1 and Beta is fitted.\cr
-	Only one set of Alpha, Beta, Tau, Phi and Delta are used for all timeseries present in data.\cr
-	Note that it is possible to fit or fixed Alpha[n], Beta[n], Tau[n], Phi[n] and Delta[n] with [n]=1 or 2 
-	and then it is possible to use this function to establish the likelihood map for a 
-	second or third sinusoids added to the global pattern.\cr
-	If Delta is not specified, it is estimated from Phi and the same precision as Phi is used.
+Parameters are the same than for the fit_phenology() function except for trace that is disabled.\cr
+If Alpha, Beta or Tau are not indicated, Alpha and Tau are set to 0 and 1 and Beta is fitted.\cr
+Only one set of Alpha, Beta, Tau, Phi and Delta are used for all timeseries present in data.\cr
+Note that it is possible to fit or fixed Alpha[n], Beta[n], Tau[n], Phi[n] and Delta[n] with [n]=1 or 2
+and then it is possible to use this function to establish the likelihood map for a
+second or third sinusoids added to the global pattern.\cr
+If Delta is not specified, it is estimated from Phi and the same precision as Phi is used.
 }
 \details{
 map_phenology generates a likelihood map.
@@ -113,26 +113,26 @@ Other Phenology model:
 \code{\link{logLik.phenology}()},
 \code{\link{map_Gratiot}},
 \code{\link{par_init}()},
-\code{\link{phenology2fitRMU}()},
-\code{\link{phenology_MHmcmc_p}()},
-\code{\link{phenology_MHmcmc}()},
 \code{\link{phenology}()},
-\code{\link{plot.phenologymap}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology_MHmcmc_p}()},
 \code{\link{plot.phenology}()},
+\code{\link{plot.phenologymap}()},
 \code{\link{plot_delta}()},
 \code{\link{plot_phi}()},
+\code{\link{print.phenology}()},
 \code{\link{print.phenologymap}()},
 \code{\link{print.phenologyout}()},
-\code{\link{print.phenology}()},
 \code{\link{remove_site}()},
+\code{\link{result_Gratiot}},
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
 \code{\link{result_Gratiot_mcmc}},
-\code{\link{result_Gratiot}},
+\code{\link{summary.phenology}()},
 \code{\link{summary.phenologymap}()},
-\code{\link{summary.phenologyout}()},
-\code{\link{summary.phenology}()}
+\code{\link{summary.phenologyout}()}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

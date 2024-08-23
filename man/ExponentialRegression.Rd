@@ -39,13 +39,13 @@ ExponentialRegression(
 Return a list with the results of exponential regression
 }
 \description{
-The idea of this function is to fit a regression exponential model using MCMC 
+The idea of this function is to fit a regression exponential model using MCMC
 because regression model using glm can produce biased outputs.\cr
-prior.default.distribution can be "dnorm", "dunif", or "dgamma". Note that if you propose 
+prior.default.distribution can be "dnorm", "dunif", or "dgamma". Note that if you propose
 dgamma prior, it will use uniform prior for r because r can be negative.\cr
-The SD model is asd*Nt+bsd. The asd parameter represents multiplicative model and the 
+The SD model is asd*Nt+bsd. The asd parameter represents multiplicative model and the
 bsd parameter represents additive model. Both can be used simultaneously.\cr
-density can be dnorm or dnbinom_new (from HelpersMG package). dnbinom_new() is a 
+density can be dnorm or dnbinom_new (from HelpersMG package). dnbinom_new() is a
 negative binomial with mean and sd parametrization.
 }
 \details{

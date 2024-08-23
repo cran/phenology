@@ -16,7 +16,7 @@
 #'   model_after is applied after par is separated in p1, p2, pL1, pL2, pR1 and pR2 parameters.\cr
 #' pobservation can be a vector of daily probabilities to be captured. The last value is repeated 
 #' if necessary.\cr
-#' The maximum number of days of observation is exp(LengthObservation["max"]).\cr
+#' The maximum number of days of observation is exp(LengthObservation\["max"\]).\cr
 #' If model="12" then par must have _1 and _2 parameters.\cr
 #' if model="LR" then par must have _L2, _L1, _R2, R1 parameters.\cr
 #' @family Model of Tag-loss

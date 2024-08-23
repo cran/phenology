@@ -6,6 +6,7 @@
 #' @param fixed.parameters Set of fixed parameters
 #' @param fitted.parameters Set of parameters to be fitted
 #' @param parallel If TRUE, parallel computing is used.
+#' @param model_before The change of parameters before to estimate daily counts.
 #' @param cofactors data.frame with a column Date and a column for each cofactor
 #' @param add.cofactors Names of the column of parameter cofactors to use as a cofactor
 #' @param zero If the theoretical nest number is under this value, this value wll be used
@@ -46,6 +47,7 @@ likelihood_phenology <-  function(data=NULL                  ,
                                   fixed.parameters=NULL      , 
                                   parallel=TRUE              , 
                                   result=NULL                , 
+                                  model_before=NULL          , 
                                   cofactors=NULL             , 
                                   add.cofactors=NULL         ,
                                   zero=1E-9                  , 
@@ -59,7 +61,7 @@ likelihood_phenology <-  function(data=NULL                  ,
       if (!inherits(result, "phenology")) {
         stop("The object result must be the result of a fit_phenology()")
       }
-      
+      if (is.null(model_before)) {model_before <- result$model_before}
       if (is.null(data)) {data <- result$data}
       if (is.null(fitted.parameters)) {fitted.parameters <- result$par}
       if (is.null(fixed.parameters)) {fixed.parameters <- result$fixed.parameters}
@@ -83,6 +85,7 @@ likelihood_phenology <-  function(data=NULL                  ,
     LnL <- getFromNamespace(".Lnegbin", ns="phenology")(x=fitted.parameters, 
                                                         pt=list(data=data, fixed=fixed.parameters, 
                                                                 parallel=parallel, 
+                                                                model_before=model_before, 
                                                                 out=out, 
                                                                 namespar=names(fitted.parameters), 
                                                                 method_Snbinom=result$method_Snbinom, 

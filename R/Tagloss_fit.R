@@ -69,7 +69,7 @@
 #' If only one parameter is fitted, method must be "Brent" and \code{upper} and \code{lower} 
 #' parameters must be set up with finite values.
 #' 
-#' model_before can be ""par['a0_1']=par['a0_2'];par['a1_1']=par['a1_2']".
+#' model_before can be ""par\['a0_1'\]=par\['a0_2'\];par\['a1_1'\]=par\['a1_2'\]".
 #' model_after can be "p1=p2"
 #' @family Model of Tag-loss
 #' @references Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C., Girondot, M., 2005. Maximum likelihood estimates of tag loss in leatherback sea turtles. Journal of Wildlife Management 69, 540-548.

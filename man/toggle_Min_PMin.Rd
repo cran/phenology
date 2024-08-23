@@ -13,8 +13,8 @@ toggle_Min_PMin(parameters = stop("A set of parameters must be indicated"))
 Return a set of modified parameters
 }
 \description{
-This function is used to transform a set of parameters 
-that uses Min, MinB or MinE to a set of parameters 
+This function is used to transform a set of parameters
+that uses Min, MinB or MinE to a set of parameters
 that uses PMin, PminB or PminE, or reverse.
 }
 \details{

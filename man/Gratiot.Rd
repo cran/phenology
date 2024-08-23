@@ -11,9 +11,9 @@ data.frame with the morning date in the first column and the nest counts on the 
 Gratiot
 }
 \description{
-Leatherback nest counts from Gratiot et al. (2006) Figure 1. These 
-             data have been collected by the ONG Kwata in French Guiana.\cr
-             The data have been obtained from the graph of the publication (see reference).
+Leatherback nest counts from Gratiot et al. (2006) Figure 1. These
+data have been collected by the ONG Kwata in French Guiana.\cr
+The data have been obtained from the graph of the publication (see reference).
 }
 \details{
 Leatherback nest counts from Gratiot et al. (2006) Figure 1
@@ -24,10 +24,10 @@ library(phenology)
 data(Gratiot)
 }
 \references{
-Gratiot, N., Gratiot, J., de Thoisy, B. & Kelle, L. 2006. 
-            Estimation of marine turtles nesting season from incomplete 
-            data ; statistical adjustment of a sinusoidal function. Animal 
-            Conservation, 9, 95-102.
+Gratiot, N., Gratiot, J., de Thoisy, B. & Kelle, L. 2006.
+Estimation of marine turtles nesting season from incomplete
+data ; statistical adjustment of a sinusoidal function. Animal
+Conservation, 9, 95-102.
 }
 \seealso{
 Other Phenology model: 
@@ -48,26 +48,26 @@ Other Phenology model:
 \code{\link{map_Gratiot}},
 \code{\link{map_phenology}()},
 \code{\link{par_init}()},
-\code{\link{phenology2fitRMU}()},
-\code{\link{phenology_MHmcmc_p}()},
-\code{\link{phenology_MHmcmc}()},
 \code{\link{phenology}()},
-\code{\link{plot.phenologymap}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology_MHmcmc_p}()},
 \code{\link{plot.phenology}()},
+\code{\link{plot.phenologymap}()},
 \code{\link{plot_delta}()},
 \code{\link{plot_phi}()},
+\code{\link{print.phenology}()},
 \code{\link{print.phenologymap}()},
 \code{\link{print.phenologyout}()},
-\code{\link{print.phenology}()},
 \code{\link{remove_site}()},
+\code{\link{result_Gratiot}},
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
 \code{\link{result_Gratiot_mcmc}},
-\code{\link{result_Gratiot}},
+\code{\link{summary.phenology}()},
 \code{\link{summary.phenologymap}()},
-\code{\link{summary.phenologyout}()},
-\code{\link{summary.phenology}()}
+\code{\link{summary.phenologyout}()}
 }
 \author{
 KWATA ONG

@@ -11,6 +11,7 @@
   moon = FALSE,
   replicate.CI = 10000,
   resultmcmc = NULL,
+  season = NULL,
   chain = 1,
   replicate.CI.mcmc = "all",
   level = 0.95,
@@ -40,6 +41,8 @@
 \item{replicate.CI}{Number of replicates for estimation of confidence interval}
 
 \item{resultmcmc}{A mcmc object}
+
+\item{season}{Which season to plot}
 
 \item{chain}{The number of chain to be used in resultmcmc}
 
@@ -76,7 +79,7 @@ details_MCMC, details_ML and details_mean are lists with day by day information 
 \description{
 The function plot.phenology plots the phenology graph from a result object.\cr
 If cofactors have been added, the plot does not show their effects.\cr
-plot.objects can be "observations", "ML" for maximum likelihood, "ML.SD" for dispersion of 
+plot.objects can be "observations", "ML" for maximum likelihood, "ML.SD" for dispersion of
 observations, "ML.quantiles" or "MCMC.quantiles" if a mcmc object is given
 }
 \details{
@@ -145,25 +148,25 @@ Other Phenology model:
 \code{\link{map_Gratiot}},
 \code{\link{map_phenology}()},
 \code{\link{par_init}()},
-\code{\link{phenology2fitRMU}()},
-\code{\link{phenology_MHmcmc_p}()},
-\code{\link{phenology_MHmcmc}()},
 \code{\link{phenology}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology_MHmcmc_p}()},
 \code{\link{plot.phenologymap}()},
 \code{\link{plot_delta}()},
 \code{\link{plot_phi}()},
+\code{\link{print.phenology}()},
 \code{\link{print.phenologymap}()},
 \code{\link{print.phenologyout}()},
-\code{\link{print.phenology}()},
 \code{\link{remove_site}()},
+\code{\link{result_Gratiot}},
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
 \code{\link{result_Gratiot_mcmc}},
-\code{\link{result_Gratiot}},
+\code{\link{summary.phenology}()},
 \code{\link{summary.phenologymap}()},
-\code{\link{summary.phenologyout}()},
-\code{\link{summary.phenology}()}
+\code{\link{summary.phenologyout}()}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

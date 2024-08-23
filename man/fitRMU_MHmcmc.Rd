@@ -101,8 +101,8 @@ parametersMCMC = pMCMC, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
 \seealso{
 Other Fill gaps in RMU: 
 \code{\link{CI.RMU}()},
-\code{\link{fitRMU_MHmcmc_p}()},
 \code{\link{fitRMU}()},
+\code{\link{fitRMU_MHmcmc_p}()},
 \code{\link{logLik.fitRMU}()},
 \code{\link{plot.fitRMU}()}
 }

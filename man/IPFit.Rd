@@ -77,12 +77,12 @@ IPFit(
 Return a list of class IP with the fit informations and the fitted model.\cr
 }
 \description{
-This function fits a model of internesting period using maximum 
+This function fits a model of internesting period using maximum
 likelihood or using Metropolis-Hastings algorithm with Bayesian model.\cr
-The fit using maximum likelihood is not the best strategy because the objective 
-function is based on a stochastic model (and then a single set of parameters 
-does not produce exactly the same output each time). 
-The use of Metropolis-Hastings algorithm (a Markov chain Monte Carlo method)  
+The fit using maximum likelihood is not the best strategy because the objective
+function is based on a stochastic model (and then a single set of parameters
+does not produce exactly the same output each time).
+The use of Metropolis-Hastings algorithm (a Markov chain Monte Carlo method)
 should be prefered.
 }
 \details{

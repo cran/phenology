@@ -39,66 +39,66 @@ fitCF(
 Return a list of class ECFOCF with the fit information.\cr
 The list has the following items:\cr
 \itemize{
-  \item \code{data}: The observations to be fitted
-  \item \code{par}: The fitted parameters
-  \item \code{SE}: The standard error of parameters if hessian is TRUE
-  \item \code{value}: The -log likelihood of observations within the fitted model
-  \item \code{AIC}: The AIC of fitted model
-  \item \code{mu}: The vector of fitted mu values
-  \item \code{sd}: The vector of fitted sd values
-  \item \code{prob}: The vector of fitted capture probabilities
-  \item \code{a}: The vector of fitted capture probabilities multiplier
-  \item \code{OTN}: The vector of fitted relative probabilities of contribution
-  \item \code{period_categories}: A list with the different period probabilities as named vectors for each category
-  \item \code{period}: The combined period probabilities using OTN as named vector
-  \item \code{CF_categories}: A list with the different CF probabilities as named vectors for each category
-  \item \code{CF}: The combined CF probabilities  using OTN as named vector
-  \item \code{ECFOCF_categories}: A list with the different probability ECFOCF tables for each category
-  \item \code{ECFOCF}: The combined table of ECFOCF  using OTN probabilities tables
-  \item \code{ECFOCF_0}: The combined table of ECFOCF probabilities tables  using OTN without the OCF=0
-  \item \code{SE_df}: A data.frame with SE and 95\% confidence intervals for meanx and vx (mean and variance of clutch frequency for x category), OTNx (proportion for x category), and probx (capture probability for x category)
+\item \code{data}: The observations to be fitted
+\item \code{par}: The fitted parameters
+\item \code{SE}: The standard error of parameters if hessian is TRUE
+\item \code{value}: The -log likelihood of observations within the fitted model
+\item \code{AIC}: The AIC of fitted model
+\item \code{mu}: The vector of fitted mu values
+\item \code{sd}: The vector of fitted sd values
+\item \code{prob}: The vector of fitted capture probabilities
+\item \code{a}: The vector of fitted capture probabilities multiplier
+\item \code{OTN}: The vector of fitted relative probabilities of contribution
+\item \code{period_categories}: A list with the different period probabilities as named vectors for each category
+\item \code{period}: The combined period probabilities using OTN as named vector
+\item \code{CF_categories}: A list with the different CF probabilities as named vectors for each category
+\item \code{CF}: The combined CF probabilities  using OTN as named vector
+\item \code{ECFOCF_categories}: A list with the different probability ECFOCF tables for each category
+\item \code{ECFOCF}: The combined table of ECFOCF  using OTN probabilities tables
+\item \code{ECFOCF_0}: The combined table of ECFOCF probabilities tables  using OTN without the OCF=0
+\item \code{SE_df}: A data.frame with SE and 95\\% confidence intervals for meanx and vx (mean and variance of clutch frequency for x category), OTNx (proportion for x category), and probx (capture probability for x category)
 }
 }
 \description{
 This function fits a model of clutch frequency.\cr
 This model is an enhanced version of the one published by Briane et al. (2007).\cr
-Parameters are \code{mu} and \code{sd} being the parameters of a  
+Parameters are \code{mu} and \code{sd} being the parameters of a
 distribution used to model the clutch frequency.\cr
 This distribution is used only as a guide but has not statistical meaning.\cr
-The parameter \code{p} is the -logit probability that a female is seen 
-on the beach for a particular nesting event. It includes both the probability 
+The parameter \code{p} is the -logit probability that a female is seen
+on the beach for a particular nesting event. It includes both the probability
 that it is captured but also the probability that it uses that specific beach.\cr
-Several categories of females can be included in the model using index after 
-the name of the parameter, for example \code{mu1}, \code{sd1} and \code{mu2}, 
-\code{sd2} indicates that two categories of females with different clutch 
-frequencies distribution are present. Similarly \code{p1} and \code{p2} indicates 
+Several categories of females can be included in the model using index after
+the name of the parameter, for example \code{mu1}, \code{sd1} and \code{mu2},
+\code{sd2} indicates that two categories of females with different clutch
+frequencies distribution are present. Similarly \code{p1} and \code{p2} indicates
 that two categories of females with different capture probabilities are present.\cr
-If more than one category is used, then it is necessary to include the 
-parameter \code{OTN} to indicate the relative frequencies of each category. 
-If two categories are used, one \code{OTN} parameter named \code{ONT1} must 
-be included. The \code{OTN2} is forced to be 1. Then the relative frequency 
-for category 1 is \code{OTN1/(OTN1+1)} and for category 2 is \code{1/(OTN1+1)}. 
-Same logic must be applied for 3 and more categories with always the last one 
+If more than one category is used, then it is necessary to include the
+parameter \code{OTN} to indicate the relative frequencies of each category.
+If two categories are used, one \code{OTN} parameter named \code{ONT1} must
+be included. The \code{OTN2} is forced to be 1. Then the relative frequency
+for category 1 is \code{OTN1/(OTN1+1)} and for category 2 is \code{1/(OTN1+1)}.
+Same logic must be applied for 3 and more categories with always the last one
 being fixed to 1.\cr
 
-if p or a (logit of the capture probability) are equal to -Inf, 
-the probability of capture is 0 and if they are equal to 
+if p or a (logit of the capture probability) are equal to -Inf,
+the probability of capture is 0 and if they are equal to
 +Inf, the probability is 1.\cr
 
-The value of p out of the period 
+The value of p out of the period
 of nesting must be set to +Inf (capture probability=1)
 to indicate that no turtle is nesting in this period.\cr
 
 p must be set to -Inf (capture probability=0) to indicate that no
 monitoring has been done during a specific period of the nesting season.\cr
 
-The best way to indicate capture probability for 3D model (OCF, ECF, Period) 
-is to indicate p.period common for all categories and a1, a2, etc for each category. 
-The capture probability for category 1 will be p.period * a1, and for category 2 
+The best way to indicate capture probability for 3D model (OCF, ECF, Period)
+is to indicate p.period common for all categories and a1, a2, etc for each category.
+The capture probability for category 1 will be p.period * a1, and for category 2
 will be p.period * a2, etc. \cr
 
-In this case, the parameters p.period should be indicated in fitted parameters 
-as well as a1, but a2 must be fixed to +Inf in fixed.parameters. Then the capture 
+In this case, the parameters p.period should be indicated in fitted parameters
+as well as a1, but a2 must be fixed to +Inf in fixed.parameters. Then the capture
 probability for category 2 will be p.period and for category 1 a1 * p.period.\cr
 
 If itnmax is equal to 0, it will return the model using the parameters without fitting them.\cr
@@ -303,22 +303,22 @@ o_mu1p1aseason1 <- fitCF(x=par, data=ECFOCF_2002,
 }
 }
 \seealso{
-Briane J-P, Rivalan P, Girondot M (2007) The inverse problem applied 
-            to the Observed Clutch Frequency of Leatherbacks from Yalimapo beach, 
-            French Guiana. Chelonian Conservation and Biology 6:63-69
+Briane J-P, Rivalan P, Girondot M (2007) The inverse problem applied
+to the Observed Clutch Frequency of Leatherbacks from Yalimapo beach,
+French Guiana. Chelonian Conservation and Biology 6:63-69
 
-Fossette S, Kelle L, Girondot M, Goverse E, Hilterman ML, Verhage B, 
-         Thoisy B, de, Georges J-Y (2008) The world's largest leatherback 
-         rookeries: A review of conservation-oriented research in French 
-         Guiana/Suriname and Gabon. Journal of Experimental Marine Biology 
-         and Ecology 356:69-82
+Fossette S, Kelle L, Girondot M, Goverse E, Hilterman ML, Verhage B,
+Thoisy B, de, Georges J-Y (2008) The world's largest leatherback
+rookeries: A review of conservation-oriented research in French
+Guiana/Suriname and Gabon. Journal of Experimental Marine Biology
+and Ecology 356:69-82
 
 Other Model of Clutch Frequency: 
-\code{\link{ECFOCF_full}()},
 \code{\link{ECFOCF_f}()},
+\code{\link{ECFOCF_full}()},
 \code{\link{TableECFOCF}()},
-\code{\link{fitCF_MHmcmc_p}()},
 \code{\link{fitCF_MHmcmc}()},
+\code{\link{fitCF_MHmcmc_p}()},
 \code{\link{generateCF}()},
 \code{\link{lnLCF}()},
 \code{\link{logLik.ECFOCF}()},

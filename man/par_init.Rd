@@ -21,25 +21,25 @@ par_init(
 The initial set of parameters
 }
 \description{
-This function is used to generate an initial set of parameters for fitting 
+This function is used to generate an initial set of parameters for fitting
 that is expected to be not to far from the final.\cr
 The parameters can be:\cr
 \itemize{
-  \item \code{Min}, \code{MinE}, \code{MinB}, \code{PMin}, \code{PMinB}, \code{PMinE};
-  \item \code{Max};
-  \item \code{Begin}, \code{Peak}, \code{Flat}, \code{End};
-  \item \code{Length}, \code{LengthB}, \code{LengthE};
-  \item \code{Theta};
-  \item \code{Alpha}, \code{Beta}, \code{Tau}, \code{Phi}, \code{Delta};
-  \item \code{Alpha1}, \code{Beta1}, \code{Tau1}, \code{Phi1}, \code{Delta1};
-  \item \code{Alpha2}, \code{Beta2}, \code{Tau2}, \code{Phi2}, \code{Delta2};
-  \item \code{Alpha3}, \code{Beta3}, \code{Tau3}, \code{Phi3}, \code{Delta3};
+\item \code{Min}, \code{MinE}, \code{MinB}, \code{PMin}, \code{PMinB}, \code{PMinE};
+\item \code{Max};
+\item \code{Begin}, \code{Peak}, \code{Flat}, \code{End};
+\item \code{Length}, \code{LengthB}, \code{LengthE};
+\item \code{Theta};
+\item \code{Alpha}, \code{Beta}, \code{Tau}, \code{Phi}, \code{Delta};
+\item \code{Alpha1}, \code{Beta1}, \code{Tau1}, \code{Phi1}, \code{Delta1};
+\item \code{Alpha2}, \code{Beta2}, \code{Tau2}, \code{Phi2}, \code{Delta2};
+\item \code{Alpha3}, \code{Beta3}, \code{Tau3}, \code{Phi3}, \code{Delta3};
 }
 And the name of level if a cofactor is used.\cr
-The parameters \code{Max}, \code{Min}, \code{MinE}, \code{MinB}, \code{Length}, 
-\code{LengthB}, \code{LengthE}, and \code{Peak} can be followed with _ and part of the 
+The parameters \code{Max}, \code{Min}, \code{MinE}, \code{MinB}, \code{Length},
+\code{LengthB}, \code{LengthE}, and \code{Peak} can be followed with _ and part of the
 name of the rookery.\cr
-The model for scale effect of sinusoid is: Alpha + Beta * n(t) ^ Tau where 
+The model for scale effect of sinusoid is: Alpha + Beta * n(t) ^ Tau where
 n(t) is the expected number for the day t without the sinusoid effect.
 }
 \details{
@@ -103,26 +103,26 @@ Other Phenology model:
 \code{\link{logLik.phenology}()},
 \code{\link{map_Gratiot}},
 \code{\link{map_phenology}()},
-\code{\link{phenology2fitRMU}()},
-\code{\link{phenology_MHmcmc_p}()},
-\code{\link{phenology_MHmcmc}()},
 \code{\link{phenology}()},
-\code{\link{plot.phenologymap}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology_MHmcmc_p}()},
 \code{\link{plot.phenology}()},
+\code{\link{plot.phenologymap}()},
 \code{\link{plot_delta}()},
 \code{\link{plot_phi}()},
+\code{\link{print.phenology}()},
 \code{\link{print.phenologymap}()},
 \code{\link{print.phenologyout}()},
-\code{\link{print.phenology}()},
 \code{\link{remove_site}()},
+\code{\link{result_Gratiot}},
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
 \code{\link{result_Gratiot_mcmc}},
-\code{\link{result_Gratiot}},
+\code{\link{summary.phenology}()},
 \code{\link{summary.phenologymap}()},
-\code{\link{summary.phenologyout}()},
-\code{\link{summary.phenology}()}
+\code{\link{summary.phenologyout}()}
 }
 \author{
 Marc Girondot

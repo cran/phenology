@@ -10,6 +10,7 @@ likelihood_phenology(
   fixed.parameters = NULL,
   parallel = TRUE,
   result = NULL,
+  model_before = NULL,
   cofactors = NULL,
   add.cofactors = NULL,
   zero = 1e-09,
@@ -26,6 +27,8 @@ likelihood_phenology(
 \item{parallel}{If TRUE, parallel computing is used.}
 
 \item{result}{An object obtained after fit_phenology()}
+
+\item{model_before}{The change of parameters before to estimate daily counts.}
 
 \item{cofactors}{data.frame with a column Date and a column for each cofactor}
 
@@ -89,26 +92,26 @@ Other Phenology model:
 \code{\link{map_Gratiot}},
 \code{\link{map_phenology}()},
 \code{\link{par_init}()},
-\code{\link{phenology2fitRMU}()},
-\code{\link{phenology_MHmcmc_p}()},
-\code{\link{phenology_MHmcmc}()},
 \code{\link{phenology}()},
-\code{\link{plot.phenologymap}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology_MHmcmc_p}()},
 \code{\link{plot.phenology}()},
+\code{\link{plot.phenologymap}()},
 \code{\link{plot_delta}()},
 \code{\link{plot_phi}()},
+\code{\link{print.phenology}()},
 \code{\link{print.phenologymap}()},
 \code{\link{print.phenologyout}()},
-\code{\link{print.phenology}()},
 \code{\link{remove_site}()},
+\code{\link{result_Gratiot}},
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
 \code{\link{result_Gratiot_mcmc}},
-\code{\link{result_Gratiot}},
+\code{\link{summary.phenology}()},
 \code{\link{summary.phenologymap}()},
-\code{\link{summary.phenologyout}()},
-\code{\link{summary.phenology}()}
+\code{\link{summary.phenologyout}()}
 }
 \author{
 Marc Girondot

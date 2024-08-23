@@ -15,7 +15,7 @@
 #' 	Parameters are the same than for the fit_phenology() function except for trace that is disabled.\cr
 #' 	If Alpha, Beta or Tau are not indicated, Alpha and Tau are set to 0 and 1 and Beta is fitted.\cr
 #' 	Only one set of Alpha, Beta, Tau, Phi and Delta are used for all timeseries present in data.\cr
-#' 	Note that it is possible to fit or fixed Alpha[n], Beta[n], Tau[n], Phi[n] and Delta[n] with [n]=1 or 2 
+#' 	Note that it is possible to fit or fixed Alpha\[n\], Beta\[n\], Tau\[n\], Phi\[n\] and Delta\[n\] with \[n\]=1 or 2 
 #' 	and then it is possible to use this function to establish the likelihood map for a 
 #' 	second or third sinusoids added to the global pattern.\cr
 #' 	If Delta is not specified, it is estimated from Phi and the same precision as Phi is used.

@@ -56,12 +56,12 @@ lnLCF(x=par, data=ECFOCF_2002, fixed.parameters=fixed.parameters)
 }
 \seealso{
 Other Model of Clutch Frequency: 
-\code{\link{ECFOCF_full}()},
 \code{\link{ECFOCF_f}()},
+\code{\link{ECFOCF_full}()},
 \code{\link{TableECFOCF}()},
-\code{\link{fitCF_MHmcmc_p}()},
-\code{\link{fitCF_MHmcmc}()},
 \code{\link{fitCF}()},
+\code{\link{fitCF_MHmcmc}()},
+\code{\link{fitCF_MHmcmc_p}()},
 \code{\link{generateCF}()},
 \code{\link{logLik.ECFOCF}()},
 \code{\link{plot.ECFOCF}()},

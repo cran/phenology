@@ -36,9 +36,9 @@ phenology2fitRMU(
 Return a list with elements ready to be used with fitRMU().
 }
 \description{
-This function takes the result of plot.phenology() and generates the information 
+This function takes the result of plot.phenology() and generates the information
 to be used with fitRMU().\cr
-The value of density can be dnorm or dgamma. dnorm is better if ML results are used and 
+The value of density can be dnorm or dgamma. dnorm is better if ML results are used and
 dgamma is for MCMC.\cr
 Here are some example of regular expressions (regex) in grep:\cr
 If format of timeseries is beachname-2005: \cr
@@ -50,13 +50,13 @@ If format of timeseries is beachname-2005-2006: \cr
 rookeries.names.grep="(.+)-.+-.+"\cr
 years.grep=".+-([0-9][0-9][0-9][0-9])-.+$"\cr
 Examples:\cr
-gsub("(.+)-.+-.+", "\\\\1", "beachname-2005-2006"); 
+gsub("(.+)-.+-.+", "\\\\1", "beachname-2005-2006");
 gsub(".+-([0-9][0-9][0-9][0-9])-.+$", "\\\\1", "beachname-2005-2006")\cr
 If format of timeseries is beachname-20052006:\cr
 rookeries.names.grep="(.+)-.+"\cr
 years.grep=".+-([0-9][0-9][0-9][0-9])([0-9][0-9][0-9][0-9])$"\cr
 Examples:\cr
-gsub("(.+)-.+", "\\\\1", "beachname-20052006"); 
+gsub("(.+)-.+", "\\\\1", "beachname-20052006");
 gsub(".+-([0-9][0-9][0-9][0-9])([0-9][0-9][0-9][0-9])$", "\\\\1", "beachname-20052006")\cr
 The return is a list with these elements:\cr
 RMU.data, years.byrow, colname.year, and RMU.names.\cr
@@ -90,25 +90,25 @@ Other Phenology model:
 \code{\link{map_Gratiot}},
 \code{\link{map_phenology}()},
 \code{\link{par_init}()},
-\code{\link{phenology_MHmcmc_p}()},
-\code{\link{phenology_MHmcmc}()},
 \code{\link{phenology}()},
-\code{\link{plot.phenologymap}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology_MHmcmc_p}()},
 \code{\link{plot.phenology}()},
+\code{\link{plot.phenologymap}()},
 \code{\link{plot_delta}()},
 \code{\link{plot_phi}()},
+\code{\link{print.phenology}()},
 \code{\link{print.phenologymap}()},
 \code{\link{print.phenologyout}()},
-\code{\link{print.phenology}()},
 \code{\link{remove_site}()},
+\code{\link{result_Gratiot}},
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
 \code{\link{result_Gratiot_mcmc}},
-\code{\link{result_Gratiot}},
+\code{\link{summary.phenology}()},
 \code{\link{summary.phenologymap}()},
-\code{\link{summary.phenologyout}()},
-\code{\link{summary.phenology}()}
+\code{\link{summary.phenologyout}()}
 }
 \author{
 Marc Girondot

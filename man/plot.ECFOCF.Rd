@@ -51,8 +51,8 @@ If category is left to NA, the compound value for all the population is plotted.
 When result="data" is used, this is a parser for plot.TableECFOCF().\cr
 See this function for the parameters.\cr
 The parameter y.axis is the shift of the x legends for result="prob".\cr
-When a \code{resultMCMC} is indicated, if replicates is "all", all values are used; 
-if a value lower than number of iterations is indicated, a regular thinning is used and 
+When a \code{resultMCMC} is indicated, if replicates is "all", all values are used;
+if a value lower than number of iterations is indicated, a regular thinning is used and
 if a value larger then number if iteration is indicated, a sampling with replacement is used.\cr
 }
 \details{
@@ -101,12 +101,12 @@ plot(o_mu1p2_NB, result="Prob", category=c(2, 1), bty="n", las=1)
 }
 \seealso{
 Other Model of Clutch Frequency: 
-\code{\link{ECFOCF_full}()},
 \code{\link{ECFOCF_f}()},
+\code{\link{ECFOCF_full}()},
 \code{\link{TableECFOCF}()},
-\code{\link{fitCF_MHmcmc_p}()},
-\code{\link{fitCF_MHmcmc}()},
 \code{\link{fitCF}()},
+\code{\link{fitCF_MHmcmc}()},
+\code{\link{fitCF_MHmcmc_p}()},
 \code{\link{generateCF}()},
 \code{\link{lnLCF}()},
 \code{\link{logLik.ECFOCF}()},

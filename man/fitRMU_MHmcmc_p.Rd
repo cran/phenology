@@ -21,9 +21,9 @@ fitRMU_MHmcmc_p(
 A matrix with the parameters
 }
 \description{
-Interactive or automatic script used to generate set of parameters to be 
+Interactive or automatic script used to generate set of parameters to be
 used with fitRMU_MHmcmc().\cr
-If density="dgamma" is used, a uniform distribution is used for r, as 
+If density="dgamma" is used, a uniform distribution is used for r, as
 r can be negative.
 }
 \details{
@@ -61,8 +61,8 @@ pMCMC <- fitRMU_MHmcmc_p(result=cst, accept=TRUE)
 \seealso{
 Other Fill gaps in RMU: 
 \code{\link{CI.RMU}()},
-\code{\link{fitRMU_MHmcmc}()},
 \code{\link{fitRMU}()},
+\code{\link{fitRMU_MHmcmc}()},
 \code{\link{logLik.fitRMU}()},
 \code{\link{plot.fitRMU}()}
 }

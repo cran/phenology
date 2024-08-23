@@ -20,7 +20,7 @@
 #   'LengthE.2' = 0.048129714036260852, 
 #   'Theta' = 10.584509187364276)
 
-.format_par <- function(xpar, serie, model_before=NULL) {
+.format_par <- function(xpar, serie, model_before=NULL, season=NULL) {
   
   # if (!is.null(model_before)) eval(parse(text=model_before), envir= environment())
   # model_before <- "Peak.1=Peak.3; Max.1=Max.2"
@@ -59,6 +59,7 @@
   xparec <- xpar[ec]
   names(xparec) <- sapply(nxparec[ec], function(x) x[[1]])
   
+  if (length(unique(names(xparec))) != length(names(xparec))) stop("At least two series have similar names that can be confound")
   # 10/5/2023
   index <- na.omit(suppressWarnings(as.numeric(gsub(".+\\.(\\d+).*", "\\1", names(xparec)))))
   if (length(index) != 0) index <- max(index) else index <- 0
@@ -224,6 +225,12 @@
       xparec[paste0("MaxMinE.", i)] <- xparec[paste0("Max.", i)]-xparec[paste0("MinE.", i)]
       
     }
+  }
+  
+  if (!is.null(season)) {
+    xparec <- c(xparec[!grepl("\\.", names(xparec))], 
+                xparec[grepl(paste0("\\.", season,"$"), names(xparec))])
+    names(xparec) <- gsub("\\.[0-9]+$", "", names(xparec))
   }
   
   

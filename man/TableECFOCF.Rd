@@ -39,13 +39,15 @@ Return a matrix with counts for all OCF and ECF combinations.
 This function formats a CMR dataset to a file that fitCF can use.\cr
 If date0 is not null, a 3D TableECFOCF is generated.\cr
 3D table (ECF, OCF, period) has two attributes:\cr
-- table with 5 elements:\cr
+\itemize{
+\item table with 5 elements:\cr
 begin, end are the first and last elements with counts\cr
 final is the last period with information\cr
 min and max are the first and last period where a nest could have been laid based on MaxNests value\cr
-- characteristics with 5 elements:\cr
+\item characteristics with 5 elements:\cr
 MinimumDaysBetween2Nest, MeanDaysBetween2Nest MaxNests, date0, length_season\cr
 p parameter can be setup to +Inf until begin and after end
+}
 }
 \details{
 TableECFOCF formats a CMR dataset into a file that fitCF can use.
@@ -63,11 +65,11 @@ plot(ECFOCF_2002, period=11)
 }
 \seealso{
 Other Model of Clutch Frequency: 
-\code{\link{ECFOCF_full}()},
 \code{\link{ECFOCF_f}()},
-\code{\link{fitCF_MHmcmc_p}()},
-\code{\link{fitCF_MHmcmc}()},
+\code{\link{ECFOCF_full}()},
 \code{\link{fitCF}()},
+\code{\link{fitCF_MHmcmc}()},
+\code{\link{fitCF_MHmcmc_p}()},
 \code{\link{generateCF}()},
 \code{\link{lnLCF}()},
 \code{\link{logLik.ECFOCF}()},

@@ -156,9 +156,9 @@ plot(cst, order=c("Galibi.Suriname", "Irakumpapy.French.Guiana", "Yalimapo.Frenc
 \seealso{
 Other Fill gaps in RMU: 
 \code{\link{CI.RMU}()},
-\code{\link{fitRMU_MHmcmc_p}()},
-\code{\link{fitRMU_MHmcmc}()},
 \code{\link{fitRMU}()},
+\code{\link{fitRMU_MHmcmc}()},
+\code{\link{fitRMU_MHmcmc_p}()},
 \code{\link{logLik.fitRMU}()}
 }
 \author{

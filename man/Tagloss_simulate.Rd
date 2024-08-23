@@ -40,9 +40,9 @@ Return a list with the number of days different kinds of individuals are seen.
 }
 \description{
 Generate data with known features.\cr
-  model_before is applied to par parameter.\cr
-  model_after is applied after par is separated in p1, p2, pL1, pL2, pR1 and pR2 parameters.\cr
-pobservation can be a vector of daily probabilities to be captured. The last value is repeated 
+model_before is applied to par parameter.\cr
+model_after is applied after par is separated in p1, p2, pL1, pL2, pR1 and pR2 parameters.\cr
+pobservation can be a vector of daily probabilities to be captured. The last value is repeated
 if necessary.\cr
 The maximum number of days of observation is exp(LengthObservation["max"]).\cr
 If model="12" then par must have _1 and _2 parameters.\cr
@@ -67,19 +67,19 @@ cmr_f <- Tagloss_format(cmr, model="12")
 }
 \seealso{
 Other Model of Tag-loss: 
-\code{\link{Tagloss_LengthObs}()},
 \code{\link{Tagloss_L}()},
+\code{\link{Tagloss_LengthObs}()},
 \code{\link{Tagloss_cumul}()},
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_fit}()},
 \code{\link{Tagloss_format}()},
-\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_mcmc}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_model}()},
 \code{\link{logLik.Tagloss}()},
 \code{\link{o_4p_p1p2}},
-\code{\link{plot.TaglossData}()},
-\code{\link{plot.Tagloss}()}
+\code{\link{plot.Tagloss}()},
+\code{\link{plot.TaglossData}()}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

@@ -66,31 +66,31 @@ fitRMU(
 Return a list with the results from optim and synthesis for proportions and numbers
 }
 \description{
-The data must be a data.frame with the first column being years 
+The data must be a data.frame with the first column being years
 and two columns for each beach: the average and the se for the estimate.\cr
 The correspondence between mean, se and density for each rookery are given in the RMU.names data.frame.\cr
-This data.frame must have a column named mean, another named se and a third named density. If 
-no sd column exists, no sd will be considered for the series and if no density column exists, it 
+This data.frame must have a column named mean, another named se and a third named density. If
+no sd column exists, no sd will be considered for the series and if no density column exists, it
 will be considered as being "dnorm" (Gaussian distribution).\cr
 The aggregated number of nests and its confidence interval can be obtained using CI.RMU().\cr
 The names of beach columns must not begin by T_, SD_, a0_, a1_ or a2_ and cannot be r.\cr
 A RMU is the acronyme for Regional Managment Unit. See:\cr
-Wallace, B.P., DiMatteo, A.D., Hurley, B.J., Finkbeiner, E.M., Bolten, A.B., 
-Chaloupka, M.Y., Hutchinson, B.J., Abreu-Grobois, F.A., Amorocho, D., Bjorndal, K.A., 
-Bourjea, J., Bowen, B.W., Dueñas, R.B., Casale, P., Choudhury, B.C., Costa, A., 
-Dutton, P.H., Fallabrino, A., Girard, A., Girondot, M., Godfrey, M.H., Hamann, M., 
-López-Mendilaharsu, M., Marcovaldi, M.A., Mortimer, J.A., Musick, J.A., Nel, R., 
-Seminoff, J.A., Troëng, S., Witherington, B., Mast, R.B., 2010. Regional 
-management units for marine turtles: a novel framework for prioritizing 
+Wallace, B.P., DiMatteo, A.D., Hurley, B.J., Finkbeiner, E.M., Bolten, A.B.,
+Chaloupka, M.Y., Hutchinson, B.J., Abreu-Grobois, F.A., Amorocho, D., Bjorndal, K.A.,
+Bourjea, J., Bowen, B.W., Dueñas, R.B., Casale, P., Choudhury, B.C., Costa, A.,
+Dutton, P.H., Fallabrino, A., Girard, A., Girondot, M., Godfrey, M.H., Hamann, M.,
+López-Mendilaharsu, M., Marcovaldi, M.A., Mortimer, J.A., Musick, J.A., Nel, R.,
+Seminoff, J.A., Troëng, S., Witherington, B., Mast, R.B., 2010. Regional
+management units for marine turtles: a novel framework for prioritizing
 conservation and research across multiple scales. PLoS One 5, e15465.\cr
-Variance for each value is additive based on both the observed SE (in the RMU.data 
+Variance for each value is additive based on both the observed SE (in the RMU.data
 object) and a value.\cr
 The value is a global constant when model.SD is "global-constant". \cr
-The value is proportional to the observed number of nests when model.SD is 
-"global-proportional" with aSD_*observed+SD_ with aSD_ and SD_ being fitted 
+The value is proportional to the observed number of nests when model.SD is
+"global-proportional" with aSD_*observed+SD_ with aSD_ and SD_ being fitted
 values. This value is fixed to zero when model.SD is "Zero".\cr
-The value is dependent on the rookery when model.SD is equal to 
-"Rookery-constant" or "Rookery-proportional" with a similar formula as previously 
+The value is dependent on the rookery when model.SD is equal to
+"Rookery-constant" or "Rookery-proportional" with a similar formula as previously
 described for "global".\cr
 if method is NULL, it will simply return the names of required parameters.
 }
@@ -232,8 +232,8 @@ cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
 \seealso{
 Other Fill gaps in RMU: 
 \code{\link{CI.RMU}()},
-\code{\link{fitRMU_MHmcmc_p}()},
 \code{\link{fitRMU_MHmcmc}()},
+\code{\link{fitRMU_MHmcmc_p}()},
 \code{\link{logLik.fitRMU}()},
 \code{\link{plot.fitRMU}()}
 }

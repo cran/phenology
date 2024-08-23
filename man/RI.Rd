@@ -22,11 +22,11 @@ Return a remigration interval.\cr
 }
 \description{
 Model of remigration interval\cr
-Note that r, s and t are conditional probabilities. If c is null, then return probabilities are 
+Note that r, s and t are conditional probabilities. If c is null, then return probabilities are
 estimated from r. r can be named vector. For example:\cr
 r <- c(r1=0.5, r2=0.60, r3=1) is equivalent to c <- c(c1=0.5, c2=0.3, c3=0.2)\cr
-The vector of r described the probability that a female returned after 
-1, 2, 3 years among those who have not nested before. 
+The vector of r described the probability that a female returned after
+1, 2, 3 years among those who have not nested before.
 The vector of r is the same but defining the return probability for an initial female.\cr
 }
 \details{

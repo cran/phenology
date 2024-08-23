@@ -43,8 +43,8 @@ Return the -log likelihood of a set of individuals
 }
 \description{
 This function must be used within optim().\cr
-  model_before is applied to the par parameter.\cr
-  model_after is applied after par is separated in p1, p2, pL1, pL2, pR1 and pR2 parameters.\cr
+model_before is applied to the par parameter.\cr
+model_after is applied after par is separated in p1, p2, pL1, pL2, pR1 and pR2 parameters.\cr
 progressbar is set to FALSE if mc.cores is different from 1.\cr
 If days.maximum is not indicated, it is estimated using Tagloss_daymax().
 }
@@ -253,14 +253,14 @@ Other Model of Tag-loss:
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_fit}()},
 \code{\link{Tagloss_format}()},
-\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_mcmc}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_model}()},
 \code{\link{Tagloss_simulate}()},
 \code{\link{logLik.Tagloss}()},
 \code{\link{o_4p_p1p2}},
-\code{\link{plot.TaglossData}()},
-\code{\link{plot.Tagloss}()}
+\code{\link{plot.Tagloss}()},
+\code{\link{plot.TaglossData}()}
 }
 \author{
 Marc Girondot

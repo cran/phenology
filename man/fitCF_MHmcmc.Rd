@@ -96,11 +96,11 @@ plot(fitCF_MCMC, parameters="p", transform = invlogit, xlim=c(0, 1),
 }
 \seealso{
 Other Model of Clutch Frequency: 
-\code{\link{ECFOCF_full}()},
 \code{\link{ECFOCF_f}()},
+\code{\link{ECFOCF_full}()},
 \code{\link{TableECFOCF}()},
-\code{\link{fitCF_MHmcmc_p}()},
 \code{\link{fitCF}()},
+\code{\link{fitCF_MHmcmc_p}()},
 \code{\link{generateCF}()},
 \code{\link{lnLCF}()},
 \code{\link{logLik.ECFOCF}()},

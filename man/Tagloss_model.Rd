@@ -42,7 +42,7 @@ Tagloss_model(
 Return the daily rate of tag loss if hessian is null or a data.frame with distribution of daily rate of tag loss if hessian is not null.
 }
 \description{
-This function compute a model of daily tag loss rate for days t 
+This function compute a model of daily tag loss rate for days t
 based on a set of parameters, par or a fitted tag loss model in x.\cr
 Parameters are described in \code{\link{Tagloss_fit}}.
 }
@@ -119,19 +119,19 @@ y <- Tagloss_model(t, x=o, method="Hessian", model="1", replicates=1000)
 }
 \seealso{
 Other Model of Tag-loss: 
-\code{\link{Tagloss_LengthObs}()},
 \code{\link{Tagloss_L}()},
+\code{\link{Tagloss_LengthObs}()},
 \code{\link{Tagloss_cumul}()},
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_fit}()},
 \code{\link{Tagloss_format}()},
-\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_mcmc}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_simulate}()},
 \code{\link{logLik.Tagloss}()},
 \code{\link{o_4p_p1p2}},
-\code{\link{plot.TaglossData}()},
-\code{\link{plot.Tagloss}()}
+\code{\link{plot.Tagloss}()},
+\code{\link{plot.TaglossData}()}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

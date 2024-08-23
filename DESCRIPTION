@@ -2,10 +2,13 @@ Package: phenology
 Type: Package
 Title: Tools to Manage a Parametric Function that Describes Phenology
         and More
-Version: 9.1
-Date: 2023-10-16
-Author: Marc Girondot
-Maintainer: Marc Girondot <marc.girondot@gmail.com>
+Version: 10.1
+Date: 2024-08-23
+Authors@R: person(given = "Marc",
+                    family = "Girondot",
+                    role = c("aut", "cre"),
+                    email = "marc.girondot@gmail.com", 
+                    comment = c(ORCID = "0000-0001-6645-8530"))
 Depends: numDeriv, parallel, optimx, HelpersMG (>= 6.0.1), R (>= 4.1)
 Suggests: shiny, fields, progress, car, MultiRNG, nlWaldTest, pbapply,
         cranlogs
@@ -15,7 +18,9 @@ LazyData: yes
 LazyLoad: yes
 Encoding: UTF-8
 NeedsCompilation: no
-RoxygenNote: 7.2.3
-Packaged: 2023-10-16 08:00:53 UTC; marcgirondot
+RoxygenNote: 7.3.2
+Packaged: 2024-08-23 06:57:28 UTC; marcgirondot
+Author: Marc Girondot [aut, cre] (<https://orcid.org/0000-0001-6645-8530>)
+Maintainer: Marc Girondot <marc.girondot@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-10-16 08:20:02 UTC
+Date/Publication: 2024-08-23 07:40:02 UTC

@@ -52,14 +52,14 @@ This function fits a model of tag loss using a CMR database.\cr
 The names of parameters can be:\cr
 Model Pfaller et al. (2019):\cr
 \describe{
-  \item{Left tag lost when 2 are present}{\code{D1_L2}, \code{D2D1_L2}, \code{D3D2_L2}, \code{A_L2}, \code{B_L2}, \code{C_L2}, \code{delta_L2}}
-  \item{Right tag lost when 2 are present}{\code{D1_R2}, \code{D2D1_R2}, \code{D3D2_R2}, \code{A_R2}, \code{B_R2}, \code{C_R2}, \code{delta_R2}}
-  \item{Left tag lost when 1 is present}{\code{D1_L1}, \code{D2D1_L1}, \code{D3D2_L1}, \code{A_L1}, \code{B_L1}, \code{C_L1}, \code{delta_L1}}
-  \item{Right tag lost when 1 is present}{\code{D1_R1}, \code{D2D1_R1}, \code{D3D2_R1}, \code{A_R1}, \code{B_R1}, \code{C_R1}, \code{delta_R1}}
-  \item{One tag lost when 2 are present}{\code{D1_2}, \code{D2D1_2}, \code{D3D2_2}, \code{A_2}, \code{B_2}, \code{C_2}, \code{delta_2}}
-  \item{One tag lost when 1 is present}{\code{D1_1}, \code{D2D1_1}, \code{D3D2_1}, \code{A_1}, \code{B_1}, \code{C_1}, \code{delta_1}}
+\item{Left tag lost when 2 are present}{\code{D1_L2}, \code{D2D1_L2}, \code{D3D2_L2}, \code{A_L2}, \code{B_L2}, \code{C_L2}, \code{delta_L2}}
+\item{Right tag lost when 2 are present}{\code{D1_R2}, \code{D2D1_R2}, \code{D3D2_R2}, \code{A_R2}, \code{B_R2}, \code{C_R2}, \code{delta_R2}}
+\item{Left tag lost when 1 is present}{\code{D1_L1}, \code{D2D1_L1}, \code{D3D2_L1}, \code{A_L1}, \code{B_L1}, \code{C_L1}, \code{delta_L1}}
+\item{Right tag lost when 1 is present}{\code{D1_R1}, \code{D2D1_R1}, \code{D3D2_R1}, \code{A_R1}, \code{B_R1}, \code{C_R1}, \code{delta_R1}}
+\item{One tag lost when 2 are present}{\code{D1_2}, \code{D2D1_2}, \code{D3D2_2}, \code{A_2}, \code{B_2}, \code{C_2}, \code{delta_2}}
+\item{One tag lost when 1 is present}{\code{D1_1}, \code{D2D1_1}, \code{D3D2_1}, \code{A_1}, \code{B_1}, \code{C_1}, \code{delta_1}}
 }
-\code{pA}, \code{pB} and \code{pC} are the daily probabilities of tag loss with 
+\code{pA}, \code{pB} and \code{pC} are the daily probabilities of tag loss with
 \code{pA=-logit(A)}, \code{pB=-logit(B)} and \code{pC=-logit(C)} .\cr
 \code{delta} is used as: \code{p = p + delta}. Nothe that \code{delta} can be negative\cr
 Tag loss rate is \code{pA} at day 1\cr
@@ -100,7 +100,7 @@ Model V\cr
 \item{One tag lost when 1 is present}{\code{CasaleModelVa0_1}, \code{CasaleModelVa1_1}, \code{CasaleModelVa2_1}, \code{CasaleModelVa3_1}, \code{CasaleModelVa4_1}}
 }
 
-If only one parameter is fitted, method must be "Brent" and \code{upper} and \code{lower} 
+If only one parameter is fitted, method must be "Brent" and \code{upper} and \code{lower}
 parameters must be set up with finite values.
 
 model_before can be ""par['a0_1']=par['a0_2'];par['a1_1']=par['a1_2']".
@@ -166,19 +166,19 @@ Pfaller JB, Williams KL, Frick MG, Shamblin BM, Nairn CJ, Girondot M (2019) Gene
 }
 \seealso{
 Other Model of Tag-loss: 
-\code{\link{Tagloss_LengthObs}()},
 \code{\link{Tagloss_L}()},
+\code{\link{Tagloss_LengthObs}()},
 \code{\link{Tagloss_cumul}()},
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_format}()},
-\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_mcmc}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_model}()},
 \code{\link{Tagloss_simulate}()},
 \code{\link{logLik.Tagloss}()},
 \code{\link{o_4p_p1p2}},
-\code{\link{plot.TaglossData}()},
-\code{\link{plot.Tagloss}()}
+\code{\link{plot.Tagloss}()},
+\code{\link{plot.TaglossData}()}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

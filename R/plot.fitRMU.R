@@ -11,7 +11,7 @@
 #' @param replicate.CI Number of replicates to estimate CI
 #' @param CI.RMU A result of CI.RMU()
 #' @param what Can be proportions, numbers or total
-#' @param criteria What criteria will be used for proportions or numbers: mean or 50\%
+#' @param criteria What criteria will be used for proportions or numbers: mean or 50%
 #' @param aggregate Can be model or both
 #' @param order Give the order of series in plot, from bottom to top. Can be used to not show series.
 #' @param control.legend Parameters send to legend

@@ -76,8 +76,8 @@ cofactors must be a data.frame with a column Date and a column for each cofactor
 add.cofactors are the names of the column of parameter cofactors to use as a cofactor;\cr
 The model is then: parameter[add.cofactors] * cofactor[, add.cofactors]\cr
 If the name of the parameter is paste0(add.cofactors, "multi"), then the model is:\cr
-parameter[paste0(add.cofactors, "multi")] * cofactor[, add.cofactors] * 
-       (number of nests without cofactor)\cr
+parameter[paste0(add.cofactors, "multi")] * cofactor[, add.cofactors] *
+(number of nests without cofactor)\cr
 About parallel computing:\cr
 Set options mc.cores and forking to tell what sort of parallel computing\cr
 Example:\cr
@@ -350,26 +350,26 @@ Other Phenology model:
 \code{\link{map_Gratiot}},
 \code{\link{map_phenology}()},
 \code{\link{par_init}()},
-\code{\link{phenology2fitRMU}()},
-\code{\link{phenology_MHmcmc_p}()},
-\code{\link{phenology_MHmcmc}()},
 \code{\link{phenology}()},
-\code{\link{plot.phenologymap}()},
+\code{\link{phenology2fitRMU}()},
+\code{\link{phenology_MHmcmc}()},
+\code{\link{phenology_MHmcmc_p}()},
 \code{\link{plot.phenology}()},
+\code{\link{plot.phenologymap}()},
 \code{\link{plot_delta}()},
 \code{\link{plot_phi}()},
+\code{\link{print.phenology}()},
 \code{\link{print.phenologymap}()},
 \code{\link{print.phenologyout}()},
-\code{\link{print.phenology}()},
 \code{\link{remove_site}()},
+\code{\link{result_Gratiot}},
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
 \code{\link{result_Gratiot_mcmc}},
-\code{\link{result_Gratiot}},
+\code{\link{summary.phenology}()},
 \code{\link{summary.phenologymap}()},
-\code{\link{summary.phenologyout}()},
-\code{\link{summary.phenology}()}
+\code{\link{summary.phenologyout}()}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

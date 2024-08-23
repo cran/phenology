@@ -24,15 +24,15 @@
 #' Result <- fit_phenology(data=dataset, fitted.parameters=par, fixed.parameters=pfixed, trace=1, hessian=TRUE)\cr
 #' or if no parameter is fixed :\cr
 #' Result <- fit_phenology(data=dataset, fitted.parameters=par)\cr
-#' Add trace=1 [default] to have information on the fit progression or trace=0 to hide information on the fit progression.\cr
+#' Add trace=1 \[default\] to have information on the fit progression or trace=0 to hide information on the fit progression.\cr
 #' hessian = FALSE does not estimate Hessian matrix and SE of parameters.\cr
 #' If the parameter Theta is fixed to +Inf, a Poissonian model of daily nest distribution is implemented.\cr
 #' Special section about cofactors:\cr
 #' cofactors must be a data.frame with a column Date and a column for each cofactor\cr
 #' add.cofactors are the names of the column of parameter cofactors to use as a cofactor;\cr
-#' The model is then: parameter[add.cofactors] * cofactor[, add.cofactors]\cr
+#' The model is then: parameter\[add.cofactors\] * cofactor\[, add.cofactors\]\cr
 #' If the name of the parameter is paste0(add.cofactors, "multi"), then the model is:\cr
-#' parameter[paste0(add.cofactors, "multi")] * cofactor[, add.cofactors] * 
+#' parameter\[paste0(add.cofactors, "multi")\] * cofactor\[, add.cofactors\] * 
 #'        (number of nests without cofactor)\cr
 #' About parallel computing:\cr
 #' Set options mc.cores and forking to tell what sort of parallel computing\cr

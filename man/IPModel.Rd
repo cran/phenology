@@ -25,18 +25,18 @@ Return a list with two elements.\cr
 This function fits a model of internesting period.\cr
 The parameters are:\cr
 \itemize{
-  \item \code{meanIP} : The average number of days between two nesting processes
-  \item \code{DeltameanIP} : The shift in days for IP at each new clutch.
-  \item \code{sdIP} : The standard deviation of number of days between two nesting processes
-  \item \code{minIP} : The minimum number of days between two nesting processes
-  \item \code{pAbort} : The -logit of the probability to abort a nesting process
-  \item \code{meanAbort} : The average of the number of days after the abortion of a nesting process
-  \item \code{sdAbort} : The standard deviation of the number of days after the abortion of a nesting process
-  \item \code{pCapture} : The -logit of the probability to capture a female on the beach
-  \item \code{meanECF} : The average number of clutch a female will try to do being reprensented as ECF
-  \item \code{sdECF} : The standard deviation of number of clutch a female will try to do
-  \item \code{N} : The number of replicates to generate the distribution (default is 10000 if not indicated)
-  \item \code{ECF.x} : The relative proportion of females nesting with ECF = x (ECF.1 being fixed to 1)
+\item \code{meanIP} : The average number of days between two nesting processes
+\item \code{DeltameanIP} : The shift in days for IP at each new clutch.
+\item \code{sdIP} : The standard deviation of number of days between two nesting processes
+\item \code{minIP} : The minimum number of days between two nesting processes
+\item \code{pAbort} : The -logit of the probability to abort a nesting process
+\item \code{meanAbort} : The average of the number of days after the abortion of a nesting process
+\item \code{sdAbort} : The standard deviation of the number of days after the abortion of a nesting process
+\item \code{pCapture} : The -logit of the probability to capture a female on the beach
+\item \code{meanECF} : The average number of clutch a female will try to do being reprensented as ECF
+\item \code{sdECF} : The standard deviation of number of clutch a female will try to do
+\item \code{N} : The number of replicates to generate the distribution (default is 10000 if not indicated)
+\item \code{ECF.x} : The relative proportion of females nesting with ECF = x (ECF.1 being fixed to 1)
 }
 }
 \details{

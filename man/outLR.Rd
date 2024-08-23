@@ -25,8 +25,8 @@ data_f_21 <- Tagloss_format(outLR, model="21")
 }
 }
 \references{
-Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C., 
-Girondot, M., 2005. Maximum likelihood estimates of tag loss in 
+Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C.,
+Girondot, M., 2005. Maximum likelihood estimates of tag loss in
 leatherback sea turtles. Journal of Wildlife Management 69, 540-548.
 }
 \author{

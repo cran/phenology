@@ -53,9 +53,9 @@ AIC(cst)
 \seealso{
 Other Fill gaps in RMU: 
 \code{\link{CI.RMU}()},
-\code{\link{fitRMU_MHmcmc_p}()},
-\code{\link{fitRMU_MHmcmc}()},
 \code{\link{fitRMU}()},
+\code{\link{fitRMU_MHmcmc}()},
+\code{\link{fitRMU_MHmcmc_p}()},
 \code{\link{plot.fitRMU}()}
 }
 \author{

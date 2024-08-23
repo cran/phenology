@@ -3,14 +3,13 @@
 #' \tabular{ll}{
 #'  Package: \tab phenology\cr
 #'  Type: \tab Package\cr
-#'  Version: \tab 9.1 build 1575\cr
-#'  Date: \tab 2023-10-16\cr
+#'  Version: \tab 10.1 build 1603\cr
+#'  Date: \tab 2024-08-23\cr
 #'  License: \tab GPL (>= 2)\cr
 #'  LazyLoad: \tab yes\cr
 #'  }
 #' @title Tools to Manage a Parametric Function that Describes Phenology and More
 #' @author Marc Girondot \email{marc.girondot@@gmail.com}
-#' @docType package
 #' @name phenology-package
 #' @description Functions used to fit and test the phenology of species based on counts.\cr
 #' Note that only the most significant changes are reported in the NEWS.\cr

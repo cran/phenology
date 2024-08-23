@@ -72,9 +72,9 @@ plot(modelECFOCF, period=2)
 Other Model of Clutch Frequency: 
 \code{\link{ECFOCF_full}()},
 \code{\link{TableECFOCF}()},
-\code{\link{fitCF_MHmcmc_p}()},
-\code{\link{fitCF_MHmcmc}()},
 \code{\link{fitCF}()},
+\code{\link{fitCF_MHmcmc}()},
+\code{\link{fitCF_MHmcmc_p}()},
 \code{\link{generateCF}()},
 \code{\link{lnLCF}()},
 \code{\link{logLik.ECFOCF}()},

@@ -119,6 +119,12 @@
                                 
                                 for (i in 1:nrow(data)) {
                                   
+                                  if ((is.na(data[i, "A"])) | (is.na(data[i, "S"])) | (is.null(data[i, "A"])) | (is.null(data[i, "S"]))) {
+                                    d <- 1
+                                  } else {
+                                    d <- 1/(1+exp(-(1/(4*data[i, "S"]))*(data[i, "A"]-0)))
+                                  }
+                                  
                                   if (data$ZeroCounts[i]) {
                                     
                                     if (data$CountTypes[i] == "exact") {
@@ -129,13 +135,14 @@
                                         sumnbcount <- nbperday[data$ordinal[i]+1]
                                         
                                         lnli2 <- -dnbinom(data$nombre[i], size = th, 
-                                                          mu = sumnbcount, log = TRUE)
+                                                          mu = sumnbcount*d, log = TRUE)
                                       } else {
                                         # break
                                         nbjour <- data$ordinal2[i] - data$ordinal[i] + 1
                                         # nbcount <- daily_count((1:nbjour) + data$ordinal[i] - 1, xparec, print = FALSE)
                                         # Le premier jour de la série est 0 et donc il est à l'indice 1
-                                        nbcount <- nbperday[((1:nbjour) + data$ordinal[i] - 1)+1]
+                                        # nbcount <- nbperday[((1:nbjour) + data$ordinal[i] - 1)+1]
+                                        nbcount <- nbperday[(1:nbjour) + data$ordinal[i]]
                                         sumnbcount <- sum(nbcount)
                                         
                                         if (!is.null(pt$method_Snbinom)) {
@@ -144,7 +151,12 @@
                                           method_Snbinom <- "saddlepoint"
                                         }
                                         
-                                        lnli2 <- -dSnbinom(x=data$nombre[i], size = th, mu = nbcount, 
+                                        if ((is.na(data[i, "A"])) | (is.na(data[i, "S"])) | (is.null(data[i, "A"])) | (is.null(data[i, "S"]))) {
+                                          d <- rep(1, nbjour)
+                                          } else {
+                                            d <- 1/(1+exp(-(1/(4*data[i, "S"]))*(data[i, "A"]-(0:(nbjour-1)))))
+                                        }
+                                        lnli2 <- -dSnbinom(x=data$nombre[i], size = th, mu = nbcount*rev(d), 
                                                            log = TRUE, method = method_Snbinom, normalize = FALSE)
                                       }
                                     } else {
@@ -162,7 +174,7 @@
                                           if (data$nombre[i]-1 >= 0) { 
                                             
                                             lnli2 <- -pnbinom(q=data$nombre[i]-1, size = th, 
-                                                              mu = sumnbcount, log.p = TRUE, 
+                                                              mu = sumnbcount*d, log.p = TRUE, 
                                                               lower.tail = TRUE)
                                             
                                             
@@ -184,8 +196,12 @@
                                               method_Snbinom <- "saddlepoint"
                                             }
                                             # -log((1-sum(dSnbinom(x=0:(data$nombre[i]-1), size = th, mu = nbcount, log=FALSE, method = method_Snbinom))))
-                                            
-                                            lnli2 <- -pSnbinom(q=data$nombre[i]-1, size = th, mu = nbcount, log.p = TRUE, 
+                                            if ((is.na(data[i, "A"])) | (is.na(data[i, "S"])) | (is.null(data[i, "A"])) | (is.null(data[i, "S"]))) {
+                                              d <- rep(1, nbjour)
+                                            } else {
+                                              d <- 1/(1+exp(-(1/(4*data[i, "S"]))*(data[i, "A"]-(0:(nbjour-1)))))
+                                            }
+                                            lnli2 <- -pSnbinom(q=data$nombre[i]-1, size = th, mu = nbcount*rev(d), log.p = TRUE, 
                                                                lower.tail = FALSE, method = method_Snbinom, tol=1E-6, normalize = FALSE)
                                             
                                             
@@ -209,7 +225,7 @@
                                           # pnbinom(q=1-1, size = 3, mu = 10, log.p = FALSE, lower.tail = FALSE)+dnbinom(0, size = 3, mu = 10, log=FALSE) = 1
                                           
                                           lnli2 <- -sum(dnbinom(x=nbmin:nbmax, size = th, 
-                                                                mu = sumnbcount, log = TRUE))
+                                                                mu = sumnbcount*d, log = TRUE))
                                           
                                         } else {
                                           # j'ai une range de dates
@@ -225,8 +241,12 @@
                                               method_Snbinom <- "saddlepoint"
                                             }
                                             # -log((1-sum(dSnbinom(x=0:(data$nombre[i]-1), size = th, mu = nbcount, log=FALSE, method = method_Snbinom))))
-                                            
-                                            lnli2 <- -sum(dSnbinom(x=nbmin:nbmax, size = th, mu = nbcount, log = TRUE, 
+                                            if ((is.na(data[i, "A"])) | (is.na(data[i, "S"])) | (is.null(data[i, "A"])) | (is.null(data[i, "S"]))) {
+                                              d <- rep(1, nbjour)
+                                            } else {
+                                              d <- 1/(1+exp(-(1/(4*data[i, "S"]))*(data[i, "A"]-(0:(nbjour-1)))))
+                                            }
+                                            lnli2 <- -sum(dSnbinom(x=nbmin:nbmax, size = th, mu = nbcount*rev(d), log = TRUE, 
                                                                    method = method_Snbinom, tol=1E-6, normalize = FALSE))
                                             
                                           } else {
@@ -247,8 +267,8 @@
                                         sumnbcount <- nbperday[data$ordinal[i]+1]
                                         
                                         
-                                        lnli2 <- (- dnbinom(data$nombre[i], size = th, mu = sumnbcount, log = TRUE)+
-                                                    log(1 - dnbinom(0, size = th, mu = sumnbcount,  log = FALSE)))
+                                        lnli2 <- (- dnbinom(data$nombre[i], size = th, mu = sumnbcount*d, log = TRUE)+
+                                                    log(1 - dnbinom(0, size = th, mu = sumnbcount*d,  log = FALSE)))
                                         
                                       } else {
                                         nbjour <- data$ordinal2[i] - data$ordinal[i] + 1
@@ -273,8 +293,13 @@
                                             method_Snbinom <- "saddlepoint"
                                           }
                                         }
-                                        lnli2 <- (- dSnbinom(data$nombre[i], size = th, mu = nbcount, log = TRUE, method = method_Snbinom, normalize = FALSE) + 
-                                                    log(1 - dSnbinom(0, size = th, mu = nbcount, log = FALSE, method = method_Snbinom, normalize = FALSE)))
+                                        if ((is.na(data[i, "A"])) | (is.na(data[i, "S"])) | (is.null(data[i, "A"])) | (is.null(data[i, "S"]))) {
+                                          d <- rep(1, nbjour)
+                                        } else {
+                                          d <- 1/(1+exp(-(1/(4*data[i, "S"]))*(data[i, "A"]-(0:(nbjour-1)))))
+                                        }
+                                        lnli2 <- (- dSnbinom(data$nombre[i], size = th, mu = nbcount*rev(d), log = TRUE, method = method_Snbinom, normalize = FALSE) + 
+                                                    log(1 - dSnbinom(0, size = th, mu = nbcount*rev(d), log = FALSE, method = method_Snbinom, normalize = FALSE)))
                                         
                                       }
                                     } else {
@@ -289,8 +314,8 @@
                                           
                                           if (data$nombre[i]-1 >= 0) {
                                             
-                                            prob.sup.egal.obs <- pnbinom(q=data$nombre[i]-1, size = th, mu = sumnbcount, log.p = TRUE, lower.tail = FALSE)
-                                            prob0 <- dnbinom(0, size = th, mu = sumnbcount,  log = FALSE)
+                                            prob.sup.egal.obs <- pnbinom(q=data$nombre[i]-1, size = th, mu = sumnbcount*d, log.p = TRUE, lower.tail = FALSE)
+                                            prob0 <- dnbinom(0, size = th, mu = sumnbcount*d,  log = FALSE)
                                             
                                             lnli2 <- (- prob.sup.egal.obs + log(1 - prob0))
                                           } else {
@@ -310,10 +335,14 @@
                                             } else {
                                               method_Snbinom <- "saddlepoint"
                                             }
-                                            
-                                            prob.sup.egal.obs <- pSnbinom(q=data$nombre[i]-1, size = th, mu = nbcount, log.p = TRUE, 
+                                            if ((is.na(data[i, "A"])) | (is.na(data[i, "S"])) | (is.null(data[i, "A"])) | (is.null(data[i, "S"]))) {
+                                              d <- rep(1, nbjour)
+                                            } else {
+                                              d <- 1/(1+exp(-(1/(4*data[i, "S"]))*(data[i, "A"]-(0:(nbjour-1)))))
+                                            }
+                                            prob.sup.egal.obs <- pSnbinom(q=data$nombre[i]-1, size = th, mu = nbcount*rev(d), log.p = TRUE, 
                                                                           lower.tail = FALSE, method = method_Snbinom, tol=1E-6, normalize = FALSE)
-                                            prob0 <- dSnbinom(0, size = th, mu = nbcount,  log = FALSE, method = method_Snbinom, normalize = FALSE)
+                                            prob0 <- dSnbinom(0, size = th, mu = nbcount*rev(d),  log = FALSE, method = method_Snbinom, normalize = FALSE)
                                             
                                             lnli2 <- (- prob.sup.egal.obs + log(1 - prob0))
                                             
@@ -337,9 +366,9 @@
                                           if (data$nombre[i]-1 >= 0) {
                                             
                                             prob.sup.egal.obs <- -sum(dnbinom(x=nbmin:nbmax, size = th, 
-                                                                              mu = sumnbcount, log = TRUE))
+                                                                              mu = sumnbcount*d, log = TRUE))
                                             
-                                            prob0 <- dnbinom(0, size = th, mu = sumnbcount,  log = FALSE)
+                                            prob0 <- dnbinom(0, size = th, mu = sumnbcount*d,  log = FALSE)
                                             
                                             lnli2 <- (prob.sup.egal.obs + log(1 - prob0))
                                           } else {
@@ -359,10 +388,14 @@
                                             } else {
                                               method_Snbinom <- "saddlepoint"
                                             }
-                                            
-                                            prob.sup.egal.obs <- -sum(dSnbinom(x=nbmin:nbmax, size = th, mu = nbcount, log = TRUE, 
+                                            if ((is.na(data[i, "A"])) | (is.na(data[i, "S"])) | (is.null(data[i, "A"])) | (is.null(data[i, "S"]))) {
+                                              d <- rep(1, nbjour)
+                                            } else {
+                                              d <- 1/(1+exp(-(1/(4*data[i, "S"]))*(data[i, "A"]-(0:(nbjour-1)))))
+                                            }
+                                            prob.sup.egal.obs <- -sum(dSnbinom(x=nbmin:nbmax, size = th, mu = nbcount*rev(d), log = TRUE, 
                                                                                         method = method_Snbinom, tol=1E-6, normalize = FALSE))
-                                            prob0 <- dSnbinom(0, size = th, mu = nbcount,  log = FALSE, method = method_Snbinom, normalize = FALSE)
+                                            prob0 <- dSnbinom(0, size = th, mu = nbcount*rev(d),  log = FALSE, method = method_Snbinom, normalize = FALSE)
                                             
                                             lnli2 <- (prob.sup.egal.obs + log(1 - prob0))
                                             

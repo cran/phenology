@@ -39,19 +39,19 @@ AIC(o)
 }
 \seealso{
 Other Model of Tag-loss: 
-\code{\link{Tagloss_LengthObs}()},
 \code{\link{Tagloss_L}()},
+\code{\link{Tagloss_LengthObs}()},
 \code{\link{Tagloss_cumul}()},
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_fit}()},
 \code{\link{Tagloss_format}()},
-\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_mcmc}()},
+\code{\link{Tagloss_mcmc_p}()},
 \code{\link{Tagloss_model}()},
 \code{\link{Tagloss_simulate}()},
 \code{\link{o_4p_p1p2}},
-\code{\link{plot.TaglossData}()},
-\code{\link{plot.Tagloss}()}
+\code{\link{plot.Tagloss}()},
+\code{\link{plot.TaglossData}()}
 }
 \author{
 Marc Girondot

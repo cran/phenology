@@ -74,13 +74,13 @@ Return a list object with the Bayesian model describing tag loss.
 This function fits a model of tag loss using a CMR database using Bayesian mcmc.\cr
 The parameters must be stored in a data.frame with named rows for each parameter with the following columns:\cr
 \itemize{
-  \item Density. The density function name, example \code{dnorm}, \code{dlnorm}, \code{dunif}
-  \item Prior1. The first parameter to send to the \code{Density} function
-  \item Prior2. The second parameter to send to the \code{Density} function
-  \item SDProp. The standard error from new proposition value of this parameter
-  \item Min. The minimum value for this parameter
-  \item Max. The maximum value for this parameter
-  \item Init. The initial value for this parameter
+\item Density. The density function name, example \code{dnorm}, \code{dlnorm}, \code{dunif}
+\item Prior1. The first parameter to send to the \code{Density} function
+\item Prior2. The second parameter to send to the \code{Density} function
+\item SDProp. The standard error from new proposition value of this parameter
+\item Min. The minimum value for this parameter
+\item Max. The maximum value for this parameter
+\item Init. The initial value for this parameter
 }
 }
 \details{
@@ -107,8 +107,8 @@ o_MCMC <- Tagloss_mcmc(data=data_f_21, parameters=pMCMC, fixed.parameters=pfixed
 }
 \seealso{
 Other Model of Tag-loss: 
-\code{\link{Tagloss_LengthObs}()},
 \code{\link{Tagloss_L}()},
+\code{\link{Tagloss_LengthObs}()},
 \code{\link{Tagloss_cumul}()},
 \code{\link{Tagloss_daymax}()},
 \code{\link{Tagloss_fit}()},
@@ -118,8 +118,8 @@ Other Model of Tag-loss:
 \code{\link{Tagloss_simulate}()},
 \code{\link{logLik.Tagloss}()},
 \code{\link{o_4p_p1p2}},
-\code{\link{plot.TaglossData}()},
-\code{\link{plot.Tagloss}()}
+\code{\link{plot.Tagloss}()},
+\code{\link{plot.TaglossData}()}
 }
 \author{
 Marc Girondot
