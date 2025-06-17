@@ -18,8 +18,8 @@ Fit a parametric function that describes phenology
 \tabular{ll}{
 Package: \tab phenology\cr
 Type: \tab Package\cr
-Version: \tab 10.1 build 1603\cr
-Date: \tab 2024-08-23\cr
+Version: \tab 10.3 build 1642\cr
+Date: \tab 2025-06-17\cr
 License: \tab GPL (>= 2)\cr
 LazyLoad: \tab yes\cr
 }

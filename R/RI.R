@@ -29,6 +29,9 @@
 #' # Then the true remigration interval is:
 #' ri_true <- sum(1:5*c[1:5])
 #' 
+#' # BP is then
+#' RI2BP(proportion=c, RI=c(mean=1:5, sd=rep(0, 5)))
+#' 
 #' s_ri  <- NULL
 #' for (sx in seq(from=0.01, to=1, by=0.01)) {
 #'   s[] <- sx

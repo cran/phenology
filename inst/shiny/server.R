@@ -23,7 +23,7 @@ shinyServer(function(input, output, session) {
   output$Developpeur_UI <- renderUI({
     p(babel["Developpeur" , input$language]
       , a("Marc Girondot"
-          , href="https://max2.ese.u-psud.fr/epc/conservation/index.html"
+          , href="http://hebergement.universite-paris-saclay.fr/marcgirondot/"
           , target="_blank"))
   })
   

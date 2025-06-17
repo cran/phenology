@@ -14,6 +14,7 @@
   replicate.CI = 10000,
   level = 0.95,
   print = TRUE,
+  save.all = FALSE,
   ...
 )
 }
@@ -36,6 +37,8 @@
 
 \item{print}{Should information be shown}
 
+\item{save.all}{If TRUE, returns all the values for replicates}
+
 \item{...}{Not used}
 }
 \value{
@@ -46,7 +49,13 @@ sum_synthesis is the synthesis of the sum of all analyzed time-series.
 \description{
 The function summary.phenology shows result and estimates confidence interval.\cr
 If several years are analyzed, the sum_synthesis result can be obtained only if there is
-not a mix of bisextile and non-bisextile years.
+not a mix of bisextile and non-bisextile years.\cr
+If save.all is true, it will return a object $save.all as an array with dimensions:\cr
+c("without_obs_ML", "with_obs_ML", "without_obs_MCMC", "with_obs_MCMC"), \cr
+series, \cr
+replicates\cr
+The replicates dimension will be the max of replicate.CI.mcmc and replicate.CI. If
+they are not equal, NA will be present for the missing replicates. See examples.
 }
 \details{
 summary.phenology prints the information from a result object.
@@ -69,6 +78,8 @@ data(result_Gratiot)
 s <- summary(result_Gratiot)
 # Using mcmc
 s <- summary(object=result_Gratiot, resultmcmc=result_Gratiot_mcmc)
+sa <- summary(object=result_Gratiot, resultmcmc=result_Gratiot_mcmc, save.all = TRUE)
+hist(sa$save.all["with_obs_MCMC", "Complete", ])
 }
 }
 \seealso{
@@ -107,7 +118,6 @@ Other Phenology model:
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
-\code{\link{result_Gratiot_mcmc}},
 \code{\link{summary.phenologymap}()},
 \code{\link{summary.phenologyout}()}
 }

@@ -109,6 +109,7 @@ plot(rMCMC)
 Other Model of Remigration Interval: 
 \code{\link{LnRI_norm}()},
 \code{\link{RI}()},
+\code{\link{RI2BP}()},
 \code{\link{plot.Remigration}()}
 }
 \author{

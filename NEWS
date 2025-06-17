@@ -5,6 +5,18 @@ What must be done:
 
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
+            CHANGES IN VERSION 10.3 (2025-06-17)
+
+* New CRAN version - 10.3 (2025-06-16)
+
+            CHANGES IN VERSION 10.2.4 (2025-06-11)
+
+* Add function RI2BP() - 10.2 (2024-09-08)
+* Correct example of fit_phenology() - 10.2.1 (2025-02-06)
+* Add WAIC for mcmcPhenology() - 10.2.2 (2025-03-06)
+* Give some information about mc.cores for fit.phenology() - 10.2.3 (2025-04-09)
+* New parameter save.all for summary.phenology() to save all replicates estimates - 10.2.4 (2025-04-17)
+
             CHANGES IN VERSION 10.1 (2024-08-23)
 
 * New CRAN version - 10.1 (2024-08-23)

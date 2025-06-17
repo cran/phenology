@@ -22,7 +22,9 @@
 #' # Generate set of priors for Bayesian analysis
 #' pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept = TRUE)
 #' result_Gratiot_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000, 
-#' parametersMCMC = pmcmc, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
+#'                                         parametersMCMC = pmcmc, n.chains = 1, 
+#'                                         n.adapt = 0, thin = 10, trace = FALSE, 
+#'                                         WAIC=FALSE)
 #' # Get standard error of parameters
 #' summary(result_Gratiot_mcmc)
 #' # Make diagnostics of the mcmc results using coda package

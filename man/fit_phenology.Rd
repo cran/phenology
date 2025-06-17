@@ -117,6 +117,7 @@ parg <- c('LengthB' = 95.187648986054285,
            'Alpha' = 0, 
            'Beta' = 0.21019683898423902, 
            'Delta' = 3.6798422076201724,
+           'Phi' = 10)
 result_Gratiot1 <- fit_phenology(data=data_Gratiot, 
 		fitted.parameters=parg, fixed.parameters=NULL)
 plot(result_Gratiot1)
@@ -366,7 +367,6 @@ Other Phenology model:
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
-\code{\link{result_Gratiot_mcmc}},
 \code{\link{summary.phenology}()},
 \code{\link{summary.phenologymap}()},
 \code{\link{summary.phenologyout}()}

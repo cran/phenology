@@ -10,7 +10,8 @@
 #         out=out, 
 #         namespar=names(fitted.parameters), 
 #         zero=zero, cofactors=cofactors, 
-#         add.cofactors=add.cofactors)
+#         add.cofactors=add.cofactors, 
+#         WAIC=TRUE, WAIC.bybeach=FALSE)
 # @description Function of the package phenology
 
 .Lnegbin <- function (x, pt) {
@@ -86,7 +87,6 @@
                                 
                                 deb <- 0
                                 
-                                
                                 data <- datatot[[k]]
                                 nmser <- names(datatot)[k]
                                 
@@ -153,11 +153,15 @@
                                         
                                         if ((is.na(data[i, "A"])) | (is.na(data[i, "S"])) | (is.null(data[i, "A"])) | (is.null(data[i, "S"]))) {
                                           d <- rep(1, nbjour)
-                                          } else {
-                                            d <- 1/(1+exp(-(1/(4*data[i, "S"]))*(data[i, "A"]-(0:(nbjour-1)))))
+                                        } else {
+                                          d <- 1/(1+exp(-(1/(4*data[i, "S"]))*(data[i, "A"]-(0:(nbjour-1)))))
                                         }
-                                        lnli2 <- -dSnbinom(x=data$nombre[i], size = th, mu = nbcount*rev(d), 
-                                                           log = TRUE, method = method_Snbinom, normalize = FALSE)
+                                        lnli2 <- -dSnbinom(x=data$nombre[i], 
+                                                           size = th, 
+                                                           mu = nbcount*rev(d), 
+                                                           log = TRUE, 
+                                                           method = method_Snbinom, 
+                                                           normalize = FALSE)
                                       }
                                     } else {
                                       # je suis en minimum
@@ -394,7 +398,7 @@
                                               d <- 1/(1+exp(-(1/(4*data[i, "S"]))*(data[i, "A"]-(0:(nbjour-1)))))
                                             }
                                             prob.sup.egal.obs <- -sum(dSnbinom(x=nbmin:nbmax, size = th, mu = nbcount*rev(d), log = TRUE, 
-                                                                                        method = method_Snbinom, tol=1E-6, normalize = FALSE))
+                                                                               method = method_Snbinom, tol=1E-6, normalize = FALSE))
                                             prob0 <- dSnbinom(0, size = th, mu = nbcount*rev(d),  log = FALSE, method = method_Snbinom, normalize = FALSE)
                                             
                                             lnli2 <- (prob.sup.egal.obs + log(1 - prob0))
@@ -445,6 +449,23 @@
   
   sum <- sum(sapply(X = rg, function(x) sum(x$LnL, na.rm = TRUE)))
   
+  if (!is.null(pt$WAIC)) {
+    if (pt$WAIC) {
+      LnLi <- lapply(X = rg, function(x) x$LnL)
+      if (!is.null(pt$WAIC.bybeach)) {
+        if (pt$WAIC.bybeach) {
+          LnLi <- unlist(lapply(X = LnLi, function(x) sum(x, na.rm = TRUE)))
+        } else {
+          LnLi <- unlist(LnLi)
+        }
+      } else {
+        LnLi <- unlist(LnLi)
+      }
+      
+      attributes(sum) <- list(WAIC=-LnLi)
+    }
+  }
+  
   if (is.na(sum)) sum <- 1E9
   
   if (!is.null(pt$store.intermediate)) {
@@ -454,9 +475,6 @@
       save(store, file=pt$file.intermediate)
     }
   }
-  
-  
-  
   
   if (out) {
     return(sum)

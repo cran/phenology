@@ -11,6 +11,8 @@ phenology_MHmcmc(
   n.chains = 1,
   n.adapt = 1000,
   thin = 1,
+  WAIC = FALSE,
+  WAIC.bybeach = TRUE,
   trace = FALSE,
   traceML = FALSE,
   adaptive = TRUE,
@@ -35,6 +37,10 @@ phenology_MHmcmc(
 \item{n.adapt}{Number of iterations before to store outputs}
 
 \item{thin}{Number of iterations between each stored output}
+
+\item{WAIC}{Should WAIC information be saved?}
+
+\item{WAIC.bybeach}{Should the WAIC be saved by beach or by count?}
 
 \item{trace}{TRUE or FALSE or period, shows progress}
 
@@ -81,8 +87,23 @@ result_Gratiot <- fit_phenology(data=data_Gratiot,
 		fitted.parameters=parg, fixed.parameters=NULL)
 # Generate set of priors for Bayesian analysis
 pmcmc <- phenology_MHmcmc_p(result_Gratiot, accept = TRUE)
+# Here no WAIC data
 result_Gratiot_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000, 
-parametersMCMC = pmcmc, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
+                                        parametersMCMC = pmcmc, n.chains = 1, 
+                                        n.adapt = 0, thin = 10, trace = FALSE, 
+                                        WAIC=FALSE)
+# Here the WAIC is at the level of the beaches
+result_Gratiot_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000, 
+                                        parametersMCMC = pmcmc, n.chains = 1, 
+                                        n.adapt = 0, thin = 10, trace = FALSE, 
+                                        WAIC=TRUE, WAIC.bybeach=TRUE)
+# Here the WAIC is at the level of the counts
+result_Gratiot_mcmc <- phenology_MHmcmc(result = result_Gratiot, n.iter = 10000, 
+                                        parametersMCMC = pmcmc, n.chains = 1, 
+                                        n.adapt = 0, thin = 10, trace = FALSE, 
+                                        WAIC=TRUE, WAIC.bybeach=FALSE)
+loo::loo(result_Gratiot_mcmc$WAIC)
+loo::waic(result_Gratiot_mcmc$WAIC)
 # Get standard error of parameters
 summary(result_Gratiot_mcmc)
 # Make diagnostics of the mcmc results using coda package
@@ -92,12 +113,14 @@ heidel.diag(mcmc)
 raftery.diag(mcmc)
 autocorr.diag(mcmc)
 acf(mcmc[[1]][,"LengthB"], lag.max=200, bty="n", las=1)
-acf(mcmc[[1]][,"Max_Gratiot"], lag.max=50, bty="n", las=1)
+acf(mcmc[[1]][,"Max_Complete"], lag.max=50, bty="n", las=1)
 batchSE(mcmc, batchSize=100)
 # The batch standard error procedure is usually thought to 
 # be not as accurate as the time series methods used in summary
 summary(mcmc)$statistics[,"Time-series SE"]
-plot(result_Gratiot_mcmc, parameters=3, las=1, xlim=c(-10, 300))
+plot(result_Gratiot_mcmc, parameters="Max_Complete", las=1, xlim=c(-10, 210))
+plot(result_Gratiot_mcmc, what="MarkovChain", ylim=c(20, 40))
+plot(result_Gratiot_mcmc, what="LnL")
 }
 }
 \seealso{
@@ -135,7 +158,6 @@ Other Phenology model:
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
-\code{\link{result_Gratiot_mcmc}},
 \code{\link{summary.phenology}()},
 \code{\link{summary.phenologymap}()},
 \code{\link{summary.phenologyout}()}

@@ -13,10 +13,17 @@
 #' @param replicate.CI Number of replicates for ML resampling
 #' @param level Level to estimate confidence interval or credibility interval
 #' @param print Should information be shown
+#' @param save.all If TRUE, returns all the values for replicates
 #' @param ... Not used
 #' @description The function summary.phenology shows result and estimates confidence interval.\cr
 #' If several years are analyzed, the sum_synthesis result can be obtained only if there is 
-#' not a mix of bisextile and non-bisextile years.
+#' not a mix of bisextile and non-bisextile years.\cr
+#' If save.all is true, it will return a object $save.all as an array with dimensions:\cr
+#' c("without_obs_ML", "with_obs_ML", "without_obs_MCMC", "with_obs_MCMC"), \cr
+#'  series, \cr
+#'  replicates\cr
+#' The replicates dimension will be the max of replicate.CI.mcmc and replicate.CI. If 
+#' they are not equal, NA will be present for the missing replicates. See examples.
 #' @family Phenology model
 #' @examples
 #' \dontrun{
@@ -36,6 +43,8 @@
 #' s <- summary(result_Gratiot)
 #' # Using mcmc
 #' s <- summary(object=result_Gratiot, resultmcmc=result_Gratiot_mcmc)
+#' sa <- summary(object=result_Gratiot, resultmcmc=result_Gratiot_mcmc, save.all = TRUE)
+#' hist(sa$save.all["with_obs_MCMC", "Complete", ])
 #' }
 #' @method summary phenology
 #' @export
@@ -51,6 +60,7 @@ summary.phenology <- function(object                    ,
                               replicate.CI = 10000      ,
                               level= 0.95               ,
                               print = TRUE              ,
+                              save.all = FALSE          ,
                               ...) {
   
   
@@ -96,8 +106,6 @@ summary.phenology <- function(object                    ,
   rna <- rep(NA, nseries)
   
   probs <- c((1-level)/2, 0.5, 1-(1-level)/2)
-  
-  
   
   retdf <- data.frame(series=series, 
                       "without_obs_Mean"=rna,
@@ -160,6 +168,15 @@ summary.phenology <- function(object                    ,
     Sum_dailydata_withObs_MCMC <- NULL
   }
   
+  if (save.all) {
+    sa <- array(data = NA, dim=c(4, length(series), max(replicate.CI, replicate.CI.mcmc.x)), 
+                            dimnames = list(c("without_obs_ML", "with_obs_ML", "without_obs_MCMC", "with_obs_MCMC"), 
+                                            series, as.character(1:max(replicate.CI, replicate.CI.mcmc.x))))
+  } else {
+    sa <- NULL
+  }
+  
+  
   bisextile <- NULL
   
   # nmser <- series[1]
@@ -197,9 +214,6 @@ summary.phenology <- function(object                    ,
       }
     }
     
-    
-    
-    
     parg <- formatpar(c(object$par, object$fixed.parameters), nmser, model_before=model_before, season=season)
     
     cof <- NULL
@@ -227,7 +241,7 @@ summary.phenology <- function(object                    ,
     
     if (print) {
       cat("Total estimate not taking into account the observations: ")
-      cat(paste0("Mean=", retdf[nmser, "without_obs_Mean"], "\n"))
+      cat(paste0("Mean=", specify_decimal(retdf[nmser, "without_obs_Mean"], 2), "\n"))
     }
     
     # 3/11/2018 Pourquoi Theta seulement dans fixed.parameters ?
@@ -264,7 +278,7 @@ summary.phenology <- function(object                    ,
     
     if (print) {
       cat("Total estimate taking into account the observations: ")
-      cat(paste0("Mean=", retdf[nmser, "with_obs_Mean"], "\n"))
+      cat(paste0("Mean=", specify_decimal(retdf[nmser, "with_obs_Mean"], 2), "\n"))
     }
     
     pfixed <- object$fixed.parameters
@@ -391,14 +405,18 @@ summary.phenology <- function(object                    ,
       
       klist_mcmc <- c(klist_mcmc, k)
       
+      if (save.all) sa["without_obs_MCMC", nmser, 1:replicate.CI.mcmc.x] <- synthesisPontes
+ 
       k <- unname(quantile(synthesisPontes, probs=probs))
       retdf[nmser, c("without_obs_Low_MCMC", "without_obs_Median_MCMC", "without_obs_High_MCMC")] <- k
       retdf[nmser, c("without_obs_Mean_MCMC", "without_obs_Var_MCMC")] <- c(mean(synthesisPontes), var(synthesisPontes))
       
       if (print) {
         cat("Total estimate not taking into account the observations MCMC-based:\n")
-        cat(paste0("Low=", k[1], "   Median=", k[2], "   High=", k[3], "\n"))
+        cat(paste0("Low=", specify_decimal(k[1], 2), "   Median=", specify_decimal(k[2], 2), "   High=", specify_decimal(k[3], 2), "\n"))
       }
+      
+      if (save.all) sa["with_obs_MCMC", nmser, 1:replicate.CI.mcmc.x] <- synthesisPontes_withObs
       
       k <- unname(quantile(synthesisPontes_withObs, probs=probs, na.rm = TRUE))
       retdf[nmser, c("with_obs_Low_MCMC", "with_obs_Median_MCMC", "with_obs_High_MCMC")] <- k
@@ -406,7 +424,7 @@ summary.phenology <- function(object                    ,
       
       if (print) {
         cat("Total estimate taking into account the observations MCMC-based:\n")
-        cat(paste0("Low=", k[1], "   Median=", k[2], "   High=", k[3], "\n"))
+        cat(paste0("Low=", specify_decimal(k[1], 2), "   Median=", specify_decimal(k[2], 2), "   High=", specify_decimal(k[3], 2), "\n"))
       }
       synthesisPontes_MCMC <- synthesisPontes
     } else {
@@ -472,14 +490,18 @@ summary.phenology <- function(object                    ,
         #   sum(xxx)
         # })
         
+        if (save.all) sa["without_obs_ML", nmser, ] <- synthesisPontes
+        
         k <- unname(quantile(synthesisPontes, probs=probs))
         retdf[nmser, c("without_obs_Low_ML", "without_obs_Median_ML", "without_obs_High_ML")] <- k
         retdf[nmser, c("without_obs_Mean_ML", "without_obs_Var_ML")] <- c(mean(synthesisPontes), var(synthesisPontes))
         
         if (print) {
           cat("Total estimate not taking into account the observations ML-based:\n")
-          cat(paste0("Low=", k[1], "   Median=", k[2], "   High=", k[3], "\n"))
+          cat(paste0("Low=", specify_decimal(k[1], 2), "   Median=", specify_decimal(k[2], 2), "   High=", specify_decimal(k[3], 2), "\n"))
         }
+        
+        if (save.all) sa["with_obs_ML", nmser, ] <- synthesisPontes_withObs
         
         k <- unname(quantile(synthesisPontes_withObs, probs=probs, na.rm = TRUE))
         retdf[nmser, c("with_obs_Low_ML", "with_obs_Median_ML", "with_obs_High_ML")] <- k
@@ -487,7 +509,7 @@ summary.phenology <- function(object                    ,
         
         if (print) {
           cat("Total estimate taking into account the observations ML-based:\n")
-          cat(paste0("Low=", k[1], "   Median=", k[2], "   High=", k[3], "\n"))
+          cat(paste0("Low=", specify_decimal(k[1], 2), "   Median=", specify_decimal(k[2], 2), "   High=", specify_decimal(k[3], 2), "\n"))
         }
         synthesisPontes_ML <- synthesisPontes
       } else {
@@ -551,7 +573,8 @@ summary.phenology <- function(object                    ,
   
   rout <- list(synthesis=retdf, details_mcmc=klist_mcmc, 
                details_ML=klist_ML, details_Mean=klist_Mean, 
-               sum_synthesis=Sum_final, sum_withoutobs_replicates=sp)
+               sum_synthesis=Sum_final, sum_withoutobs_replicates=sp, 
+               save.all=sa)
   rout <- addS3Class(rout, "phenologyout")
   return(invisible(rout))
 }

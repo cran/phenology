@@ -46,6 +46,9 @@ c <- c(c1=0.1, c2=0.72, c3=0.126, c4=0.0378, c5=0.0162)
 # Then the true remigration interval is:
 ri_true <- sum(1:5*c[1:5])
 
+# BP is then
+RI2BP(proportion=c, RI=c(mean=1:5, sd=rep(0, 5)))
+
 s_ri  <- NULL
 for (sx in seq(from=0.01, to=1, by=0.01)) {
   s[] <- sx
@@ -68,6 +71,7 @@ legend("topright", legend="True remigration interval", lty=2, col="red")
 Other Model of Remigration Interval: 
 \code{\link{Bayesian.remigration}()},
 \code{\link{LnRI_norm}()},
+\code{\link{RI2BP}()},
 \code{\link{plot.Remigration}()}
 }
 \author{

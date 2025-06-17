@@ -92,7 +92,6 @@ Other Phenology model:
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
-\code{\link{result_Gratiot_mcmc}},
 \code{\link{summary.phenology}()},
 \code{\link{summary.phenologymap}()},
 \code{\link{summary.phenologyout}()}
