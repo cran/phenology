@@ -226,7 +226,11 @@ add_phenology <- function(add=stop("New data must be given.")     ,
     add <- cbind(add, ZeroCounts=rep(ZeroCounts.default, nrow(add)))
   }
   
-  if (inherits(try(add[, colname.Rookery], silent = TRUE), "try-error")) {
+  if ((is.null(colname.Rookery))) {
+      colname.Rookery <- "Site"
+  }
+  
+  if ((inherits(try(add[, colname.Rookery], silent = TRUE), "try-error"))) {
     if (!silent) message("The columns with rookery name does not exist; I create one")
     add <- cbind(add, Site=rep(name, nrow(add)))
   }
@@ -297,7 +301,7 @@ add_phenology <- function(add=stop("New data must be given.")     ,
                      Date2=dfadd$D28989898, 
                      nombre=dfadd[, colname.Number], 
                      ordinal=as.numeric(dfadd$D18989898-refencours), 
-                     ordinal2=as.numeric(dfadd$D28989898-refencours), 
+                     ordinal2=ifelse(!is.na(dfadd$D28989898), as.numeric(dfadd$D28989898-refencours), NA), 
                      Modeled=rep(NA, nrow(dfadd)), 
                      CountTypes=dfadd[, colname.CountTypes],
                      ZeroCounts=dfadd[, colname.ZeroCounts], 

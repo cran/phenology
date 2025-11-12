@@ -5,9 +5,17 @@ What must be done:
 
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
-            CHANGES IN VERSION 10.3 (2025-06-17)
+            CHANGES IN VERSION 2025.11.12 (2025-11-12)
+
+* New CRAN version - 2025.11.12 (2025-11-12)
+
+            CHANGES IN VERSION 2025.11.12 (2025-11-12)
 
 * New CRAN version - 10.3 (2025-06-16)
+* Update CI.RMU() to use RandomFromHessianOrMCMC() from HelpersMG package - 10.3.1 (2025-08-29)
+* New numerotation of package version using date - 2029.09.18 (2025-09-18)
+* Correct a bug when PMinB or PMinE are used - 2025.11.12 (2025-11-12)
+* Update for R 4.5.2 that change the way dates can be added - 2025.11.12 (2025-11-12)
 
             CHANGES IN VERSION 10.2.4 (2025-06-11)
 

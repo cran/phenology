@@ -5,7 +5,8 @@
 #' @param result A result of fitRMu()
 #' @param resultMCMC A resuts of fitRMU_MHmcmc()
 #' @param chain Number of MCMC chain to be used
-#' @param regularThin If TRUE, use regular thin for MCMC
+#' @param method Can be NULL, "SE", "Hessian", "MCMC", or "PseudoHessianFromMCMC"
+#' @param regularThin If TRUE, use regular thin for MCMC. If a number, take this replicate.
 #' @param replicate.CI Number of replicates
 #' @param probs The probabilities to return for quantiles
 #' @param silent If TRUE does not display anything
@@ -33,7 +34,14 @@
 #' The value is proportional to the observed number of nests when model.SD is 
 #' "global-proportional" with aSD_*observed+SD_ with aSD_ and SD_ being fitted 
 #' values. This value is fixed to zero when model.SD is "Zero".\cr
-#' If replicate.CI is 0, no CI is estimated, and only point estimation is returned.
+#' If method is NULL, replicate.CI is set to 0.\cr
+#' If method is hessian, it will generate replicate.CI random numbers using 
+#' Hessian matrix with covariance.\cr
+#' If method is se, it will generate replicate.CI random numbers using 
+#' SE values then without covariance.\cr
+#' If method is mcmc, it will generate replicate.CI random numbers using 
+#' random samples of the MCMC or the regularThin number.\cr
+#' If replicate.CI is 0, no CI is estimated, and only point estimation is returned.\cr
 #' @examples
 #' \dontrun{
 #' library("phenology")
@@ -165,12 +173,13 @@
 #' @export
 
 CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"), 
-                   resultMCMC=NULL, 
-                   chain=1, 
-                   replicate.CI=10000, 
-                   regularThin = TRUE, 
-                   probs=c(0.025, 0.5, 0.975), 
-                   silent=FALSE) {
+                   resultMCMC=NULL                                          , 
+                   method=NULL                                              , 
+                   chain=1                                                  , 
+                   replicate.CI=10000                                       , 
+                   regularThin = TRUE                                       , 
+                   probs=c(0.025, 0.5, 0.975)                               , 
+                   silent=FALSE                                             ) {
   
   #  result=NULL; resultMCMC=NULL; chain=1; replicate.CI=10000; silent=FALSE; regularThin = TRUE; probs=c(0.025, 0.5, 0.975); silent=FALSE
   
@@ -183,69 +192,82 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
     result$RMU.names$density <- as.character(result$RMU.names$density)
   }
   
-  df_random <- NULL
-  hessian <- result$hessian
-  pfixed <- c(result$fixed.parameters.initial, result$fixed.parameters.computing)
-  totpar <- c(result$par, pfixed)
-                                       
-  # J'ai une matrice hessienne et pas de MCMC et replicate.CI ne vaut pas 0
-  if (((!is.null(hessian)) & is.null(resultMCMC)) & (replicate.CI != 0)) {
-    sigma <- try(solve(hessian), silent = TRUE)
-    if (!inherits(sigma, "try-error")) {
-      s. <- svd(sigma)
-      R <- t(s.$v %*% (t(s.$u) * sqrt(pmax(s.$d, 0))))
-      df_random <- matrix(rnorm(replicate.CI * ncol(sigma)), nrow = replicate.CI, byrow = TRUE) %*% R
-      df_random <- sweep(df_random, 2, result$par[rownames(hessian)], "+")
-      colnames(df_random) <- rownames(hessian)
-    } else {
-      # J'ai une erreur sur l'inversion de la matrice hessienne; 
-      # Je prends les SE
-      
-      se <- result$SE
-      
-      df_random <- matrix(data = NA, ncol=length(se), nrow=replicate.CI)
-      colnames(df_random) <- names(se)
-      
-      for (i in names(se)) {
-        df_random[, i] <- rnorm(replicate.CI, result$par[i], se[i])
+  df_random <- RandomFromHessianOrMCMC(se=result$se, 
+                                       Hessian=result$hessian, 
+                                       mcmc = resultMCMC, 
+                                       method=method, 
+                                       chain = chain, 
+                                       regularThin = regularThin, 
+                                       replicates = replicate.CI, 
+                                       fitted.parameters = result$par, 
+                                       fixed.parameters = result$fixed.parameters)$random
+  
+  replicate.CI_ec <- nrow(df_random)
+  
+  if (FALSE) {
+    df_random <- NULL
+    hessian <- result$hessian
+    pfixed <- c(result$fixed.parameters.initial, result$fixed.parameters.computing)
+    totpar <- c(result$par, pfixed)
+    
+    # J'ai une matrice hessienne et pas de MCMC et replicate.CI ne vaut pas 0
+    if (((!is.null(hessian)) & is.null(resultMCMC)) & (replicate.CI != 0)) {
+      sigma <- try(solve(hessian), silent = TRUE)
+      if (!inherits(sigma, "try-error")) {
+        s. <- svd(sigma)
+        R <- t(s.$v %*% (t(s.$u) * sqrt(pmax(s.$d, 0))))
+        df_random <- matrix(rnorm(replicate.CI * ncol(sigma)), nrow = replicate.CI, byrow = TRUE) %*% R
+        df_random <- sweep(df_random, 2, result$par[rownames(hessian)], "+")
+        colnames(df_random) <- rownames(hessian)
+      } else {
+        # J'ai une erreur sur l'inversion de la matrice hessienne; 
+        # Je prends les SE
+        
+        se <- result$SE
+        
+        df_random <- matrix(data = NA, ncol=length(se), nrow=replicate.CI)
+        colnames(df_random) <- names(se)
+        
+        for (i in names(se)) {
+          df_random[, i] <- rnorm(replicate.CI, result$par[i], se[i])
+        }
+        
       }
       
+      if (!is.null(pfixed)) {
+        ajouter <- matrix(rep(pfixed, replicate.CI), 
+                          nrow=replicate.CI, byrow=TRUE,
+                          dimnames = list(c(NULL), names(pfixed)))
+        df_random <- cbind(df_random, ajouter)
+      }
     }
     
-    if (!is.null(pfixed)) {
-      ajouter <- matrix(rep(pfixed, replicate.CI), 
-                        nrow=replicate.CI, byrow=TRUE,
-                        dimnames = list(c(NULL), names(pfixed)))
-      df_random <- cbind(df_random, ajouter)
+    if ((!is.null(resultMCMC)) & (replicate.CI != 0)) {
+      if (replicate.CI == "all") {
+        replicate.CI <- nrow(resultMCMC$resultMCMC[[chain]])
+      }
+      repl <- FALSE
+      if (replicate.CI > nrow(resultMCMC$resultMCMC[[chain]])) repl <- TRUE
+      
+      df_random <- resultMCMC$resultMCMC[[chain]][sample(1:nrow(resultMCMC$resultMCMC[[chain]]), replicate.CI, replace = repl), ]
+      if (!is.null(pfixed)) {
+        ajouter <- matrix(rep(pfixed, replicate.CI), 
+                          nrow=replicate.CI, byrow=TRUE,
+                          dimnames = list(c(NULL), names(pfixed)))
+        df_random <- cbind(df_random, ajouter)
+      }
     }
-  }
-  
-  if ((!is.null(resultMCMC)) & (replicate.CI != 0)) {
-    if (replicate.CI == "all") {
-      replicate.CI <- nrow(resultMCMC$resultMCMC[[chain]])
-    }
-    repl <- FALSE
-    if (replicate.CI > nrow(resultMCMC$resultMCMC[[chain]])) repl <- TRUE
     
-    df_random <- resultMCMC$resultMCMC[[chain]][sample(1:nrow(resultMCMC$resultMCMC[[chain]]), replicate.CI, replace = repl), ]
-    if (!is.null(pfixed)) {
-      ajouter <- matrix(rep(pfixed, replicate.CI), 
-                        nrow=replicate.CI, byrow=TRUE,
-                        dimnames = list(c(NULL), names(pfixed)))
-      df_random <- cbind(df_random, ajouter)
+    if (is.null(df_random)) {
+      # Je n'ai pas de moyen de calculer le CI
+      if (!silent) warning('No confidence interval is calculated')
+      replicate.CI_ec <- 1
+      df_random <- matrix(data=totpar, nrow=1, 
+                          dimnames = list(c(NULL), names(totpar)))
+    } else {
+      replicate.CI_ec <- replicate.CI
     }
   }
-  
-  if (is.null(df_random)) {
-    # Je n'ai pas de moyen de calculer le CI
-    if (!silent) warning('No confidence interval is calculated')
-    replicate.CI_ec <- 1
-    df_random <- matrix(data=totpar, nrow=1, 
-                        dimnames = list(c(NULL), names(totpar)))
-  } else {
-    replicate.CI_ec <- replicate.CI
-  }
-  
   
   # Mettre aSD_ et SD_ en positif
   
@@ -265,15 +287,11 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
     df_random[, (substr(colnames(df_random), 1, 1) == "a") & (substr(colnames(df_random), 3, 1) == "_")] <- ifelse(df_random[, (substr(colnames(df_random), 1, 1) == "a") & (substr(colnames(df_random), 3, 1) == "_")] < 0, 0, df_random[, (substr(colnames(df_random), 1, 1) == "a") & (substr(colnames(df_random), 3, 1) == "_")])
   }
   
-  
-  
   nbeach <- nrow(result$RMU.names)
   nabeach <- as.character(result$RMU.names[, "mean"])
   
   years <- as.character(min(as.numeric(result$RMU.data[, result$colname.year])):max(result$RMU.data[, result$colname.year]))
   nyear <- length(years)
-  
-  
   
   # Dans df_random, j'ai les paramètres
   # Maintenant je vais faire un array avec (replicat, année, plage)

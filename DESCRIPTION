@@ -2,8 +2,8 @@ Package: phenology
 Type: Package
 Title: Tools to Manage a Parametric Function that Describes Phenology
         and More
-Version: 10.3
-Date: 2025-06-17
+Version: 2025.11.12
+Date: 2025-11-12
 Authors@R: person(given = "Marc",
                     family = "Girondot",
                     role = c("aut", "cre"),
@@ -18,10 +18,10 @@ LazyData: yes
 LazyLoad: yes
 Encoding: UTF-8
 NeedsCompilation: no
-RoxygenNote: 7.3.2
-Packaged: 2025-06-17 08:21:35 UTC; marcgirondot
+RoxygenNote: 7.3.3
+Packaged: 2025-11-12 16:47:38 UTC; marcgirondot
 Author: Marc Girondot [aut, cre] (ORCID:
     <https://orcid.org/0000-0001-6645-8530>)
 Maintainer: Marc Girondot <marc.girondot@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-06-17 09:00:02 UTC
+Date/Publication: 2025-11-12 18:00:02 UTC

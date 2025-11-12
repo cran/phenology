@@ -389,14 +389,16 @@ fit_phenology <- function(data=file.choose()                           ,
                          control=control, 
                          hessian=FALSE)
         } else {
-          # Lnegbin(x=fitted.parameters, pt=list(data=data, fixed=fixed.parameters, 
-          # model_before=model_before, 
-          # out=TRUE, cofactors=cofactors, 
-          # add.cofactors=add.cofactors, zero=zero, 
-          # namespar=names(fitted.parameters), 
-          # method_Snbinom=method_Snbinom, 
-          # store.intermediate=store.intermediate, 
-          # file.intermediate=file.intermediate))
+          # Lnegbin(x=fitted.parameters, 
+          #         pt=list(data=data, fixed=fixed.parameters, 
+          #                 model_before=model_before, 
+          #                 out=TRUE, cofactors=cofactors, 
+          #                 add.cofactors=add.cofactors, zero=zero, 
+          #                 namespar=names(fitted.parameters), 
+          #                 method_Snbinom=method_Snbinom, 
+          #                 store.intermediate=store.intermediate, 
+          #                 file.intermediate=file.intermediate)
+          #        )
           resul <- optim(par=fitted.parameters, fn=Lnegbin, 
                          pt=list(data=data, fixed=fixed.parameters, 
                                  model_before=model_before, 
@@ -418,10 +420,8 @@ fit_phenology <- function(data=file.choose()                           ,
         
         if (any(grepl("^Peak", names(resfit)))) resfit[substr(names(resfit), 1, 4)=="Peak"] <- abs(resfit[substr(names(resfit), 1, 4)=="Peak"])
         if (any(grepl("^Theta", names(resfit)))) resfit[substr(names(resfit), 1, 5)=="Theta"] <- abs(resfit[substr(names(resfit), 1, 5)=="Theta"])
-        if (any(grepl("^PMin", names(resfit)))) resfit["PMin"] <- abs(resfit["PMin"])
-        # 28/3/2018. J'avais oublié ceux là
-        if (any(grepl("^PMinE", names(resfit)))) resfit["PMinE"] <- abs(resfit["PMinE"])
-        if (any(grepl("^PMinB", names(resfit)))) resfit["PMinB"] <- abs(resfit["PMinB"])
+        # Ca fait en même temps PMinE et PMinB
+        if (any(grepl("^PMin", names(resfit)))) resfit[substr(names(resfit), 1, 4)=="PMin"] <- abs(resfit[substr(names(resfit), 1, 4)=="PMin"])
         if (any(grepl("^Flat", names(resfit)))) resfit["Flat"] <- abs(resfit["Flat"])
         if (any(grepl("^Length", names(resfit)))) resfit[substr(names(resfit), 1, 6)=="Length"] <- abs(resfit[substr(names(resfit), 1, 6)=="Length"])
         # Ca fait en même temps MinE et MinB

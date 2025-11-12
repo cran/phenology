@@ -7,6 +7,7 @@
 CI.RMU(
   result = stop("A result obtained from fitRMU is necessary"),
   resultMCMC = NULL,
+  method = NULL,
   chain = 1,
   replicate.CI = 10000,
   regularThin = TRUE,
@@ -19,11 +20,13 @@ CI.RMU(
 
 \item{resultMCMC}{A resuts of fitRMU_MHmcmc()}
 
+\item{method}{Can be NULL, "SE", "Hessian", "MCMC", or "PseudoHessianFromMCMC"}
+
 \item{chain}{Number of MCMC chain to be used}
 
 \item{replicate.CI}{Number of replicates}
 
-\item{regularThin}{If TRUE, use regular thin for MCMC}
+\item{regularThin}{If TRUE, use regular thin for MCMC. If a number, take this replicate.}
 
 \item{probs}{The probabilities to return for quantiles}
 
@@ -56,7 +59,14 @@ object) and a constant value dependent on the rookery when model.SD is equal to
 The value is proportional to the observed number of nests when model.SD is
 "global-proportional" with aSD_*observed+SD_ with aSD_ and SD_ being fitted
 values. This value is fixed to zero when model.SD is "Zero".\cr
-If replicate.CI is 0, no CI is estimated, and only point estimation is returned.
+If method is NULL, replicate.CI is set to 0.\cr
+If method is hessian, it will generate replicate.CI random numbers using
+Hessian matrix with covariance.\cr
+If method is se, it will generate replicate.CI random numbers using
+SE values then without covariance.\cr
+If method is mcmc, it will generate replicate.CI random numbers using
+random samples of the MCMC or the regularThin number.\cr
+If replicate.CI is 0, no CI is estimated, and only point estimation is returned.\cr
 }
 \details{
 CI.RMU calculates the confidence interval of the results of fitRMU()
