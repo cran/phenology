@@ -266,6 +266,8 @@ add_phenology <- function(add=stop("New data must be given.")     ,
     if (!silent) message(paste0("Site: ", site))
     dfadd <- add[add[, colname.Rookery] == site, ]
     dfadd <- dfadd[order(dfadd[, "D18989898"]), ]
+    # 25/02/2026
+    dfadd <- dfadd[!is.na(dfadd[, colname.Number]), ]
     
     if (is.null(reference)) {
       # si month_ref > premier mois de la série, c'est l'année n-1

@@ -15,7 +15,8 @@
   chain = 1,
   replicate.CI.mcmc = "all",
   level = 0.95,
-  plot.objects = c("observations", "ML", "ML.SD", "ML.quantiles", "MCMC.quantiles"),
+  plot.objects = c("observations", "ML", "ML.SD", "MCMC.SD", "ML.quantiles",
+    "MCMC.quantiles"),
   col.ML = "black",
   col.SD = "red",
   col.SD.polygon = rgb(red = 1, green = 0, blue = 0, alpha = 0.2),
@@ -50,7 +51,7 @@
 
 \item{level}{Level to estimate confidence interval or credibility interval}
 
-\item{plot.objects}{What to plot?}
+\item{plot.objects}{What to plot? See description}
 
 \item{col.ML}{Color of the ML mean curve}
 
@@ -79,7 +80,7 @@ details_MCMC, details_ML and details_mean are lists with day by day information 
 \description{
 The function plot.phenology plots the phenology graph from a result object.\cr
 If cofactors have been added, the plot does not show their effects.\cr
-plot.objects can be "observations", "ML" for maximum likelihood, "ML.SD" for dispersion of
+plot.objects can be "observations", "ML" for maximum likelihood, "ML.SD" or "MCMC.SD" for dispersion of
 observations, "ML.quantiles" or "MCMC.quantiles" if a mcmc object is given
 }
 \details{

@@ -5,9 +5,12 @@ What must be done:
 
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
-            CHANGES IN VERSION 2025.11.12 (2025-11-12)
+            CHANGES IN VERSION 2026.2.28 (2026-02-28)
 
 * New CRAN version - 2025.11.12 (2025-11-12)
+* Possibility to plot phenology over another one - 2025.11.13 (2025-11-13)
+* The lines with count number being NA are removed when add_phenology() is used - 2026.2.25 (2026-02-25)
+* Add option in plot.objects == "MCMC.SD") in plot.phenology() - 2026.2.28 (2026-02-28)
 
             CHANGES IN VERSION 2025.11.12 (2025-11-12)
 

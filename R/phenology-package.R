@@ -3,8 +3,8 @@
 #' \tabular{ll}{
 #'  Package: \tab phenology\cr
 #'  Type: \tab Package\cr
-#'  Version: \tab 2025.11.12 build 1653\cr
-#'  Date: \tab 2025-11-12\cr
+#'  Version: \tab 2026.2.28 build 1664\cr
+#'  Date: \tab 2026-02-28\cr
 #'  License: \tab GPL (>= 2)\cr
 #'  LazyLoad: \tab yes\cr
 #'  }
@@ -14,8 +14,8 @@
 #' @description Functions used to fit and test the phenology of species based on counts.\cr
 #' Note that only the most significant changes are reported in the NEWS.\cr
 #' The latest version of this package can always been installed using:\cr
-#' install.packages("https://hebergement.universite-paris-saclay.fr/marcgirondot/CRAN/HelpersMG.tar.gz", repos=NULL, type="source")\cr
-#' install.packages("https://hebergement.universite-paris-saclay.fr/marcgirondot/CRAN/phenology.tar.gz", repos=NULL, type="source")\cr
+#' install.packages("http://marc.girondot.free.fr/CRAN/HelpersMG.tar.gz", repos=NULL, type="source")\cr
+#' install.packages("http://marc.girondot.free.fr/CRAN/phenology.tar.gz", repos=NULL, type="source")\cr
 #' \if{html}{\figure{imgfile.png}{options: alt="phenology logo"}}
 #' \if{latex}{\figure{imgfile.png}}
 #' @references Girondot, M. 2010. Estimating density of animals during 

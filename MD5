@@ -1,6 +1,6 @@
-2cacb5bfd756e094b0dcea3515c08409 *DESCRIPTION
+abd4eb620b0cbacc54c18b7adf1b1147 *DESCRIPTION
 3518cc04c350f897f5bf9c6ecd60706b *NAMESPACE
-e4a4660dc457681abbdc7d29a3dccb78 *NEWS
+42a4f172992fed8609fbbdc83d1bb8d4 *NEWS
 cc4f4547f85eba72f6bc55de76e7a933 *R/AutoFitPhenology.R
 50a1db0d480d10f88e2f78370dd2fdbd *R/BE_to_LBLE.R
 35489248e3dcdd941b2721e19dd54174 *R/Bayesian.remigration.R
@@ -38,7 +38,7 @@ b1c4ed5384c93b98c4356765468e54fa *R/Tagloss_model.R
 60f82fbbc83a2fc41d7de883691c0086 *R/Tagloss_simulate.R
 2f682ad073f90e9d3f81df8822153f3c *R/adapt_parameters.R
 3129c4d2ee3b713a87e0f4ba82432477 *R/add_SE.R
-3849767dede02dd6bc0720544f90de69 *R/add_phenology.R
+abe2d6baa34d7f363d18a244aa0b4ae5 *R/add_phenology.R
 a9e4d678f1980393893e05e373ec3a0c *R/daily_count.R
 8ebe5709957a27299b88ffa458740774 *R/extract_result.R
 d851ce39df934029a22ca4ba71eca525 *R/fitCF.R
@@ -63,10 +63,10 @@ f1939d752877f401c0677e87e87bcb91 *R/o_4p_p1p2.R
 321a5e68494a42c6bf3a8855cee1714a *R/onAttach.R
 6dd85a00fd5336940e06c15ca17664cf *R/outLR.R
 093be63d6ec9ffa7c87148fa6f8262ef *R/par_init.R
-4a26aad5d0db16eab57792c9e2af60b9 *R/phenology-package.R
+32c9d33ad5ed7b3098b91a8d0a87f07f *R/phenology-package.R
 77faba0ef0f01a77e9438d18e4ad926c *R/phenology.R
 b73c55e777b037cb32340abfb066c70d *R/phenology2fitRMU.R
-466c1fdf5aeb049d8c97c4e1fdefea03 *R/phenology_MHmcmc.R
+d8dc85308763496b7b72042a4f479df6 *R/phenology_MHmcmc.R
 5f1b943a07e0e20514ea34dbd4f48b94 *R/phenology_MHmcmc_p.R
 08e748c26ee2451f10aa4c3a0141a04a *R/plot.ECFOCF.R
 d36def27c3b23b97301f95a48b71f64a *R/plot.IP.R
@@ -75,7 +75,7 @@ d36def27c3b23b97301f95a48b71f64a *R/plot.IP.R
 1c893e6e689fd793d78bc0b450a0e62a *R/plot.Tagloss.R
 1258ff54037dd9dfeab6918ba943b713 *R/plot.TaglossData.R
 6279539ce4dcfcf1073e9b63324c311b *R/plot.fitRMU.R
-59d091838dc63a1345e62f02ecf78f74 *R/plot.phenology.R
+4a8e9d2243bf996b1a703aac342f5b45 *R/plot.phenology.R
 27965d8d1fa2631631d6493a254c7eea *R/plot.phenologymap.R
 08d79800c1f0bf7147ba7c6f0600b123 *R/plot_delta.R
 df85d34cfb0926c2fa80f9f847ef1ab3 *R/plot_phi.R
@@ -90,7 +90,7 @@ ea0b8a361e69bffa1b4b40e7c5559385 *R/remove_site.R
 70a2d7147e841b5c88c9c769138b8855 *R/result_Gratiot_Flat.R
 33786abb103ca6606263d8bd7304fb35 *R/shift_sinusoid.R
 ed1d5219700efd14158ee37d54143e44 *R/summary.IP.R
-13c6b50f890e1c75c673c4de288ca2c0 *R/summary.phenology.R
+8f5d4999866ac00b3edc0030c7b0db50 *R/summary.phenology.R
 8c32046a055204a7026d97dd122b079e *R/summary.phenologymap.R
 9fd69597206bc242bbbab51e85017082 *R/summary.phenologyout.R
 bcdc4cbe32b520179c7206b69690ea52 *R/toggle_Min_PMin.R
@@ -150,7 +150,7 @@ f3ce8ee185b2d16f7265529c3e53248f *man/Tagloss_mcmc_p.Rd
 47a27acb02b863f3c136d2eda0d4a841 *man/add_SE.Rd
 6f4011d99657488c7f215757c56b4171 *man/add_phenology.Rd
 b2bf4d440a8b46e4ede13fbd9bd4fed5 *man/extract_result.Rd
-436012f524285f3f07ea43b8e8727c5d *man/figures/imgfile.png
+f0a207179b6d65c8d1d1ee86db162f52 *man/figures/imgfile.png
 c7c6c42fae3ca9380a2f812072b0a7af *man/fitCF.Rd
 0557ee90b20d6d01e36e8cb60fc04c83 *man/fitCF_MHmcmc.Rd
 4fd8bd960158b755a2932040a8e44cf3 *man/fitCF_MHmcmc_p.Rd
@@ -171,10 +171,10 @@ aeb32c9beb16db56b37e42cbf8b3b7af *man/map_phenology.Rd
 f9511ac3f3e4aa66de0910412f2f88b1 *man/o_4p_p1p2.Rd
 eb71b76daa1589004b08e36b026fabfe *man/outLR.Rd
 d0bd96d240aefaedbba976439ee13d20 *man/par_init.Rd
-d0c36ecb557aba6feedc7efbfb5df60f *man/phenology-package.Rd
+fab8eb1b3508e6e00f59b7ace34e5bcd *man/phenology-package.Rd
 bca3c71f87db35e2b89689250b36bf8a *man/phenology.Rd
 d9d5e4658c957bc452d8afdf05019823 *man/phenology2fitRMU.Rd
-26a3bc94523e85440b7ff6aa298ee695 *man/phenology_MHmcmc.Rd
+1e21c90a3efa9d58a1a740d3399cf7d8 *man/phenology_MHmcmc.Rd
 c9189d4b90ec774681b44d90de7179c1 *man/phenology_MHmcmc_p.Rd
 16d4b1a10c6ab5c335b6971ede751aad *man/plot.ECFOCF.Rd
 3321297217ffc91ee83e76b84f7010c2 *man/plot.IP.Rd
@@ -183,7 +183,7 @@ c9189d4b90ec774681b44d90de7179c1 *man/phenology_MHmcmc_p.Rd
 8b502e20b5e95f047bd63df9938c169a *man/plot.Tagloss.Rd
 2518f8fc43d350c29a2ed5367e61a4c7 *man/plot.TaglossData.Rd
 555f9eed3db5439f6e20b95f5edef413 *man/plot.fitRMU.Rd
-10c4e378eccf1f7d4dd5ded695e5dceb *man/plot.phenology.Rd
+7fdd4641792cf894739510df4f21af4e *man/plot.phenology.Rd
 dbd684eb2ce1bb7ae7cb6bceb47d6392 *man/plot.phenologymap.Rd
 5fdf0fb25381f4e75719a81f2724a246 *man/plot_delta.Rd
 c3e9d841c873daeca0108114b789f8cd *man/plot_phi.Rd

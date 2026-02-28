@@ -13,7 +13,7 @@
 #' @param chain The number of chain to be used in resultmcmc
 #' @param replicate.CI.mcmc Number of iterations to be used or "all"
 #' @param level Level to estimate confidence interval or credibility interval
-#' @param plot.objects What to plot?
+#' @param plot.objects What to plot? See description
 #' @param col.ML Color of the ML mean curve
 #' @param col.SD Color of the SD curve (distribution of observations)
 #' @param col.SD.polygon Color of the polygon of the SD curve. If FALSE not shown.
@@ -26,7 +26,7 @@
 #' @param col.minimum.observations Color of the points indicating minimum counts
 #' @description The function plot.phenology plots the phenology graph from a result object.\cr
 #' If cofactors have been added, the plot does not show their effects.\cr
-#' plot.objects can be "observations", "ML" for maximum likelihood, "ML.SD" for dispersion of 
+#' plot.objects can be "observations", "ML" for maximum likelihood, "ML.SD" or "MCMC.SD" for dispersion of 
 #' observations, "ML.quantiles" or "MCMC.quantiles" if a mcmc object is given
 #' @family Phenology model
 #' @examples
@@ -78,25 +78,27 @@
 
 plot.phenology <- 
   function(x, ..., 
-           series="all", moon=FALSE, replicate.CI=10000, 
-           resultmcmc = NULL,
-           season = NULL, 
-           chain = 1,
-           replicate.CI.mcmc = "all",
-           level=0.95, 
-           plot.objects = c("observations", "ML", "ML.SD", "ML.quantiles", "MCMC.quantiles"), 
-           col.ML="black", 
-           col.SD="red", 
-           col.SD.polygon=rgb(red = 1, green = 0, blue = 0, alpha = 0.2), 
-           col.MCMC.quantiles="purple",
-           col.MCMC.quantiles.polygon=rgb(red = 160/255, green = 32/255, blue = 240/255, alpha = 0.2), 
-           col.ML.quantiles="black",
-           col.ML.quantiles.polygon=rgb(red = 0, green = 0, blue = 0, alpha = 0.2), 
-           col.observations = "black", 
-           col.minimum.observations = "blue"                                                          ,
-           col.grouped.observations = "green") {
+           series="all"                                                                                , 
+           moon=FALSE                                                                                  , 
+           replicate.CI=10000                                                                          , 
+           resultmcmc = NULL                                                                           ,
+           season = NULL                                                                               , 
+           chain = 1                                                                                   ,
+           replicate.CI.mcmc = "all"                                                                   ,
+           level=0.95                                                                                  , 
+           plot.objects = c("observations", "ML", "ML.SD", "MCMC.SD", "ML.quantiles", "MCMC.quantiles"), 
+           col.ML="black"                                                                              , 
+           col.SD="red"                                                                                , 
+           col.SD.polygon=rgb(red = 1, green = 0, blue = 0, alpha = 0.2)                               , 
+           col.MCMC.quantiles="purple"                                                                 ,
+           col.MCMC.quantiles.polygon=rgb(red = 160/255, green = 32/255, blue = 240/255, alpha = 0.2)  , 
+           col.ML.quantiles="black"                                                                    ,
+           col.ML.quantiles.polygon=rgb(red = 0, green = 0, blue = 0, alpha = 0.2)                     , 
+           col.observations = "black"                                                                  , 
+           col.minimum.observations = "blue"                                                           ,
+           col.grouped.observations = "green"                                                          ) {
     
-    # x=NULL; series="all"; moon=FALSE; level=0.95; replicate.CI=1000; progressbar=TRUE; growlnotify=TRUE; show.plot=TRUE; resultmcmc = NULL; chain = 1; replicate.CI.mcmc = "all"; plot.objects = c("observations", "ML", "ML.SD", "ML.quantiles", "MCMC.quantiles"); col.ML="black"; col.SD="red"; col.MCMC.quantiles="purple"; col.ML.quantiles="black"; col.observations = "black"; col.grouped.observations = "green"; col.observations = "black"; col.minimum.observations = "blue"; col.SD.polygon=rgb(red = 1, green = 0, blue = 0, alpha = 0.2); col.MCMC.quantiles.polygon=rgb(red = 160/255, green = 32/255, blue = 240/255, alpha = 0.2); col.ML.quantiles.polygon=rgb(red = 0, green = 0, blue = 0, alpha = 0.2) 
+    # x=NULL; series="all"; moon=FALSE; level=0.95; replicate.CI=1000; progressbar=TRUE; growlnotify=TRUE; show.plot=TRUE; resultmcmc = NULL; chain = 1; replicate.CI.mcmc = "all"; plot.objects = c("observations", "ML", "ML.SD", "MCMC.SD", "ML.quantiles", "MCMC.quantiles"); col.ML="black"; col.SD="red"; col.MCMC.quantiles="purple"; col.ML.quantiles="black"; col.observations = "black"; col.grouped.observations = "green"; col.observations = "black"; col.minimum.observations = "blue"; col.SD.polygon=rgb(red = 1, green = 0, blue = 0, alpha = 0.2); col.MCMC.quantiles.polygon=rgb(red = 160/255, green = 32/255, blue = 240/255, alpha = 0.2); col.ML.quantiles.polygon=rgb(red = 0, green = 0, blue = 0, alpha = 0.2) 
     
 
     p3p <- list(...)
@@ -105,10 +107,15 @@ plot.phenology <-
     
     data <- x$data
     
-    out <- summary(object = x, resultmcmc=resultmcmc, season=season, 
-                   series=series, replicate.CI=replicate.CI, 
-                   replicate.CI.mcmc=replicate.CI.mcmc, 
-                   level=level, chain=chain, print=FALSE)
+    out <- summary(object = x                          , 
+                   resultmcmc=resultmcmc               , 
+                   season=season                       , 
+                   series=series                       , 
+                   replicate.CI=replicate.CI           , 
+                   replicate.CI.mcmc=replicate.CI.mcmc , 
+                   level=level                         , 
+                   chain=chain                         , 
+                   print=FALSE                         )
     
     
     # kseries <- 1
@@ -165,7 +172,8 @@ plot.phenology <-
       
       
       # je prépare une base
-      par(new=FALSE)
+      # par(new=FALSE)
+
       pnp <- modifyList(list(xlab="Months", ylab="Counts", main=nmser, 
                              pch=16, cex=0.5, xlim=vmaxx, ylim=vmaxy, type="n", bty="n"), p3p)
       do.call("plot", modifyList(pnp, list(x=x, y=rep(0, length(x)))))
@@ -202,8 +210,27 @@ plot.phenology <-
               y=out$details_Mean[[nmser]][, "SD.Low"], lty=2, col=col.SD)
         lines(x=x, 
               y=out$details_Mean[[nmser]][, "SD.High"], lty=2, col=col.SD)
-      } 
-      if (any(plot.objects == "ML.quantiles") & !identical(NA, out$details_ML[[nmser]])) {
+      }
+      
+      if (any(plot.objects == "MCMC.SD")) {
+        if (!is.null(resultmcmc)) {
+        if (!isFALSE(col.SD.polygon)) {
+          dy <- as.numeric(c(out$details_mcmc[[nmser]][, "SD.Low"], 
+                             rev(out$details_mcmc[[nmser]][, "SD.High"])))
+          polygon(x=dx, y=dy, col=col.SD.polygon, border=NA)
+        }
+        lines(x=x, 
+              y=out$details_mcmc[[nmser]][, "SD.Low"], lty=2, col=col.SD)
+        lines(x=x, 
+              y=out$details_mcmc[[nmser]][, "SD.High"], lty=2, col=col.SD)
+        } else {
+          warning("Impossible to show MCMC.SD object because resultmcmc was not provided.")
+        }
+      }
+      
+      
+      if (any(plot.objects == "ML.quantiles")) {
+        if (!identical(NA, out$details_ML[[nmser]])) {
         if (!isFALSE(col.ML.quantiles.polygon)) {
           dy <- as.numeric(c(out$details_ML[[nmser]][, 2], rev(out$details_ML[[nmser]][, 4])))
           polygon(x=dx, y=dy, col=col.ML.quantiles.polygon, border=NA)
@@ -214,9 +241,13 @@ plot.phenology <-
               y=out$details_ML[[nmser]][, 4], lty=2, col=col.ML.quantiles)
         lines(x=x, 
               y=out$details_ML[[nmser]][, 3], lty=1, col=col.ML.quantiles)
-        
+        } else {
+          warning("Impossible to show ML.quantiles object because Hessian was not estimated.")
+        }
       }
-      if (any(plot.objects == "MCMC.quantiles") & !identical(NA, out$details_mcmc[[nmser]])) {
+      
+      if (any(plot.objects == "MCMC.quantiles")) {
+        if (!identical(NA, out$details_mcmc[[nmser]])) {
         if (!isFALSE(col.MCMC.quantiles.polygon)) {
           dy <- as.numeric(c(out$details_mcmc[[nmser]][, 2], 
                              rev(out$details_mcmc[[nmser]][, 4])))
@@ -229,6 +260,9 @@ plot.phenology <-
               y=out$details_mcmc[[nmser]][, 3], lty=1, col=col.MCMC.quantiles)
         lines(x=x, 
               y=out$details_mcmc[[nmser]][, 4], lty=2, col=col.MCMC.quantiles)
+      } else {
+        warning("Impossible to show MCMC.quantiles object because resultmcmc was not provided.")
+      }
       }
       
       if (!is.null(data) & any(plot.objects == "observations")) {

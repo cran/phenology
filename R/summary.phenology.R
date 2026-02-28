@@ -343,8 +343,9 @@ summary.phenology <- function(object                    ,
     opnumb <- observedPontes[, "observed"]
     
     if (!is.null(resultmcmc)) {
-      lmcmc <- nrow(resultmcmc$resultMCMC[[chain]])
+       lmcmc <- nrow(resultmcmc$resultMCMC[[chain]])
       mcmctobeused <- 1:lmcmc
+      
       if (replicate.CI.mcmc != "all") {
         repl <- ifelse(nrow(resultmcmc$resultMCMC[[chain]]) <= replicate.CI.mcmc, TRUE, FALSE)
         mcmctobeused <- sample(x=mcmctobeused, 
@@ -353,7 +354,6 @@ summary.phenology <- function(object                    ,
       } else {
         replicate.CI.mcmc <- nrow(resultmcmc$resultMCMC[[chain]])
       }
-      
       
       if (ncol(pfixed.df.mcmc) != 0) {
         dailydata <- sapply(X = 1:replicate.CI.mcmc, FUN=function(xxx) {
@@ -397,9 +397,21 @@ summary.phenology <- function(object                    ,
       #   sum(xxx)
       # })
       
-      k <-as.data.frame(t(apply(X = dailydata, MARGIN=1, 
+      k <- as.data.frame(t(apply(X = dailydata, MARGIN=1, 
                                 FUN = function(x) {quantile(x, probs=probs)})))
-      k <- list(cbind(Ordinal=lnday, k))
+      
+      # Je dois calculer le MCMC.SD
+      SDMin <- NULL
+      SDMax <- NULL
+      for (mu in k[, "50%"]) {
+        qnb <- qnbinom(p = c(probs[1], probs[3]), 
+                       size=median(cbind(resultmcmc$resultMCMC[[chain]][mcmctobeused, ], pfixed.df.mcmc)[, "Theta"]), 
+                       mu=mu)
+        SDMin <- c(SDMin, qnb[1])
+        SDMax <- c(SDMax, qnb[2])
+      }
+      
+      k <- list(cbind(Ordinal=lnday, k, SD.Low=SDMin, SD.High=SDMax))
       
       names(k) <- nmser
       
@@ -427,6 +439,10 @@ summary.phenology <- function(object                    ,
         cat(paste0("Low=", specify_decimal(k[1], 2), "   Median=", specify_decimal(k[2], 2), "   High=", specify_decimal(k[3], 2), "\n"))
       }
       synthesisPontes_MCMC <- synthesisPontes
+      
+
+      
+      
     } else {
       k <- list(NA)
       names(k) <- nmser
