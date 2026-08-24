@@ -230,12 +230,12 @@ cst <- fitRMU(RMU.data=data.AtlanticW, RMU.names=RMU.names.AtlanticW,
 }
 }
 \seealso{
-Other Fill gaps in RMU: 
-\code{\link{CI.RMU}()},
-\code{\link{fitRMU_MHmcmc}()},
-\code{\link{fitRMU_MHmcmc_p}()},
-\code{\link{logLik.fitRMU}()},
-\code{\link{plot.fitRMU}()}
+Other Fill gaps in RMU:
+\code{\link[=CI.RMU]{CI.RMU()}},
+\code{\link[=fitRMU_MHmcmc]{fitRMU_MHmcmc()}},
+\code{\link[=fitRMU_MHmcmc_p]{fitRMU_MHmcmc_p()}},
+\code{\link[=logLik.fitRMU]{logLik.fitRMU()}},
+\code{\link[=plot.fitRMU]{plot.fitRMU()}}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

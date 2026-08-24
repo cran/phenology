@@ -106,20 +106,20 @@ o_MCMC <- Tagloss_mcmc(data=data_f_21, parameters=pMCMC, fixed.parameters=pfixed
 }
 }
 \seealso{
-Other Model of Tag-loss: 
-\code{\link{Tagloss_L}()},
-\code{\link{Tagloss_LengthObs}()},
-\code{\link{Tagloss_cumul}()},
-\code{\link{Tagloss_daymax}()},
-\code{\link{Tagloss_fit}()},
-\code{\link{Tagloss_format}()},
-\code{\link{Tagloss_mcmc_p}()},
-\code{\link{Tagloss_model}()},
-\code{\link{Tagloss_simulate}()},
-\code{\link{logLik.Tagloss}()},
+Other Model of Tag-loss:
+\code{\link[=Tagloss_L]{Tagloss_L()}},
+\code{\link[=Tagloss_LengthObs]{Tagloss_LengthObs()}},
+\code{\link[=Tagloss_cumul]{Tagloss_cumul()}},
+\code{\link[=Tagloss_daymax]{Tagloss_daymax()}},
+\code{\link[=Tagloss_fit]{Tagloss_fit()}},
+\code{\link[=Tagloss_format]{Tagloss_format()}},
+\code{\link[=Tagloss_mcmc_p]{Tagloss_mcmc_p()}},
+\code{\link[=Tagloss_model]{Tagloss_model()}},
+\code{\link[=Tagloss_simulate]{Tagloss_simulate()}},
+\code{\link[=logLik.Tagloss]{logLik.Tagloss()}},
 \code{\link{o_4p_p1p2}},
-\code{\link{plot.Tagloss}()},
-\code{\link{plot.TaglossData}()}
+\code{\link[=plot.Tagloss]{plot.Tagloss()}},
+\code{\link[=plot.TaglossData]{plot.TaglossData()}}
 }
 \author{
 Marc Girondot

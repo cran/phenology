@@ -40,20 +40,20 @@ plot(o_4p_p1p2, model="Cumul")
 Rivalan, P., Godfrey, M.H., Prévot-Julliard, A.-C., Girondot, M., 2005. Maximum likelihood estimates of tag loss in leatherback sea turtles. Journal of Wildlife Management 69, 540-548.
 }
 \seealso{
-Other Model of Tag-loss: 
-\code{\link{Tagloss_L}()},
-\code{\link{Tagloss_LengthObs}()},
-\code{\link{Tagloss_cumul}()},
-\code{\link{Tagloss_daymax}()},
-\code{\link{Tagloss_fit}()},
-\code{\link{Tagloss_format}()},
-\code{\link{Tagloss_mcmc}()},
-\code{\link{Tagloss_mcmc_p}()},
-\code{\link{Tagloss_model}()},
-\code{\link{Tagloss_simulate}()},
-\code{\link{logLik.Tagloss}()},
-\code{\link{plot.Tagloss}()},
-\code{\link{plot.TaglossData}()}
+Other Model of Tag-loss:
+\code{\link[=Tagloss_L]{Tagloss_L()}},
+\code{\link[=Tagloss_LengthObs]{Tagloss_LengthObs()}},
+\code{\link[=Tagloss_cumul]{Tagloss_cumul()}},
+\code{\link[=Tagloss_daymax]{Tagloss_daymax()}},
+\code{\link[=Tagloss_fit]{Tagloss_fit()}},
+\code{\link[=Tagloss_format]{Tagloss_format()}},
+\code{\link[=Tagloss_mcmc]{Tagloss_mcmc()}},
+\code{\link[=Tagloss_mcmc_p]{Tagloss_mcmc_p()}},
+\code{\link[=Tagloss_model]{Tagloss_model()}},
+\code{\link[=Tagloss_simulate]{Tagloss_simulate()}},
+\code{\link[=logLik.Tagloss]{logLik.Tagloss()}},
+\code{\link[=plot.Tagloss]{plot.Tagloss()}},
+\code{\link[=plot.TaglossData]{plot.TaglossData()}}
 }
 \author{
 Marc Girondot

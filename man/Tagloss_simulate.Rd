@@ -58,7 +58,7 @@ library(phenology)
 par <- structure(c(49.5658922243074, 808.136085362158, 106.283783786853, 
 5.22150592456511, 8.00608716525864, 8.32718202233396, 150.612916258503, 
 715.865805125223, 2242.06574225966, 119.212383120678, 10.1860735529433, 
-7.14231725937626), .Names = c("D1_2", "D2D1_2", "D3D2_2", "A_2", 
+7.14231725937626), names = c("D1_2", "D2D1_2", "D3D2_2", "A_2", 
 "B_2", "C_2", "D1_1", "D2D1_1", "D3D2_1", "A_1", "B_1", "C_1"))
 cmr <- Tagloss_simulate(n=500, 
                         par=par, model="12")
@@ -66,20 +66,20 @@ cmr_f <- Tagloss_format(cmr, model="12")
 }
 }
 \seealso{
-Other Model of Tag-loss: 
-\code{\link{Tagloss_L}()},
-\code{\link{Tagloss_LengthObs}()},
-\code{\link{Tagloss_cumul}()},
-\code{\link{Tagloss_daymax}()},
-\code{\link{Tagloss_fit}()},
-\code{\link{Tagloss_format}()},
-\code{\link{Tagloss_mcmc}()},
-\code{\link{Tagloss_mcmc_p}()},
-\code{\link{Tagloss_model}()},
-\code{\link{logLik.Tagloss}()},
+Other Model of Tag-loss:
+\code{\link[=Tagloss_L]{Tagloss_L()}},
+\code{\link[=Tagloss_LengthObs]{Tagloss_LengthObs()}},
+\code{\link[=Tagloss_cumul]{Tagloss_cumul()}},
+\code{\link[=Tagloss_daymax]{Tagloss_daymax()}},
+\code{\link[=Tagloss_fit]{Tagloss_fit()}},
+\code{\link[=Tagloss_format]{Tagloss_format()}},
+\code{\link[=Tagloss_mcmc]{Tagloss_mcmc()}},
+\code{\link[=Tagloss_mcmc_p]{Tagloss_mcmc_p()}},
+\code{\link[=Tagloss_model]{Tagloss_model()}},
+\code{\link[=logLik.Tagloss]{logLik.Tagloss()}},
 \code{\link{o_4p_p1p2}},
-\code{\link{plot.Tagloss}()},
-\code{\link{plot.TaglossData}()}
+\code{\link[=plot.Tagloss]{plot.Tagloss()}},
+\code{\link[=plot.TaglossData]{plot.TaglossData()}}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

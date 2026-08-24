@@ -35,7 +35,7 @@
 #' @description This function fits a model of clutch frequency.\cr
 #' This model is an enhanced version of the one published by Briane et al. (2007).\cr
 #' Parameters are \code{mu} and \code{sd} being the parameters of a  
-#' distribution used to model the clutch frequency.\cr
+#' lognormal distribution used to model the clutch frequency.\cr
 #' This distribution is used only as a guide but has not statistical meaning.\cr
 #' The parameter \code{p} is the -logit probability that a female is seen 
 #' on the beach for a particular nesting event. It includes both the probability 
@@ -53,7 +53,7 @@
 #' Same logic must be applied for 3 and more categories with always the last one 
 #' being fixed to 1.\cr
 #' 
-#' if p or a (logit of the capture probability) are equal to -Inf, 
+#' if p or a (-logit of the capture probability) are equal to -Inf, 
 #' the probability of capture is 0 and if they are equal to 
 #' +Inf, the probability is 1.\cr
 #' 
@@ -170,7 +170,7 @@
 #'                                    0.323636536050397, 
 #'                                    1.37072039291397, 
 #'                                    9.28055412564559e-06), 
-#'                                   .Names = c("mu1", "sd1", "mu2", 
+#'                                   names = c("mu1", "sd1", "mu2", 
 #'                                              "sd2", "mu3", "sd3", 
 #'                                              "p", "OTN1", "OTN2")),
 #'                  data=ECFOCF_2002, hessian = TRUE)
@@ -183,7 +183,7 @@
 #'                                    -3.62623634029326, 
 #'                                    11.6950204755787, 
 #'                                    4.05273728846523), 
-#'                                    .Names = c("mu", "sd", 
+#'                                    names = c("mu", "sd", 
 #'                                               "p1", "p2", "p3", 
 #'                                               "OTN1", "OTN2")),
 #'                  data=ECFOCF_2002, hessian = TRUE)
@@ -285,13 +285,15 @@
 
 # library("phenology");load(file="/Users/marcgirondot/Documents/Espace_de_travail_R/Remigration/CF_R/dataOut/fit2002_CF.Rdata"); for (i in names(fit2002_CF)) assign(paste0("o_", i), fit2002_CF[[i]])
 
-fitCF <- function(x=c(mu=4, sd=100, p=0),
-                  fixed.parameters=NULL, 
+fitCF <- function(x=c(mu=4, sd=100, p=0)                                        ,
+                  fixed.parameters=NULL                                         , 
                   data=stop("Data formated with TableECFOCF() must be provided"),
-                  method = c("Nelder-Mead","BFGS"), 
-                  control=list(trace=1, REPORT=100, maxit=500),
-                  itnmax=c(500, 100), 
-                  hessian=TRUE, parallel=TRUE, verbose=FALSE) {
+                  method = c("Nelder-Mead","BFGS")                              , 
+                  control=list(trace=1, REPORT=100, maxit=500)                  ,
+                  itnmax=c(500, 100)                                            , 
+                  hessian=TRUE                                                  , 
+                  parallel=TRUE                                                 , 
+                  verbose=FALSE                                                 ) {
   
   
   #  x=c(mu=4, sd=100, p=-1);
@@ -305,8 +307,13 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
   MaxNests <- max(dim(data)[c(1, 2)])-1
   
   if (any(itnmax != 0)) {
+    
+    if (length(itnmax) != length(method)) {
+      stop("You setup more itnmax than methods. Check your parameters.")
+    }
   
   repeat {
+    # k <- lnLCF(x=x, data=data, fixed.parameters=fixed.parameters, parallel=FALSE, verbose=TRUE)
     o <- try(suppressWarnings(optimx::optimx(par = x,
                                              data=data, 
                                              fixed.parameters=fixed.parameters,
@@ -314,8 +321,17 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
                                              method=method, 
                                              itnmax=itnmax, 
                                              control=modifyList(control, list(dowarn=FALSE, follow.on=TRUE, kkt=FALSE)), 
-                                             hessian=FALSE, parallel=parallel, verbose=verbose)), silent=TRUE)
+                                             hessian=FALSE, parallel=parallel, verbose=verbose, attributeWAIC=FALSE)), silent=TRUE)
     
+    # o <- optimx::optimx(par = x,
+    #                     data=data, 
+    #                     fixed.parameters=fixed.parameters,
+    #                     fn=lnLCF, 
+    #                     method=method, 
+    #                     itnmax=itnmax, 
+    #                     control=modifyList(control, list(dowarn=FALSE, follow.on=TRUE, kkt=FALSE)), 
+    #                     hessian=FALSE, parallel=FALSE, verbose=TRUE)
+
     minL <- nrow(o)
     nm <- names(x)
     colnames(o)[1:length(nm)] <- nm
@@ -402,7 +418,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
   }
   
   a <- totx[substr(names(totx), 1, 1)=="a"]
-  if (identical(a, structure(numeric(0), .Names = character(0)))) {
+  if (identical(a, structure(numeric(0), names = character(0)))) {
     a <- rep(Inf, mln) # Vaudra 1
     names(a) <- paste0("a", as.character(1:mln))
   }
@@ -411,7 +427,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
   mu <- totx[(substr(names(totx), 1, 2)=="mu") & (substr(names(totx), 1, 9)!="mu_season")]
   if (length(mu)>1) mu <- mu[order(as.numeric(gsub("mu([0-9\\.]+)", "\\1", names(mu))))]
   sd <- totx[(substr(names(totx), 1, 2)=="sd") & (substr(names(totx), 1, 9)!="sd_season")]
-  if (identical(sd, structure(numeric(0), .Names = character(0)))) sd <- c(sd=NA)
+  if (identical(sd, structure(numeric(0), names = character(0)))) sd <- c(sd=NA)
   if (length(sd)>1) sd <- sd[order(as.numeric(gsub("sd([0-9]+)", "\\1", names(sd))))]
   mu_season <- totx[substr(names(totx), 1, 9)=="mu_season"]
   if (length(mu_season)>1) mu_season <- mu_season[order(as.numeric(gsub("mu_season([0-9]+)", "\\1", names(mu_season))))]
@@ -447,7 +463,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
       mu_ec <- NULL
       for (i in 1:mln) {
         if (all(!grepl(paste0("mu", i), names(mu)))) {
-          mu_ec <- c(mu_ec, structure(unname(mu_ref), .Names=paste0("mu", i)))
+          mu_ec <- c(mu_ec, structure(unname(mu_ref), names=paste0("mu", i)))
         } else {
           mu_ec <- c(mu_ec, mu[grepl(paste0("mu", i), names(mu))])
         }
@@ -460,7 +476,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
       mu_ec <- NULL
       for (i in 1:mln) {
         if (all(!grepl(paste0("mu", i), names(mu)))) {
-          mu_ec <- c(mu_ec, structure(unname(mu_ref), .Names=gsub("mu(\\.[0-9]+)", paste0("mu", i, "\\1"), names(mu_ref))))
+          mu_ec <- c(mu_ec, structure(unname(mu_ref), names=gsub("mu(\\.[0-9]+)", paste0("mu", i, "\\1"), names(mu_ref))))
         } else {
           mu_ec <- c(mu_ec, mu[grepl(paste0("mu", i), names(mu))])
         }
@@ -499,7 +515,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
   
   if (dim(data)[3] != 1) {
     period <- structure(rep(0, dim(data)[3]-MaxNests+1), 
-                        .Names=paste0("period", formatC(1:(dim(data)[3]-MaxNests+1), width=2, flag="0")))
+                        names=paste0("period", formatC(1:(dim(data)[3]-MaxNests+1), width=2, flag="0")))
   } else {
     period <- NA
   }
@@ -555,7 +571,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
       if (length(CF_int) < MaxNests) CF_int <- c(CF_int, rep(1E-10, MaxNests - length(CF_int)))
     }
     
-    CF_int <- structure(c(CF_int / sum(CF_int)), .Names=paste0("CF", as.character(1:MaxNests)))
+    CF_int <- structure(c(CF_int / sum(CF_int)), names=paste0("CF", as.character(1:MaxNests)))
     CF_categories <- c(CF_categories, 
                        list(CF_int))
     CF <- CF+ CF_int * OTN[paste0("OTN", i)]
@@ -565,7 +581,7 @@ fitCF <- function(x=c(mu=4, sd=100, p=0),
                          meanlog=log(abs(mu_season[paste0("mu_season", i)])), 
                          sdlog=abs(sd_season[paste0("sd_season", i)]))
       time_int <- structure(c(time_int / sum(time_int)), 
-                            .Names=paste0("period", formatC(1:(dim(data)[3]-MaxNests+1), width=2, flag="0")))
+                            names=paste0("period", formatC(1:(dim(data)[3]-MaxNests+1), width=2, flag="0")))
       
       period_categories <- c(period_categories, list(time_int))
       

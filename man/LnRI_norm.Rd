@@ -50,11 +50,11 @@ LnRI_norm(data=OBS, x = c(s=0.97, t, r, p, sd=2) )
 }
 }
 \seealso{
-Other Model of Remigration Interval: 
-\code{\link{Bayesian.remigration}()},
-\code{\link{RI}()},
-\code{\link{RI2BP}()},
-\code{\link{plot.Remigration}()}
+Other Model of Remigration Interval:
+\code{\link[=Bayesian.remigration]{Bayesian.remigration()}},
+\code{\link[=RI]{RI()}},
+\code{\link[=RI2BP]{RI2BP()}},
+\code{\link[=plot.Remigration]{plot.Remigration()}}
 }
 \author{
 Marc Girondot

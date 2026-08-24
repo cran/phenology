@@ -99,12 +99,12 @@ parametersMCMC = pMCMC, n.chains = 1, n.adapt = 0, thin = 1, trace = FALSE)
 }
 }
 \seealso{
-Other Fill gaps in RMU: 
-\code{\link{CI.RMU}()},
-\code{\link{fitRMU}()},
-\code{\link{fitRMU_MHmcmc_p}()},
-\code{\link{logLik.fitRMU}()},
-\code{\link{plot.fitRMU}()}
+Other Fill gaps in RMU:
+\code{\link[=CI.RMU]{CI.RMU()}},
+\code{\link[=fitRMU]{fitRMU()}},
+\code{\link[=fitRMU_MHmcmc_p]{fitRMU_MHmcmc_p()}},
+\code{\link[=logLik.fitRMU]{logLik.fitRMU()}},
+\code{\link[=plot.fitRMU]{plot.fitRMU()}}
 }
 \author{
 Marc Girondot

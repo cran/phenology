@@ -9,9 +9,11 @@
   ...,
   result = "CF",
   category = NA,
+  parameters = "p1",
+  legend = parameters,
   period = 1,
   resultMCMC = NULL,
-  chain = 1,
+  chain = "all",
   replicates = "all"
 )
 }
@@ -20,9 +22,13 @@
 
 \item{...}{Graphic parameters, see plot.TableECFOCF() or par.}
 
-\item{result}{What result will be plotted: data, dataOCF, dataECF, ECF, OCF, ECFOCF, ECFOCF0, CF, Prob, period}
+\item{result}{What result will be plotted: data, dataOCF, dataECF, ECF, OCF, ECFOCF, ECFOCF0, CF, Probabilities, period}
 
 \item{category}{What category will be plotted, numeric or NA for all.}
+
+\item{parameters}{Name of parameters to plot for Probabilities result.}
+
+\item{legend}{Legend to use for the parameters as a vector of names.}
 
 \item{period}{The period that will be plotted.}
 
@@ -45,13 +51,13 @@ The result \code{OCF} plots the observed clutch frequency.\cr
 The result \code{ECF} plots the estimated clutch frequency.\cr
 The result \code{ECFOCF} plots the bivariate observed vs. estimated clutch frequency.\cr
 The result \code{ECFOCF0} plots the bivariate observed vs. estimated clutch frequency without the 0 OCF.\cr
-The result \code{prob} plots the probabilities of capture.\cr
+The result \code{probabilities} plots the probabilities of captures, p and a, or OTN.\cr
 The result \code{period} plots the probabilities of nesting according to period.\cr
 If category is left to NA, the compound value for all the population is plotted.\cr
 When result="data" is used, this is a parser for plot.TableECFOCF().\cr
 See this function for the parameters.\cr
 The parameter y.axis is the shift of the x legends for result="prob".\cr
-When a \code{resultMCMC} is indicated, if replicates is "all", all values are used;
+When a \code{resultMCMC} is indicated, if replicates is "all", all values from all chains are used;
 if a value lower than number of iterations is indicated, a regular thinning is used and
 if a value larger then number if iteration is indicated, a sampling with replacement is used.\cr
 }
@@ -100,17 +106,17 @@ plot(o_mu1p2_NB, result="Prob", category=c(2, 1), bty="n", las=1)
 }
 }
 \seealso{
-Other Model of Clutch Frequency: 
-\code{\link{ECFOCF_f}()},
-\code{\link{ECFOCF_full}()},
-\code{\link{TableECFOCF}()},
-\code{\link{fitCF}()},
-\code{\link{fitCF_MHmcmc}()},
-\code{\link{fitCF_MHmcmc_p}()},
-\code{\link{generateCF}()},
-\code{\link{lnLCF}()},
-\code{\link{logLik.ECFOCF}()},
-\code{\link{plot.TableECFOCF}()}
+Other Model of Clutch Frequency:
+\code{\link[=ECFOCF_f]{ECFOCF_f()}},
+\code{\link[=ECFOCF_full]{ECFOCF_full()}},
+\code{\link[=TableECFOCF]{TableECFOCF()}},
+\code{\link[=fitCF]{fitCF()}},
+\code{\link[=fitCF_MHmcmc]{fitCF_MHmcmc()}},
+\code{\link[=fitCF_MHmcmc_p]{fitCF_MHmcmc_p()}},
+\code{\link[=generateCF]{generateCF()}},
+\code{\link[=lnLCF]{lnLCF()}},
+\code{\link[=logLik.ECFOCF]{logLik.ECFOCF()}},
+\code{\link[=plot.TableECFOCF]{plot.TableECFOCF()}}
 }
 \author{
 Marc Girondot

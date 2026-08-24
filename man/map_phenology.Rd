@@ -13,7 +13,9 @@ map_phenology(
   progressbar = any(installed.packages()[, "Package"] == "pbapply"),
   cofactors = NULL,
   add.cofactors = NULL,
-  zero = 1e-09
+  zero = 1e-09,
+  mc.cores = getOption("mc.cores", detectCores()),
+  forking = getOption("forking", ifelse(.Platform$OS.type == "windows", FALSE, TRUE))
 )
 }
 \arguments{
@@ -34,6 +36,10 @@ map_phenology(
 \item{add.cofactors}{Names of the column of parameter cofactors to use as a cofactor}
 
 \item{zero}{If the theoretical nest number is under this value, this value wll be used}
+
+\item{mc.cores}{Number of cores to use for parallel computing}
+
+\item{forking}{Should forking be used for parallel computing}
 }
 \value{
 Display a likelihood map
@@ -43,7 +49,7 @@ This function generates a map of likelihood varying Phi and Delta.\cr
 Parameters are the same than for the fit_phenology() function except for trace that is disabled.\cr
 If Alpha, Beta or Tau are not indicated, Alpha and Tau are set to 0 and 1 and Beta is fitted.\cr
 Only one set of Alpha, Beta, Tau, Phi and Delta are used for all timeseries present in data.\cr
-Note that it is possible to fit or fixed Alpha[n], Beta[n], Tau[n], Phi[n] and Delta[n] with [n]=1 or 2
+Note that it is possible to fit or fixed Alpha[n], Beta[n], Tau[n], Phi[n] and Delta[n] with [n]=1, 2 or 3
 and then it is possible to use this function to establish the likelihood map for a
 second or third sinusoids added to the global pattern.\cr
 If Delta is not specified, it is estimated from Phi and the same precision as Phi is used.
@@ -83,6 +89,11 @@ map_Gratiot <- map_phenology(data = data_Gratiot,
                              Phi = seq(from=0.1, to=30, length.out=100), 
 		                          fitted.parameters = parg2, 
 		                          fixed.parameters = pfixed)
+# Rapid example for debug
+map_Gratiot_short <- map_phenology(data = data_Gratiot, 
+                             Phi = seq(from=10, to=30, length.out=2), 
+		                          fitted.parameters = parg2, 
+		                          fixed.parameters = pfixed, forking = FALSE)
 }
 data(map_Gratiot)
 # Plot the map
@@ -95,43 +106,44 @@ plot_delta(map = map_Gratiot)
 plot_delta(map = map_Gratiot, Phi = 15)
 }
 \seealso{
-Other Phenology model: 
-\code{\link{AutoFitPhenology}()},
-\code{\link{BE_to_LBLE}()},
+Other Phenology model:
+\code{\link[=AutoFitPhenology]{AutoFitPhenology()}},
+\code{\link[=BE_to_LBLE]{BE_to_LBLE()}},
 \code{\link{Gratiot}},
-\code{\link{LBLE_to_BE}()},
-\code{\link{LBLE_to_L}()},
-\code{\link{L_to_LBLE}()},
+\code{\link[=LBLE_to_BE]{LBLE_to_BE()}},
+\code{\link[=LBLE_to_L]{LBLE_to_L()}},
+\code{\link[=L_to_LBLE]{L_to_LBLE()}},
 \code{\link{MarineTurtles_2002}},
-\code{\link{MinBMinE_to_Min}()},
-\code{\link{adapt_parameters}()},
-\code{\link{add_SE}()},
-\code{\link{add_phenology}()},
-\code{\link{extract_result}()},
-\code{\link{fit_phenology}()},
-\code{\link{likelihood_phenology}()},
-\code{\link{logLik.phenology}()},
+\code{\link[=MinBMinE_to_Min]{MinBMinE_to_Min()}},
+\code{\link[=adapt_parameters]{adapt_parameters()}},
+\code{\link[=add_SE]{add_SE()}},
+\code{\link[=add_phenology]{add_phenology()}},
+\code{\link[=extract_result]{extract_result()}},
+\code{\link[=fit_phenology]{fit_phenology()}},
+\code{\link[=likelihood_phenology]{likelihood_phenology()}},
+\code{\link[=logLik.phenology]{logLik.phenology()}},
 \code{\link{map_Gratiot}},
-\code{\link{par_init}()},
-\code{\link{phenology}()},
-\code{\link{phenology2fitRMU}()},
-\code{\link{phenology_MHmcmc}()},
-\code{\link{phenology_MHmcmc_p}()},
-\code{\link{plot.phenology}()},
-\code{\link{plot.phenologymap}()},
-\code{\link{plot_delta}()},
-\code{\link{plot_phi}()},
-\code{\link{print.phenology}()},
-\code{\link{print.phenologymap}()},
-\code{\link{print.phenologyout}()},
-\code{\link{remove_site}()},
+\code{\link[=par_init]{par_init()}},
+\code{\link[=phenology]{phenology()}},
+\code{\link[=phenology2fitRMU]{phenology2fitRMU()}},
+\code{\link[=phenology_MHmcmc]{phenology_MHmcmc()}},
+\code{\link[=phenology_MHmcmc_p]{phenology_MHmcmc_p()}},
+\code{\link[=plot.phenology]{plot.phenology()}},
+\code{\link[=plot.phenologydata]{plot.phenologydata()}},
+\code{\link[=plot.phenologymap]{plot.phenologymap()}},
+\code{\link[=plot_delta]{plot_delta()}},
+\code{\link[=plot_phi]{plot_phi()}},
+\code{\link[=print.phenology]{print.phenology()}},
+\code{\link[=print.phenologymap]{print.phenologymap()}},
+\code{\link[=print.phenologyout]{print.phenologyout()}},
+\code{\link[=remove_site]{remove_site()}},
 \code{\link{result_Gratiot}},
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
-\code{\link{summary.phenology}()},
-\code{\link{summary.phenologymap}()},
-\code{\link{summary.phenologyout}()}
+\code{\link[=summary.phenology]{summary.phenology()}},
+\code{\link[=summary.phenologymap]{summary.phenologymap()}},
+\code{\link[=summary.phenologyout]{summary.phenologyout()}}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

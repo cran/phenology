@@ -4,7 +4,9 @@
 #' @return Nothing
 #' @param x A result for fitCF().
 #' @param ... Graphic parameters, see plot.TableECFOCF() or par.
-#' @param result What result will be plotted: data, dataOCF, dataECF, ECF, OCF, ECFOCF, ECFOCF0, CF, Prob, period
+#' @param result What result will be plotted: data, dataOCF, dataECF, ECF, OCF, ECFOCF, ECFOCF0, CF, Probabilities, period
+#' @param parameters Name of parameters to plot for Probabilities result.
+#' @param legend Legend to use for the parameters as a vector of names.
 #' @param category What category will be plotted, numeric or NA for all.
 #' @param period The period that will be plotted.
 #' @param resultMCMC A result from fitRMU_MHmcmc.
@@ -19,13 +21,13 @@
 #' The result \code{ECF} plots the estimated clutch frequency.\cr
 #' The result \code{ECFOCF} plots the bivariate observed vs. estimated clutch frequency.\cr
 #' The result \code{ECFOCF0} plots the bivariate observed vs. estimated clutch frequency without the 0 OCF.\cr
-#' The result \code{prob} plots the probabilities of capture.\cr
+#' The result \code{probabilities} plots the probabilities of captures, p and a, or OTN.\cr
 #' The result \code{period} plots the probabilities of nesting according to period.\cr
 #' If category is left to NA, the compound value for all the population is plotted.\cr
 #' When result="data" is used, this is a parser for plot.TableECFOCF().\cr
 #' See this function for the parameters.\cr
 #' The parameter y.axis is the shift of the x legends for result="prob".\cr
-#' When a \code{resultMCMC} is indicated, if replicates is "all", all values are used; 
+#' When a \code{resultMCMC} is indicated, if replicates is "all", all values from all chains are used; 
 #' if a value lower than number of iterations is indicated, a regular thinning is used and 
 #' if a value larger then number if iteration is indicated, a sampling with replacement is used.\cr
 #' @family Model of Clutch Frequency
@@ -75,11 +77,17 @@
 
 # plot de la table ECF OCF ####
 
-plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1, 
-                        resultMCMC = NULL, 
-                        chain =1, 
-                        replicates = "all") {
-  p3p <- list(...)
+plot.ECFOCF <- function(x                  , 
+                        ...                , 
+                        result="CF"        , 
+                        category=NA        , 
+                        parameters="p1"    ,
+                        legend=parameters  ,
+                        period=1           , 
+                        resultMCMC = NULL  , 
+                        chain = "all"      , 
+                        replicates = "all" ) {
+  p3p <- list(...) # p3p=list()
   
   # result="CF"; category=NA; period=1; p3p=list(); x=NULL
   
@@ -91,21 +99,35 @@ plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1,
                                                   "ECF", 
                                                   "ECFOCF", 
                                                   "ECFOCF0", 
-                                                  "prob", 
+                                                  "probabilities", 
                                                   "period")))
   
   samples <- NULL
   if (!is.null(resultMCMC)) {
-    samples <- 1:(nrow(resultMCMC$resultMCMC[[chain]]))
+    if (chain == "all") {
+      nbchains <- 1:(resultMCMC$parametersMCMC$n.chains)
+      totalMCMC <- resultMCMC$resultMCMC[[1]]
+      if (nbchains > 1) {
+        for (j in 2:nbchains) {
+          totalMCMC <- rbind(totalMCMC, resultMCMC$resultMCMC[[j]])
+        }
+      }
+    } else {
+      totalMCMC <- resultMCMC$resultMCMC[[chain]]
+    }
+    
+    samples <- 1:(nrow(totalMCMC))
     if (replicates != "all") {
       replicates <- as.numeric(replicates)
       if (replicates <= max(samples)) {
-        samples <- floor(seq(from=1, to=nrow(resultMCMC$resultMCMC[[chain]]), length.out=replicates))
+        samples <- floor(seq(from=1, to=nrow(totalMCMC), length.out=replicates))
         # samples <- sample(x=samples, size=replicates, replace = FALSE)
       } else {
         samples <- sample(x=samples, size=replicates, replace = TRUE)
       }
     }
+  } else {
+    totalMCMC <- NULL
   }
   
   if (result=="data") {
@@ -202,7 +224,7 @@ plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1,
     # Si SE...
     if (!is.null(samples)) {
       CF_matrix <- universalmclapply(X=seq_along(samples), FUN = function(i) {
-        par <- resultMCMC$resultMCMC[[chain]][samples[i], ]
+        par <- totalMCMC[samples[i], ]
         cf_e <- fitCF(x=par, fixed.parameters = x$fixed.parameters, data=x$data, 
                       itnmax = 0, hessian = FALSE)
         if (all(is.na(category)) | (all(category == ""))) {
@@ -210,10 +232,10 @@ plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1,
         } else {
           cf_e <- cf_e$CF_categories[[as.numeric(category)]]
         }
-         return(cf_e)
+        return(cf_e)
       }, mc.cores = detectCores(), 
       clusterEvalQ=list(expr=expression(library(phenology))), 
-      clusterExport=list(varlist=c("x", "resultMCMC", "category", "chain"), envir=environment()), 
+      clusterExport=list(varlist=c("x", "totalMCMC", "category", "chain"), envir=environment()), 
       progressbar=TRUE)
       
       CF_matrix <- t(sapply(CF_matrix, FUN = function(x) x))
@@ -230,19 +252,19 @@ plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1,
       maxq <- ncol(q)
       
       do.call(plot_errbar, modifyList(list(x=1:maxq, 
-                                    xlab="Clutch Frequency", 
-                                    ylab="Density", 
-                                    main=main, 
-                                    y=q["50%", 1:maxq], 
-                                    y.minus=q["2.5%", 1:maxq], 
-                                    y.plus=q["97.5%", 1:maxq], 
-                                    pch=19, 
-                                    bty="n", 
-                                    ylim=c(0, max(q["97.5%", 1:maxq])), 
-                                    type="p", xaxt="n"), p3p)[c("x", "y", "type", "col", 
-                                                                "pch", "y.minus", "y.plus", "bty", 
-                                                                      "main", "cex.axis", "bty", "las", 
-                                                                      "xlab", "ylab", "xaxt", "xlim", "ylim")])
+                                           xlab="Clutch Frequency", 
+                                           ylab="Density", 
+                                           main=main, 
+                                           y=q["50%", 1:maxq], 
+                                           y.minus=q["2.5%", 1:maxq], 
+                                           y.plus=q["97.5%", 1:maxq], 
+                                           pch=19, 
+                                           bty="n", 
+                                           ylim=c(0, max(q["97.5%", 1:maxq])), 
+                                           type="p", xaxt="n"), p3p)[c("x", "y", "type", "col", 
+                                                                       "pch", "y.minus", "y.plus", "bty", 
+                                                                       "main", "cex.axis", "bty", "las", 
+                                                                       "xlab", "ylab", "xaxt", "xlim", "ylim")])
       
       
       axis(side = 1, at=1:maxq, cex.axis=unlist(modifyList(list(cex.axis=0.8), p3p)[c("cex.axis")]))
@@ -340,59 +362,179 @@ plot.ECFOCF <- function(x, ..., result="CF", category=NA, period=1,
     do.call(plot, perr)
   }
   
-  if (result=="prob") {
-    if (is.null(x$SE_df)) {
-      warning("The estimate of standard error for capture probability is not available")
-    } else {
-      if (all(is.na(category)) | (all(category == ""))) {
-        category <- ""
-        
-        cl <- sapply(X = rownames(x$SE_df), function(x) {
-          # Je le prends si probx
-          grepl("prob", x)
-        })
-        
+  if (result=="probabilities") {
+    if (is.null(totalMCMC)) {
+      
+      namespar <- names(x$par)[grepl("^p|^a|^OTN", names(x$par))]
+      if (identical(gsub("\\D", "", namespar), "")) {
+        ncat <- 1
       } else {
-        # Si j'ai une catégorie
-        category <- as.character(category)
+        ncat <- max(as.numeric(gsub("\\D", "", namespar)), na.rm = TRUE)
+      }
+      
+      par <- x$par[namespar]
+      
+      par_p <- invlogit(-par[grepl("^p", names(par))])
+      if (length(par_p) == 1) if (ncat == 1) names(par_p) <- "p1" else {par_p <- rep(par_p, ncat); names(par_p) <- paste0("p", as.character(1:ncat))}
+      par_a <- invlogit(-par[grepl("^a", names(par))])
+      if (!identical(par_a, numeric(0))) {
+        if (length(par_a) == 1) if (ncat == 1) names(par_a) <- "a1" else {par_a <- rep(par_a, ncat); names(par_a) <- paste0("a", as.character(1:ncat))}
+      }
+      par_OTN <- invlogit(-par[grepl("^OTN", names(par))])
+      if (ncat == 1) names(par_OTN) <- "OTN1" else {
+        if (length(par_OTN) == 1) {
+          names(par_OTN) <- "OTN1"
+        }
+        par_OTN <- par_OTN[order(as.numeric(gsub("\\D", "", names(par_OTN))))]
+        comp_par_OTN <- 1 - sum(par_OTN)
+        names(comp_par_OTN) <- paste0("OTN", ncat)
+        par_OTN <- c(par_OTN, comp_par_OTN)
+      }
+      
+      total_columns <- length(par_p)+length(par_OTN)
+      cn <- c(names(par_p), names(par_OTN))
+      if (!identical(par_a, numeric(0))) {
+        total_columns <- total_columns + length(par_a)*2
+        cn <- c(cn, names(par_a), paste0("(a.p)", as.character(1:ncat)))
+      }
+      
+      Total_par_prob <- matrix(data = NA, ncol=total_columns, nrow=1)
+      colnames(Total_par_prob) <- cn
+      
+      par_p <- invlogit(-par[grepl("^p", names(par))])
+      if (length(par_p) == 1) if (ncat == 1) names(par_p) <- "p1" else {par_p <- rep(par_p, ncat); names(par_p) <- paste0("p", as.character(1:ncat))}
+      par_a <- invlogit(-par[grepl("^a", names(par))])
+      if (!identical(par_a, numeric(0))) {
+        if (length(par_a) == 1) if (ncat == 1) names(par_a) <- "a1" else {par_a <- rep(par_a, ncat); names(par_a) <- paste0("a", as.character(1:ncat))}
+        par_ap <- par_a * par_p
+        names(par_ap) <- paste0("(a.p)", as.character(1:ncat))
+      }
+      par_OTN <- invlogit(-par[grepl("^OTN", names(par))])
+      if (ncat == 1) names(par_OTN) <- "OTN1" else {
+        if (length(par_OTN) == 1) {
+          names(par_OTN) <- "OTN1"
+        }
+        par_OTN <- par_OTN[order(as.numeric(gsub("\\D", "", names(par_OTN))))]
+        comp_par_OTN <- 1 - sum(par_OTN)
+        names(comp_par_OTN) <- paste0("OTN", ncat)
+        par_OTN <- c(par_OTN, comp_par_OTN)
+      }
+      
+      j <- 1
+      if (any(grepl("^p", cn)))
+        Total_par_prob[j, names(par_p)] <- par_p
+      if (any(grepl("^OTN", cn)))
+        Total_par_prob[j, names(par_OTN)] <- par_OTN
+      if (!identical(par_a, numeric(0))) {
+        Total_par_prob[j, names(par_a)] <- par_a
+        Total_par_prob[j, paste0("(a.p)", as.character(1:ncat))] <- par_ap[paste0("(a.p)", as.character(1:ncat))]
+      }
+      main_ec <- "No uncertainty is shown"
+    } else {
+      # Dans parameters, j'ai les paramètres à montrer
+      
+      namespar <- colnames(totalMCMC)[grepl("^p|^a|^OTN", colnames(totalMCMC))]
+      if (identical(gsub("\\D", "", namespar), "")) {
+        ncat <- 1
+      } else {
+        ncat <- max(as.numeric(gsub("\\D", "", namespar)), na.rm = TRUE)
+      }
+      
+      # J'utilise totalMCMC[samples[i], ]
+      par <- totalMCMC[samples[1], namespar]
+      
+      par_p <- invlogit(-par[grepl("^p", names(par))])
+      if (length(par_p) == 1) if (ncat == 1) names(par_p) <- "p1" else {par_p <- rep(par_p, ncat); names(par_p) <- paste0("p", as.character(1:ncat))}
+      par_a <- invlogit(-par[grepl("^a", names(par))])
+      if (!identical(par_a, numeric(0))) {
+        if (length(par_a) == 1) if (ncat == 1) names(par_a) <- "a1" else {par_a <- rep(par_a, ncat); names(par_a) <- paste0("a", as.character(1:ncat))}
+      }
+      par_OTN <- invlogit(-par[grepl("^OTN", names(par))])
+      if (ncat == 1) names(par_OTN) <- "OTN1" else {
+        if (length(par_OTN) == 1) {
+          names(par_OTN) <- "OTN1"
+        }
+        par_OTN <- par_OTN[order(as.numeric(gsub("\\D", "", names(par_OTN))))]
+        comp_par_OTN <- 1 - sum(par_OTN)
+        names(comp_par_OTN) <- paste0("OTN", ncat)
+        par_OTN <- c(par_OTN, comp_par_OTN)
+      }
+      
+      total_columns <- length(par_p)+length(par_OTN)
+      cn <- c(names(par_p), names(par_OTN))
+      if (!identical(par_a, numeric(0))) {
+        total_columns <- total_columns + length(par_a)*2
+        cn <- c(cn, names(par_a), paste0("(a.p)", as.character(1:ncat)))
+      }
+      
+      Total_par_prob <- matrix(data = NA, ncol=total_columns, nrow=length(samples))
+      colnames(Total_par_prob) <- cn
+      
+      
+      for (j in samples) {
+        par <- totalMCMC[samples[j], namespar]
         
-        cl <- sapply(X = rownames(x$SE_df), function(x) {
-          # Je le prends si probx
-          grepl(paste0("prob", category, "\\."), x) | 
-            # ou ax
-            grepl(paste0("a", category), x) | 
-            # ou prob. et category = 1 mais pas si ax
-            ((grepl(paste0("prob\\."), x)) & (category == "1") & !grepl(paste0("a[^", category, "]"), x))
-        })
+        par_p <- invlogit(-par[grepl("^p", names(par))])
+        if (length(par_p) == 1) if (ncat == 1) names(par_p) <- "p1" else {par_p <- rep(par_p, ncat); names(par_p) <- paste0("p", as.character(1:ncat))}
+        par_a <- invlogit(-par[grepl("^a", names(par))])
+        if (!identical(par_a, numeric(0))) {
+          if (length(par_a) == 1) if (ncat == 1) names(par_a) <- "a1" else {par_a <- rep(par_a, ncat); names(par_a) <- paste0("a", as.character(1:ncat))}
+          par_ap <- par_a * par_p
+          names(par_ap) <- paste0("(a.p)", as.character(1:ncat))
+        }
+        par_OTN <- invlogit(-par[grepl("^OTN", names(par))])
+        if (ncat == 1) names(par_OTN) <- "OTN1" else {
+          if (length(par_OTN) == 1) {
+            names(par_OTN) <- "OTN1"
+          }
+          par_OTN <- par_OTN[order(as.numeric(gsub("\\D", "", names(par_OTN))))]
+          comp_par_OTN <- 1 - sum(par_OTN)
+          names(comp_par_OTN) <- paste0("OTN", ncat)
+          par_OTN <- c(par_OTN, comp_par_OTN)
+        }
+        
+        
+        if (any(grepl("^p", cn)))
+          Total_par_prob[j, names(par_p)] <- par_p
+        if (any(grepl("^OTN", cn)))
+          Total_par_prob[j, names(par_OTN)] <- par_OTN
+        if (!identical(par_a, numeric(0))) {
+          Total_par_prob[j, names(par_a)] <- par_a
+          Total_par_prob[j, paste0("(a.p)", as.character(1:ncat))] <- par_ap[paste0("(a.p)", as.character(1:ncat))]
+        }
       }
-      
-      perr <- list(x=1:sum(cl), 
-                   y=x$SE_df[cl, "Estimate"], 
-                   y.minus=x$SE_df[cl, "2.5 %"], 
-                   y.plus = x$SE_df[cl, "97.5 %"], 
-                   xlim=c(0.5, sum(cl)+0.5), ylim=c(0,1), 
-                   las=1, bty="n", xaxt="n", 
-                   ylab="Probability of capture", xlab="Categories", 
-                   main="SE using delta method")
-      perr <- modifyList(perr, p3p)
-      
-      do.call(plot_errbar, perr)
-      
-      if (is.null(p3p$xaxt)) p3p$xaxt <- "r"
-      
-      if (p3p$xaxt != "n") {
-        segments(x0=1:sum(cl), 
-                 y0=-0.1, y1=-0.15, xpd=TRUE)
-        cex <- p3p[["cex.axis"]]
-        y <- p3p[["y.axis"]]
-        if (is.null(cex)) cex <- 1
-        if (is.null(y)) y <- -0.3
-        do.call(text, modifyList(list(x = 1:sum(cl), 
-                                      y=y, 
-                                      cex=cex, 
-                                      labels = rownames(x$SE_df)[cl], 
-                                      xpd=TRUE), p3p[c("srt", "labels")]))
-      }
+      main_ec <- "95% quantiles using Bayesian MCMC"
+    }
+    qprob <- apply(Total_par_prob, MARGIN = 2, FUN = function(x) {quantile(x, probs = c(0.025, 0.5, 0.975))})
+    qprob <- qprob[, parameters, drop=FALSE]
+    
+    perr <- list(x=1:ncol(qprob),  
+                 y=qprob["50%", ], 
+                 y.minus=qprob["2.5%", ], 
+                 y.plus = qprob["97.5%", ], 
+                 xlim=c(0.5, ncol(qprob)+0.5), 
+                 ylim=c(0,1), 
+                 las=1, bty="n", xaxt="n", 
+                 ylab="Probability of capture", xlab="Categories", 
+                 main=main_ec)
+    perr <- modifyList(perr, p3p)
+    
+    do.call(plot_errbar, perr)
+    
+    if (is.null(p3p$xaxt)) p3p$xaxt <- "r"
+    
+    if (p3p$xaxt != "n") {
+      segments(x0=1:ncol(qprob), 
+               y0=-0.01, y1=-0.04, xpd=TRUE)
+      cex <- p3p[["cex.axis"]]
+      y <- p3p[["y.axis"]]
+      if (is.null(cex)) cex <- 1
+      if (is.null(y)) y <- -0.08
+      do.call(text, modifyList(list(x = 1:ncol(qprob), 
+                                    y=y, 
+                                    cex=cex, 
+                                    labels = legend, 
+                                    xpd=TRUE), p3p[c("srt", "labels")]))
     }
   }
 }

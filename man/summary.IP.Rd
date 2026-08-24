@@ -31,11 +31,11 @@ library(phenology)
 }
 }
 \seealso{
-Other Model of Internesting Period: 
-\code{\link{IPFit}()},
-\code{\link{IPModel}()},
-\code{\link{IPPredict}()},
-\code{\link{plot.IP}()}
+Other Model of Internesting Period:
+\code{\link[=IPFit]{IPFit()}},
+\code{\link[=IPModel]{IPModel()}},
+\code{\link[=IPPredict]{IPPredict()}},
+\code{\link[=plot.IP]{plot.IP()}}
 }
 \author{
 Marc Girondot

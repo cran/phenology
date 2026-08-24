@@ -43,7 +43,7 @@
 #' }
 #' @export
 
-phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be provided"), 
+phenology_MHmcmc_p <- function(result=stop("An output from fit_phenology() must be provided"), 
                              default.density="dunif", 
                              accept=FALSE) {
   
@@ -287,6 +287,46 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
     Tau2 <- c("dnorm", pe, pe/2, 0.5, 0, max(c(5, pe+5)), pe)
   }
   
+  # "Phi3"
+  pe <- ifelse(is.na(par["Phi3"]), 30, par["Phi3"])
+  if (default.density == "dunif") {
+    Phi3 <- c("dunif", 0, max(c(50, pe+50)), 3, 0, max(c(50, pe+50)), pe)
+  } else {
+    Phi3 <- c("dnorm", pe, pe/2, 3, 0, max(c(50, pe+50)), pe)
+  }
+  
+  # "Delta3"
+  pe <- ifelse(is.na(par["Delta3"]), 30, par["Delta3"])
+  if (default.density == "dunif") {
+    Delta3 <- c("dunif", 0, max(c(50, pe+50)), 3, 0, max(c(50, pe+50)), pe)
+  } else {
+    Delta3 <- c("dnorm", pe, pe/2, 3, 0, max(c(50, pe+50)), pe)
+  }
+  
+  # "Alpha3"
+  pe <- ifelse(is.na(par["Alpha3"]), 30, par["Alpha3"])
+  if (default.density == "dunif") {
+    Alpha3 <- c("dunif", 0, max(c(50, pe+50)), 3, 0, max(c(50, pe+50)), pe)
+  } else {
+    Alpha3 <- c("dnorm", pe, pe/2, 3, 0, max(c(50, pe+50)), pe)
+  }
+  
+  # "Beta3"
+  pe <- ifelse(is.na(par["Beta3"]), 30, par["Beta3"])
+  if (default.density == "dunif") {
+    Beta3 <- c("dunif", 0, max(c(50, pe+50)), 3, 0, max(c(50, pe+50)), pe)
+  } else {
+    Beta3 <- c("dnorm", pe, pe/2, 3, 0, max(c(50, pe+50)), pe)
+  }
+  
+  # "Tau3"
+  pe <- ifelse(is.na(par["Tau3"]), 2, par["Tau3"])
+  if (default.density == "dunif") {
+    Tau3 <- c("dunif", 0, max(c(5, pe+5)), 0.5, 0, max(c(5, pe+5)), pe)
+  } else {
+    Tau3 <- c("dnorm", pe, pe/2, 0.5, 0, max(c(5, pe+5)), pe)
+  }
+  
   # "Theta"
   pe <- ifelse(is.na(par["Theta"]), 5, par["Theta"])
   if (default.density == "dunif") {
@@ -347,17 +387,19 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
   priors <- list(Peak, Flat, Begin, End, Length, LengthE, LengthB, 
                  Length, Max, PMin, Min, PMinE, MinE, PMinB, MinB, Phi, Delta, Alpha, 
                  Beta, Tau, Phi1, Delta1, Alpha1, Beta1, Tau1, Phi2, Delta2, 
-                 Alpha2, Beta2, Tau2, Theta, alpha, tp, tf, s1, s2, sr)
+                 Alpha2, Beta2, Tau2, Phi3, Delta3, Alpha3, Beta3, Tau3, 
+                 Theta, alpha, tp, tf, s1, s2, sr)
   
   names(priors) <- c("Peak", "Flat", "Begin", "End", "Length", 
                      "LengthE", "LengthB", "Length", "Max", "PMin", "Min", "PMinE", "MinE", 
                      "PMinB", "MinB", "Phi", "Delta", "Alpha", "Beta", "Tau", "Phi1", 
                      "Delta1", "Alpha1", "Beta1", "Tau1", "Phi2", "Delta2", "Alpha2", 
-                     "Beta2", "Tau2", "Theta", "alpha", "tp", "tf", "s1", "s2", "sr")
+                     "Beta2", "Tau2", "Phi3", "Delta3", "Alpha3", "Beta3", "Tau3", 
+                     "Theta", "alpha", "tp", "tf", "s1", "s2", "sr")
   
   for (i in seq_along(par)) {
     
-    if (substr(names(par[i]), 1, 4)=="Max_") {
+    if (substr(names(par[i]), 1, 3)=="Max") {
       pe <- ifelse(is.na(par[i]), 50, par[i])
       if (default.density == "dunif") {
         priors <- c(priors, list(c("dunif", 0, max(c(200, pe+50)), 2, 0, max(c(200, pe+50)), pe)))
@@ -371,7 +413,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       names(priors)[length(priors)] <- names(par[i])
     }
     
-    if (substr(names(par[i]), 1, 4)=="Min_") {
+    if ((substr(names(par[i]), 1, 3)=="Min") & (substr(names(par[i]), 1, 4)!="MinE") & (substr(names(par[i]), 1, 4)!="MinB")) {
       pe <- ifelse(is.na(par[i]), 5, par[i])
       if (default.density == "dunif") {
         priors <- c(priors, list(c("dunif", 0, max(c(5, pe+5)), 2, 0, max(c(5, pe+5)), pe)))
@@ -381,7 +423,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       names(priors)[length(priors)] <- names(par[i])
     }
     
-    if (substr(names(par[i]), 1, 5)=="MinE_") {
+    if (substr(names(par[i]), 1, 4)=="MinE") {
       pe <- ifelse(is.na(par[i]), 5, par[i])
       if (default.density == "dunif") {
         priors <- c(priors, list(c("dunif", 0, max(c(5, pe+5)), 2, 0, max(c(5, pe+5)), pe)))
@@ -391,7 +433,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       names(priors)[length(priors)] <- names(par[i])
     }
     
-    if (substr(names(par[i]), 1, 5)=="MinB_") {
+    if (substr(names(par[i]), 1, 4)=="MinB") {
       pe <- ifelse(is.na(par[i]), 5, par[i])
       if (default.density == "dunif") {
         priors <- c(priors, list(c("dunif", 0, max(c(5, pe+5)), 2, 0, max(c(5, pe+5)), pe)))
@@ -400,7 +442,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       }
       names(priors)[length(priors)] <- names(par[i])
     }
-    if (substr(names(par[i]), 1, 5)=="Peak_") {
+    if (substr(names(par[i]), 1, 4)=="Peak") {
       pe <- ifelse(is.na(par[i]), 180, par[i])
       if (default.density == "dunif") {
         priors <-  c(priors, list(c("dunif", 0, max(c(365, pe+100)), 5, 0, max(c(365, pe+100)), pe)))
@@ -409,7 +451,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       }
       names(priors)[length(priors)] <- names(par[i])
     }
-    if (substr(names(par[i]), 1, 7)=="Length_") {
+    if ((substr(names(par[i]), 1, 6)=="Length") & (substr(names(par[i]), 1, 7)!="LengthB") & (substr(names(par[i]), 1, 7)!="LengthE")) {
       pe <- ifelse(is.na(par[i]), 100, par[i])
       if (default.density == "dunif") {
         priors <- c(priors, list(c("dunif", 0, max(c(200, pe+50)), 20, 0, max(c(200, pe+50)), pe)))
@@ -418,7 +460,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       }
       names(priors)[length(priors)] <- names(par[i])
     }
-    if (substr(names(par[i]), 1, 8)=="LengthB_") {
+    if (substr(names(par[i]), 1, 7)=="LengthB") {
       pe <- ifelse(is.na(par[i]), 100, par[i])
       if (default.density == "dunif") {
         priors <- c(priors, list(c("dunif", 0, max(c(200, pe+50)), 20, 0, max(c(200, pe+50)), pe)))
@@ -427,7 +469,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       }
       names(priors)[length(priors)] <- names(par[i])
     }
-    if (substr(names(par[i]), 1, 8)=="LengthE_") {
+    if (substr(names(par[i]), 1, 7)=="LengthE") {
       pe <- ifelse(is.na(par[i]), 100, par[i])
       if (default.density == "dunif") {
         priors <- c(priors, list(c("dunif", 0, max(c(200, pe+50)), 20, 0, max(c(200, pe+50)), pe)))
@@ -436,7 +478,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       }
       names(priors)[length(priors)] <- names(par[i])
     }
-    if (substr(names(par[i]), 1, 6)=="Begin_") {
+    if (substr(names(par[i]), 1, 5)=="Begin") {
       pe <- ifelse(is.na(par[i]), 100, par[i])
       if (default.density == "dunif") {
         priors <- c(priors, list(c("dunif", 0, max(c(365, pe+50)), 20, 0, max(c(365, pe+50)), pe)))
@@ -445,7 +487,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       }
       names(priors)[length(priors)] <- names(par[i])
     }
-    if (substr(names(par[i]), 1, 4)=="End_") {
+    if (substr(names(par[i]), 1, 3)=="End") {
       pe <- ifelse(is.na(par[i]), 100, par[i])
       if (default.density == "dunif") {
         priors <- c(priors, list(c("dunif", 0, max(c(365, pe+50)), 20, 0, max(c(365, pe+50)), pe)))
@@ -454,7 +496,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       }
       names(priors)[length(priors)] <- names(par[i])
     }
-    if (substr(names(par[i]), 1, 6)=="Theta_") {
+    if (substr(names(par[i]), 1, 5)=="Theta") {
       pe <- ifelse(is.na(par[i]), 1, par[i])
       if (default.density == "dunif") {
         priors <- c(priors, list(c("dunif", 1E-6, max(c(10, pe+5)), 2, 1E-6, max(c(10, pe+5)), pe)))
@@ -493,6 +535,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
   parameters <- parametersMCMC
   
   if (accept) {
+    parameters <- addS3Class(parameters, class="PriorsmcmcComposite")
     return(parameters)
   } else {
     
@@ -506,6 +549,7 @@ phenology_MHmcmc_p<-function(result=stop("An output from fit_phenology() must be
       if (length(f)==0) f <- "q"
       
       if (f=="q") {
+        parameters <- addS3Class(parameters, class="PriorsmcmcComposite")
         return(parameters)
         
       } else {

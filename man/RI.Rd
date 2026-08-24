@@ -68,11 +68,11 @@ legend("topright", legend="True remigration interval", lty=2, col="red")
 }
 }
 \seealso{
-Other Model of Remigration Interval: 
-\code{\link{Bayesian.remigration}()},
-\code{\link{LnRI_norm}()},
-\code{\link{RI2BP}()},
-\code{\link{plot.Remigration}()}
+Other Model of Remigration Interval:
+\code{\link[=Bayesian.remigration]{Bayesian.remigration()}},
+\code{\link[=LnRI_norm]{LnRI_norm()}},
+\code{\link[=RI2BP]{RI2BP()}},
+\code{\link[=plot.Remigration]{plot.Remigration()}}
 }
 \author{
 Marc Girondot

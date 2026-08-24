@@ -11,11 +11,13 @@
 #' @param add.cofactors Names of the column of parameter cofactors to use as a cofactor
 #' @param zero If the theoretical nest number is under this value, this value wll be used
 #' @param progressbar If FALSE, do not show the progress bar
+#' @param mc.cores Number of cores to use for parallel computing
+#' @param forking Should forking be used for parallel computing
 #' @description This function generates a map of likelihood varying Phi and Delta.\cr
 #' 	Parameters are the same than for the fit_phenology() function except for trace that is disabled.\cr
 #' 	If Alpha, Beta or Tau are not indicated, Alpha and Tau are set to 0 and 1 and Beta is fitted.\cr
 #' 	Only one set of Alpha, Beta, Tau, Phi and Delta are used for all timeseries present in data.\cr
-#' 	Note that it is possible to fit or fixed Alpha\[n\], Beta\[n\], Tau\[n\], Phi\[n\] and Delta\[n\] with \[n\]=1 or 2 
+#' 	Note that it is possible to fit or fixed Alpha\[n\], Beta\[n\], Tau\[n\], Phi\[n\] and Delta\[n\] with \[n\]=1, 2 or 3 
 #' 	and then it is possible to use this function to establish the likelihood map for a 
 #' 	second or third sinusoids added to the global pattern.\cr
 #' 	If Delta is not specified, it is estimated from Phi and the same precision as Phi is used.
@@ -52,6 +54,11 @@
 #'                              Phi = seq(from=0.1, to=30, length.out=100), 
 #' 		                          fitted.parameters = parg2, 
 #' 		                          fixed.parameters = pfixed)
+#' # Rapid example for debug
+#' map_Gratiot_short <- map_phenology(data = data_Gratiot, 
+#'                              Phi = seq(from=10, to=30, length.out=2), 
+#' 		                          fitted.parameters = parg2, 
+#' 		                          fixed.parameters = pfixed, forking = FALSE)
 #' }
 #' data(map_Gratiot)
 #' # Plot the map
@@ -65,14 +72,19 @@
 #' @export
 
 map_phenology <-
-  function(data=NULL, fitted.parameters=NULL, fixed.parameters=NA, 
-           Phi=seq(from=0.2,to=20, length.out=100), Delta=NULL, 
-           progressbar=any(installed.packages()[, "Package"] == "pbapply"), 
-           cofactors=NULL, add.cofactors=NULL, zero=1E-9) {
+  function(data=NULL                                                                           , 
+           fitted.parameters=NULL                                                              , 
+           fixed.parameters=NA                                                                 , 
+           Phi=seq(from=0.2,to=20, length.out=100)                                             , 
+           Delta=NULL                                                                          , 
+           progressbar=any(installed.packages()[, "Package"] == "pbapply")                     , 
+           cofactors=NULL                                                                      , 
+           add.cofactors=NULL                                                                  , 
+           zero=1E-9                                                                           , 
+           mc.cores = getOption("mc.cores", detectCores())                                    , 
+           forking = getOption("forking", ifelse(.Platform$OS.type == "windows", FALSE, TRUE))) {
     
     # data=NULL; fitted.parameters=NULL; fixed.parameters=NA;Phi=seq(from=0.2,to=20, length.out=100); Delta=NULL; progressbar=TRUE; cofactors=NULL; add.cofactors=NULL; zero=1E-9
-    mc.cores <- getOption("mc.cores", detectCores())
-    forking <- getOption("forking", ifelse(.Platform$OS.type == "windows", FALSE, TRUE))
     
     if (is.null(fixed.parameters)) {fixed.parameters<-NA}
     if (is.null(fitted.parameters)) {fitted.parameters<-NA}
@@ -141,7 +153,7 @@ map_phenology <-
     
     # ptx<<-pt
     
-    outma <- universalmclapply(1:(LDelta*LPhi), FUN=function(ma) {
+    outma <- universalmclapply(X=1:(LDelta*LPhi), FUN=function(ma) {
       
       #FILLING MATRIX
       # for(j in 1:LDelta) {
@@ -191,11 +203,9 @@ map_phenology <-
         }
         return(out)
         
-    }, clusterExport = list(pt=pt, 
-                            fixed.parameters = fixed.parameters,
-                            LPhi = LPhi, 
-                            Deltavalue = Deltavalue, 
-                            Phivalue = Phivalue), 
+    }, clusterExport = list(varlist=c("pt", "fixed.parameters", "LPhi", "Deltavalue", 
+                                      "Phivalue"), envir=environment()
+                           ), 
     clusterEvalQ = CEG, 
     progressbar=progressbar, forking=forking, mc.cores=mc.cores)
     

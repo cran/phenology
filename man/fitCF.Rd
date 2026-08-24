@@ -63,7 +63,7 @@ The list has the following items:\cr
 This function fits a model of clutch frequency.\cr
 This model is an enhanced version of the one published by Briane et al. (2007).\cr
 Parameters are \code{mu} and \code{sd} being the parameters of a
-distribution used to model the clutch frequency.\cr
+lognormal distribution used to model the clutch frequency.\cr
 This distribution is used only as a guide but has not statistical meaning.\cr
 The parameter \code{p} is the -logit probability that a female is seen
 on the beach for a particular nesting event. It includes both the probability
@@ -81,7 +81,7 @@ for category 1 is \code{OTN1/(OTN1+1)} and for category 2 is \code{1/(OTN1+1)}.
 Same logic must be applied for 3 and more categories with always the last one
 being fixed to 1.\cr
 
-if p or a (logit of the capture probability) are equal to -Inf,
+if p or a (-logit of the capture probability) are equal to -Inf,
 the probability of capture is 0 and if they are equal to
 +Inf, the probability is 1.\cr
 
@@ -192,7 +192,7 @@ o_mu3p1 <- fitCF(x = structure(c(0.24387978183477,
                                    0.323636536050397, 
                                    1.37072039291397, 
                                    9.28055412564559e-06), 
-                                  .Names = c("mu1", "sd1", "mu2", 
+                                  names = c("mu1", "sd1", "mu2", 
                                              "sd2", "mu3", "sd3", 
                                              "p", "OTN1", "OTN2")),
                  data=ECFOCF_2002, hessian = TRUE)
@@ -205,7 +205,7 @@ o_mu1p3 <- fitCF(x = structure(c(4.65792402108387,
                                    -3.62623634029326, 
                                    11.6950204755787, 
                                    4.05273728846523), 
-                                   .Names = c("mu", "sd", 
+                                   names = c("mu", "sd", 
                                               "p1", "p2", "p3", 
                                               "OTN1", "OTN2")),
                  data=ECFOCF_2002, hessian = TRUE)
@@ -313,17 +313,17 @@ rookeries: A review of conservation-oriented research in French
 Guiana/Suriname and Gabon. Journal of Experimental Marine Biology
 and Ecology 356:69-82
 
-Other Model of Clutch Frequency: 
-\code{\link{ECFOCF_f}()},
-\code{\link{ECFOCF_full}()},
-\code{\link{TableECFOCF}()},
-\code{\link{fitCF_MHmcmc}()},
-\code{\link{fitCF_MHmcmc_p}()},
-\code{\link{generateCF}()},
-\code{\link{lnLCF}()},
-\code{\link{logLik.ECFOCF}()},
-\code{\link{plot.ECFOCF}()},
-\code{\link{plot.TableECFOCF}()}
+Other Model of Clutch Frequency:
+\code{\link[=ECFOCF_f]{ECFOCF_f()}},
+\code{\link[=ECFOCF_full]{ECFOCF_full()}},
+\code{\link[=TableECFOCF]{TableECFOCF()}},
+\code{\link[=fitCF_MHmcmc]{fitCF_MHmcmc()}},
+\code{\link[=fitCF_MHmcmc_p]{fitCF_MHmcmc_p()}},
+\code{\link[=generateCF]{generateCF()}},
+\code{\link[=lnLCF]{lnLCF()}},
+\code{\link[=logLik.ECFOCF]{logLik.ECFOCF()}},
+\code{\link[=plot.ECFOCF]{plot.ECFOCF()}},
+\code{\link[=plot.TableECFOCF]{plot.TableECFOCF()}}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

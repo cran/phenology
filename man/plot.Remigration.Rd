@@ -67,11 +67,11 @@ plot(rMCMC)
 }
 }
 \seealso{
-Other Model of Remigration Interval: 
-\code{\link{Bayesian.remigration}()},
-\code{\link{LnRI_norm}()},
-\code{\link{RI}()},
-\code{\link{RI2BP}()}
+Other Model of Remigration Interval:
+\code{\link[=Bayesian.remigration]{Bayesian.remigration()}},
+\code{\link[=LnRI_norm]{LnRI_norm()}},
+\code{\link[=RI]{RI()}},
+\code{\link[=RI2BP]{RI2BP()}}
 }
 \author{
 Marc Girondot

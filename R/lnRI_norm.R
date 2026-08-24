@@ -48,7 +48,7 @@ LnRI_norm <- function(data, x, kl=NULL) {
   }
   
   par_r <- x[substr(names(x), 1, 1)=="r"]
-  if (identical(structure(numeric(0), .Names = character(0)), par_r)) {
+  if (identical(structure(numeric(0), names = character(0)), par_r)) {
     par_r <- NULL
   } else {
     if (names(par_r[1]) != "r") {
@@ -57,7 +57,7 @@ LnRI_norm <- function(data, x, kl=NULL) {
   }
   
   par_c <- x[substr(names(x), 1, 1)=="c"]
-  if (identical(structure(numeric(0), .Names = character(0)), par_c)) {
+  if (identical(structure(numeric(0), names = character(0)), par_c)) {
     par_c <- NULL
     } else {
       if (names(par_c[1]) != "c") {

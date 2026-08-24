@@ -11,6 +11,7 @@ likelihood_phenology(
   parallel = TRUE,
   result = NULL,
   model_before = NULL,
+  method_Snbinom = NULL,
   cofactors = NULL,
   add.cofactors = NULL,
   zero = 1e-09,
@@ -18,11 +19,11 @@ likelihood_phenology(
 )
 }
 \arguments{
-\item{data}{Dataset generated with add_format}
+\item{data}{Dataset generated with add_format.}
 
-\item{fitted.parameters}{Set of parameters to be fitted}
+\item{fitted.parameters}{Set of parameters to be fitted.}
 
-\item{fixed.parameters}{Set of fixed parameters}
+\item{fixed.parameters}{Set of fixed parameters.}
 
 \item{parallel}{If TRUE, parallel computing is used.}
 
@@ -30,13 +31,15 @@ likelihood_phenology(
 
 \item{model_before}{The change of parameters before to estimate daily counts.}
 
-\item{cofactors}{data.frame with a column Date and a column for each cofactor}
+\item{method_Snbinom}{Can be Furman, exact, or saddlepoint.}
 
-\item{add.cofactors}{Names of the column of parameter cofactors to use as a cofactor}
+\item{cofactors}{data.frame with a column Date and a column for each cofactor.}
 
-\item{zero}{If the theoretical nest number is under this value, this value wll be used}
+\item{add.cofactors}{Names of the column of parameter cofactors to use as a cofactor.}
 
-\item{out}{If TRUE, return the global likelihood; if FALSE, the likelihood for each series}
+\item{zero}{If the theoretical nest number is under this value, this value wll be used.}
+
+\item{out}{If TRUE, return the global likelihood; if FALSE, the likelihood for each series.}
 }
 \value{
 The likelihood of the data with the parameters
@@ -74,43 +77,44 @@ likelihood_phenology(data=data_Gratiot, fitted.parameters=parg, fixed.parameters
 }
 }
 \seealso{
-Other Phenology model: 
-\code{\link{AutoFitPhenology}()},
-\code{\link{BE_to_LBLE}()},
+Other Phenology model:
+\code{\link[=AutoFitPhenology]{AutoFitPhenology()}},
+\code{\link[=BE_to_LBLE]{BE_to_LBLE()}},
 \code{\link{Gratiot}},
-\code{\link{LBLE_to_BE}()},
-\code{\link{LBLE_to_L}()},
-\code{\link{L_to_LBLE}()},
+\code{\link[=LBLE_to_BE]{LBLE_to_BE()}},
+\code{\link[=LBLE_to_L]{LBLE_to_L()}},
+\code{\link[=L_to_LBLE]{L_to_LBLE()}},
 \code{\link{MarineTurtles_2002}},
-\code{\link{MinBMinE_to_Min}()},
-\code{\link{adapt_parameters}()},
-\code{\link{add_SE}()},
-\code{\link{add_phenology}()},
-\code{\link{extract_result}()},
-\code{\link{fit_phenology}()},
-\code{\link{logLik.phenology}()},
+\code{\link[=MinBMinE_to_Min]{MinBMinE_to_Min()}},
+\code{\link[=adapt_parameters]{adapt_parameters()}},
+\code{\link[=add_SE]{add_SE()}},
+\code{\link[=add_phenology]{add_phenology()}},
+\code{\link[=extract_result]{extract_result()}},
+\code{\link[=fit_phenology]{fit_phenology()}},
+\code{\link[=logLik.phenology]{logLik.phenology()}},
 \code{\link{map_Gratiot}},
-\code{\link{map_phenology}()},
-\code{\link{par_init}()},
-\code{\link{phenology}()},
-\code{\link{phenology2fitRMU}()},
-\code{\link{phenology_MHmcmc}()},
-\code{\link{phenology_MHmcmc_p}()},
-\code{\link{plot.phenology}()},
-\code{\link{plot.phenologymap}()},
-\code{\link{plot_delta}()},
-\code{\link{plot_phi}()},
-\code{\link{print.phenology}()},
-\code{\link{print.phenologymap}()},
-\code{\link{print.phenologyout}()},
-\code{\link{remove_site}()},
+\code{\link[=map_phenology]{map_phenology()}},
+\code{\link[=par_init]{par_init()}},
+\code{\link[=phenology]{phenology()}},
+\code{\link[=phenology2fitRMU]{phenology2fitRMU()}},
+\code{\link[=phenology_MHmcmc]{phenology_MHmcmc()}},
+\code{\link[=phenology_MHmcmc_p]{phenology_MHmcmc_p()}},
+\code{\link[=plot.phenology]{plot.phenology()}},
+\code{\link[=plot.phenologydata]{plot.phenologydata()}},
+\code{\link[=plot.phenologymap]{plot.phenologymap()}},
+\code{\link[=plot_delta]{plot_delta()}},
+\code{\link[=plot_phi]{plot_phi()}},
+\code{\link[=print.phenology]{print.phenology()}},
+\code{\link[=print.phenologymap]{print.phenologymap()}},
+\code{\link[=print.phenologyout]{print.phenologyout()}},
+\code{\link[=remove_site]{remove_site()}},
 \code{\link{result_Gratiot}},
 \code{\link{result_Gratiot1}},
 \code{\link{result_Gratiot2}},
 \code{\link{result_Gratiot_Flat}},
-\code{\link{summary.phenology}()},
-\code{\link{summary.phenologymap}()},
-\code{\link{summary.phenologyout}()}
+\code{\link[=summary.phenology]{summary.phenology()}},
+\code{\link[=summary.phenologymap]{summary.phenologymap()}},
+\code{\link[=summary.phenologyout]{summary.phenologyout()}}
 }
 \author{
 Marc Girondot

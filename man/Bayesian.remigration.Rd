@@ -106,11 +106,11 @@ plot(rMCMC)
 }
 }
 \seealso{
-Other Model of Remigration Interval: 
-\code{\link{LnRI_norm}()},
-\code{\link{RI}()},
-\code{\link{RI2BP}()},
-\code{\link{plot.Remigration}()}
+Other Model of Remigration Interval:
+\code{\link[=LnRI_norm]{LnRI_norm()}},
+\code{\link[=RI]{RI()}},
+\code{\link[=RI2BP]{RI2BP()}},
+\code{\link[=plot.Remigration]{plot.Remigration()}}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

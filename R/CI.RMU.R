@@ -271,6 +271,16 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
   
   # Mettre aSD_ et SD_ en positif
   
+  if (FALSE) {
+    system.time({for(i in 1:1E5) any(grepl("^aSD_", colnames(df_random)))})
+    #user  system elapsed 
+    #10.887   0.093  11.061 
+    
+    system.time({for(i in 1:1E5) any(substr(colnames(df_random), 1, 4) == "aSD_")})
+    # user  system elapsed 
+    # 1.013   0.014   1.057 
+  }
+  
   if (any(substr(colnames(df_random), 1, 4) == "aSD_")) {
     df_random[, substr(colnames(df_random), 1, 4) == "aSD_"] <- ifelse(df_random[, substr(colnames(df_random), 1, 4) == "aSD_"] < 0, 0, df_random[, substr(colnames(df_random), 1, 4) == "aSD_"])
   }
@@ -309,7 +319,7 @@ CI.RMU <- function(result=stop("A result obtained from fitRMU is necessary"),
   for (rep in 1:replicate.CI_ec) {
     
     # D'abord je génère le modèle des proportions par site
-    x <- df_random[rep, ]
+    x <- unlist(df_random[rep, , drop=TRUE])
     
     
     La0 <- x[paste0("a0_", nabeach)]

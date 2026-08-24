@@ -28,7 +28,7 @@
 #' par <- structure(c(49.5658922243074, 808.136085362158, 106.283783786853, 
 #' 5.22150592456511, 8.00608716525864, 8.32718202233396, 150.612916258503, 
 #' 715.865805125223, 2242.06574225966, 119.212383120678, 10.1860735529433, 
-#' 7.14231725937626), .Names = c("D1_2", "D2D1_2", "D3D2_2", "A_2", 
+#' 7.14231725937626), names = c("D1_2", "D2D1_2", "D3D2_2", "A_2", 
 #' "B_2", "C_2", "D1_1", "D2D1_1", "D3D2_1", "A_1", "B_1", "C_1"))
 #' pfixed <- NULL
 #' # All the data are analyzed; the N20 are very long to compute
@@ -43,10 +43,10 @@
 #' o <- structure(list(par = structure(c(49.5658922243074, 808.136085362158, 
 #' 106.283783786853, 5.22150592456511, 8.00608716525864, 8.32718202233396, 
 #' 150.612916258503, 715.865805125223, 2242.06574225966, 119.212383120678, 
-#' 10.1860735529433, 7.14231725937626), .Names = c("D1_2", "D2D1_2", 
+#' 10.1860735529433, 7.14231725937626), names = c("D1_2", "D2D1_2", 
 #' "D3D2_2", "A_2", "B_2", "C_2", "D1_1", "D2D1_1", "D3D2_1", "A_1", 
 #' "B_1", "C_1")), value = 5841.93084262461, counts = structure(c(1093L, 
-#' NA), .Names = c("function", "gradient")), convergence = 0L, message = NULL, 
+#' NA), names = c("function", "gradient")), convergence = 0L, message = NULL, 
 #'     hessian = structure(c(0.0469808583147824, 0.000133240973809734, 
 #'     6.68478605803102e-05, -2.53581288234273, -1.25931342154217, 
 #'     -0.124650568977813, -2.46700437855907e-05, -1.11413100967184e-05, 
@@ -92,7 +92,7 @@
 #'     "D3D2_2", "A_2", "B_2", "C_2", "D1_1", "D2D1_1", "D3D2_1", 
 #'     "A_1", "B_1", "C_1"), c("D1_2", "D2D1_2", "D3D2_2", "A_2", 
 #'     "B_2", "C_2", "D1_1", "D2D1_1", "D3D2_1", "A_1", "B_1", "C_1"
-#'     )))), .Names = c("par", "value", "counts", "convergence", 
+#'     )))), names = c("par", "value", "counts", "convergence", 
 #' "message", "hessian"), class = c("list", "Tagloss"))
 #' par(mar=c(4, 4, 1, 1))
 #' plot(o, t=1:3000, model="2", scale=1000, ylim=c(0, 3), 
@@ -114,15 +114,15 @@
 #' data_f_21_fast <- subset(data_f_21, subset=(is.na(data_f_21$N20)))
 #' par <- structure(c(49.5658922243074, 5.22150592456511, 8.00608716525864, 
 #'                    50.612916258503, 6, 9), 
-#'                 .Names = c("D1_2",  "A_2", "B_2", 
+#'                 names = c("D1_2",  "A_2", "B_2", 
 #'                            "D1_1",  "A_1", "B_1"))
 #' pfixed <- c(D2D1_2=10000, D3D2_2=10000, C_2=0, D2D1_1=10000, D3D2_1=10000, C_1=0)
 #' o <- Tagloss_fit(data=data_f_21_fast, fitted.parameters=par, fixed.parameters=pfixed)
 #' # Here it is the result of the previous function
 #' o <- structure(list(par = structure(c(55.2184044121564, 5.2630294044259, 
 #' 8.13359029885985, 14269.9757684677, 21.8702023948044, 6.46586480967269
-#' ), .Names = c("D1_2", "A_2", "B_2", "D1_1", "A_1", "B_1")), value = 5853.64634357369, 
-#'     counts = structure(c(757L, NA), .Names = c("function", "gradient"
+#' ), names = c("D1_2", "A_2", "B_2", "D1_1", "A_1", "B_1")), value = 5853.64634357369, 
+#'     counts = structure(c(757L, NA), names = c("function", "gradient"
 #'     )), convergence = 0L, message = NULL, hessian = structure(c(0.036636720324168, 
 #'     -2.26385645873961, -1.2330608569755, -2.95585778076202e-06, 
 #'     -2.27373675443232e-07, -0.0399197688238928, -2.26385645873961, 
@@ -136,7 +136,7 @@
 #'     -0.0399197688238928, 1.69928603099834, 2.8553522497532, 0.00741636085876962, 
 #'     8.79936123965308e-05, 107.941018768543), .Dim = c(6L, 6L), .Dimnames = list(
 #'         c("D1_2", "A_2", "B_2", "D1_1", "A_1", "B_1"), c("D1_2", 
-#'         "A_2", "B_2", "D1_1", "A_1", "B_1")))), .Names = c("par", 
+#'         "A_2", "B_2", "D1_1", "A_1", "B_1")))), names = c("par", 
 #' "value", "counts", "convergence", "message", "hessian"), class = c("list", "Tagloss"))
 #' par(mar=c(4, 4, 1, 1))
 #' plot(o, t=1:3000, model="2", scale=1000, ylim=c(0, 3), 
@@ -157,22 +157,22 @@
 #' # Without the N20 the computing is much faster
 #' data_f_21_fast <- subset(data_f_21, subset=(is.na(data_f_21$N20)))
 #' par <- structure(c(45.8764973711504, 5.22489974562498, 8.07602162728874, 
-#' -0.865444694177429), .Names = c("D1_2", "A_2", "B_2", "delta"
+#' -0.865444694177429), names = c("D1_2", "A_2", "B_2", "delta"
 #' ))
 #' pfixed <- c(D2D1_2=10000, D3D2_2=10000, C_2=0)
 #' o <- Tagloss_fit(data=data_f_21_fast, fitted.parameters=par, fixed.parameters=pfixed)
 #' # Here it is the result of the previous function
 #' o <- structure(list(par = structure(c(45.9035484983855, 5.22576211343279, 
-#' 8.07585745169786, -0.865706100004634), .Names = c("D1_2", "A_2", 
+#' 8.07585745169786, -0.865706100004634), names = c("D1_2", "A_2", 
 #' "B_2", "delta")), value = 5913.716964613, counts = structure(c(91L, 
-#' NA), .Names = c("function", "gradient")), convergence = 0L, message = NULL, 
+#' NA), names = c("function", "gradient")), convergence = 0L, message = NULL, 
 #'     hessian = structure(c(0.0644593001197791, -2.88983483187621, 
 #'     -1.49161280660337, -0.0875163550517755, -2.88983483187621, 
 #'     221.02317802819, 45.3729608125286, 3.73816044429987, -1.49161280660337, 
 #'     45.3729608125286, 440.129730122862, 30.4781699469459, -0.0875163550517755, 
 #'     3.73816044429987, 30.4781699469459, 9.47964940678503), .Dim = c(4L, 
 #'     4L), .Dimnames = list(c("D1_2", "A_2", "B_2", "delta"), c("D1_2", 
-#'     "A_2", "B_2", "delta")))), .Names = c("par", "value", "counts", 
+#'     "A_2", "B_2", "delta")))), names = c("par", "value", "counts", 
 #' "convergence", "message", "hessian"), class = c("list", "Tagloss"))
 #' par(mar=c(4, 4, 1, 1))
 #' plot(o, t=1:3000, model="2", scale=1000, ylim=c(0, 3), 
@@ -185,7 +185,7 @@
 #' data_f_LR <- Tagloss_format(outLR, model="LR")
 #' par <- structure(c(72.0399239978454, 58.1034231071992, 645.068735669251, 
 #'                    5.10791337470247, 3538.47220045768, 7.83358940767931), 
-#'                 .Names = c("D1_L2", "D2D1_L2", "D3D2_L2", "A_L2", "B_L2", "C_L2"))
+#'                 names = c("D1_L2", "D2D1_L2", "D3D2_L2", "A_L2", "B_L2", "C_L2"))
 #' pfixed <- NULL
 #' # A progress bar can be shown when one core is used
 #' system.time(
@@ -231,7 +231,7 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
   # individuals <- data_f_LR
   # par <- structure(c(72.0399239978454, 58.1034231071992, 645.068735669251, 
   #                    5.10791337470247, 3538.47220045768, 7.83358940767931), 
-  #                 .Names = c("D1_L2", "D2D1_L2", "D3D2_L2", "A_L2", "B_L2", "C_L2"))
+  #                 names = c("D1_L2", "D2D1_L2", "D3D2_L2", "A_L2", "B_L2", "C_L2"))
   # fixed.parameters <- NULL
   # days.maximum=Tagloss_daymax(data_f_LR)
   # model_before=NULL
@@ -240,7 +240,7 @@ Tagloss_L <- function(individuals, par, days.maximum=NULL, fixed.parameters=NULL
   # mc.cores=1
   
   # days.maximum=NULL; fixed.parameters=NULL; model_before=NULL; model_after=NULL; names.par=NULL; groups=NULL; mc.cores=4; progressbar=FALSE
-  # par <- structure(c(45.1329605991567, 450.853116508527, -0.00575380257262254, 4.50622019412649, 26.1727077014068, 7.98271155711244), .Names = c("D1_2", "D2D1_2", "D3D2_2", "A_2", "B_2", "C_2"))
+  # par <- structure(c(45.1329605991567, 450.853116508527, -0.00575380257262254, 4.50622019412649, 26.1727077014068, 7.98271155711244), names = c("D1_2", "D2D1_2", "D3D2_2", "A_2", "B_2", "C_2"))
   # pfixed <- NULL
   # load(file=file.path("/Users/marcgirondot/Dropbox/Stephanie Kalberer", "dataOut", "m1_1.Rdata"))
   # data_f_21_fast <- m1_1$data

@@ -101,7 +101,7 @@ generateCF <- function(x=c(mu=4, sd=1,
   OTN <- x[substr(names(x), 1, 3) == "OTN"]
   lnm <- max(c(1, floor(as.numeric(gsub("[A-Za-z_]", "", names(x))))), 
              na.rm=TRUE)
-  if (identical(structure(numeric(0), .Names = character(0)), OTN)) {
+  if (identical(structure(numeric(0), names = character(0)), OTN)) {
     OTN <- c(OTN1=1)
   }
   

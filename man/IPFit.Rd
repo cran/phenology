@@ -340,11 +340,11 @@ plot(fMH, result="ECF")
 }
 }
 \seealso{
-Other Model of Internesting Period: 
-\code{\link{IPModel}()},
-\code{\link{IPPredict}()},
-\code{\link{plot.IP}()},
-\code{\link{summary.IP}()}
+Other Model of Internesting Period:
+\code{\link[=IPModel]{IPModel()}},
+\code{\link[=IPPredict]{IPPredict()}},
+\code{\link[=plot.IP]{plot.IP()}},
+\code{\link[=summary.IP]{summary.IP()}}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

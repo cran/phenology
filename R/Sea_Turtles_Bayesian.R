@@ -1,0 +1,770 @@
+#' Sea_Turtles_Bayesian is R code from Girondot, M., & Guillon, J.-M. (2026) Book chapter
+#' @title R code for Girondot, M., & Guillon, J.-M. (2026) Book chapter
+#' @author Marc Girondot
+#' @return The reference of the chapter
+#' @description Only the help of this function is usefull.
+#' @examples 
+#' \dontrun{
+#' suppressPackageStartupMessages(library(phenology))
+#' suppressPackageStartupMessages(library(openxlsx))
+#' 
+#' # Fit phenology of leatherbacks nesting in Ya:lima:po beach in 2002
+#' 
+#' Nests_Yal2002 <- structure(list(V1 = c("01/03/02", "02/03/02", "03/03/02", "04/03/02", 
+#' "05/03/02", "06/03/02", "07/03/02", "08/03/02", "09/03/02", "10/03/02", 
+#' "11/03/02", "12/03/02", "13/03/02", "14/03/02", "15/03/02", "16/03/02", 
+#' "17/03/02", "18/03/02", "19/03/02", "20/03/02", "21/03/02", "22/03/02", 
+#' "23/03/02", "24/03/02", "25/03/02", "26/03/02", "27/03/02", "28/03/02", 
+#' "29/03/02", "30/03/02", "31/03/02", "01/04/02", "02/04/02", "03/04/02", 
+#' "04/04/02", "05/04/02", "06/04/02", "07/04/02", "08/04/02", "09/04/02", 
+#' "10/04/02", "11/04/02", "12/04/02", "13/04/02", "14/04/02", "15/04/02", 
+#' "16/04/02", "17/04/02", "18/04/02", "19/04/02", "20/04/02", "21/04/02", 
+#' "22/04/02", "23/04/02", "24/04/02", "25/04/02", "26/04/02", "27/04/02", 
+#' "28/04/02", "29/04/02", "30/04/02", "01/05/02", "02/05/02", "03/05/02", 
+#' "04/05/02", "05/05/02", "06/05/02", "07/05/02", "08/05/02", "09/05/02", 
+#' "10/05/02", "11/05/02", "12/05/02", "13/05/02", "14/05/02", "15/05/02", 
+#' "16/05/02", "17/05/02", "18/05/02", "19/05/02", "20/05/02", "21/05/02", 
+#' "22/05/02", "23/05/02", "24/05/02", "25/05/02", "26/05/02", "27/05/02", 
+#' "28/05/02", "29/05/02", "30/05/02", "31/05/02", "01/06/02", "02/06/02", 
+#' "03/06/02", "04/06/02", "05/06/02", "06/06/02", "07/06/02", "08/06/02", 
+#' "09/06/02", "10/06/02", "11/06/02", "12/06/02", "13/06/02", "14/06/02", 
+#' "15/06/02", "16/06/02", "17/06/02", "18/06/02", "19/06/02", "20/06/02", 
+#' "21/06/02", "22/06/02", "23/06/02", "24/06/02", "25/06/02", "26/06/02", 
+#' "27/06/02", "28/06/02", "29/06/02", "30/06/02", "01/07/02", "02/07/02", 
+#' "03/07/02", "04/07/02", "05/07/02", "06/07/02", "07/07/02", "08/07/02", 
+#' "09/07/02", "10/07/02", "11/07/02", "12/07/02", "13/07/02", "14/07/02", 
+#' "15/07/02", "16/07/02", "17/07/02", "18/07/02", "19/07/02", "20/07/02", 
+#' "21/07/02", "22/07/02", "23/07/02", "24/07/02", "25/07/02", "26/07/02", 
+#' "27/07/02", "28/07/02", "29/07/02", "30/07/02", "31/07/02", "01/08/02", 
+#' "02/08/02", "03/08/02", "04/08/02", "05/08/02", "06/08/02", "07/08/02", 
+#' "08/08/02", "09/08/02", "10/08/02", "11/08/02", "12/08/02", "13/08/02", 
+#' "14/08/02", "15/08/02", "16/08/02", "17/08/02", "18/08/02", "19/08/02", 
+#' "20/08/02", "21/08/02", "22/08/02", "23/08/02", "24/08/02", "25/08/02", 
+#' "26/08/02", "27/08/02", "28/08/02", "29/08/02", "30/08/02", "31/08/02", 
+#' "01/09/02", "02/09/02", "03/09/02", "04/09/02", "05/09/02", "06/09/02", 
+#' "07/09/02", "08/09/02", "09/09/02", "10/09/02", "11/09/02", "12/09/02", 
+#' "13/09/02", "14/09/02", "15/09/02", "16/09/02", "17/09/02", "18/09/02", 
+#' "19/09/02", "20/09/02", "21/09/02", "22/09/02", "23/09/02", "24/09/02", 
+#' "25/09/02", "26/09/02", "27/09/02", "28/09/02", "29/09/02", "30/09/02", 
+#' "01/10/02", "02/10/02", "03/10/02", "04/10/02", "05/10/02", "06/10/02", 
+#' "07/10/02", "08/10/02", "09/10/02", "10/10/02", "11/10/02", "12/10/02", 
+#' "13/10/02", "14/10/02", "15/10/02", "16/10/02", "17/10/02", "18/10/02", 
+#' "19/10/02", "20/10/02", "21/10/02", "22/10/02", "23/10/02", "24/10/02", 
+#' "25/10/02", "26/10/02", "27/10/02", "28/10/02", "29/10/02", "30/10/02", 
+#' "31/10/02", "01/11/02", "02/11/02", "03/11/02", "04/11/02", "05/11/02", 
+#' "06/11/02", "07/11/02", "08/11/02", "09/11/02", "10/11/02", "11/11/02", 
+#' "12/11/02", "13/11/02", "14/11/02", "15/11/02", "16/11/02", "17/11/02", 
+#' "18/11/02", "19/11/02", "20/11/02", "21/11/02", "22/11/02"), 
+#'     V2 = c(3L, 2L, 1L, 1L, 6L, 2L, 2L, 2L, 1L, NA, 4L, NA, 1L, 
+#'     NA, 1L, NA, 3L, 1L, 4L, 4L, 2L, 3L, 1L, 7L, 7L, 5L, 4L, 7L, 
+#'     4L, 4L, NA, NA, NA, 10L, 21L, 9L, 9L, 17L, 11L, 16L, 18L, 
+#'     32L, NA, NA, 30L, NA, 40L, 20L, 16L, 18L, 39L, 44L, 32L, 
+#'     57L, 33L, 43L, 24L, 25L, 15L, 20L, 51L, 40L, 50L, 46L, 51L, 
+#'     35L, 14L, 50L, 56L, 68L, 69L, 72L, 66L, NA, NA, 63L, 34L, 
+#'     48L, 31L, NA, NA, NA, NA, 74L, 81L, 58L, NA, NA, 56L, 36L, 
+#'     37L, 44L, 61L, NA, NA, 35L, NA, 62L, 44L, 69L, NA, NA, NA, 
+#'     56L, 46L, 27L, 42L, 56L, NA, 69L, 59L, 55L, 35L, 47L, 38L, 
+#'     NA, 30L, 28L, 38L, 24L, NA, NA, NA, 27L, 35L, 30L, 36L, 41L, 
+#'     NA, NA, 27L, 21L, 27L, 15L, 22L, NA, 22L, 25L, 26L, 23L, 
+#'     23L, NA, 14L, NA, NA, NA, NA, NA, 10L, 10L, 7L, 4L, 4L, 5L, 
+#'     2L, NA, NA, 15L, 7L, 3L, NA, NA, NA, NA, 2L, NA, NA, NA, 
+#'     NA, NA, 3L, 3L, 2L, 4L, 1L, 0L, NA, NA, 4L, 3L, 3L, 0L, NA, 
+#'     NA, NA, 0L, 0L, 0L, 0L, 0L, NA, NA, 0L, 0L, 1L, 0L, 0L, NA, 
+#'     NA, 1L, NA, 2L, NA, 0L, NA, NA, 2L, NA, 0L, NA, 0L, NA, NA, 
+#'     0L, 1L, 0L, 1L, 1L, NA, NA, NA, 0L, 0L, 0L, 0L, 0L, NA, 3L, 
+#'     NA, 0L, NA, 0L, NA, NA, 0L, NA, 1L, NA, 0L, NA, NA, 1L, NA, 
+#'     NA, NA, NA, NA, NA, 0L, NA, 1L, NA, NA, NA, NA, NA, 1L, 1L, 
+#'     0L, 0L, NA, NA, NA, NA, NA, NA, 1L)), class = "data.frame", row.names = c(NA, 
+#' -267L))
+#' 
+#' Nests_Yal2002_f <- add_phenology(Nests_Yal2002, month_ref = 1, format = "%d/%m/%y")
+#' 
+#' pfixed <- c(Flat=0)
+#' parg <- par_init(Nests_Yal2002_f, fixed.parameters=pfixed)
+#' parg <- MinBMinE_to_Min(parg)
+#' 
+#' result_Nests_Yal2002_f <- fit_phenology(data = Nests_Yal2002_f, fitted.parameters = parg, 
+#'                                         fixed.parameters = pfixed, 
+#'                                         control = list(trace = 1, REPORT = 1, maxit = 100))
+#' 
+#' Priors <- phenology_MHmcmc_p(result_Nests_Yal2002_f, accept = TRUE)
+#' 
+#' result_Nests_Yal2002_mcmc <- phenology_MHmcmc(result_Nests_Yal2002_f, n.iter = 20000, 
+#'                               adaptive = TRUE, parametersMCMC = Priors, trace = 100)
+#' 
+#' # Plot the phenology of leatherbacks nesting in Ya:lima:po in 2002
+#' 
+#' par(mar=c(4, 4, 1, 1))
+#' a <- plot(result_Nests_Yal2002_f, resultmcmc = result_Nests_Yal2002_mcmc, 
+#'           plot.objects = c("observations", "MCMC.SD", "MCMC.quantiles"), 
+#'           main="", ylim=c(0, 100), las=1)
+#' 
+#' totalY2002 <- a$details_mcmc$Site
+#' totalY2002 <- cbind(totalY2002, Date=totalY2002[, "Ordinal"]+as.Date("2002-01-01")) 
+#' 
+#' # Table of OCF and ECF for leatherbacks in Ya:lima:po 2002
+#' 
+#' ECFOCF_2002 <- TableECFOCF(MarineTurtles_2002)
+#' 
+#' dOCFECF <- c(OCF=sum(rowSums(ECFOCF_2002)*(0:15)), 
+#'              ECF=sum(colSums(ECFOCF_2002)*(0:15)))
+#' 
+#' date_monitored <- sort(unique(MarineTurtles_2002$Date))
+#' 
+#' # Different priors for capture probabilities
+#' 
+#' # How many days have been monitored during the nesting season
+#' s_season <- length(seq(from=as.Date("2002-03-01"), to=as.Date("2002-08-01"), by="1 days"))
+#' n_season <- length(unique(date_monitored))
+#' 
+#' # Using the summary of number of turtles
+#' n <- sum(totalY2002[match(date_monitored, totalY2002$Date), "50%"])
+#' s <- sum(totalY2002[which(totalY2002$Date == "2002-03-01"):
+#'                     which(totalY2002$Date == "2002-08-01"), "50%"])
+#' 
+#' n_low <- sum(totalY2002[match(date_monitored, totalY2002$Date), "2.5%"])
+#' s_low <- sum(totalY2002[which(totalY2002$Date == "2002-03-01"):
+#'                         which(totalY2002$Date == "2002-08-01"), "2.5%"])
+#' 
+#' n_high <- sum(totalY2002[match(date_monitored, totalY2002$Date), "97.5%"])
+#' s_high <- sum(totalY2002[which(totalY2002$Date == "2002-03-01"):
+#'                          which(totalY2002$Date == "2002-08-01"), "97.5%"])
+#' 
+#' variance_summary <- ((n_low/s_low-n_high/s_high)/(1.96*2))^2
+#' mean_summary <- n/s
+#' 
+#' # Using the posterior predictive distribution of number of turtles
+#' 
+#' dates <- seq(from=as.Date("2002-01-01"), to = as.Date("2002-12-31"), by="1 day")
+#' dates_season <- which(dates == "2002-03-01"):which(dates == "2002-08-01")
+#' dates_patrols <- match(date_monitored, dates)
+#' 
+#' p_sur_s <- NULL
+#' for (j in 1:nrow(result_Nests_Yal2002_mcmc$resultMCMC$`1`)) {
+#'   # The same but using all replicates
+#'   par <- c(result_Nests_Yal2002_mcmc$resultMCMC$`1`[j, ], 
+#'            result_Nests_Yal2002_f$fixed.parameters)
+#'   par <- getFromNamespace(".format_par", ns="phenology")(xpar=par, serie="Site")
+#'   countd <- getFromNamespace(".daily_count", ns="phenology")(d=0:364, xpar=par)
+#'   countd[Nests_Yal2002_f$Site$ordinal+1] <- Nests_Yal2002_f$Site$nombre
+#'   p_sur_s <- c(p_sur_s, sum(countd[dates_patrols])/sum(countd[dates_season]))
+#' }
+#' 
+#' quantile(p_sur_s, probs=c(0.025, 0.5, 0.975))
+#' variance_PPd <- var(p_sur_s)
+#' mean_PPd <- mean(p_sur_s)
+#' outbeta <- dbeta_new(x=0.5, mu=mean_PPd, v=variance_PPd)
+#' shape1 <- attributes(outbeta)$shape1
+#' shape2 <- attributes(outbeta)$shape2
+#' 
+#' # First estimate of capture probability
+#' 
+#' # Using a uniform betal prior
+#' 
+#' plot(x=seq(from=0, to=1, by=0.01), y=dbeta(x=seq(from=0, to=1, by=0.01), shape1=1, shape2=1), 
+#'      type="l", las=1, bty="n", ylab="Density", xlab="x")
+#' 
+#' Priors <- setPriors1(Name = "pa", 
+#'                      Parameters=c(shape1=1, shape2=1),
+#'                      SDProp = 0.01, 
+#'                      Density = "dbeta",
+#'                      Init = n_season/s_season, 
+#'                      Min=0, Max=1
+#' )
+#' 
+#' Lprob <- function(data, x) {
+#'   return(-dbinom(x= dOCFECF['OCF'], size= dOCFECF['ECF'], prob=x, log=TRUE))
+#' }
+#' 
+#' outmcmc <- MHalgoGen(parameters=Priors, data=data, likelihood=Lprob, n.adapt = 100)
+#' 
+#' plot(outmcmc, what = "markovchain", parameters = "pa", legend = "topleft")
+#' plot(outmcmc, what = "Lnl")
+#' plot(outmcmc, what = "posterior", parameters = "pa")
+#' as.parameters(outmcmc, index = "quantile")
+#' 
+#' getFromNamespace(".BinomialConfidence", ns="HelpersMG")(x=dOCFECF["OCF"], n=dOCFECF["ECF"], 
+#'                      method = "wilson")
+#' 
+#' layout(mat = matrix(1:2, ncol=2))
+#' par(mar=c(4, 4, 1, 1))
+#' plot(outmcmc, what = "markovchain", parameters = "pa", 
+#'      legend = c(x=ScalePreviousPlot(x=0.05, y=0.20)$x,
+#'                 y=ScalePreviousPlot(x=0.05, y=0.20)$y), 
+#'      ylim=c(0, 1))
+#' text(x=ScalePreviousPlot(x=0.05, y=0.95)$x, 
+#'      y=ScalePreviousPlot(x=0, y=0.9)$y, "A", cex=2)
+#' plot(outmcmc, what = "posterior", parameters = "pa", 
+#'      legend = c(x=ScalePreviousPlot(x=0.05, y=0.20)$x, 
+#'                 y=ScalePreviousPlot(x=0.05, y=0.20)$y), 
+#'      ylim=c(0, 20), xlim=c(0, 1), 
+#'      breaks = seq(from=0, to=1, by=0.01))
+#' text(x=ScalePreviousPlot(x=0.05, y=0.85)$x, y=ScalePreviousPlot(x=0, y=0.90)$y, "B", cex=2)
+#' 
+#' # Example with CF and pa being non identifiable
+#' 
+#' dOCFd <- rowSums(ECFOCF_2002)[-1]
+#' names(dOCFd) <- as.character(1:length(dOCFd))
+#' sum(dOCFd)
+#' LprobP <- function(data, x) return(-sum(dpois(x=as.numeric(rep(names(data), data)), 
+#'                     lambda=x["pa"]*x["CF"], log=TRUE)))
+#' 
+#' LprobP(data=dOCFd, x=c(pa=n/s, CF=3))
+#' 
+#' db <- dbeta_new(x=0.5, mu=mean_PPd, v=variance_PPd)
+#' shape1 <- attributes(db)$shape1
+#' shape2 <- attributes(db)$shape2
+#' 
+#' Priors <- setPriors1(Name = "pa", 
+#'                      Parameters=c(shape1=1, shape2=1),
+#'                      SDProp = 0.1, 
+#'                      Density = "dbeta",
+#'                      Init = n_season/s_season, 
+#'                      Min=0, Max=1
+#' )
+#' Priors <- Priors + setPriors1(Name="CF", Init = 3, 
+#'                               Parameters = c(mean=7, sd=3), 
+#'                               Min=1, Max=15, Density = "dnorm", 
+#'                               SDProp = 1)
+#' 
+#' outmcmc <- MHalgoGen(parameters=Priors, data=dOCFd, likelihood=LprobP, 
+#'                      n.iter = 500000, n.adapt = 50000, thin = 10, trace=1000)
+#' 
+#' plot(outmcmc, what = "markovchain", parameters = "pa", legend="bottomleft", ylim=c(0, 1))
+#' plot(outmcmc, what = "markovchain", parameters = "CF")
+#' 
+#' plot(outmcmc, what = "posterior", parameters = "pa")
+#' plot(outmcmc, what = "posterior", parameters = "CF")
+#' 
+#' plot(as.numeric(outmcmc$resultMCMC$`1`[, "pa"]), 
+#'      as.numeric(outmcmc$resultMCMC$`1`[, "CF"]), pch=".", cex=3, 
+#'      las=1, xlab="p", ylab="CF", bty="n", ylim=c(1, 15), xlim=c(0, 1), yaxt="n")
+#' axis(2, 1:15, las=1)
+#' cor(as.numeric(outmcmc$resultMCMC$`1`[, "pa"]), as.numeric(outmcmc$resultMCMC$`1`[, "CF"]))
+#' 
+#' plot(outmcmc, what = "Lnl")
+#' as.parameters(outmcmc, index = "quantile")
+#' 
+#' svg(filename = "Figure 2_b.svg", width = 12, height = 4)
+#' layout(mat = matrix(1:3, ncol=3))
+#' par(mar=c(4, 4, 1, 1))
+#' plot(outmcmc, what = "posterior", parameters = "pa", # legend="topright", 
+#'      legend = c(x=ScalePreviousPlot(x=0.75, y=0.95)$x, y=ScalePreviousPlot(x=0.75, y=0.95)$y), 
+#'      xlim=c(0, 1), 
+#'      breaks = seq(from=0, to=1, by=0.01))
+#' text(x=ScalePreviousPlot(x=0.05, y=0.95)$x, y=ScalePreviousPlot(x=0, y=1)$y, "A", cex=2)
+#' plot(outmcmc, what = "posterior", parameters = "CF",  
+#'      legend = c(x=ScalePreviousPlot(x=0.75, y=0.95)$x, y=ScalePreviousPlot(x=0.75, y=0.95)$y), 
+#'      breaks = seq(from=1, to=15, by=0.1), xlim=c(1, 15), xaxt="n", ylim=c(0, 0.2))
+#' axis(1, 1:15)
+#' text(x=ScalePreviousPlot(x=0.05, y=0.95)$x, y=ScalePreviousPlot(x=0, y=1)$y, "B", cex=2)
+#' plot(as.numeric(outmcmc$resultMCMC$`1`[, "pa"]), 
+#'      as.numeric(outmcmc$resultMCMC$`1`[, "CF"]), pch=".", cex=3, 
+#'      las=1, xlab="pa", ylab="CF", bty="n", ylim=c(1, 15), xlim=c(0, 1), yaxt="n")
+#' axis(2, 1:15, las=1)
+#' text(x=0.6, y=7, labels=paste0("r = ", 
+#'         specify_decimal(cor(as.numeric(outmcmc$resultMCMC$`1`[, "pa"]), 
+#'                         as.numeric(outmcmc$resultMCMC$`1`[, "CF"])), 2)))
+#' text(x=ScalePreviousPlot(x=0.05, y=0.95)$x, y=ScalePreviousPlot(x=0, y=1)$y, "C", cex=2)
+#' dev.off()
+#' 
+#' # Fit using a model of ECF OCF using p
+#' 
+#' # p is the product of capture probability, and the probability that females 
+#' # use that beach, p, or p1 and p2 - if px is high, females are resident and if it 
+#' # low, it is transient females.
+#' 
+#' ## One category of individuals
+#' 
+#' o_mu1p1_CFp <- fitCF(x = c(mu = 2.1653229641404539, 
+#'                            sd = 1.1465246643327098, 
+#'                            p = 0.25785366120357966), 
+#'                      fixed.parameters=NULL, 
+#'                      data=ECFOCF_2002, hessian = TRUE)
+#' 
+#' Priors <- fitCF_MHmcmc_p(result = o_mu1p1_CFp, density = "dunif", accept = TRUE)
+#' 
+#' outmcmc_mu1p1_CFp <- fitCF_MHmcmc(
+#'   result = o_mu1p1_CFp,
+#'   n.iter = 10000,
+#'   parametersMCMC = Priors,
+#'   n.chains = 1, WAIC = TRUE, 
+#'   n.adapt = 1000,
+#'   thin = 10, trace=1000, adaptive = TRUE
+#' )
+#' 
+#' ## Two categories of individuals
+#' 
+#' o_mu1p2 <- fitCF(x = c(mu = 5.3628701816871462, 
+#'                        sd = 0.39390555498088764, 
+#'                        p1 = 0.61159637544418755, 
+#'                        p2 = -2.4212753004659189, 
+#'                        OTN = 0.31898004668901009),
+#'                  data=ECFOCF_2002, hessian = TRUE)
+#' 
+#' plot(o_mu1p2, result="CF", las=1, bty="n")
+#' plot(o_mu1p2, result="prob")
+#' 
+#' Priors <- fitCF_MHmcmc_p(result = o_mu1p2, density = "dunif", accept = TRUE)
+#' 
+#' Priors["p1", c("Prior1", "Min")] <- 0
+#' Priors["p2", c("Prior2", "Max")] <- 0
+#' 
+#' outmcmc_mu1p2 <- fitCF_MHmcmc(
+#'   result = o_mu1p2,
+#'   n.iter = 10000,
+#'   parametersMCMC = Priors,
+#'   n.chains = 1, WAIC = TRUE, 
+#'   n.adapt = 1000,
+#'   thin = 10, trace=1000, adaptive = TRUE
+#' )
+#' 
+#' ## Compare both models
+#' 
+#' ### Using AICc
+#' 
+#' compare_AICc(Model_1_categories = o_mu1p1_CFp, 
+#'              Model_2_categories = o_mu1p2)
+#' 
+#' ### Using WAIC
+#' 
+#' library(loo)
+#' 
+#' Model_2_categories <- outmcmc_mu1p2$WAIC
+#' Model_1_categories <- outmcmc_mu1p1_CFp$WAIC
+#' 
+#' Model_2_categories <- Model_2_categories[, !apply(Model_2_categories, 
+#'                         MARGIN = 2, FUN = function(x) all(x == 0))]
+#' Model_1_categories <- Model_1_categories[, !apply(Model_1_categories, 
+#'                         MARGIN = 2, FUN = function(x) all(x == 0))]
+#' 
+#' # apply(WAIC1, MARGIN = 2, FUN = function(x) length(unique(x))==1)
+#' 
+#' Model_1_categories_loo <- loo::loo(Model_1_categories)
+#' Model_2_categories_loo <- loo::loo(Model_2_categories)
+#' 
+#' print(loo_compare(list(Model_1_categories=Model_1_categories_loo, 
+#'                        Model_2_categories=Model_2_categories_loo)), simplify = FALSE)
+#' 
+#' ELPDweight(list(Model_1_categories=Model_1_categories_loo, 
+#'                 Model_2_categories=Model_2_categories_loo))
+#' 
+#' # Plot Results of selected model
+#' 
+#' plot(outmcmc_mu1p2, what = "markovchain", parameters = "p1")
+#' plot(outmcmc_mu1p2, what = "markovchain", parameters = "p2")
+#' plot(outmcmc_mu1p2, what = "markovchain", parameters = "OTN")
+#' plot(outmcmc_mu1p2, what = "markovchain", parameters = "mu")
+#' plot(outmcmc_mu1p2, what = "markovchain", parameters = "sd")
+#' 
+#' layout(mat = matrix(1:2, ncol=2))
+#' par(mar=c(4, 4, 1, 1))
+#' plot(o_mu1p2, resultMCMC = outmcmc_mu1p2, result = "cf", main="")
+#' text(x=ScalePreviousPlot(x=0.05, y=0.95)$x, y=ScalePreviousPlot(x=0, y=1)$y, "A", cex=2)
+#' plot(x=o_mu1p2, resultMCMC = outmcmc_mu1p2, result = "probabilities", 
+#'      main="", parameters=c("p1", "p2", "OTN1", "OTN2"), 
+#'      legend=c("p1", "p2", "Prob. Cat 1", "Prob. Cat 2"), xlab="Probabilities")
+#' text(x=ScalePreviousPlot(x=0.05, y=0.95)$x, y=ScalePreviousPlot(x=0, y=1)$y, "B", cex=2)
+#' 
+#' # Fit using a model of ECF OCF using p and a
+#' 
+#' # a is capture probability, and p is the probability that females 
+#' # use that beach, p, or p1 and p2 - if px is high, females are resident and if it 
+#' # low, it is transient females.
+#' # a is set up from the fraction of nesting turtles known by phenology 
+#' # that nest during dates with patrols
+#' 
+#' ## One category of individuals
+#' 
+#' o_mu1p1_a <- fitCF(x = c(mu = 2.1653229641404539, 
+#'                          sd = 1.1465246643327098, 
+#'                          p = 0.25785366120357966), 
+#'                    fixed.parameters=c(a = -logit(mean_PPd)), 
+#'                    data=ECFOCF_2002, hessian = FALSE)
+#' 
+#' Priors <- fitCF_MHmcmc_p(result = o_mu1p1_a, density = "dunif", accept = TRUE)
+#' 
+#' outmcmc_mu1p1_a <- fitCF_MHmcmc(
+#'   result = o_mu1p1_a,
+#'   n.iter = 10000,
+#'   parametersMCMC = Priors,
+#'   n.chains = 1, WAIC = TRUE, 
+#'   n.adapt = 1000,
+#'   thin = 10, trace=1000, adaptive = TRUE)
+#' 
+#' ## Two categories of individuals
+#' 
+#' o_mu1p2_a <- fitCF(x = c('mu' = 5.3628715952689952, 
+#'                          'sd' = 0.39390925142405148, 
+#'                          'p1' = 0.61159618691939643, 
+#'                          'p2' = -2.4212738230438715, 
+#'                          'OTN' = 0.318979364987661),
+#'                    fixed.parameters = c(a = -logit(mean_PPd)), 
+#'                    data=ECFOCF_2002, hessian = FALSE, 
+#'                    method = "Nelder-Mead", 
+#'                    itnmax=500, 
+#'                    control = list(trace = 1, REPORT = 100, maxit = 500))
+#' 
+#' plot(o_mu1p2_a, result="CF", las=1, bty="n")
+#' plot(o_mu1p2_a, result="probabilities")
+#' 
+#' Priors <- fitCF_MHmcmc_p(result = o_mu1p2_a, 
+#'                          density = "dunif", 
+#'                          accept = TRUE)
+#' 
+#' # Ensure that Category 1 and 2 will not change of definition during fit
+#' Priors["p1", c("Prior1", "Min")] <- 0
+#' Priors["p2", c("Prior2", "Max")] <- 0
+#' 
+#' outmcmc_mu1p2_a <- fitCF_MHmcmc(
+#'   result = o_mu1p2_a,
+#'   n.iter = 10000,
+#'   parametersMCMC = Priors,
+#'   n.chains = 1, WAIC = TRUE, 
+#'   n.adapt = 1000,
+#'   thin = 10, trace=1000, adaptive = TRUE)
+#' 
+#' ## Compare both models
+#' 
+#' ### Using AICc
+#' 
+#' compare_AICc(Model_1_categories = o_mu1p1_CFp, 
+#'              Model_2_categories = o_mu1p2)
+#' 
+#' ### Using ELPD
+#' 
+#' library(loo)
+#' 
+#' Model_2_categories <- outmcmc_mu1p2_a$WAIC
+#' Model_1_categories <- outmcmc_mu1p1_a$WAIC
+#' 
+#' Model_2_categories <- Model_2_categories[, !apply(Model_2_categories, 
+#'                     MARGIN = 2, FUN = function(x) all(x == 0))]
+#' Model_1_categories <- Model_1_categories[, !apply(Model_1_categories, 
+#'                     MARGIN = 2, FUN = function(x) all(x == 0))]
+#' 
+#' # apply(WAIC1, MARGIN = 2, FUN = function(x) length(unique(x))==1)
+#' 
+#' Model_1_categories_loo <- loo::loo(Model_1_categories)
+#' Model_2_categories_loo <- loo::loo(Model_2_categories)
+#' 
+#' print(loo_compare(list(Model_1_categories=Model_1_categories_loo, 
+#'                        Model_2_categories=Model_2_categories_loo)), simplify = FALSE)
+#' 
+#' ELPDweight(list(Model_1_categories=Model_1_categories_loo, 
+#'                 Model_2_categories=Model_2_categories_loo))
+#' 
+#' MaxNests <- 15
+#' 
+#' plot(outmcmc_mu1p2_a, what = "markovchain", parameters = "p1")
+#' plot(outmcmc_mu1p2_a, what = "markovchain", parameters = "p2")
+#' plot(outmcmc_mu1p2_a, what = "markovchain", parameters = "OTN")
+#' plot(outmcmc_mu1p2_a, what = "markovchain", parameters = "mu")
+#' plot(outmcmc_mu1p2_a, what = "markovchain", parameters = "sd")
+#' 
+#' plot(o_mu1p2_a, resultMCMC = outmcmc_mu1p2_a, result="CF", las=1, bty="n", main="")
+#' plot(o_mu1p2_a, resultMCMC = outmcmc_mu1p2_a, result="probabilities", 
+#'            parameters = c("p1", "p2", "OTN1", "OTN2"), 
+#'            legend = c("p1", "p2", "Prob.\nCat 1", "Prob.\nCat 2"), 
+#'            main="", xlab="Probabilities")
+#' 
+#' # Je dois sortir la distribution du CF moyen
+#' 
+#' x <- 1:MaxNests
+#' y_tot <- NULL
+#' for (j in 1:nrow(outmcmc_mu1p2_a$resultMCMC$`1`)) {
+#'   mu <- outmcmc_mu1p2_a$resultMCMC$`1`[j, "mu"]
+#'   sd <- outmcmc_mu1p2_a$resultMCMC$`1`[j, "sd"]
+#'   p1 <- invlogit(-outmcmc_mu1p2_a$resultMCMC$`1`[j, "p1"])
+#'   p2 <- invlogit(-outmcmc_mu1p2_a$resultMCMC$`1`[j, "p2"])
+#'   OTN <- invlogit(-outmcmc_mu1p2_a$resultMCMC$`1`[j, "OTN"])
+#'   
+#'   y <- dlnorm(x, meanlog=log(abs(mu)), sdlog=abs(sd))
+#'   y <- sum((y / sum(y)) * x)
+#'   y <- y * OTN * p1 + y * (1-OTN) * p2 
+#'   y_tot <- c(y_tot, y)
+#' }
+#' 
+#' # Nombre moyen de nids par femelle
+#' quantile(y_tot)
+#' 
+#' load(file=file.path("dataOut", "result_Nests_Yal2002_f.Rdata"))
+#' load(file=file.path("dataOut", "result_Nests_Yal2002_mcmc.Rdata"))
+#' 
+#' dates <- seq(from=as.Date("2002-01-01"), to = as.Date("2002-12-31"), by="1 day")
+#' dates_season <- which(dates == "2002-03-01"):which(dates == "2002-08-01")
+#' 
+#' NbNests_2002 <- NULL
+#' for (j in 1:nrow(result_Nests_Yal2002_mcmc$resultMCMC$`1`)) {
+#'   # The same but using all replicates
+#'   par <- c(result_Nests_Yal2002_mcmc$resultMCMC$`1`[j, ], 
+#'            result_Nests_Yal2002_f$fixed.parameters)
+#'   par <- getFromNamespace(".format_par", ns="phenology")(xpar=par, serie="Site")
+#'   countd <- getFromNamespace(".daily_count", ns="phenology")(d=0:364, xpar=par)
+#'   countd[result_Nests_Yal2002_f$data$Site$ordinal] <- result_Nests_Yal2002_f$data$Site$nombre
+#'   NbNests_2002 <- c(NbNests_2002, sum(countd[dates_season]))
+#' }
+#' 
+#' N2002 <- NbNests_2002[seq(from=1, to=20000, length.out=1000)]/y_tot
+#' quantile(N2002, probs=c(0.025, 0.5, 0.975))
+#' 
+#' N2002_residente <- N2002*invlogit(-outmcmc_mu1p2_a$resultMCMC$`1`[, "OTN"])
+#' quantile(N2002_residente, probs=c(0.025, 0.5, 0.975))
+#' 
+#' save(N2002_residente, file=file.path("dataOut", "N2002_residente.Rdata"))
+#' 
+#' N2002_gamma <- fitdist(N2002, distr = "gamma")
+#' N2002_lnorm <- fitdist(N2002, distr = "lnorm")
+#' 
+#' AIC(N2002_gamma)
+#' AIC(N2002_lnorm)
+#' 
+#' plot(N2002_lnorm)
+#' 
+#' hist(N2002, xlab=c(950, 1350), freq=FALSE)
+#' 
+#' lines(x = seq(from=950, to=1350, by=1), dlnorm(x=seq(from=950, to=1350, by=1), 
+#'       meanlog = N2002_lnorm$estimate["meanlog"], sdlog=N2002_lnorm$estimate["sdlog"]), col="red")
+#' 
+#' hist(N2002_residente, freq = FALSE)
+#' 
+#' layout(mat = matrix(1:4, ncol=2))
+#' par(mar=c(4, 4, 1, 1))
+#' plot(o_mu1p2_a, resultMCMC = outmcmc_mu1p2_a, result="CF", las=1, bty="n", main="")
+#' text(x=ScalePreviousPlot(x=0.05, y=0.95)$x, y=ScalePreviousPlot(x=0, y=1)$y, "A", cex=2)
+#' plot(o_mu1p2_a, resultMCMC = outmcmc_mu1p2_a, result="probabilities", 
+#'      parameters = c("p1", "p2", "OTN1", "OTN2"), 
+#'      legend = c("p1", "p2", "Proportion\nCat 1", "Proportion\nCat 2"), main="", 
+#'      xlab="", ylab="Probability")
+#' text(x=ScalePreviousPlot(x=0.05, y=0.95)$x, y=ScalePreviousPlot(x=0, y=1)$y, "B", cex=2)
+#' par(mar=c(4, 4, 1, 1))
+#' plot(1:1000, NbNests[seq(from=1, to=20000, length.out=1000)]/y_tot, type="l", las=1, 
+#'      bty="n", ylim=c(0, 1400), yaxt="n", xlab="MCMC iterations", ylab="Number of females")
+#' lines(x = 1:1000, y=N2002_residente, col="blue")
+#' text(x=800, y=300, labels="Resident", col="blue")
+#' text(x=800, y=900, labels="Total", col="black")
+#' axis(2, at=seq(from=0, to=1400, by=100), las=1)
+#' text(x=ScalePreviousPlot(x=0.05, y=0.95)$x, y=ScalePreviousPlot(x=0, y=1)$y, "C", cex=2)
+#' par(mar=c(4, 5, 1, 1))
+#' hist(N2002, xlim=c(400, 1400), las=1, 
+#'      freq = FALSE, main="", xaxt="n", xlab="Number of females", ylab="", ylim=c(0, 0.025), 
+#'      breaks = seq(from=400, to=1400, by=10))
+#' 
+#' N2002_lnorm <- fitdist(N2002, distr = "lnorm")
+#' lines(x = seq(from=950, to=1350, by=1), dlnorm(x=seq(from=950, to=1350, by=1), 
+#'       meanlog = N2002_lnorm$estimate["meanlog"], sdlog=N2002_lnorm$estimate["sdlog"]), 
+#'       col="black", lwd=2)
+#' 
+#' text(x=1150, y=0.0125, labels="Total")
+#' 
+#' par(new=TRUE)
+#' hist(N2002_residente, xlim=c(400, 1400), axes = FALSE, 
+#'      freq = FALSE, main="", xaxt="n", xlab="", ylab="", ylim=c(0, 0.025), 
+#'      breaks = seq(from=400, to=1400, by=10), col="blue")
+#' text(x=500, y=0.0225, labels="Resident", col="blue")
+#' 
+#' N2002_residente_lnorm <- fitdist(N2002_residente, distr = "lnorm")
+#' lines(x = seq(from=400, to=800, by=1), dlnorm(x=seq(from=400, to=800, by=1), 
+#'       meanlog = N2002_residente_lnorm$estimate["meanlog"], 
+#'       sdlog=N2002_residente_lnorm$estimate["sdlog"]), lwd=2, col="blue")
+#' 
+#' 
+#' mtext("Density", side=2, line=4)
+#' axis(1, at=seq(from=400, to=1400, by=50))
+#' text(x=ScalePreviousPlot(x=0.05, y=0.95)$x, y=ScalePreviousPlot(x=0, y=1)$y, "D", cex=2)
+#' 
+#' # Example to analyze a trend
+#' 
+#' # Generate timeseries of nest counts
+#' 
+#' library(nlme)
+#' 
+#' set.seed(1)
+#' years <- (1996:2100)
+#' data <- data.frame(Year=years, Number=NA, time=1:length(years), ID=factor(1))
+#' rownames(data) <- as.character(years)
+#' 
+#' data[1:4, "Number"] <- abs(rnorm(4, mean=1000, sd=100))
+#' 
+#' for (i in 5:nrow(data))
+#'   data[i, "Number"] <- data[i-1, "Number"]*invlogit(rnorm(1, mean=logit(0.1), sd=0.1))+
+#'                        data[i-2, "Number"]*invlogit(rnorm(1, mean=logit(0.5), sd=0.5))+
+#'                        data[i-3, "Number"]*invlogit(rnorm(1, mean=logit(0.4), sd=0.3))
+#' 
+#' data <- cbind(data, meanlog=log(data$Number), sd=rlnorm(nrow(data), mean=log(200), sd=0.2), n=1000)
+#' 
+#' plot(data$Year, data$Number)
+#' 
+#' years <- 2020:2069
+#' 
+#' data_matrix <- matrix(data = NA, ncol=length(years), nrow=1000)
+#' colnames(data_matrix) <- as.character(years)
+#' 
+#' for (y in as.character(years)) {
+#'   data_matrix[, y] <- abs(rnorm(1000, mean = data[y, "Number"], sd = data[y, "sd"]))
+#' }
+#' 
+#' data <- data[as.character(years), ]
+#' plot(data$Year, data$Number, ylim=c(0, 2000), las=1, bty="n")
+#' 
+#' ## Method 1
+#' 
+#' phis <- NULL
+#' predict_r <- matrix(data = NA, nrow = 1000, ncol=length(years))
+#' 
+#' for (i in 1:nrow(data_matrix)) {
+#'   print(i)
+#'   data_matrix_r <- as.data.frame(data_matrix[i, ])
+#'   colnames(data_matrix_r) <- "Number"
+#'   data_matrix_r <- cbind(Year=as.numeric(rownames(data_matrix_r)), data_matrix_r, 
+#'           time=1:nrow(data_matrix_r), ID=rep(factor(1), nrow(data_matrix_r)))
+#'   
+#'   model_ar0ma1 <- lme(
+#'     fixed = Number ~ poly(Year, 2),
+#'     random = ~ 1 | ID,
+#'     correlation = corAR1(value=0.5, form = ~ time | ID),
+#'     data = data_matrix_r,
+#'     method = "ML"
+#'   )
+#'   phis <- c(phis, coef(model_ar0ma1$modelStruct$corStruct, unconstrained = FALSE))
+#'   predict_r[i, ] <- model_ar0ma1$fitted[, "fixed"]
+#' }
+#' 
+#' hist(phis)
+#' 
+#' plot(x=0, y=0, xlim=range(as.numeric(colnames(data_matrix))), ylim=c(0, 2000), 
+#'      type="n", las=1, bty="n", xlab="Years", ylab="Posterior distribution for N", xaxt="n")
+#' axis(1, years)
+#' 
+#' for (i in 1:nrow(predict_r))
+#'   lines(as.numeric(years), predict_r[i, ], col=rgb(red=0.90, blue=0.90, green = 0.90, alpha = 0.1))
+#' 
+#' for (y in as.character(years)) {
+#'   points(rep(as.numeric(y), 1000), data_matrix[, y], pch=".")
+#' }
+#' 
+#' text(x=2020, y=500, paste0("Increasing probability is ", 
+#'                             specify_decimal(100*sum(predict_r[, 1] < predict_r[, 20]) / 
+#'                             nrow(predict_r), 2), "%"), pos=4)
+#' text(x=2020, y=300, paste0("Decreasing probability is ", 
+#'                             specify_decimal(100-100*sum(predict_r[, 1] < predict_r[, 20]) / 
+#'                             nrow(predict_r), 2), "%"), pos=4)
+#' 
+#' 
+#' predict_rq <- apply(predict_r, MARGIN = 2, FUN=function(x) quantile(x, probs=c(0.025, 0.5, 0.975)))
+#' lines(years, predict_rq["50%", ], lty=1, col="red", lwd=2)
+#' lines(years, predict_rq["2.5%", ], lty=2, col="red", lwd=2)
+#' lines(years, predict_rq["97.5%", ], lty=2, col="red", lwd=2)
+#' 
+#' ## Method 2
+#' 
+#' i <- 1
+#' data_matrix_r <- as.data.frame(data_matrix[i, ])
+#' colnames(data_matrix_r) <- "Number"
+#' data_matrix_r_tot <- cbind(Year=as.numeric(rownames(data_matrix_r)), 
+#'                      data_matrix_r, time=1:nrow(data_matrix_r), 
+#'                      ID=rep(factor(1), nrow(data_matrix_r)))
+#' 
+#' for (i in 2:nrow(predict_r)) {
+#'   data_matrix_r <- as.data.frame(data_matrix[i, ])
+#' colnames(data_matrix_r) <- "Number"
+#' data_matrix_r_tot <- rbind(data_matrix_r_tot, cbind(Year=as.numeric(rownames(data_matrix_r)), 
+#'                     data_matrix_r, time=1:nrow(data_matrix_r), ID=rep(factor(i), 
+#'                     nrow(data_matrix_r))))
+#' 
+#' }
+#' 
+#' library(brms)
+#' 
+#' model_ar1 <- brm(
+#'   bf(
+#'     Number | se(sd / sqrt(n), sigma = TRUE) ~ poly(time, 2),
+#'     autocor = cor_ar(~ time, p = 1, cov = TRUE)
+#'   ),
+#'   data = data,
+#'   family = gaussian(),
+#'   chains = 4,
+#'   cores = 4
+#' )
+#' 
+#' 
+#' summary(model_ar1)
+#' plot(model_ar1)
+#' 
+#' k <- rstantools::posterior_predict(
+#'   object=model_ar1)
+#' 
+#' layout(matrix(1:2, ncol=1))
+#' 
+#' par(mar=c(4, 4, 1, 1))
+#' plot(x=0, y=0, xlim=range(as.numeric(colnames(data_matrix))), ylim=c(0, 2000), 
+#'      type="n", las=1, bty="n", xlab="Years", 
+#'      ylab="Posterior distribution for N", xaxt="n")
+#' axis(1, years)
+#' 
+#' for (y in as.character(years)) {
+#'   points(rep(as.numeric(y), 1000), data_matrix[, y], pch=19, 
+#'   col=rgb(red = 0, blue=0, green = 0, alpha = 0.005))
+#' }
+#' 
+#' text(x=2020, y=300, paste0("Increasing probability is ", 
+#'             specify_decimal(100*sum(predict_r[, 1] < predict_r[, ncol(predict_r)]) / 
+#'             nrow(predict_r), 2), "%"), pos=4)
+#' text(x=2020, y=100, paste0("Decreasing probability is ", 
+#'             specify_decimal(100-100*sum(predict_r[, 1] < predict_r[, ncol(predict_r)]) / 
+#'             nrow(predict_r), 2), "%"), pos=4)
+#' 
+#' 
+#' predict_rq <- apply(predict_r, MARGIN = 2, FUN=function(x) 
+#'               quantile(x, probs=c(0.025, 0.5, 0.975)))
+#' lines(years, predict_rq["50%", ], lty=1, col="red", lwd=2)
+#' lines(years, predict_rq["2.5%", ], lty=2, col="red", lwd=2)
+#' lines(years, predict_rq["97.5%", ], lty=2, col="red", lwd=2)
+#' 
+#' par(xpd=TRUE)
+#' text(x=ScalePreviousPlot(x=0, y=1)$x, y=ScalePreviousPlot(x=0, y=1)$y, 
+#' labels = "A", cex=2, pos=4)
+#' 
+#' par(mar=c(4, 4, 1, 1))
+#' plot_errbar(x=data$Year, y=data$Number, 
+#'             errbar.y = 1.96*data$sd, 
+#'             errbar.tick = 1/100, 
+#'             xlim=range(as.numeric(colnames(data_matrix))), ylim=c(0, 2000), 
+#'             type="n", las=1, bty="n", xlab="Years", 
+#'             ylab="Posterior distribution for N", xaxt="n")
+#' axis(1, years)
+#' 
+#' for (y in as.character(years)) {
+#'   points(rep(as.numeric(y), 1000), data_matrix[, y], pch=".")
+#' }
+#' 
+#' 
+#' 
+#' kq <- apply(k, MARGIN = 2, FUN=function(x) quantile(x, probs=c(0.025, 0.5, 0.975)))
+#' lines(years, kq["50%", ], lty=1, col="red", lwd=2)
+#' lines(years, kq["2.5%", ], lty=2, col="red", lwd=2)
+#' lines(years, kq["97.5%", ], lty=2, col="red", lwd=2)
+#' 
+#' text(x=2020, y=300, paste0("Increasing probability is ", 
+#'                             specify_decimal(100*sum(k[, 1] < k[, ncol(k)]) / 
+#'                             nrow(k), 2), "%"), pos=4)
+#' text(x=2020, y=100, paste0("Decreasing probability is ", 
+#'                             specify_decimal(100-100*sum(k[, 1] < k[, ncol(k)]) / 
+#'                             nrow(k), 2), "%"), pos=4)
+#' 
+#' 
+#' par(xpd=TRUE)
+#' text(x=ScalePreviousPlot(x=0, y=1)$x, y=ScalePreviousPlot(x=0, y=1)$y, 
+#'       labels = "B", cex=2, pos=4)
+#' 
+#' #' }
+#' @export
+
+
+Sea_Turtles_Bayesian <-
+  function() {
+    
+    reference <- "Girondot, M., & Guillon, J.-M. (2026). Opening the Bayesian black box for marine turtle population size and trend estimates. In A. Phillott, A. F. Rees, & M. M. P. B. Fuentes (Eds.), Research and Management Techniques for the Conservation of Sea Turtles (pp. In press). IUCN SSC Marine Turtle Specialist Group. In press"
+    
+    return(reference)
+  }

@@ -4,9 +4,9 @@
 #' @return Return a matrix of class TableECFOCF.\cr
 #' @param mu The average of lognormal for clutch frequency.
 #' @param sd The sd parameter of lognormal for clutch frequency.
-#' @param p The capture probability for an individual nesting event. As a logit
+#' @param p The capture probability for an individual nesting event. As a logit.
 #' @param a The common capture probability. As a probability
-#' @param OTN The relative probability of categories
+#' @param OTN The relative probability of categories.
 #' @param MaxNests Maximum number of nests by a female.
 #' @param MeanDaysBetween2Nests Average number of days between two nests.
 #' @param mu_season The average of ordinal day for beginning of nesting season.
@@ -15,7 +15,8 @@
 #' @param parallel If TRUE parallel computing is used.
 #' @description This function calculates a table of probabilities of ECF and OCF.\cr
 #' If p is lower or higher than 1E-100 or 1-1E-100, it is changed to 1E-100 and 1-(1E-100) respectively.\cr
-#' Names for p vector elements should be p, or px (with x=1:categories), or px.period.\cr
+#' Names for p vector elements should be p, px, or px.period (with x=1:categories).\cr
+#' Take care, p are logit, a and OTN are probabilities.\cr
 #' If mu_season and sd_season are equal to NA, the model is not temporalized.\cr
 #' If mu_season and sd_season are not NA, the model returns a 3D-table OCFECF.\cr
 #' @family Model of Clutch Frequency
@@ -37,7 +38,7 @@
 #' modelECFOCF <- ECFOCF_full(mu=c(mu1=5.58013243236187), 
 #'                     sd=c(sd1=1.225581130238), 
 #'                     a=c(a1=1), 
-#'                     p=c(p1=invlogit(1.3578137414575)), 
+#'                     p=c(p1=1.3578137414575), 
 #'                     MaxNests=15)
 #' plot(modelECFOCF)
 #' }
@@ -110,15 +111,15 @@ ECFOCF_full <- function(mu, sd = NA, p, a=NULL, MaxNests=15,
     # if (is.na(pcommon)) pcommon <- NA
     if (dim_OCFECF[3]>1) {
       # p_period <- structure(rep(pcommon, dim(data)[3]-MaxNests),
-      #                     .Names=paste0("p", as.character(j), ".",
+      #                     names=paste0("p", as.character(j), ".",
       #                                   formatC(1:(dim(data)[3]-MaxNests), width=2, flag="0")))
       p_period <- structure(rep(pcommon, dim_OCFECF[3]),
-                            .Names=paste0("p", as.character(j), ".",
+                            names=paste0("p", as.character(j), ".",
                                           formatC(1:(dim_OCFECF[3]), width=2, flag="0")))
       
     } else {
       p_period <- structure(pcommon,
-                            .Names=paste0("p", as.character(j)))
+                            names=paste0("p", as.character(j)))
     }
     
     m1 <- match(names(p_ec), names(p_period))

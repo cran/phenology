@@ -8,6 +8,7 @@
 #' @param n.chains Number of replicates
 #' @param n.adapt Number of iterations before to store outputs
 #' @param thin Number of iterations between each stored output
+#' @param WAIC Should WAIC information be saved?
 #' @param adaptive Should an adaptive process for SDProp be used
 #' @param adaptive.lag  Lag to analyze the SDProp value in an adaptive content
 #' @param adaptive.fun Function used to change the SDProp
@@ -17,7 +18,7 @@
 #' @param intermediate Period for saving intermediate result, NULL for no save
 #' @param previous Previous result to be continued. Can be the filename in which intermediate results are saved.
 #' @family Model of Clutch Frequency
-#' @description Run the Metropolis-Hastings algorithm for RMU.data.\cr
+#' @description Run the Metropolis-Hastings algorithm for ECFOCF data.\cr
 #' The number of iterations is n.iter+n.adapt+1 because the initial likelihood is also displayed.\cr
 #' I recommend thin=1 because the method to estimate SE uses resampling.\cr
 #' As initial point is maximum likelihood, n.adapt = 0 is a good solution.\cr
@@ -40,7 +41,7 @@
 #' pMCMC <- fitCF_MHmcmc_p(result=o_mu1p1_CFp, accept=TRUE)
 #' fitCF_MCMC <- fitCF_MHmcmc(result = o_mu1p1_CFp, n.iter = 1000, 
 #'                            parametersMCMC = pMCMC, n.chains = 1, n.adapt = 0, 
-#'                            adaptive=TRUE, 
+#'                            adaptive=TRUE, WAIC = TRUE, 
 #'                            thin = 1, trace = TRUE)
 #'                            
 #' plot(fitCF_MCMC, parameters="mu")
@@ -58,6 +59,7 @@ fitCF_MHmcmc <- function(result=stop("An output from fitCF() must be provided"),
                           parametersMCMC=stop("A parameter set from fitCF_MHmcmc_p() must be provided"), 
                           n.chains = 1,
                           n.adapt = 0, thin=1, 
+                          WAIC=FALSE,
                           adaptive=FALSE, 
                           adaptive.lag=500, 
                           adaptive.fun=function(x) {ifelse(x>0.234, 1.3, 0.7)},
@@ -78,6 +80,7 @@ fitCF_MHmcmc <- function(result=stop("An output from fitCF() must be provided"),
   }
 
   fun <- lnLCF
+  n.datapoints <- length(as.vector(result$data))
 
   print(parametersMCMC)
   
@@ -85,7 +88,10 @@ fitCF_MHmcmc <- function(result=stop("An output from fitCF() must be provided"),
   # pt <- list(fixed=result$fixed.parameters, RMU.data=result$RMU.data, model.trend=result$model.trend, colname.year=result$colname.year, RMU.names=result$RMU.names)
 
 out <- MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, n.chains = n.chains, n.adapt = n.adapt, 
-                 thin=thin, trace=trace, traceML=traceML, likelihood=fun,
+                 thin=thin, trace=trace, traceML=traceML, 
+                 WAIC.out=WAIC, 
+                 n.datapoints=n.datapoints, 
+                 likelihood=fun,
                  adaptive = adaptive, adaptive.fun = adaptive.fun, adaptive.lag = adaptive.lag,
                  fixed.parameters=result$fixed.parameters, 
                  data=result$data)
@@ -98,6 +104,12 @@ if (inherits(fin, "try-error")) {
   out <- c(out, SD=list(lp))
 } else {
   out <- c(out, SD=list(fin$statistics[,"SD"]))
+}
+
+if (WAIC) {
+  out$WAIC <- out$WAIC[, , 
+  unlist(lapply(1:(dim(out$WAIC)[3]), FUN=function(col) !all(is.na(out$WAIC[1, 1, col]))))
+  ]
 }
 
 out <- addS3Class(out, "mcmcComposite")

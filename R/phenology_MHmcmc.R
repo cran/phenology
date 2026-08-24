@@ -58,6 +58,7 @@
 #' loo::loo(result_Gratiot_mcmc$WAIC)
 #' loo::waic(result_Gratiot_mcmc$WAIC)
 #' # You can use loo_compare() using a named list with these objects
+#' # of ELPDweight(loos = list(m1=loo::loo(model1$WAIC), m2=loo::loo(model2$WAIC))
 #' 
 #' # Get standard error of parameters
 #' summary(result_Gratiot_mcmc)
@@ -81,22 +82,22 @@
 #' @export
 
 
-phenology_MHmcmc<-function(result=stop("An output from fit_phenology() must be provided"), 
-                           n.iter=10000, 
+phenology_MHmcmc<-function(result=stop("An output from fit_phenology() must be provided")                     , 
+                           n.iter=10000                                                                       , 
                            parametersMCMC=stop("A model generated with phenology_MHmcmc_p() must be provided"), 
-                           n.chains = 1, 
-                           n.adapt = 1000, 
-                           thin=1, 
-                           WAIC=FALSE, 
-                           WAIC.bybeach=TRUE, 
-                           trace=FALSE, 
-                           traceML=FALSE, 
-                           adaptive=TRUE, 
-                           adaptive.lag=500, 
-                           adaptive.fun=function(x) {ifelse(x>0.234, 1.3, 0.7)},
-                           intermediate=NULL, 
-                           filename="intermediate.Rdata", 
-                           previous=NULL) {
+                           n.chains = 1                                                                       , 
+                           n.adapt = 1000                                                                     , 
+                           thin=1                                                                             , 
+                           WAIC=FALSE                                                                         , 
+                           WAIC.bybeach=TRUE                                                                  , 
+                           trace=FALSE                                                                        , 
+                           traceML=FALSE                                                                      , 
+                           adaptive=TRUE                                                                      , 
+                           adaptive.lag=500                                                                   , 
+                           adaptive.fun=function(x) {ifelse(x>0.234, 1.3, 0.7)}                               ,
+                           intermediate=NULL                                                                  , 
+                           filename="intermediate.Rdata"                                                      , 
+                           previous=NULL                                                                      ) {
   
   # result <- NULL; n.iter <- 10000; parametersMCMC <- NULL; n.chains = 1; n.adapt = 0; thin = 1; WAIC=FALSE; trace = FALSE; traceML = FALSE ; adaptive=FALSE; adaptive.lag=500; adaptive.fun=function(x) {ifelse(x>0.234, 1.3, 0.7)}; intermediate=NULL; filename="intermediate.Rdata"; previous=NULL
   # result <- result_Gratiot; parametersMCMC <- phenology_MHmcmc_p(result_Gratiot, accept = TRUE)
@@ -118,7 +119,8 @@ phenology_MHmcmc<-function(result=stop("An output from fit_phenology() must be p
     stop("An output of fit_phenology() must be provided")
   }
   
-  pt <- list(data=result$data, fixed=result$fixed.parameters, 
+  pt <- list(data=result$data, 
+             fixed=result$fixed.parameters, 
              out=TRUE, 
              model_before=result$model_before, 
              cofactors=result$cofactors,
@@ -138,12 +140,19 @@ phenology_MHmcmc<-function(result=stop("An output from fit_phenology() must be p
     n.datapoints <- sum(unlist(lapply(result$data, FUN=function(x) nrow(x))))
   }
   
-  out <- MHalgoGen(n.iter=n.iter, parameters=parametersMCMC, 
-                   n.chains = n.chains, n.adapt = n.adapt, thin=thin, 
-                   WAIC.out=WAIC, 
-                   n.datapoints=n.datapoints, 
-                   adaptive = adaptive, adaptive.fun = adaptive.fun, adaptive.lag = adaptive.lag,
-                   trace=trace, traceML = traceML, pt=pt, 
+  out <- MHalgoGen(n.iter=n.iter                                          , 
+                   parameters=parametersMCMC                              , 
+                   n.chains = n.chains                                    , 
+                   n.adapt = n.adapt                                      , 
+                   thin=thin                                              , 
+                   WAIC.out=WAIC                                          , 
+                   n.datapoints=n.datapoints                              , 
+                   adaptive = adaptive                                    , 
+                   adaptive.fun = adaptive.fun                            , 
+                   adaptive.lag = adaptive.lag                            ,
+                   trace=trace                                            , 
+                   traceML = traceML                                      , 
+                   pt=pt                                                  , 
                    likelihood=getFromNamespace(".Lnegbin", ns="phenology"))
   
   fin <- try(summary(out), silent=TRUE)

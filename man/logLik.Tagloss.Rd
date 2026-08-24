@@ -30,7 +30,7 @@ data_f_21_fast <- subset(data_f_21, subset=(is.na(data_f_21$N20)))
 par <- structure(c(48.8292784204825, 1039.02842229274, -89.3162940697861, 
 5.21817463244988, 8.00575451188548, 8.32971268127933, 161.265553603601, 
 602.935748681661, 2643.57415102633, 16.752815732218, 10.181616195839, 
-7.14279063312016), .Names = c("D1_2", "D2D1_2", "D3D2_2", "A_2", 
+7.14279063312016), names = c("D1_2", "D2D1_2", "D3D2_2", "A_2", 
 "B_2", "C_2", "D1_1", "D2D1_1", "D3D2_1", "A_1", "B_1", "C_1"))
 o <- Tagloss_fit(data=data_f_21_fast, fitted.parameters=par)
 logLik(o)
@@ -38,20 +38,20 @@ AIC(o)
 }
 }
 \seealso{
-Other Model of Tag-loss: 
-\code{\link{Tagloss_L}()},
-\code{\link{Tagloss_LengthObs}()},
-\code{\link{Tagloss_cumul}()},
-\code{\link{Tagloss_daymax}()},
-\code{\link{Tagloss_fit}()},
-\code{\link{Tagloss_format}()},
-\code{\link{Tagloss_mcmc}()},
-\code{\link{Tagloss_mcmc_p}()},
-\code{\link{Tagloss_model}()},
-\code{\link{Tagloss_simulate}()},
+Other Model of Tag-loss:
+\code{\link[=Tagloss_L]{Tagloss_L()}},
+\code{\link[=Tagloss_LengthObs]{Tagloss_LengthObs()}},
+\code{\link[=Tagloss_cumul]{Tagloss_cumul()}},
+\code{\link[=Tagloss_daymax]{Tagloss_daymax()}},
+\code{\link[=Tagloss_fit]{Tagloss_fit()}},
+\code{\link[=Tagloss_format]{Tagloss_format()}},
+\code{\link[=Tagloss_mcmc]{Tagloss_mcmc()}},
+\code{\link[=Tagloss_mcmc_p]{Tagloss_mcmc_p()}},
+\code{\link[=Tagloss_model]{Tagloss_model()}},
+\code{\link[=Tagloss_simulate]{Tagloss_simulate()}},
 \code{\link{o_4p_p1p2}},
-\code{\link{plot.Tagloss}()},
-\code{\link{plot.TaglossData}()}
+\code{\link[=plot.Tagloss]{plot.Tagloss()}},
+\code{\link[=plot.TaglossData]{plot.TaglossData()}}
 }
 \author{
 Marc Girondot

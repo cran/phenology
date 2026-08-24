@@ -425,8 +425,8 @@ fit_phenology <- function(data=file.choose()                           ,
         if (any(grepl("^Flat", names(resfit)))) resfit["Flat"] <- abs(resfit["Flat"])
         if (any(grepl("^Length", names(resfit)))) resfit[substr(names(resfit), 1, 6)=="Length"] <- abs(resfit[substr(names(resfit), 1, 6)=="Length"])
         # Ca fait en même temps MinE et MinB
-        if (any(grepl("^Min", names(resfit)))) resfit[substr(names(resfit), 1, 3)=="Min"]<-abs(resfit[substr(names(resfit), 1, 3)=="Min"])
-        if (any(grepl("^PMax", names(resfit)))) resfit[substr(names(resfit), 1, 3)=="Max"]<-abs(resfit[substr(names(resfit), 1, 3)=="Max"])
+        if (any(grepl("^Min", names(resfit)))) resfit[substr(names(resfit), 1, 3)=="Min"] <- abs(resfit[substr(names(resfit), 1, 3)=="Min"])
+        if (any(grepl("^Max", names(resfit)))) resfit[substr(names(resfit), 1, 3)=="Max"] <- abs(resfit[substr(names(resfit), 1, 3)=="Max"])
         
         resul$par <- resfit
         fitted.parameters <- resfit

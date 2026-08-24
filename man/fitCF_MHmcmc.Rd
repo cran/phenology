@@ -11,6 +11,7 @@ fitCF_MHmcmc(
   n.chains = 1,
   n.adapt = 0,
   thin = 1,
+  WAIC = FALSE,
   adaptive = FALSE,
   adaptive.lag = 500,
   adaptive.fun = function(x) {
@@ -36,6 +37,8 @@ fitCF_MHmcmc(
 
 \item{thin}{Number of iterations between each stored output}
 
+\item{WAIC}{Should WAIC information be saved?}
+
 \item{adaptive}{Should an adaptive process for SDProp be used}
 
 \item{adaptive.lag}{Lag to analyze the SDProp value in an adaptive content}
@@ -56,7 +59,7 @@ fitCF_MHmcmc(
 A list with resultMCMC being mcmc.list object, resultLnL being likelihoods and parametersMCMC being the parameters used
 }
 \description{
-Run the Metropolis-Hastings algorithm for RMU.data.\cr
+Run the Metropolis-Hastings algorithm for ECFOCF data.\cr
 The number of iterations is n.iter+n.adapt+1 because the initial likelihood is also displayed.\cr
 I recommend thin=1 because the method to estimate SE uses resampling.\cr
 As initial point is maximum likelihood, n.adapt = 0 is a good solution.\cr
@@ -83,7 +86,7 @@ o_mu1p1_CFp <- fitCF(x = c(mu = 2.1653229641404539,
 pMCMC <- fitCF_MHmcmc_p(result=o_mu1p1_CFp, accept=TRUE)
 fitCF_MCMC <- fitCF_MHmcmc(result = o_mu1p1_CFp, n.iter = 1000, 
                            parametersMCMC = pMCMC, n.chains = 1, n.adapt = 0, 
-                           adaptive=TRUE, 
+                           adaptive=TRUE, WAIC = TRUE, 
                            thin = 1, trace = TRUE)
                            
 plot(fitCF_MCMC, parameters="mu")
@@ -95,17 +98,17 @@ plot(fitCF_MCMC, parameters="p", transform = invlogit, xlim=c(0, 1),
 }
 }
 \seealso{
-Other Model of Clutch Frequency: 
-\code{\link{ECFOCF_f}()},
-\code{\link{ECFOCF_full}()},
-\code{\link{TableECFOCF}()},
-\code{\link{fitCF}()},
-\code{\link{fitCF_MHmcmc_p}()},
-\code{\link{generateCF}()},
-\code{\link{lnLCF}()},
-\code{\link{logLik.ECFOCF}()},
-\code{\link{plot.ECFOCF}()},
-\code{\link{plot.TableECFOCF}()}
+Other Model of Clutch Frequency:
+\code{\link[=ECFOCF_f]{ECFOCF_f()}},
+\code{\link[=ECFOCF_full]{ECFOCF_full()}},
+\code{\link[=TableECFOCF]{TableECFOCF()}},
+\code{\link[=fitCF]{fitCF()}},
+\code{\link[=fitCF_MHmcmc_p]{fitCF_MHmcmc_p()}},
+\code{\link[=generateCF]{generateCF()}},
+\code{\link[=lnLCF]{lnLCF()}},
+\code{\link[=logLik.ECFOCF]{logLik.ECFOCF()}},
+\code{\link[=plot.ECFOCF]{plot.ECFOCF()}},
+\code{\link[=plot.TableECFOCF]{plot.TableECFOCF()}}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

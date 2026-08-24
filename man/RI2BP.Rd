@@ -66,11 +66,11 @@ RI2BP(proportion=proportion, RI=RI)
 }
 }
 \seealso{
-Other Model of Remigration Interval: 
-\code{\link{Bayesian.remigration}()},
-\code{\link{LnRI_norm}()},
-\code{\link{RI}()},
-\code{\link{plot.Remigration}()}
+Other Model of Remigration Interval:
+\code{\link[=Bayesian.remigration]{Bayesian.remigration()}},
+\code{\link[=LnRI_norm]{LnRI_norm()}},
+\code{\link[=RI]{RI()}},
+\code{\link[=plot.Remigration]{plot.Remigration()}}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

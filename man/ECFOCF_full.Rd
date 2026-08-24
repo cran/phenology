@@ -23,7 +23,7 @@ ECFOCF_full(
 
 \item{sd}{The sd parameter of lognormal for clutch frequency.}
 
-\item{p}{The capture probability for an individual nesting event. As a logit}
+\item{p}{The capture probability for an individual nesting event. As a logit.}
 
 \item{a}{The common capture probability. As a probability}
 
@@ -33,7 +33,7 @@ ECFOCF_full(
 
 \item{sd_season}{The sd parameter of lognormal for ordinal day for beginning of nesting season.}
 
-\item{OTN}{The relative probability of categories}
+\item{OTN}{The relative probability of categories.}
 
 \item{MeanDaysBetween2Nests}{Average number of days between two nests.}
 
@@ -47,7 +47,8 @@ Return a matrix of class TableECFOCF.\cr
 \description{
 This function calculates a table of probabilities of ECF and OCF.\cr
 If p is lower or higher than 1E-100 or 1-1E-100, it is changed to 1E-100 and 1-(1E-100) respectively.\cr
-Names for p vector elements should be p, or px (with x=1:categories), or px.period.\cr
+Names for p vector elements should be p, px, or px.period (with x=1:categories).\cr
+Take care, p are logit, a and OTN are probabilities.\cr
 If mu_season and sd_season are equal to NA, the model is not temporalized.\cr
 If mu_season and sd_season are not NA, the model returns a 3D-table OCFECF.\cr
 }
@@ -72,23 +73,23 @@ plot(modelECFOCF, period=12, max.scale=0.02)
 modelECFOCF <- ECFOCF_full(mu=c(mu1=5.58013243236187), 
                     sd=c(sd1=1.225581130238), 
                     a=c(a1=1), 
-                    p=c(p1=invlogit(1.3578137414575)), 
+                    p=c(p1=1.3578137414575), 
                     MaxNests=15)
 plot(modelECFOCF)
 }
 }
 \seealso{
-Other Model of Clutch Frequency: 
-\code{\link{ECFOCF_f}()},
-\code{\link{TableECFOCF}()},
-\code{\link{fitCF}()},
-\code{\link{fitCF_MHmcmc}()},
-\code{\link{fitCF_MHmcmc_p}()},
-\code{\link{generateCF}()},
-\code{\link{lnLCF}()},
-\code{\link{logLik.ECFOCF}()},
-\code{\link{plot.ECFOCF}()},
-\code{\link{plot.TableECFOCF}()}
+Other Model of Clutch Frequency:
+\code{\link[=ECFOCF_f]{ECFOCF_f()}},
+\code{\link[=TableECFOCF]{TableECFOCF()}},
+\code{\link[=fitCF]{fitCF()}},
+\code{\link[=fitCF_MHmcmc]{fitCF_MHmcmc()}},
+\code{\link[=fitCF_MHmcmc_p]{fitCF_MHmcmc_p()}},
+\code{\link[=generateCF]{generateCF()}},
+\code{\link[=lnLCF]{lnLCF()}},
+\code{\link[=logLik.ECFOCF]{logLik.ECFOCF()}},
+\code{\link[=plot.ECFOCF]{plot.ECFOCF()}},
+\code{\link[=plot.TableECFOCF]{plot.TableECFOCF()}}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

@@ -15,6 +15,9 @@
   
   # print(x)
   
+  # index permet d'accélérer le calcul
+  
+  
   if (is.null(index)) {
     nm <- colnames(RMU.data)
     index.year <- which(nm == colname.year)
@@ -89,6 +92,7 @@
                   matrix(rep(aSD, nyear), nrow = nyear, byrow = TRUE) + 
                   matrix(rep(SD, nyear), nrow = nyear, byrow = TRUE))
   }
+  dtaL_SD <- as.matrix(dtaL_SD)
   
   La0 <- x[paste0("a0_", nabeach[paste0("a0_", nabeach) %in% names(x)])]
   La1 <- x[paste0("a1_", nabeach[paste0("a1_", nabeach) %in% names(x)])]
@@ -103,36 +107,42 @@
     La1[] <- 0
     names(La1) <- gsub("^a0_", "a1_", names(La0))
   }
-  map <- matrix(rep(NA, nyear * (nbeach)), ncol = nbeach)
-  
   # Cela va de 1 à x
-  nye <- RMU.data[, colname.year]-min(RMU.data[, colname.year])+1
-  rownames(map) <- names(nye)
+  yearsec <- RMU.data[, colname.year]
+  nye <- yearsec-min(yearsec)+1
+  
+  mapp <- matrix(rep(NA, nyear * (nbeach)), ncol = nbeach, dimnames = list(as.character(yearsec), 
+                                                                          beach = nabeach))
+  
+  # rownames(map) <- names(nye)
   
   for (i in 1:nbeach) {
-    map[, i] <- abs(La2[i]) * nye^2 + abs(La1[i]) * nye + abs(La0[i])
+    mapp[, i] <- abs(La2[i]) * nye^2 + abs(La1[i]) * nye + abs(La0[i])
   }
-  mapp <- matrix(rep(NA, nyear * nbeach), ncol = nbeach, dimnames = list(names(nye), 
-                                                                         beach = nabeach))
-  for (j in 1:nyear) {
-    mapp[j, ] <- map[j, ] / sum(map[j, ])
-  }
+  # mapp <- matrix(rep(NA, nyear * nbeach), ncol = nbeach, dimnames = list(names(nye), 
+  #                                                                       beach = nabeach))
+  # for (j in 1:nyear) {
+  #  mapp[j, ] <- map[j, ] / sum(map[j, ])
+  # }
+  
+  mapp <- mapp / rowSums(mapp)
+  
   if (model.trend == "year-specific") {
     Tot <- abs(x[paste0("T_", RMU.data[, index$year])])
     dtaL_theo <- matrix(rep(Tot, nbeach), ncol = nbeach, 
-                        byrow = FALSE, dimnames = list(NULL, beach = nabeach))
+                        byrow = FALSE, dimnames = list(as.character(yearsec), beach = nabeach))
   }
   if (model.trend == "constant") {
     Tot <- abs(x["T_"])
     dtaL_theo <- matrix(rep(Tot, nbeach * nyear), ncol = nbeach, 
-                        byrow = FALSE, dimnames = list(NULL, beach = nabeach))
+                        byrow = FALSE, dimnames = list(as.character(yearsec), beach = nabeach))
   }
   if (model.trend == "exponential") {
     Tot <- abs(x["T_"]) * exp(x["r"] * (nye))
     dtaL_theo <- matrix(rep(Tot, nbeach), ncol = nbeach, 
-                        byrow = FALSE, dimnames = list(names(nye), beach = nabeach))
+                        byrow = FALSE, dimnames = list(as.character(yearsec), beach = nabeach))
   }
-  dtaL_obs <- dtaL_obs[, nabeach]
+  dtaL_obs <- as.matrix(dtaL_obs[, nabeach])
   dtaL_theo <- dtaL_theo * mapp
   valide <- !is.na(dtaL_obs)
   for (i in 1:nrow(dtaL_SD)) dtaL_SD[i, (dtaL_SD[i, ] == 0) & 

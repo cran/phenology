@@ -6,6 +6,7 @@
 #' @param data CMR database formated using TableECFOCF().
 #' @param fixed.parameters Parameters that are fixed.
 #' @param parallel If TRUE, parallel computing in ECFOCF_f is used.
+#' @param attributeWAIC TRUE if WAIC must be returned.
 #' @param verbose if TRUE, show the parameters.
 #' @description Calculate the -log likelihood of data within a model.\cr
 #' @family Model of Clutch Frequency
@@ -40,13 +41,15 @@
 
 # Log likelihood ECF OCF ####
 
-lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) {
+lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE, attributeWAIC=TRUE) {
   
  #  x <- NULL; data <- NULL; fixed.parameters <- NULL; parallel <- TRUE; verbose <- TRUE
   
   xx <- c(x, fixed.parameters)
   
-  if (verbose) d(xx)
+  if (verbose) {
+    print(d(xx))
+  }
   
   # dans ml j'ai le nombre max de catégories
   # La partie entière c'est la catégorie
@@ -71,7 +74,7 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
       mu_ec <- NULL
       for (i in 1:mln) {
         if (all(!grepl(paste0("mu", i), names(mu)))) {
-          mu_ec <- c(mu_ec, structure(unname(mu_ref), .Names=paste0("mu", i)))
+          mu_ec <- c(mu_ec, structure(unname(mu_ref), names=paste0("mu", i)))
         } else {
           mu_ec <- c(mu_ec, mu[grepl(paste0("mu", i), names(mu))])
         }
@@ -84,7 +87,7 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
       mu_ec <- NULL
       for (i in 1:mln) {
         if (all(!grepl(paste0("mu", i), names(mu)))) {
-          mu_ec <- c(mu_ec, structure(unname(mu_ref), .Names=gsub("mu(\\.[0-9]+)", paste0("mu", i, "\\1"), names(mu_ref))))
+          mu_ec <- c(mu_ec, structure(unname(mu_ref), names=gsub("mu(\\.[0-9]+)", paste0("mu", i, "\\1"), names(mu_ref))))
         } else {
           mu_ec <- c(mu_ec, mu[grepl(paste0("mu", i), names(mu))])
         }
@@ -96,13 +99,13 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
   }
   
   sd <- xx[(substr(names(xx), 1, 2)=="sd") & (substr(names(xx), 1, 3) != "sd_")]
-  if (identical(sd, structure(numeric(0), .Names = character(0)))) sd <- c(sd=NA)
+  if (identical(sd, structure(numeric(0), names = character(0)))) sd <- c(sd=NA)
   if (length(sd)>1) sd <- sd[order(as.numeric(gsub("sd([0-9]+)", "\\1", names(sd))))]
-  sd <- structure(c(sd, rep(sd[length(sd)], mln-length(sd))), .Names=paste0("sd", 1:mln))
+  sd <- structure(c(sd, rep(sd[length(sd)], mln-length(sd))), names=paste0("sd", 1:mln))
   
   mu_season <- xx[substr(names(xx), 1, 9)=="mu_season"]
   if (length(mu_season)>1) mu_season <- mu_season[order(as.numeric(gsub("mu_season([0-9]+)", "\\1", names(mu_season))))]
-  if (!identical(mu_season, structure(numeric(0), .Names = character(0)))) {
+  if (!identical(mu_season, structure(numeric(0), names = character(0)))) {
     mu_season <- c(mu_season, rep(mu_season[length(mu_season)], mln-length(mu_season)))
     names(mu_season) <- paste0("mu_season", 1:mln)
   } else {
@@ -111,7 +114,7 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
   
   sd_season <- xx[substr(names(xx), 1, 9)=="sd_season"]
   if (length(sd_season)>1) sd_season <- sd_season[order(as.numeric(gsub("sd_season([0-9]+)", "\\1", names(sd_season))))]
-  if (!identical(sd_season, structure(numeric(0), .Names = character(0)))) {
+  if (!identical(sd_season, structure(numeric(0), names = character(0)))) {
     sd_season <- c(sd_season, rep(sd_season[length(sd_season)], mln-length(sd_season)))
     names(sd_season) <- paste0("sd_season", 1:mln)
   } else {
@@ -119,11 +122,11 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
   }
   
   a <- xx[substr(names(xx), 1, 1)=="a"]
-  if (identical(a, structure(numeric(0), .Names = character(0)))) {
-    a <- structure(rep(Inf, mln), .Names=paste0("a", 1:mln))
+  if (identical(a, structure(numeric(0), names = character(0)))) {
+    a <- structure(rep(Inf, mln), names=paste0("a", 1:mln))
   }
   if (any(names(a) == "a")) names(a[names(a) == "a"]) <- "a1"
-  a_int <- structure(rep(Inf, mln), .Names=paste0("a", 1:mln))
+  a_int <- structure(rep(Inf, mln), names=paste0("a", 1:mln))
   a_int[names(a)] <- a
   a <- 1/(1 + exp(-a_int))
   
@@ -146,7 +149,6 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
   } else {
     length_mean_ec  <-  attributes(data)$characteristics["length_season"]
   }
-  
   
   OCFECF <- ECFOCF_full(mu=mu, 
                         sd=sd, 
@@ -179,6 +181,9 @@ lnLCF <- function(x, data, fixed.parameters=NULL, parallel=TRUE, verbose=FALSE) 
     OCFECF <- log(OCFECF)
     OCFECF <- OCFECF*data[-1, -1, ]
     LnL <- -sum(OCFECF, na.rm = TRUE) 
+    
+    if (attributeWAIC) attributes(LnL) <- list(WAIC=as.vector(OCFECF))
+    
     # ss2 <<- x
     return(LnL)
   }

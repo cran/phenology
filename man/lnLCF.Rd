@@ -4,7 +4,14 @@
 \alias{lnLCF}
 \title{Calculate the -log likelihood of data within a model.}
 \usage{
-lnLCF(x, data, fixed.parameters = NULL, parallel = TRUE, verbose = FALSE)
+lnLCF(
+  x,
+  data,
+  fixed.parameters = NULL,
+  parallel = TRUE,
+  verbose = FALSE,
+  attributeWAIC = TRUE
+)
 }
 \arguments{
 \item{x}{A named vector of parameters (mu, sd, mu_season, sd_season, a, p and OTN).}
@@ -16,6 +23,8 @@ lnLCF(x, data, fixed.parameters = NULL, parallel = TRUE, verbose = FALSE)
 \item{parallel}{If TRUE, parallel computing in ECFOCF_f is used.}
 
 \item{verbose}{if TRUE, show the parameters.}
+
+\item{attributeWAIC}{TRUE if WAIC must be returned.}
 }
 \value{
 Return the -log likelihood of data within a model.\cr
@@ -55,17 +64,17 @@ lnLCF(x=par, data=ECFOCF_2002, fixed.parameters=fixed.parameters)
 
 }
 \seealso{
-Other Model of Clutch Frequency: 
-\code{\link{ECFOCF_f}()},
-\code{\link{ECFOCF_full}()},
-\code{\link{TableECFOCF}()},
-\code{\link{fitCF}()},
-\code{\link{fitCF_MHmcmc}()},
-\code{\link{fitCF_MHmcmc_p}()},
-\code{\link{generateCF}()},
-\code{\link{logLik.ECFOCF}()},
-\code{\link{plot.ECFOCF}()},
-\code{\link{plot.TableECFOCF}()}
+Other Model of Clutch Frequency:
+\code{\link[=ECFOCF_f]{ECFOCF_f()}},
+\code{\link[=ECFOCF_full]{ECFOCF_full()}},
+\code{\link[=TableECFOCF]{TableECFOCF()}},
+\code{\link[=fitCF]{fitCF()}},
+\code{\link[=fitCF_MHmcmc]{fitCF_MHmcmc()}},
+\code{\link[=fitCF_MHmcmc_p]{fitCF_MHmcmc_p()}},
+\code{\link[=generateCF]{generateCF()}},
+\code{\link[=logLik.ECFOCF]{logLik.ECFOCF()}},
+\code{\link[=plot.ECFOCF]{plot.ECFOCF()}},
+\code{\link[=plot.TableECFOCF]{plot.TableECFOCF()}}
 }
 \author{
 Marc Girondot

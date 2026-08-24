@@ -165,20 +165,20 @@ Casale, P., Freggi, D., Salvemini, P., 2017. Tag loss is a minor limiting factor
 Pfaller JB, Williams KL, Frick MG, Shamblin BM, Nairn CJ, Girondot M (2019) Genetic determination of tag loss dynamics in nesting loggerhead turtles: A new chapter in “the tag loss problem”. Marine Biology 166: 97 doi 10.1007/s00227-019-3545-x
 }
 \seealso{
-Other Model of Tag-loss: 
-\code{\link{Tagloss_L}()},
-\code{\link{Tagloss_LengthObs}()},
-\code{\link{Tagloss_cumul}()},
-\code{\link{Tagloss_daymax}()},
-\code{\link{Tagloss_format}()},
-\code{\link{Tagloss_mcmc}()},
-\code{\link{Tagloss_mcmc_p}()},
-\code{\link{Tagloss_model}()},
-\code{\link{Tagloss_simulate}()},
-\code{\link{logLik.Tagloss}()},
+Other Model of Tag-loss:
+\code{\link[=Tagloss_L]{Tagloss_L()}},
+\code{\link[=Tagloss_LengthObs]{Tagloss_LengthObs()}},
+\code{\link[=Tagloss_cumul]{Tagloss_cumul()}},
+\code{\link[=Tagloss_daymax]{Tagloss_daymax()}},
+\code{\link[=Tagloss_format]{Tagloss_format()}},
+\code{\link[=Tagloss_mcmc]{Tagloss_mcmc()}},
+\code{\link[=Tagloss_mcmc_p]{Tagloss_mcmc_p()}},
+\code{\link[=Tagloss_model]{Tagloss_model()}},
+\code{\link[=Tagloss_simulate]{Tagloss_simulate()}},
+\code{\link[=logLik.Tagloss]{logLik.Tagloss()}},
 \code{\link{o_4p_p1p2}},
-\code{\link{plot.Tagloss}()},
-\code{\link{plot.TaglossData}()}
+\code{\link[=plot.Tagloss]{plot.Tagloss()}},
+\code{\link[=plot.TaglossData]{plot.TaglossData()}}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

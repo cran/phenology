@@ -108,7 +108,7 @@ ECFOCF_f <- function(mu, sd = NA, p, MaxNests=15,
     # je crée une chaîne avec toutes les prob nommées
     commonprob <- ifelse(is.na(p[paste0("p", as.character(nm))]), 0, p[paste0("p", as.character(nm))])
     prob_ec <- structure(rep(commonprob, length_season+MaxNests), 
-                         .Names=paste0("p", as.character(nm), ".", formatC(1:(length_season+MaxNests), width=2, flag="0")))
+                         names=paste0("p", as.character(nm), ".", formatC(1:(length_season+MaxNests), width=2, flag="0")))
     
     
     # Oui je met les valeurs à leur place

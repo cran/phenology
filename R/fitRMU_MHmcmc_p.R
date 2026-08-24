@@ -255,6 +255,7 @@ fitRMU_MHmcmc_p <- function(result=stop("An output from fitRMU() must be provide
   parameters <- parametersMCMC
   
   if (accept) {
+    parameters <- addS3Class(parameters, class="PriorsmcmcComposite")
     return(parameters)
   } else {
     
@@ -268,6 +269,7 @@ fitRMU_MHmcmc_p <- function(result=stop("An output from fitRMU() must be provide
       if (length(f)==0) f <- "q"
       
       if (f=="q") {
+        parameters <- addS3Class(parameters, class="PriorsmcmcComposite")
         return(parameters)
         
       } else {

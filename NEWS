@@ -5,12 +5,35 @@ What must be done:
 
 THIS IS THE CHANGELOG OF THE "phenology" PACKAGE
 
-            CHANGES IN VERSION 2026.2.28 (2026-02-28)
+            CHANGES IN VERSION 2026.8.24 (2026-08-24)
+
+* New CRAN version - 2026.08.24 (2026-08-24)
+
+            CHANGES IN VERSION 2026.8.17 (2026-08-17)
 
 * New CRAN version - 2025.11.12 (2025-11-12)
 * Possibility to plot phenology over another one - 2025.11.13 (2025-11-13)
 * The lines with count number being NA are removed when add_phenology() is used - 2026.2.25 (2026-02-25)
 * Add option in plot.objects == "MCMC.SD") in plot.phenology() - 2026.2.28 (2026-02-28)
+* Minor change in Description of fitCF() - 2026.3.19 (2026-03-19)
+* Can use resultMCMC for result="prob" in plot.ECFOCF() - 2026.3.20 (2026-03-20)
+* Amelioration of plot.ECFOCF() - 2026.3.23 (2026-03-23)
+* Amelioration of plot.ECFOCF(): can plot probabilities without SE - 2026.4.1 (2026-04-01)
+* Minor change in plot.ECFOCF() - 2026.4.3 (2026-04-03)
+* Example in Sea_Turtles_Bayesian() - 2026.4.6 (2026-04-06)
+* Bug correction in CI.RMU - 2026.4.8 (2026-04-08)
+* method being NULL in fitRMU() returns the likelihood - 2026.4.9 (2026-04-09)
+* phenology_MHmcmc_p() now can use parameters Phi3 to Tau3 and multimodes phenology - 2026.4.19 (2026-04-19)
+* Prevent a warning in daily_count() - 2026.5.14 (2026-05-14)
+* Periodic pattern can be used with bimodality - 2026.5.14 (2026-05-14)
+* Acceleration of fit_phenology() - 2026.5.15 (2026-05-15)
+* Likelihood_phenology() uses correctly method_Snbinom - 2026.5.18 (2026-05-18)
+* If Max is negative, converts it to abs() - 2026.5.18 (2026-05-18)
+* Periodic parameters can be series-specific - 2026.5.23 (2026-05-23)
+* .daily_counts() and .format_par() have been completly rewritten for phenology analysis - 2026.5.24 (2026-05-24)
+* It is possible to plot just the observations after add_phenology() - 2026.5.26 (2026-05-26)
+* Correction of error introduced in .daily_counts() in 2026.5.24 version - 2026.8.17 (2026-08-17)
+* Change the .Names into names - 2026.8.17 (2026-08-17)
 
             CHANGES IN VERSION 2025.11.12 (2025-11-12)
 

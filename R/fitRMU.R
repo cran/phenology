@@ -361,8 +361,26 @@ fitRMU <- function (RMU.data = stop("data parameter must be provided"),
   
   # print(d(x))
   
-  if (is.null(method)) return(list(fitted.parameters=x, fixed.parameters=fixed.parameters))
+  if (is.null(method)) {
+
+    return(list(value=LikelihoodRMU(x=x                                , 
+                                    fixed.parameters = fixed.parameters, 
+                                    RMU.data = RMU.data                , 
+                                    index = index                      , 
+                                    model.trend = model.trend          , 
+                                    colname.year=colname.year          , 
+                                    RMU.names = RMU.names              , 
+                                    model.SD = model.SD                ), 
+                fitted.parameters=x              , 
+                fixed.parameters=fixed.parameters, 
+                RMU.data = RMU.data              ,   
+                index = index                    ,  
+                model.trend = model.trend        ,   
+                colname.year=colname.year        ,  
+                RMU.names = RMU.names            , 
+                model.SD = model.SD                ))
   
+  }
   nm <- names(x)
   
   repeat {

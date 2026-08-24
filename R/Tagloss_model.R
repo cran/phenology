@@ -281,7 +281,7 @@ Tagloss_model <- function(t=NULL                                                
     
     par_add <- par
     par_add <- par_add[!names(par_add) %in% colnames(VCov)]
-    if (identical(par_add,structure(numeric(0), .Names = character(0)))) par_add <- NULL
+    if (identical(par_add,structure(numeric(0), names = character(0)))) par_add <- NULL
     
     gh <- data.frame(time=numeric(), value=numeric(), 
                      mean=numeric(), se=numeric(), 

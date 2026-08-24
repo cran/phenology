@@ -69,17 +69,17 @@ plot(modelECFOCF, period=2)
 }
 }
 \seealso{
-Other Model of Clutch Frequency: 
-\code{\link{ECFOCF_full}()},
-\code{\link{TableECFOCF}()},
-\code{\link{fitCF}()},
-\code{\link{fitCF_MHmcmc}()},
-\code{\link{fitCF_MHmcmc_p}()},
-\code{\link{generateCF}()},
-\code{\link{lnLCF}()},
-\code{\link{logLik.ECFOCF}()},
-\code{\link{plot.ECFOCF}()},
-\code{\link{plot.TableECFOCF}()}
+Other Model of Clutch Frequency:
+\code{\link[=ECFOCF_full]{ECFOCF_full()}},
+\code{\link[=TableECFOCF]{TableECFOCF()}},
+\code{\link[=fitCF]{fitCF()}},
+\code{\link[=fitCF_MHmcmc]{fitCF_MHmcmc()}},
+\code{\link[=fitCF_MHmcmc_p]{fitCF_MHmcmc_p()}},
+\code{\link[=generateCF]{generateCF()}},
+\code{\link[=lnLCF]{lnLCF()}},
+\code{\link[=logLik.ECFOCF]{logLik.ECFOCF()}},
+\code{\link[=plot.ECFOCF]{plot.ECFOCF()}},
+\code{\link[=plot.TableECFOCF]{plot.TableECFOCF()}}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

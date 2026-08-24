@@ -48,20 +48,20 @@ plot(data_f_21)
 }
 }
 \seealso{
-Other Model of Tag-loss: 
-\code{\link{Tagloss_L}()},
-\code{\link{Tagloss_LengthObs}()},
-\code{\link{Tagloss_cumul}()},
-\code{\link{Tagloss_daymax}()},
-\code{\link{Tagloss_fit}()},
-\code{\link{Tagloss_format}()},
-\code{\link{Tagloss_mcmc}()},
-\code{\link{Tagloss_mcmc_p}()},
-\code{\link{Tagloss_model}()},
-\code{\link{Tagloss_simulate}()},
-\code{\link{logLik.Tagloss}()},
+Other Model of Tag-loss:
+\code{\link[=Tagloss_L]{Tagloss_L()}},
+\code{\link[=Tagloss_LengthObs]{Tagloss_LengthObs()}},
+\code{\link[=Tagloss_cumul]{Tagloss_cumul()}},
+\code{\link[=Tagloss_daymax]{Tagloss_daymax()}},
+\code{\link[=Tagloss_fit]{Tagloss_fit()}},
+\code{\link[=Tagloss_format]{Tagloss_format()}},
+\code{\link[=Tagloss_mcmc]{Tagloss_mcmc()}},
+\code{\link[=Tagloss_mcmc_p]{Tagloss_mcmc_p()}},
+\code{\link[=Tagloss_model]{Tagloss_model()}},
+\code{\link[=Tagloss_simulate]{Tagloss_simulate()}},
+\code{\link[=logLik.Tagloss]{logLik.Tagloss()}},
 \code{\link{o_4p_p1p2}},
-\code{\link{plot.Tagloss}()}
+\code{\link[=plot.Tagloss]{plot.Tagloss()}}
 }
 \author{
 Marc Girondot \email{marc.girondot@gmail.com}

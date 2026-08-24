@@ -1,8 +1,11 @@
-.daily_count <- function(d, xpar, 
-                         cofactors=NULL, add.cofactors=NULL, 
-                         print=FALSE, zero=1E-9) {
+.daily_count <- function(d                  , 
+                         xpar               , 
+                         cofactors=NULL     , 
+                         add.cofactors=NULL , 
+                         print=FALSE        , 
+                         zero=1E-9          ) {
   
-
+  
   
   # daily_count estimates nest number based on set of parameters.
   # @title Estimate expected counts based on set of parameters.
@@ -35,103 +38,53 @@
   
   # 10/5/2023
   index <- na.omit(suppressWarnings(as.numeric(gsub(".+\\.(\\d+).*", "\\1", names(xpar)))))
-  if (length(index) != 0) index <- max(index) else index <- 0
+  if (length(unique(index)) != 0) index <- as.character(unique(index)) else stop("Error in parameters\n", as.character(dput(xpar)))
   
-  nn <- NULL
-  
-  if (!is.na(xpar["Begin"]))
-  nn <- ifelse(d<xpar["Begin"], xpar["MinB"],
-               ifelse(d<xpar["PmoinsF"], ((1+cos(pi*(xpar["PmoinsF"]-d)/xpar["PmoinsFB"]))/2)*xpar["MaxMinB"]+xpar["MinB"],
-                      ifelse(d<xpar["PplusF"], xpar["Max"],
-                             ifelse(d<xpar["End"], ((1+cos(pi*(d-(xpar["PplusF"]))/xpar["EPplusF"]))/2)*xpar["MaxMinE"]+xpar["MinE"],
-                                    xpar["MinE"]
-                             )
-                      )
-               )
-  )
-  
-  if (index != 0)
-    for (i in as.character(1:index)) {
-      nn <- c(nn,  ifelse(d<xpar[paste0("Begin.", i)], xpar[paste0("MinB.", i)],
-                     ifelse(d<xpar[paste0("PmoinsF.", i)], ((1+cos(pi*(xpar[paste0("PmoinsF.", i)]-d)/xpar[paste0("PmoinsFB.", i)]))/2)*xpar[paste0("MaxMinB.", i)]+xpar[paste0("MinB.", i)],
-                            ifelse(d<xpar[paste0("PplusF.", i)], xpar[paste0("Max.", i)],
-                                   ifelse(d<xpar[paste0("End.", i)], ((1+cos(pi*(d-(xpar[paste0("PplusF.", i)]))/xpar[paste0("EPplusF.", i)]))/2)*xpar[paste0("MaxMinE.", i)]+xpar[paste0("MinE.", i)],
-                                          xpar[paste0("MinE.", i)]
-                                   )
-                            )
-                     )
-      )
-      )
+  maxd <- 1+(1+max(d)%/%365)*365
+  nn_m <- matrix(NA, ncol = maxd, nrow=length(index), dimnames = list(index, as.character((1:maxd)-1)))
+  posd <- match(as.character(d), colnames(nn_m))
+  dd <- (1:maxd)-1
+  for (i in index) {
+    
+    idMinB <- (dd < xpar[paste0("Begin.", i)])
+    idIncB <- (dd < xpar[paste0("PmoinsF.", i)]) & (!idMinB)
+    idFlat <- (dd >= xpar[paste0("PmoinsF.", i)]) & (dd < xpar[paste0("PplusF.", i)])
+    idIncE <- (dd >= xpar[paste0("PplusF.", i)]) & (dd < xpar[paste0("End.", i)])
+    idMinE <- (dd >= xpar[paste0("End.", i)])
+    
+    nn_m[i, idMinB]  <- xpar[paste0("MinB.", i)]
+    nn_m[i, idIncB]  <- ((1+cos(pi*(xpar[paste0("PmoinsF.", i)]-dd[idIncB])/xpar[paste0("PmoinsFB.", i)]))/2)*xpar[paste0("MaxMinB.", i)]+xpar[paste0("MinB.", i)]
+    nn_m[i, idFlat]  <- xpar[paste0("Max.", i)]
+    nn_m[i, idIncE]  <- ((1+cos(pi*(dd[idIncE]-(xpar[paste0("PplusF.", i)]))/xpar[paste0("EPplusF.", i)]))/2)*xpar[paste0("MaxMinE.", i)]+xpar[paste0("MinE.", i)]
+    nn_m[i, idMinE]  <- xpar[paste0("MinE.", i)]
+    ns <- ns1 <- ns2 <- ns3 <- rep(0, ncol(nn_m))
+    if (xpar[paste0("sin.", i)]) {
+      ns <- sin(2*pi*((dd+xpar[paste0("Delta.", i)])/xpar[paste0("Phi.", i)]))*(xpar[paste0("Alpha.", i)]+(xpar[paste0("Beta.", i)]*nn_m[i, ]^xpar[paste0("Tau.", i)]))
     }
-  
-  
-  if (is.null(nn)) {
-    print("No global model: Error, the parameters at the time of error are:")
-    stop(dput(xpar))
-  } else {
-  if (any(is.na(nn))) {
-    print("Global is NA: Error, the parameters at the time of error are:")
-    stop(dput(xpar))
-    #	assign("par_error", xpar, envir=as.environment(.phenology.env))
-  }
-  }
-  
-  nn <- matrix(nn, ncol = length(d), byrow = TRUE)
-  nn <- colSums(nn, dims=1)
-  
-  
-  if (xpar["sin"]) {
-    if (xpar["Phi"] == 0) xpar["Phi"] <- 1E-9
-    ns <- sin(2*pi*((d+xpar["Delta"])/xpar["Phi"]))*(xpar["Alpha"]+(xpar["Beta"]*nn^xpar["Tau"]))
-    if (any(is.na(ns))) {
-      print(d)
-      print("Sin: Error, the parameters at the time of error are:")
-      stop(dput(xpar))
-      #	assign("par_error", xpar, envir=as.environment(.phenology.env))
+    if (xpar[paste0("sin1.", i)]) {
+      ns1 <- sin(2*pi*((dd+xpar[paste0("Delta1.", i)])/xpar[paste0("Phi1.", i)]))*(xpar[paste0("Alpha1.", i)]+(xpar[paste0("Beta1.", i)]*nn_m[i, ]^xpar[paste0("Tau1.", i)]))
     }
-  } else {
-    ns <- 0
-  }
-  
-  if (xpar["sin1"]) {
-    if (xpar["Phi1"] == 0) xpar["Phi1"] <- 1E-9
-    ns1 <- sin(2*pi*((d+xpar["Delta1"])/xpar["Phi1"]))*(xpar["Alpha1"]+(xpar["Beta1"]*nn^xpar["Tau1"]))
-    if (any(is.na(ns1))) {
-      print(d)
-      print("Sin 1: Error, the parameters at the time of error are:")
-      stop(dput(xpar))
-      #	assign("par_error", xpar, envir=as.environment(.phenology.env))
+    if (xpar[paste0("sin2.", i)]) {
+      ns2 <- sin(2*pi*((dd+xpar[paste0("Delta2.", i)])/xpar[paste0("Phi2.", i)]))*(xpar[paste0("Alpha2.", i)]+(xpar[paste0("Beta2.", i)]*nn_m[i, ]^xpar[paste0("Tau2.", i)]))
     }
-  } else {
-    ns1 <- 0
-  }
-  
-  
-  if (xpar["sin2"]) {
-    if (xpar["Phi2"] == 0) xpar["Phi2"] <- 1E-9
-    ns2<-sin(2*pi*((d+xpar["Delta2"])/xpar["Phi2"]))*(xpar["Alpha2"]+(xpar["Beta2"]*nn^xpar["Tau2"]))
-    if (any(is.na(ns2))) {
-      print(d)
-      print("Sin 2: Error, the parameters at the time of error are:")
-      stop(dput(xpar))
-      #	assign("par_error", xpar, envir=as.environment(.phenology.env))
+    if (xpar[paste0("sin3.", i)]) {
+      ns3 <- sin(2*pi*((dd+xpar[paste0("Delta3.", i)])/xpar[paste0("Phi3.", i)]))*(xpar[paste0("Alpha3.", i)]+(xpar[paste0("Beta3.", i)]*nn_m[i, ]^xpar[paste0("Tau3.", i)]))
     }
-  } else {
-    ns2 <- 0
+    nn_m[i, ] <- nn_m[i, ] + ns + ns1 + ns2 + ns3
   }
   
-  nn <- nn+ns+ns1+ns2
+  # C'est quoi ça ??? 
+  # C'est pour ne pas avoir de 0 mais pas sur xpar. Bizarre
+  # xpar[paste0("PmoinsFB.", as.character(1:as.numeric(index)))] <- ifelse(xpar[paste0("PmoinsFB.", as.character(1:as.numeric(index)))] == 0, 
+  #                                                            zero, 
+  #                                                            xpar[paste0("PmoinsFB.", as.character(1:as.numeric(index)))])
+  # xpar[paste0("EPplusF.", as.character(1:as.numeric(index)))] <- ifelse(xpar[paste0("EPplusF.", as.character(1:as.numeric(index)))] == 0, 
+  #                                                           zero, 
+  #                                                           xpar[paste0("EPplusF.", as.character(1:as.numeric(index)))])
+
+  nn <- colSums(nn_m, dims=1)
   nn[is.na(nn)] <- zero
-  
-  nn <- ifelse((nn <= zero) & (d<xpar["Begin"]), xpar["MinB"],
-               ifelse((nn <= zero) & (d>xpar["Begin"]), xpar["MinE"],
-                      ifelse(nn <= zero,(xpar["MinB"]+xpar["MinE"])/2,
-                             nn
-                      )
-               )
-  )
-  
-  nn[is.na(nn)] <- zero
+  nn[nn < zero] <- zero
   
   # Cofacteurs
   if ((!is.null(cofactors)) & (!is.null(add.cofactors))) {
@@ -147,16 +100,13 @@
     effet2 <- rowSums(nn * cofactors[cofactors$Date == d, add.cofactors, drop=FALSE] * xparcf[paste0(add.cofactors, "multi")])
     nn <- nn + effet1 + effet2
   }
-
-  nn[nn <= zero] <- zero
-  nn[is.na(nn)] <- zero
-  nn <- unname(nn)
+  
   
   # je suis en en mode interactif, j'affiche le résultat
   if (print) {
-    print(paste("Day ", d, "Number ", nn))
+    print(paste("Day ", d, "Number ", nn[posd]))
   }
   
-  return(nn)
+  return(nn[posd])
 }
 

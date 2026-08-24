@@ -59,12 +59,12 @@ pMCMC <- fitRMU_MHmcmc_p(result=cst, accept=TRUE)
 }
 }
 \seealso{
-Other Fill gaps in RMU: 
-\code{\link{CI.RMU}()},
-\code{\link{fitRMU}()},
-\code{\link{fitRMU_MHmcmc}()},
-\code{\link{logLik.fitRMU}()},
-\code{\link{plot.fitRMU}()}
+Other Fill gaps in RMU:
+\code{\link[=CI.RMU]{CI.RMU()}},
+\code{\link[=fitRMU]{fitRMU()}},
+\code{\link[=fitRMU_MHmcmc]{fitRMU_MHmcmc()}},
+\code{\link[=logLik.fitRMU]{logLik.fitRMU()}},
+\code{\link[=plot.fitRMU]{plot.fitRMU()}}
 }
 \author{
 Marc Girondot

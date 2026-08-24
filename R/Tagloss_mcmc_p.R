@@ -389,6 +389,7 @@ Tagloss_mcmc_p <- function(result=stop("An output from Tagloss_fit() must be pro
   parameters <- parametersMCMC
   
   if (accept) {
+    parameters <- addS3Class(parameters, class="PriorsmcmcComposite")
     return(parameters)
   } else {
     
@@ -402,6 +403,7 @@ Tagloss_mcmc_p <- function(result=stop("An output from Tagloss_fit() must be pro
       if (length(f)==0) f <- "q"
       
       if (f=="q") {
+        parameters <- addS3Class(parameters, class="PriorsmcmcComposite")
         return(parameters)
         
       } else {

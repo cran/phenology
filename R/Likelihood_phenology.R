@@ -2,16 +2,17 @@
 #' @title Estimate the likelihood of timeseries based on a set of parameters.
 #' @author Marc Girondot
 #' @return The likelihood of the data with the parameters
-#' @param data Dataset generated with add_format
-#' @param fixed.parameters Set of fixed parameters
-#' @param fitted.parameters Set of parameters to be fitted
+#' @param data Dataset generated with add_format.
+#' @param fixed.parameters Set of fixed parameters.
+#' @param fitted.parameters Set of parameters to be fitted.
 #' @param parallel If TRUE, parallel computing is used.
 #' @param model_before The change of parameters before to estimate daily counts.
-#' @param cofactors data.frame with a column Date and a column for each cofactor
-#' @param add.cofactors Names of the column of parameter cofactors to use as a cofactor
-#' @param zero If the theoretical nest number is under this value, this value wll be used
+#' @param method_Snbinom Can be Furman, exact, or saddlepoint.
+#' @param cofactors data.frame with a column Date and a column for each cofactor.
+#' @param add.cofactors Names of the column of parameter cofactors to use as a cofactor.
+#' @param zero If the theoretical nest number is under this value, this value wll be used.
 #' @param result An object obtained after fit_phenology()
-#' @param out If TRUE, return the global likelihood; if FALSE, the likelihood for each series
+#' @param out If TRUE, return the global likelihood; if FALSE, the likelihood for each series.
 #' @description This function is used to estimate the likelihood based on a set of parameters.
 #' @family Phenology model
 #' @examples
@@ -48,6 +49,7 @@ likelihood_phenology <-  function(data=NULL                  ,
                                   parallel=TRUE              , 
                                   result=NULL                , 
                                   model_before=NULL          , 
+                                  method_Snbinom=NULL        ,
                                   cofactors=NULL             , 
                                   add.cofactors=NULL         ,
                                   zero=1E-9                  , 
@@ -65,6 +67,7 @@ likelihood_phenology <-  function(data=NULL                  ,
       if (is.null(data)) {data <- result$data}
       if (is.null(fitted.parameters)) {fitted.parameters <- result$par}
       if (is.null(fixed.parameters)) {fixed.parameters <- result$fixed.parameters}
+      if (is.null(method_Snbinom)) {method_Snbinom <- result$method_Snbinom}
       if (is.null(cofactors)) cofactors <- result$cofactors
       if (is.null(add.cofactors)) add.cofactors <- result$add.cofactors
     }
